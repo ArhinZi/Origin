@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<GolemSettings>
+  <!--CoreItemID: ID of item dropped when a golem dies-->
+  <!--GolemSpawnDefs
+        Item
+          ItemID: ID of item that can turn into a golem
+          Amount: Minimum amount before a golem can spawn
+  -->
+  <CoreItemID>GolemCore</CoreItemID>
+  <GolemSpawnDefs>
+    <Item>
+      <ItemID>RawSoil</ItemID>
+      <Amount>500</Amount>
+    </Item>
+    <Item>
+      <ItemID>RawStone</ItemID>
+      <Amount>500</Amount>
+    </Item>
+    <Item>
+      <ItemID>RawOre</ItemID>
+      <Amount>500</Amount>
+    </Item>
+    <Item>
+      <ItemID>RawWood</ItemID>
+      <Amount>500</Amount>
+    </Item>
+    <Item>
+      <ItemID>Block</ItemID>
+      <Amount>500</Amount>
+    </Item>
+    <Item>
+      <ItemID>Bar</ItemID>
+      <Amount>250</Amount>
+    </Item>
+    <Item>
+      <ItemID>Plank</ItemID>
+      <Amount>500</Amount>
+    </Item>
+    <Item>
+      <ItemID>Straw</ItemID>
+      <Amount>500</Amount>
+    </Item>
+  </GolemSpawnDefs>
+</GolemSettings>

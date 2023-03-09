@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Liquids>
+  <Item>
+    <LiquidID>Water</LiquidID>
+    <Viscosity>0.05</Viscosity>
+    <Compression>0.5</Compression>
+    <StaticAlpha>64</StaticAlpha>
+    <Description>Water is dangerous to those who can't swim.  It is also wet.</Description>
+    <SpriteID>WaterFloor</SpriteID>
+    <LeftWallSpriteID>WaterLeftWall</LeftWallSpriteID>
+    <RightWallSpriteID>WaterRightWall</RightWallSpriteID>
+  </Item>
+  <Item>
+    <LiquidID>Lava</LiquidID>
+    <Viscosity>0.5</Viscosity>
+    <Compression>0</Compression>
+    <StaticAlpha>255</StaticAlpha>
+    <Description>Wading in lava should be avoided.</Description>
+    <SpriteID>LavaFloor</SpriteID>
+    <LeftWallSpriteID>WaterLeftWall</LeftWallSpriteID>
+    <RightWallSpriteID>WaterRightWall</RightWallSpriteID>
+  </Item>
+</Liquids>

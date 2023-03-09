@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LiquidSettings>
+  <MaterialIDToLiquidID>
+    <Key>Water</Key>
+    <Value>Water</Value>
+  </MaterialIDToLiquidID>
+  <MaterialIDToLiquidID>
+    <Key>Lava</Key>
+    <Value>Lava</Value>
+  </MaterialIDToLiquidID>
+</LiquidSettings>

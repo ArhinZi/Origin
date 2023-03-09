@@ -28,3 +28,4 @@ C:\Users\ARHIN\source\repos\Origin\bin\Windows\x86\Debug\Content\basefont2.xnb
 C:\Users\ARHIN\source\repos\Origin\bin\Windows\x86\Debug\Content\tile0.xnb
 C:\Users\ARHIN\source\repos\Origin\bin\Windows\x86\Debug\Content\tile1.xnb
 C:\Users\ARHIN\source\repos\Origin\bin\Windows\x86\Debug\MonoGameStaticBatch.dll
+C:\Users\ARHIN\source\repos\Origin\bin\Windows\x86\Debug\Content\default.xnb

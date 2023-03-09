@@ -1,0 +1,405 @@
+﻿<ItemSettings>
+  <!--TransportContainers: Items used to carry other items when stocking
+        ItemID: ID of transport container.  Supports arbitrary number of these
+  -->
+  <!--WornEquipment: Items that can be smelted into a fix amount of another item
+        Item: 
+          ItemID: ID of item
+          SmeltIntoItemID (optional): Default is MetalSliver.  New item that is generated when smelting
+          SmeltAmount: Amount of SmeltIntoItemID to generate
+  -->
+  <!--Furniture: Used in Stock UI to display combined quantity of these items under Furniture
+        ItemID: ID of item.
+  -->
+  <!--Tools: These items are sort of sticky.  Gnomes will hold onto these items if they have the associated skill defined in their profession
+        Tool
+          ItemID: ID of item
+          Skill:  Associated Skill
+  -->
+  <!--Weapons: Used in Stock UI to display combined quantity of these items under Weapons
+        ItemID: ID of item.  
+  -->
+  <!--Armor: Used in Stock UI to display combined quantity of these items under Weapons
+        ItemID: ID of item.  
+  -->
+  <!--ItemIDToPileItemID
+        Item: These items can be converted to the associated pile Item ID
+          Key: Base ID of item
+          Value: Pile ID associated with item
+  -->
+  <!--ItemIDToStorageID
+        Item: Items with an associated storage ID which define allowed items for this container
+          Key: ID of item
+          Value: Storage ID
+  -->
+  <!--MaterialTypeToItemID
+        Item: Defines which item to generate when this type of material is destroyed when mining/felling trees/harvesting plant/etc
+          Key: Material
+          Value: ID of item
+  -->
+  <!--ItemIDToAmmoType
+        Item: Associates items with ammo definitions
+          Key: ID of item
+          Value: AmmoType ID
+  -->
+  <!--AmmoContainersByAmmoItemID
+        Item: Associates ammo item with a container
+          Key: ID of item
+          Value: Supports multiple items
+            Item: ItemID of container
+  -->
+  <!--ItemIDToArtificialLimbBodyPartID
+        Item: Associates an ItemID with an ArtificialLimb ID
+          Key: ID of item
+          Value: ArtificialLimb ID
+  -->
+  <!--ArtificialLimbMaterialIDs: Available materials in order when searching for an artificial limb
+        OrderedMaterialID: ID of material-->
+  <!--BodyPartIDToItemID
+        Item: Associates a BodyPartID to an ItemID
+          Key: BodyPartID
+          Value: ItemID
+  -->
+  <!--CorpseItemID: ItemID used when spawning a corpse -->
+  <!--LimbItemID: ItemID used when spawning a limb-->
+  <!--DefaultWeapon: WeaponDef used for all items that don't have one defined in items.xml
+        Skill: Associated skill used for this weapon
+        AttackMove: Supports an arbitrary number of these
+          Verb: Used in combat log
+          SFXEventName (optional): sound effect that fires for this attack
+          AttackType: Type of attack.  Used for defending against this attack.  Available types - Swing, Thrust, HandToHand, Projectile
+          AttackTime (optional, seconds): Default is 3.  Time before another attack can be attempted after this one
+          AttackRange (optional) [min, max] values are in distance squared: Defines min and max distance attack can be used.
+          RequiresAmmo (optional): Default is false.  If true, requires ammo to be available and consumes on use
+          Damage:  Type of damage this weapon applies. Supports multiple.  Damage is applied in order listed.  ex, Claymore will first do slash damage then apply blunt damage.  If slash damage cuts through a layer (skin, muscle), blunt damage will be applied to the next layer
+        TargetedAttackMove (optional): Supports an arbitrary number
+          TargetedMaterial: Material which determines if this attack will be used
+          AttackDef:  AttackMove defined above
+        DefendMove (optional): Supports an arbitrary number
+          Verb: Used in combat log
+          SFXEventName (optional): sound effect that fires for this defend move        
+          DefendTime (optional, seconds): Default is 1.  Time before this weapon can be used to defend with again
+          AttackDelay (optional, seconds): Default is 1.  Delays next attack by this amount when defending.
+          DefendType: Supports an arbitrary number of these.  AttackType that this move can defend against
+        Point (optional): Default is 0.  Used for determining damage of pierce attacks
+        Edge (optional): Default is 0.   Used for determining damage of slash attacks
+        BluntModifier (optional): Default is 1. Used for determining damage of blunt attacks
+        ProjectileModifier (optional): Default is 1.  Used for determing damage of ranged attacks
+        VelocityModifier (optional): Default is 1.  Used for determining damage of melee attacks as well as difficulty to defend against this weapon
+        KnockbackModifier (optional): Default is 0.  Determines chance of knocking an enemy back when hit
+        AmmoItemID (optional): ItemID of ammo used by this weapon for ranged attacks-->
+  <TransportContainers>
+    <ItemID>Wheelbarrow</ItemID>
+    <ItemID>Bucket</ItemID>
+    <ItemID>Sack</ItemID>
+    <ItemID>ResourcePile</ItemID>
+    <ItemID>MusketRoundPile</ItemID>
+    <ItemID>CrossbowBoltPile</ItemID>
+    <ItemID>StrawPile</ItemID>
+    <ItemID>SilicaPile</ItemID>
+  </TransportContainers>
+  <WornEquipment>
+    <Item>
+      <ItemID>WornHelmet</ItemID>
+      <SmeltAmount>6</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornBreastplate</ItemID>
+      <SmeltAmount>8</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornPauldron</ItemID>
+      <SmeltAmount>4</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornGreave</ItemID>
+      <SmeltAmount>4</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornGauntlet</ItemID>
+      <SmeltAmount>2</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornBoot</ItemID>
+      <SmeltAmount>2</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornSword</ItemID>
+      <SmeltAmount>5</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornHandAxe</ItemID>
+      <SmeltAmount>5</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornHammer</ItemID>
+      <SmeltAmount>5</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornClaymore</ItemID>
+      <SmeltAmount>5</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornBattleAxe</ItemID>
+      <SmeltAmount>8</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornWarhammer</ItemID>
+      <SmeltAmount>8</SmeltAmount>
+    </Item>
+    <Item>
+      <ItemID>WornShield</ItemID>
+      <SmeltAmount>8</SmeltAmount>
+    </Item>
+  </WornEquipment>
+  <Furniture>
+    <ItemID>WoodDoor</ItemID>
+    <ItemID>StoneDoor</ItemID>
+    <ItemID>Table</ItemID>
+    <ItemID>Chair</ItemID>
+    <ItemID>Bed</ItemID>
+    <ItemID>FancyBed</ItemID>
+    <ItemID>Statue</ItemID>
+    <ItemID>Torch</ItemID>
+    <ItemID>Pillar</ItemID>
+    <ItemID>Dresser</ItemID>
+    <ItemID>Cabinet</ItemID>
+  </Furniture>
+  <Tools>
+    <Tool>
+      <ItemID>Pickaxe</ItemID>
+      <Skill>Mining</Skill>
+    </Tool>
+    <Tool>
+      <ItemID>FellingAxe</ItemID>
+      <Skill>Woodcutting</Skill>
+    </Tool>
+  </Tools>
+  <Weapons>
+    <ItemID>StoneSword</ItemID>
+    <ItemID>StoneHandAxe</ItemID>
+    <ItemID>StoneHammer</ItemID>
+    <ItemID>WoodenShield</ItemID>
+    <ItemID>Sword</ItemID>
+    <ItemID>HandAxe</ItemID>
+    <ItemID>Hammer</ItemID>
+    <ItemID>Pistol</ItemID>
+    <ItemID>Claymore</ItemID>
+    <ItemID>BattleAxe</ItemID>
+    <ItemID>Warhammer</ItemID>
+    <ItemID>Crossbow</ItemID>
+    <ItemID>Blunderbuss</ItemID>
+    <ItemID>Shield</ItemID>
+    <ItemID>TowerShield</ItemID>
+  </Weapons>
+  <Armor>
+    <ItemID>Helmet</ItemID>
+    <ItemID>Breastplate</ItemID>
+    <ItemID>Pauldron</ItemID>
+    <ItemID>Greave</ItemID>
+    <ItemID>Gauntlet</ItemID>
+    <ItemID>Boot</ItemID>
+    <ItemID>LeatherHelm</ItemID>
+    <ItemID>LeatherCuirass</ItemID>
+    <ItemID>LeatherBracer</ItemID>
+    <ItemID>LeatherGreave</ItemID>
+    <ItemID>LeatherGlove</ItemID>
+    <ItemID>LeatherBoot</ItemID>
+    <ItemID>SkullHelmet</ItemID>
+    <ItemID>BoneShirt</ItemID>
+  </Armor>
+  <ItemIDToPileItemID>
+    <Item>
+      <Key>RawSoil</Key>
+      <Value>ResourcePile</Value>
+    </Item>
+    <Item>
+      <Key>RawStone</Key>
+      <Value>ResourcePile</Value>
+    </Item>
+    <Item>
+      <Key>MusketRound</Key>
+      <Value>MusketRoundPile</Value>
+    </Item>
+    <Item>
+      <Key>CrossbowBolt</Key>
+      <Value>CrossbowBoltPile</Value>
+    </Item>
+    <Item>
+      <Key>Straw</Key>
+      <Value>StrawPile</Value>
+    </Item>
+    <Item>
+      <Key>Silica</Key>
+      <Value>SilicaPile</Value>
+    </Item>
+  </ItemIDToPileItemID>
+  <ItemIDToStorageID>
+    <Item>
+      <Key>ResourcePile</Key>
+      <Value>ResourcePile</Value>
+    </Item>
+    <Item>
+      <Key>MusketRoundPile</Key>
+      <Value>MusketRoundPile</Value>
+    </Item>
+    <Item>
+      <Key>CrossbowBoltPile</Key>
+      <Value>CrossbowBoltPile</Value>
+    </Item>
+    <Item>
+      <Key>StrawPile</Key>
+      <Value>StrawPile</Value>
+    </Item>
+    <Item>
+      <Key>SilicaPile</Key>
+      <Value>SilicaPile</Value>
+    </Item>
+    <Item>
+      <Key>Crate</Key>
+      <Value>Crate</Value>
+    </Item>
+    <Item>
+      <Key>Barrel</Key>
+      <Value>Barrel</Value>
+    </Item>
+    <Item>
+      <Key>Bag</Key>
+      <Value>Bag</Value>
+    </Item>
+    <Item>
+      <Key>AmmoPouch</Key>
+      <Value>AmmoPouch</Value>
+    </Item>
+    <Item>
+      <Key>Quiver</Key>
+      <Value>Quiver</Value>
+    </Item>
+    <Item>
+      <Key>Wheelbarrow</Key>
+      <Value>Wheelbarrow</Value>
+    </Item>
+    <Item>
+      <Key>Bucket</Key>
+      <Value>Bucket</Value>
+    </Item>
+    <Item>
+      <Key>Sack</Key>
+      <Value>Sack</Value>
+    </Item>
+  </ItemIDToStorageID>
+  <MaterialTypeToItemID>
+    <Item>
+      <Key>Soil</Key>
+      <Value>RawSoil</Value>
+    </Item>
+    <Item>
+      <Key>Stone</Key>
+      <Value>RawStone</Value>
+    </Item>
+    <Item>
+      <Key>Wood</Key>
+      <Value>RawWood</Value>
+    </Item>
+    <Item>
+      <Key>Metal</Key>
+      <Value>RawOre</Value>
+    </Item>
+    <Item>
+      <Key>Gem</Key>
+      <Value>RawGem</Value>
+    </Item>
+    <Item>
+      <Key>Cloth</Key>
+      <Value>RawCloth</Value>
+    </Item>
+    <Item>
+      <Key>Coal</Key>
+      <Value>RawCoal</Value>
+    </Item>
+  </MaterialTypeToItemID>
+  <ItemIDToAmmoID>
+    <Item>
+      <Key>MusketRound</Key>
+      <Value>MusketRound</Value>
+    </Item>
+    <Item>
+      <Key>CrossbowBolt</Key>
+      <Value>Bolt</Value>
+    </Item>
+  </ItemIDToAmmoID>
+  <AmmoContainersByAmmoItemID>
+    <Item>
+      <Key>MusketRound</Key>
+      <Value>
+        <Item>AmmoPouch</Item>
+      </Value>
+    </Item>
+    <Item>
+      <Key>CrossbowBolt</Key>
+      <Value>
+        <Item>Quiver</Item>
+      </Value>
+    </Item>
+  </AmmoContainersByAmmoItemID>
+  <ItemIDToArtificialLimbBodyPartID>
+    <Item>
+      <Key>ArtificialArm</Key>
+      <Value>ArtificialArm</Value>
+    </Item>
+    <Item>
+      <Key>ArtificialHand</Key>
+      <Value>ArtificialHand</Value>
+    </Item>
+    <Item>
+      <Key>ArtificialLeg</Key>
+      <Value>ArtificialLeg</Value>
+    </Item>
+    <Item>
+      <Key>ArtificialFoot</Key>
+      <Value>ArtificialFoot</Value>
+    </Item>
+  </ItemIDToArtificialLimbBodyPartID>
+  <ArtificialLimbMaterialIDs>
+    <OrderedMaterialID>Steel</OrderedMaterialID>
+    <OrderedMaterialID>Iron</OrderedMaterialID>
+    <OrderedMaterialID>Lead</OrderedMaterialID>
+    <OrderedMaterialID>Bronze</OrderedMaterialID>
+    <OrderedMaterialID>Copper</OrderedMaterialID>
+    <OrderedMaterialID>Malachite</OrderedMaterialID>
+    <OrderedMaterialID>Silver</OrderedMaterialID>
+    <OrderedMaterialID>Gold</OrderedMaterialID>
+    <OrderedMaterialID>RoseGold</OrderedMaterialID>
+    <OrderedMaterialID>Platinum</OrderedMaterialID>
+    <OrderedMaterialID>Tin</OrderedMaterialID>
+    <OrderedMaterialID>MATERIALID_NONE</OrderedMaterialID>
+  </ArtificialLimbMaterialIDs>
+  <BodyPartIDToItemID>
+    <Item>
+      <Key>GnomeArm</Key>
+      <Value>ArtificialArm</Value>
+    </Item>
+    <Item>
+      <Key>GnomeHand</Key>
+      <Value>ArtificialHand</Value>
+    </Item>
+    <Item>
+      <Key>GnomeLeg</Key>
+      <Value>ArtificialLeg</Value>
+    </Item>
+    <Item>
+      <Key>GnomeFoot</Key>
+      <Value>ArtificialFoot</Value>
+    </Item>
+  </BodyPartIDToItemID>
+  <CorpseItemID>Corpse</CorpseItemID>
+  <LimbItemID>BodyPart</LimbItemID>
+  <DefaultWeapon>
+    <Skill>Brawling</Skill>
+    <AttackMove>
+      <Verb>swings</Verb>
+      <AttackType>Swing</AttackType>
+      <Damage>Blunt</Damage>
+    </AttackMove>
+  </DefaultWeapon>
+</ItemSettings>

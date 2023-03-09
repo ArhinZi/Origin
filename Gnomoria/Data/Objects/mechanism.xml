@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MechanismDefs>
+  <!--Item:
+        MechanismID: Defines ID for this mechanism referenced everywhere else
+        Power (optional): Default is 0. Amount of power required to operate this mechanism.  If positive, it is the amount of power it adds to the system
+        FuelItemID (optional): ID of item used for fuel.
+        PressureSwitch (optional): Default is false.  Used for toggle switches and determines if it's switched when a character stands on this cell
+        BuildsIn (optional): Default is Wall.  Accepts Wall, Floor or Axle.
+        RequiresFloor (optional): Default is true.  If false, allows building in the air
+        ConstructionID: ID of construction associated with this mechanism
+        ConnectionCells: Local Vector3 offset of valid cells this mechanism can connect with.  Deliminated by spaces
+  -->
+  <Item>
+    <MechanismID>Axle</MechanismID>
+    <Power>-1</Power>
+    <BuildsIn>Axle</BuildsIn>
+    <RequiresFloor>false</RequiresFloor>
+    <ConstructionID>Axle</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>VerticalAxle</MechanismID>
+    <Power>-1</Power>
+    <RequiresFloor>false</RequiresFloor>
+    <ConstructionID>VerticalAxle</ConstructionID>
+    <ConnectionCells>
+      0 0 0
+      0 0 1
+      0 0 -1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>GearBox</MechanismID>
+    <Power>-3</Power>
+    <BuildsIn>Floor</BuildsIn>
+    <ConstructionID>GearBox</ConstructionID>
+    <ConnectionCells>
+      0 0 0
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>Lever</MechanismID>
+    <ConstructionID>Lever</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>PressurePlate</MechanismID>
+    <PressureSwitch>true</PressureSwitch>
+    <ConstructionID>PressurePlate</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>MechanicalWall</MechanismID>
+    <Power>-20</Power>
+    <ConstructionID>MechanicalWall</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>Hatch</MechanismID>
+    <Power>-10</Power>
+    <BuildsIn>Floor</BuildsIn>
+    <ConstructionID>Hatch</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>Pump</MechanismID>
+    <Power>-20</Power>
+    <BuildsIn>Floor</BuildsIn>
+    <ConstructionID>Pump</ConstructionID>
+    <ConnectionCells>
+      0 0 0
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>SpikeTrap</MechanismID>
+    <Power>0</Power>
+    <ConstructionID>SpikeTrap</ConstructionID>
+    <ConnectionCells></ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>BladeTrap</MechanismID>
+    <Power>0</Power>
+    <ConstructionID>BladeTrap</ConstructionID>
+    <ConnectionCells></ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>Handcrank</MechanismID>
+    <Power>10</Power>
+    <ConstructionID>Handcrank</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>WindMill</MechanismID>
+    <Power>20</Power>
+    <RequiresFloor>false</RequiresFloor>
+    <ConstructionID>WindMill</ConstructionID>
+    <ConnectionCells>
+      0 0 0
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+      0 0 -1
+    </ConnectionCells>
+  </Item>
+  <Item>
+    <MechanismID>SteamEngine</MechanismID>
+    <Power>200</Power>
+    <FuelItemID>RawCoal</FuelItemID>
+    <ConstructionID>SteamEngine</ConstructionID>
+    <ConnectionCells>
+      1 0 0
+      -1 0 0
+      0 1 0
+      0 -1 0
+      0 0 1
+    </ConnectionCells>
+  </Item>
+</MechanismDefs>

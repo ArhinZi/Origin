@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ProfessionMenuSettings>
+  <!--MenuItem: Used to build the profession options
+      Text: Displayed text
+      SkillID: Skill IDs that make up this group.
+  -->
+  <MenuItem>
+    <Text>Stone</Text>
+    <SkillID>Mining</SkillID>
+    <SkillID>Masonry</SkillID>
+    <SkillID>Stonecarving</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Wood</Text>
+    <SkillID>Woodcutting</SkillID>
+    <SkillID>Carpentry</SkillID>
+    <SkillID>Woodcarving</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Metal</Text>
+    <SkillID>Smelting</SkillID>
+    <SkillID>Blacksmithing</SkillID>
+    <SkillID>Metalworking</SkillID>
+    <SkillID>WeaponCrafting</SkillID>
+    <SkillID>ArmorCrafting</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Gem</Text>
+    <SkillID>Gemcutting</SkillID>
+    <SkillID>JewelryMaking</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Cloth</Text>
+    <SkillID>Weaving</SkillID>
+    <SkillID>Tailoring</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Misc Craft</Text>
+    <SkillID>Pottery</SkillID>
+    <SkillID>Leatherworking</SkillID>
+    <SkillID>Bonecarving</SkillID>
+    <SkillID>Prospecting</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Engineer</Text>
+    <SkillID>Tinkering</SkillID>
+    <SkillID>Machining</SkillID>
+    <SkillID>Engineering</SkillID>
+    <SkillID>Mechanic</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Rancher</Text>
+    <SkillID>AnimalHusbandry</SkillID>
+    <SkillID>Butchery</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Agriculture</Text>
+    <SkillID>Horticulture</SkillID>
+    <SkillID>Farming</SkillID>
+    <SkillID>Cooking</SkillID>
+    <SkillID>Brewing</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Doctor</Text>
+    <SkillID>Medic</SkillID>
+    <SkillID>Caretaking</SkillID>
+  </MenuItem>
+  <MenuItem>
+    <Text>Misc</Text>
+    <SkillID>Construction</SkillID>
+    <SkillID>Hauling</SkillID>
+  </MenuItem>
+</ProfessionMenuSettings>

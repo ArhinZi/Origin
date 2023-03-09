@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AutomatonSettings>
+  <!--AutomatonItemID: When an item with this ID is crafted at a workshop, it creates an automaton-->
+  <!--CoreItemID: ID of item that is created when an automaton dies and is used to rebuild-->
+  <!--FuelItemID: ID of item used to fuel automatons-->
+  <!--FuelMaterialID: ID of material of fuel to generate when automaton is destroyed or dismantled-->
+  <!--RepairWorkshopID: ID of workshop where automatons will go to be repaired-->
+  <AutomatonItemID>Automaton</AutomatonItemID>
+  <CoreItemID>AutomatonCore</CoreItemID>
+  <FuelItemID>RawCoal</FuelItemID>
+  <FuelMaterialID>Coal</FuelMaterialID>
+  <RepairWorkshopID>Engineer</RepairWorkshopID>
+</AutomatonSettings>

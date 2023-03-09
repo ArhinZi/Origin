@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Ammo>
+  <!--Item: Ammo settings are used for ranged attacks when determining damage. Material of weapon is also taken into consideration when computing final damage
+        AmmoID: ID of ammo
+        WeaponSize (optional): Default is 1. Used when determining damage in combat
+        Damage:  Type of damage this weapon applies. Supports multiple.  Damage is applied in order listed
+        Point (optional): Default is 0.  Used for determining damage of pierce attacks
+        Edge (optional): Default is 0.   Used for determining damage of slash attacks
+        BluntModifier (optional): Default is 1. Used for determining damage of blunt attacks
+        VelocityModifier (optional): Default is 1.  Used for determining damage of attack as well as difficulty to defend against this ammo
+  -->
+  <Item>
+    <AmmoID>MusketRound</AmmoID>
+    <WeaponSize>12.0</WeaponSize>
+    <Damage>Pierce</Damage>
+    <Point>1</Point>
+    <VelocityModifier>25.0</VelocityModifier>
+  </Item>
+  <Item>
+    <AmmoID>Bolt</AmmoID>
+    <WeaponSize>20.0</WeaponSize>
+    <Damage>Pierce</Damage>
+    <Point>1</Point>
+    <VelocityModifier>10.0</VelocityModifier>
+  </Item>
+</Ammo>

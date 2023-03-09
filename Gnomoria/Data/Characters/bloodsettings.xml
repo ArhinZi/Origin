@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<BloodSettings>
+  <!--Color: RGBA [0, 255] color used for blood.  Separated by spaces-->
+  <!--WeightedBigBloodSpriteID: Sprite that is randomly picked when a character is bleeding profusely.  Supports an arbitrary number of sequential WeightedBigBloodSpriteIDs
+        Weight: Affects liklihood of this sprite being randomly chosen.  ex Two sprites with equal weight (1 and 1) both have 50% chance. A weight of 3 is 3x as likely to be chosen vs 1 (75% vs 25%)
+        Sprites: Sprite to be rendered
+          SpriteID (Needs to be renamed to avoid confusion): Supports an arbitrary number of these, rendering in order with the last one on top
+            SpriteID: Actual ID of sprite to be rendered
+  -->
+  <!--WeightedLittleBloodSpriteID: Sprite that is randomly picked when a character is bleeding profusely.  Supports an arbitrary number of sequential WeightedLittleBloodSpriteID
+        Weight: Affects liklihood of this sprite being randomly chosen.  ex Two sprites with equal weight (1 and 1) both have 50% chance. A weight of 3 is 3x as likely to be chosen vs 1 (75% vs 25%)
+        Sprites: Sprite to be rendered
+          SpriteID (Needs to be renamed to avoid confusion): Supports an arbitrary number of these, rendering in order with the last one on top
+            SpriteID: Actual ID of sprite to be rendered
+  -->
+  <!--Duration (seconds): Range that blood lasts-->
+  <Color>192 0 0 255</Color>
+  <WeightedBigBloodSpriteID>
+    <Weight>1</Weight>
+    <Sprites>
+      <SpriteID>
+        <SpriteID>BigBlood1</SpriteID>
+      </SpriteID>
+    </Sprites>
+  </WeightedBigBloodSpriteID>
+  <WeightedBigBloodSpriteID>
+    <Weight>1</Weight>
+    <Sprites>
+      <SpriteID>
+        <SpriteID>BigBlood2</SpriteID>
+      </SpriteID>
+    </Sprites>
+  </WeightedBigBloodSpriteID>
+  <WeightedLittleBloodSpriteID>
+    <Weight>1</Weight>
+    <Sprites>
+      <SpriteID>
+        <SpriteID>LittleBlood1</SpriteID>
+      </SpriteID>
+    </Sprites>
+  </WeightedLittleBloodSpriteID>
+  <WeightedLittleBloodSpriteID>
+    <Weight>1</Weight>
+    <Sprites>
+      <SpriteID>
+        <SpriteID>LittleBlood2</SpriteID>
+      </SpriteID>
+    </Sprites>
+  </WeightedLittleBloodSpriteID>
+  <Duration>180 300</Duration>
+</BloodSettings>

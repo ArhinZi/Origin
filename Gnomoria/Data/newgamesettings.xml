@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<NewGameSettings>
+  <!--EnemyRaceOptions: Define which race IDs are able to be turned on or off in advanced options
+        EnemyRaceIDGroup: Group of race IDs which is used to create a check box
+          Name: Text to display for check box
+          RaceID: ID of race which is toggled with this check box.  Supports an arbitrary amount
+  -->
+  <!--Profession: Default profession. Starting gnomes with this profession will have higher starting skills in the allowed skills
+        Name: Name of this profession
+        Skill: Skills allowed for this profession
+  -->
+  <!--Settler:
+        Offset: Vector2 offset from start position
+        RaceID: ID of race
+        Profession: Name of starting profession
+        TemplateMaterialID (Optional): ID of material to be used when generating an Automaton.  This parameter is required for automatons
+        HeldItem: Item held in hand. Supports as many as can be carried
+          Item: Weighted item to generate
+            ItemID: ID of item to generate
+            Weight (Optional): Default is 1. Weight that this item is selected over others in this group
+          MaterialID (Optional): Default is random based on CoreItemIDsToMaterialIDs.  ID of material
+  -->
+  <!--FarmAnimal:
+        Offset: Vector2 offset from start position
+        RaceID: ID of race
+        Gender: Gender.  Supports Male, Female, Neuter
+  -->
+  <!--ItemToGenerate: Supports an arbitrary amount
+        Item: Weighted item to generate.  Supports arbitrary amount
+          ItemID: ID of item to generate
+          Weight (Optional): Default is 1. Weight that this item is selected over others in this group
+        MaterialID (Optional): Default is random based on CoreItemIDsToMaterialIDs.  ID of material
+        Quantity (Optional): Default is 1.  Quantity of item to generate
+        Offset: Vector2 offset from start position
+  -->
+  <!--Container:
+        Item: Weighted item to generate.  Supports arbitrary amount
+          ItemID: ID of item to generate
+          Weight (Optional): Default is 1. Weight that this item is selected over others in this group
+        MaterialID (Optional): Default is random based on CoreItemIDsToMaterialIDs.  ID of material
+        Quantity (Optional): Default is 1.  Quantity of item to generate
+        Offset: Vector2 offset from start position
+        Contents: Contents of this container.  Must be valid contents
+          Item: Weighted item to generate.  Supports arbitrary amount
+            ItemID: ID of item to generate
+            Weight (Optional): Default is 1. Weight that this item is selected over others in this group
+          MaterialID (Optional): Default is random based on CoreItemIDsToMaterialIDs.  ID of material
+          Quantity (Optional): Default fills the container.  Quantity of item to generate
+          Offset: Vector2 offset from start position
+  -->
+  <!--Pile: Supports an arbitrary amount
+        Item: Weighted item to generate.  Supports arbitrary amount
+          ItemID: ID of item to generate
+          Weight (Optional): Default is 1. Weight that this item is selected over others in this group
+        MaterialID (Optional): Default is random based on CoreItemIDsToMaterialIDs.  ID of material
+        Quantity (Optional): Default fills the pile.  Quantity of item to generate
+        Offset: Vector2 offset from start position
+  -->
+  <EnemyRaceOptions>
+    <EnemyRaceIDGroup>
+      <Name>Wild Animals</Name>
+      <RaceID>HoneyBadger</RaceID>
+      <RaceID>MonitorLizard</RaceID>
+      <RaceID>Bear</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Goblins</Name>
+      <RaceID>Goblin</RaceID>
+      <RaceID>Ogre</RaceID>
+      <RaceID>BlueOgre</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Mants</Name>
+      <RaceID>Mant</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Golems</Name>
+      <RaceID>Golem</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Zombies</Name>
+      <RaceID>Zombie</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Skeletons</Name>
+      <RaceID>Skeleton</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Beetles</Name>
+      <RaceID>Beetle</RaceID>
+      <RaceID>BeetleCocoon</RaceID>
+    </EnemyRaceIDGroup>
+    <EnemyRaceIDGroup>
+      <Name>Spiders</Name>
+      <RaceID>Spider</RaceID>
+    </EnemyRaceIDGroup>
+  </EnemyRaceOptions>
+  <Profession>
+    <Name>Miner</Name>
+    <Skill>Mining</Skill>
+    <Skill>Masonry</Skill>
+    <Skill>Stonecarving</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Woodcutter</Name>
+    <Skill>Woodcutting</Skill>
+    <Skill>Carpentry</Skill>
+    <Skill>Woodcarving</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Farmer</Name>
+    <Skill>Farming</Skill>
+    <Skill>Horticulture</Skill>
+    <Skill>Brewing</Skill>
+    <Skill>Weaving</Skill>
+    <Skill>Tailoring</Skill>
+    <Skill>Cooking</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Rancher</Name>
+    <Skill>AnimalHusbandry</Skill>
+    <Skill>Butchery</Skill>
+    <Skill>Cooking</Skill>
+    <Skill>Leatherworking</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Builder</Name>
+    <Skill>Construction</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Blacksmith</Name>
+    <Skill>Smelting</Skill>
+    <Skill>Blacksmithing</Skill>
+    <Skill>Metalworking</Skill>
+    <Skill>ArmorCrafting</Skill>
+    <Skill>WeaponCrafting</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Engineer</Name>
+    <Skill>Engineering</Skill>
+    <Skill>Machining</Skill>
+    <Skill>Mechanic</Skill>
+    <Skill>Tinkering</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Profession>
+    <Name>Jeweler</Name>
+    <Skill>Gemcutting</Skill>
+    <Skill>JewelryMaking</Skill>
+    <Skill>Hauling</Skill>
+  </Profession>
+  <Settler>
+    <Offset>-1 -1</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Miner</Profession>
+    <HeldItem>
+      <Item>
+        <ItemID>Pickaxe</ItemID>
+      </Item>
+      <MaterialID>Copper</MaterialID>
+    </HeldItem>
+  </Settler>
+  <Settler>
+    <Offset>-1 -1</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Miner</Profession>
+    <HeldItem>
+      <Item>
+        <ItemID>Pickaxe</ItemID>
+      </Item>
+      <MaterialID>Copper</MaterialID>
+    </HeldItem>
+  </Settler>
+  <Settler>
+    <Offset>0 -1</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Woodcutter</Profession>
+    <HeldItem>
+      <Item>
+        <ItemID>FellingAxe</ItemID>
+      </Item>
+      <MaterialID>Copper</MaterialID>
+    </HeldItem>
+  </Settler>
+  <Settler>
+    <Offset>0 -1</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Woodcutter</Profession>
+    <HeldItem>
+      <Item>
+        <ItemID>FellingAxe</ItemID>
+      </Item>
+      <MaterialID>Copper</MaterialID>
+    </HeldItem>
+  </Settler>
+  <Settler>
+    <Offset>1 -1</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Farmer</Profession>
+  </Settler>
+  <Settler>
+    <Offset>1 -1</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Farmer</Profession>
+  </Settler>
+  <Settler>
+    <Offset>-1 0</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Rancher</Profession>
+  </Settler>
+  <Settler>
+    <Offset>0 0</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Builder</Profession>
+  </Settler>
+  <Settler>
+    <Offset>0 0</Offset>
+    <RaceID>Gnome</RaceID>
+    <Profession>Builder</Profession>
+  </Settler>
+  <FarmAnimal>
+    <Offset>1 0</Offset>
+    <RaceID>Yak</RaceID>
+    <Gender>Male</Gender>
+  </FarmAnimal>
+  <FarmAnimal>
+    <Offset>1 0</Offset>
+    <RaceID>Yak</RaceID>
+    <Gender>Female</Gender>
+  </FarmAnimal>
+  <Container>
+    <Item>
+      <ItemID>Crate</ItemID>
+    </Item>
+    <Offset>-1 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Fruit</ItemID>
+        </Item>
+      </Item>
+    </Contents>
+  </Container>
+  <Container>
+    <Item>
+      <ItemID>Crate</ItemID>
+    </Item>
+    <Offset>-1 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Bread</ItemID>
+        </Item>
+      </Item>
+    </Contents>
+  </Container>
+  <Container>
+    <Item>
+      <ItemID>Crate</ItemID>
+    </Item>
+    <Offset>-1 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Sword</ItemID>
+        </Item>
+        <Item>
+          <ItemID>HandAxe</ItemID>
+        </Item>
+        <Item>
+          <ItemID>Hammer</ItemID>
+        </Item>
+        <MaterialID>Copper</MaterialID>
+        <Quantity>1</Quantity>
+      </Item>
+      <Item>
+        <Item>
+          <ItemID>Breastplate</ItemID>
+        </Item>
+        <MaterialID>Copper</MaterialID>
+        <Quantity>1</Quantity>
+      </Item>
+      <Item>
+        <Item>
+          <ItemID>Helmet</ItemID>
+        </Item>
+        <MaterialID>Copper</MaterialID>
+        <Quantity>1</Quantity>
+      </Item>
+      <Item>
+        <Item>
+          <ItemID>Bandage</ItemID>
+        </Item>
+      </Item>
+    </Contents>
+  </Container>
+  <Container>
+    <Item>
+      <ItemID>Bag</ItemID>
+    </Item>
+    <Offset>0 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Seed</ItemID>
+        </Item>
+        <MaterialID>Strawberry</MaterialID>
+      </Item>
+    </Contents>
+  </Container>
+  <Container>
+    <Item>
+      <ItemID>Bag</ItemID>
+    </Item>
+    <Offset>0 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Seed</ItemID>
+        </Item>
+        <MaterialID>Wheat</MaterialID>
+      </Item>
+    </Contents>
+  </Container>
+  <Container>
+    <Item>
+      <ItemID>Barrel</ItemID>
+    </Item>
+    <Offset>1 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Wine</ItemID>
+        </Item>
+      </Item>
+    </Contents>
+  </Container>
+  <Container>
+    <Item>
+      <ItemID>Barrel</ItemID>
+    </Item>
+    <Offset>1 1</Offset>
+    <Contents>
+      <Item>
+        <Item>
+          <ItemID>Wine</ItemID>
+        </Item>
+      </Item>
+    </Contents>
+  </Container>
+  <Pile>
+    <Item>
+      <ItemID>Straw</ItemID>
+    </Item>
+    <Offset>0 1</Offset>
+  </Pile>
+  <Pile>
+    <Item>
+      <ItemID>Straw</ItemID>
+    </Item>
+    <Offset>0 1</Offset>
+  </Pile>
+</NewGameSettings>

@@ -41,18 +41,28 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Camera2D.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="SimpleFps.cs" />
-    <Compile Include="Interfaces\IDraw.cs" />
-    <Compile Include="Interfaces\IDrawTile.cs" />
-    <Compile Include="Interfaces\IUpdate.cs" />
-    <Compile Include="KeyboardController.cs" />
+    <Compile Include="Draw\Camera2D.cs" />
+    <Compile Include="Draw\MainDrawer.cs" />
+    <Compile Include="Draw\SiteRenderer.cs" />
+    <Compile Include="Model\Chunk.cs" />
+    <Compile Include="Utils\ByteField.cs" />
+    <Compile Include="Utils\DiffUtils.cs" />
+    <Compile Include="Utils\InfoDrawer.cs" />
+    <Compile Include="Utils\Point3.cs" />
+    <Compile Include="Utils\SimpleFps.cs" />
+    <Compile Include="Utils\Interfaces\IDraw.cs" />
+    <Compile Include="Utils\Interfaces\IDrawTile.cs" />
+    <Compile Include="Utils\Interfaces\IUpdate.cs" />
+    <Compile Include="IO\KeyboardController.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tile.cs" />
-    <Compile Include="WorldMap.cs" />
+    <Compile Include="Draw\TileSet.cs" />
+    <Compile Include="Utils\WorldUtils.cs" />
+    <Compile Include="View\TileTexture.cs" />
+    <Compile Include="World\MainWorld.cs" />
+    <Compile Include="World\Site.cs" />
+    <Compile Include="World\SiteBlock.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -61,6 +71,7 @@
     <Reference Include="MonoGameStaticBatch, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MonoGame.StaticBatch.1.0.0\lib\staticbatch\MonoGameStaticBatch.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="SimplexNoise, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\SimplexNoise.2.0.0\lib\net45\SimplexNoise.dll</HintPath>
     </Reference>
@@ -74,6 +85,7 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
+    <None Include="Content\CSAmbientSun.fx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

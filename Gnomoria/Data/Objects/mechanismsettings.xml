@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MechanismSettings>
+  <!--Axles: Defines all axles
+        MechanismID: ID of mechanism
+  -->
+  <!--Switches: Defines all switches
+        MechanismID: ID of mechanism
+  -->
+  <!--Traps: Defines all traps
+        MechanismID: ID of mechanism
+  -->
+  <!--MechanicalWalls: Defines all mechanical walls
+        MechanismID: ID of mechanism
+  -->
+  <!--Hatches: Defines all hatches
+        MechanismID: ID of mechanism
+  -->
+  <!--Pumps: Defines all pumps
+        MechanismID: ID of mechanism
+  -->
+  <!--Handcranks: Defines all handcranks
+        MechanismID: ID of mechanism
+  -->
+  <!--SteamEngines: Defines all steam engines
+        MechanismID: ID of mechanism
+  -->
+  <!--Windmills: Defines all windmills
+        MechanismID: ID of mechanism
+  -->
+  <!--ConstructionIDToMechanismID: Associates a construction ID with a mechanism ID
+        Item:
+          Key: ID of construction
+          Value: ID of mechanism
+  -->
+  <!--MechanismIDToTrapID: Associates a mechanism ID with a trap ID
+         Item:
+          Key: ID of mechanism
+          Value: ID of trap
+  -->
+  <Axles>
+    <MechanismID>Axle</MechanismID>
+    <MechanismID>VerticalAxle</MechanismID>
+  </Axles>
+  <Switches>
+    <MechanismID>Lever</MechanismID>
+    <MechanismID>PressurePlate</MechanismID>
+  </Switches>
+  <Traps>
+    <MechanismID>SpikeTrap</MechanismID>
+    <MechanismID>BladeTrap</MechanismID>
+  </Traps>
+  <MechanicalWalls>
+    <MechanismID>MechanicalWall</MechanismID>
+  </MechanicalWalls>
+  <Hatches>
+    <MechanismID>Hatch</MechanismID>
+  </Hatches>
+  <Pumps>
+    <MechanismID>Pump</MechanismID>
+  </Pumps>
+  <Handcranks>
+    <MechanismID>Handcrank</MechanismID>
+  </Handcranks>
+  <SteamEngines>
+    <MechanismID>SteamEngine</MechanismID>
+  </SteamEngines>
+  <Windmills>
+    <MechanismID>WindMill</MechanismID>
+  </Windmills>    
+  <ConstructionIDToMechanismID>
+    <Item>
+      <Key>Axle</Key>
+      <Value>Axle</Value>
+    </Item>
+    <Item>
+      <Key>VerticalAxle</Key>
+      <Value>VerticalAxle</Value>
+    </Item>
+    <Item>
+      <Key>GearBox</Key>
+      <Value>GearBox</Value>
+    </Item>
+    <Item>
+      <Key>Lever</Key>
+      <Value>Lever</Value>
+    </Item>
+    <Item>
+      <Key>PressurePlate</Key>
+      <Value>PressurePlate</Value>
+    </Item>
+    <Item>
+      <Key>MechanicalWall</Key>
+      <Value>MechanicalWall</Value>
+    </Item>
+    <Item>
+      <Key>Hatch</Key>
+      <Value>Hatch</Value>
+    </Item>
+    <Item>
+      <Key>Pump</Key>
+      <Value>Pump</Value>
+    </Item>
+    <Item>
+      <Key>SpikeTrap</Key>
+      <Value>SpikeTrap</Value>
+    </Item>
+    <Item>
+      <Key>BladeTrap</Key>
+      <Value>BladeTrap</Value>
+    </Item>
+    <Item>
+      <Key>Handcrank</Key>
+      <Value>Handcrank</Value>
+    </Item>
+    <Item>
+      <Key>WindMill</Key>
+      <Value>WindMill</Value>
+    </Item>
+    <Item>
+      <Key>SteamEngine</Key>
+      <Value>SteamEngine</Value>
+    </Item>
+  </ConstructionIDToMechanismID>
+  <MechanismIDToTrapID>
+    <Item>
+      <Key>SpikeTrap</Key>
+      <Value>SpikeTrap</Value>
+    </Item>
+    <Item>
+      <Key>BladeTrap</Key>
+      <Value>BladeTrap</Value>
+    </Item>
+  </MechanismIDToTrapID>
+</MechanismSettings>

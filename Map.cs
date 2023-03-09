@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.StaticBatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,44 +12,67 @@ namespace Origin
 {
     public class Map
     {
-        public static Point MAP_SIZE = new Point(100, 100);
-        public static Point TILE_SIZE;
+        public static Vector3 MAP_SIZE = new Vector3(100, 100, 1);
+        public static Point TILE_SIZE = new Point(32,16);
         public static Vector2 MAP_OFFSET = new Vector2(0, 0);
-        private readonly Tile[,] _tiles;
-        private Point _keyboardSelected = new Point(0, 0);
-        private Tile _lastMouseSelected;
+
+        private Texture2D mainTexture;
+
+        private Tile[,,] blocks;
+
         private SpriteBatch spriteBatch;
+        private StaticBatch staticGrid;
+        private List<StaticBatch.StaticSprite> _sprites;
+        Rectangle viewport;
 
         public Map()
         {
-            _tiles = new Tile[MAP_SIZE.X, MAP_SIZE.Y];
-
-            Texture2D[] textures =
-            {
-            MainGame.instance.Content.Load<Texture2D>("tile0"),
-            MainGame.instance.Content.Load<Texture2D>("tile1"),
-        };
-
-            TILE_SIZE.X = textures[0].Width;
-            TILE_SIZE.Y = textures[0].Height / 2;
-
-            Random random = new Random();
-            SimplexNoise.Noise.Seed = 209323094; // Optional
-            float scale = 0.05f;
-
-            for (int y = 0; y < MAP_SIZE.Y; y++)
+            mainTexture = MainGame.instance.Content.Load<Texture2D>("default");
+            blocks = new Tile[(int)MAP_SIZE.X, (int)MAP_SIZE.Y, (int)MAP_SIZE.Z];
+            for (int i = 0; i < MAP_SIZE.Z/2; i++)
             {
                 for (int x = 0; x < MAP_SIZE.X; x++)
                 {
-                    int r = random.Next(0, textures.Length);
-                    r = (int)SimplexNoise.Noise.CalcPixel2D(x, y, scale)/128;
-                    _tiles[x, y] = new Tile(textures[r], MapToScreen(x, y));
+                    for (int y = 0; y < MAP_SIZE.Y; y++)
+                    {
+                        blocks[x,y,i] = new Tile(1, 1);
+                    }
                 }
             }
 
-            _tiles[_keyboardSelected.X, _keyboardSelected.Y].KeyboardSelect();
 
             spriteBatch = new SpriteBatch(MainGame.instance.GraphicsDevice);
+            _sprites = new List<StaticBatch.StaticSprite>();
+            staticGrid = new StaticBatch(MainGame.instance.GraphicsDevice, new Point(512,512));
+            Rectangle blockPos = new Rectangle(0, 72, 32, 32);
+            Rectangle floorPos = new Rectangle(0, 52, 32, 20);
+
+
+            for (int i = 0; i < MAP_SIZE.Z; i++)
+            {
+                for (int y = 0; y < MAP_SIZE.Y; y++)
+                {
+                    for (int x = 0; x < MAP_SIZE.X; x++)
+                    {
+                        Point scr = MapToScreen(x, y).ToPoint();
+                        //draw block
+                        _sprites.Add(new StaticBatch.StaticSprite(mainTexture, 
+                            new Rectangle(scr, TILE_SIZE),
+                            blockPos, zindex: i*2+1f));
+
+
+                        //draw floor
+                        /*_sprites.Add(new StaticBatch.StaticSprite(mainTexture,
+                                        new Rectangle(TILE_SIZE * new Point(x, y), TILE_SIZE),
+                                        floorPos, zindex: i*2));*/
+                    }
+                }
+            }
+            staticGrid.AddSprites(_sprites);
+            staticGrid.Build(spriteBatch);
+
+            
+            
         }
 
         private Vector2 MapToScreen(int mapX, int mapY)
@@ -57,8 +81,8 @@ namespace Origin
             var screenY = ((mapY + mapX) * TILE_SIZE.Y/2);
 
             Vector2 res = new Vector2(screenX, screenY);
-            res += MainGame.cam.Pos;
-            res *= MainGame.cam.Zoom;
+            //res += MainGame.cam.Pos;
+            //res *= MainGame.cam.Zoom;
             //Matrix inverted = Matrix.Invert(MainGame.cam.get_transformation(MainGame.instance.GraphicsDevice));
             return res;
         }
@@ -79,19 +103,12 @@ namespace Origin
             return new Point(mapX,mapY);
         }
 
+        
         public void Update()
         {
-            _lastMouseSelected?.MouseDeselect();
+            MainGame.debug.Add("Pos: "+MainGame.cam.Pos.ToString());
 
-            MouseState currentMouseState = Mouse.GetState();
-            var map = ScreenToMap(currentMouseState.Position);
-
-            if (map.X >= 0 && map.Y >= 0 && map.X < MAP_SIZE.X && map.Y < MAP_SIZE.Y)
-            {
-                _lastMouseSelected = _tiles[map.X, map.Y];
-                _lastMouseSelected.MouseSelect();
-            }
-
+            viewport = MainGame.instance.GraphicsDevice.Viewport.Bounds;
             /*if ( InputManager.Direction != Point.Zero)
             {
                 _tiles[_keyboardSelected.X, _keyboardSelected.Y].KeyboardDeselect();
@@ -104,16 +121,39 @@ namespace Origin
         public void Draw()
         {
             spriteBatch.Begin(
+                SpriteSortMode.Texture,
                 transformMatrix: MainGame.cam.get_transformation(MainGame.instance.GraphicsDevice)
                 );
-            for (int y = 0; y < MAP_SIZE.Y; y++)
+            Rectangle blockPos = new Rectangle(0, 72, 32, 32);
+            Rectangle floorPos = new Rectangle(0, 52, 32, 20);
+            for (int i = 0; i < MAP_SIZE.Z; i++)
             {
-                for (int x = 0; x < MAP_SIZE.X; x++)
+                for (int y = 0; y < MAP_SIZE.Y; y++)
                 {
-                    _tiles[x, y].Draw(spriteBatch);
+                    for (int x = 0; x < MAP_SIZE.X; x++)
+                    {
+                        //draw block
+                        spriteBatch.Draw(mainTexture,
+                            MapToScreen(x, y),
+                            blockPos,
+                            Color.White
+                            );
+
+                        //draw floor
+                        spriteBatch.Draw(mainTexture,
+                            MapToScreen(x, y) - new Vector2(0, 4),
+                            floorPos,
+                            Color.White
+                            );
+                    }
                 }
             }
+
+
             spriteBatch.End();
+            /*staticGrid.Draw(spriteBatch, viewport,
+                offset: MainGame.cam.Pos.ToPoint());*/
+
         }
     }
 }

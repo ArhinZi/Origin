@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Languages>
+  <!--Item:
+        LanguageID: ID of language referenced everywhere else
+        MaleNameID: ID of name used for males
+        FemaleNameID: ID of name used for females
+  -->
+  <Item>
+    <LanguageID>Gnome</LanguageID>
+    <MaleNameID>GnomeMale</MaleNameID>
+    <FemaleNameID>GnomeFemale</FemaleNameID>
+  </Item>
+  <Item>
+    <LanguageID>Goblin</LanguageID>
+    <MaleNameID>Goblin</MaleNameID>
+    <FemaleNameID>Goblin</FemaleNameID>
+  </Item>
+</Languages>

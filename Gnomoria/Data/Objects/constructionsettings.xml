@@ -1,0 +1,207 @@
+﻿<ConstructionSettings>
+  <!--Doors: Defines all doors.  Requires state sprites for various possible door states
+        ConstructionID: ID of construction
+  -->
+  <!--ConstructedContainers: Defines all constructed containers. Used for building containers in stockpiles
+        ConstructionID: ID of construction
+  -->
+  <!--Torches: Defines all torches.  Torches update light when constructed and deconstructed
+        ConstructionID: ID of construction
+  -->
+  <!--Fences: Defines all fences.  Requires state sprites for various possible fence states
+        ConstructionID: ID of construction
+  -->
+  <!--Wells: Defines all wells.
+        ConstructionID: ID of construction
+  -->
+  <!--Troughs: Defines all troughs
+        ConstructionID: ID of construction
+  -->
+  <!--AlarmBells: Defines all alarmBells
+        ConstructionID: ID of construction
+  -->
+  <!--SkullPikes: Defines all skull pikes.  Displays skull when viewing this construction
+        ConstructionID: ID of construction
+  -->
+  <!--DefaultFloorConstructionID: Construction ID used for floor if not present in ConstructionFloorPair-->
+  <!--ConstructionFloorPair: When building a wall or stairs in the air, it will automatically queue building a floor of the associated construction ID
+        Key: Base construction ID
+        Value: Associated floor construction ID
+  -->
+  <!--ConvertConstructionIDToNaturalTerrain: When building these constructions it gets converted to natural terrain.  Internally does some things but most noticeably determines if Mine/Dig is used instead of Deconstruct-->
+  <!--GoblinTunnelSprite: Sprite used for when goblins build a tunnel
+        SpriteID:
+           SpriteID: Actual ID of sprite
+  -->
+  <Doors>
+    <ConstructionID>WoodDoor</ConstructionID>
+    <ConstructionID>StoneDoor</ConstructionID>    
+  </Doors>
+  <ConstructedContainers>
+    <ConstructionID>Crate</ConstructionID>
+    <ConstructionID>Barrel</ConstructionID>
+    <ConstructionID>Bag</ConstructionID>
+  </ConstructedContainers>
+  <Torches>
+    <ConstructionID>Torch</ConstructionID>
+    <ConstructionID>WallTorch</ConstructionID>
+  </Torches>
+  <Fences>
+    <ConstructionID>PostAndRailFence</ConstructionID>
+    <ConstructionID>PicketFence</ConstructionID>
+  </Fences>
+  <Wells>
+    <ConstructionID>Well</ConstructionID>
+  </Wells>
+  <Troughs>
+    <ConstructionID>Trough</ConstructionID>
+  </Troughs>
+  <AlarmBells>
+    <ConstructionID>AlarmBell</ConstructionID>
+  </AlarmBells>
+  <SkullPikes>
+    <ConstructionID>SkullPike</ConstructionID>
+  </SkullPikes>
+  <DefaultFloorConstructionID>SoilFloor</DefaultFloorConstructionID>
+  <ConstructionFloorPair>
+    <Key>SoilWall</Key>
+    <Value>SoilFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>RawStoneWall</Key>
+    <Value>RawStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>LogWall</Key>
+    <Value>LogFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>BlockWall</Key>
+    <Value>BlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>FancyBlockWall</Key>
+    <Value>FancyBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>ChiseledBlockWall</Key>
+    <Value>ChiseledBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>EngravedBlockWall</Key>
+    <Value>EngravedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>StarEngravedBlockWall</Key>
+    <Value>StarEngravedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>SpiralEngravedBlockWall</Key>
+    <Value>SpiralEngravedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>MoonEngravedBlockWall</Key>
+    <Value>MoonEngravedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>WaterEngravedBlockWall</Key>
+    <Value>WaterEngravedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>PlankWall</Key>
+    <Value>PlankFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>MetalWall</Key>
+    <Value>MetalFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>ThatchWall</Key>
+    <Value>ThatchFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>BoneWall</Key>
+    <Value>BoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>CrossFramedDirtWall</Key>
+    <Value>FramedDirtFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>VFramedDirtWall</Key>
+    <Value>FramedDirtFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>CrossFramedStoneWall</Key>
+    <Value>FramedStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>VFramedStoneWall</Key>
+    <Value>FramedStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>CrossFramedBlockWall</Key>
+    <Value>FramedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>VFramedBlockWall</Key>
+    <Value>FramedBlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>PanelledBlockWall</Key>
+    <Value>BlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>CrossFramedSmoothWall</Key>
+    <Value>FramedSmoothFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>VFramedSmoothWall</Key>
+    <Value>FramedSmoothFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>PanelledSmoothWall</Key>
+    <Value>SmoothStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>SmoothStoneWall</Key>
+    <Value>SmoothStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>CeramicWall</Key>
+    <Value>CeramicFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>CarvedStoneWall</Key>
+    <Value>CarvedStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>SoilStairs</Key>
+    <Value>SoilFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>RawStoneStairs</Key>
+    <Value>RawStoneFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>BlockStairs</Key>
+    <Value>BlockFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>PlankStairs</Key>
+    <Value>PlankFloor</Value>
+  </ConstructionFloorPair>
+  <ConstructionFloorPair>
+    <Key>MetalStairs</Key>
+    <Value>MetalFloor</Value>
+  </ConstructionFloorPair>
+  <ConvertConstructionIDToNaturalTerrain>RawStoneWall</ConvertConstructionIDToNaturalTerrain>
+  <ConvertConstructionIDToNaturalTerrain>RawStoneFloor</ConvertConstructionIDToNaturalTerrain>
+  <ConvertConstructionIDToNaturalTerrain>SoilWall</ConvertConstructionIDToNaturalTerrain>
+  <ConvertConstructionIDToNaturalTerrain>SoilFloor</ConvertConstructionIDToNaturalTerrain>
+  <GoblinTunnelSprite>
+    <SpriteID>
+      <SpriteID>GoblinTunnel</SpriteID>
+    </SpriteID>
+  </GoblinTunnelSprite>
+</ConstructionSettings>

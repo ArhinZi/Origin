@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<NameRules>
+  <!--PartOfSpeech:
+        The
+        Of
+        Land
+        Kingdom
+        ProperNoun Random name in that language
+        GenericNoun Race name, item name
+        Noun_Singular
+        Noun_Plural
+        Noun Singular or plural
+        The_Noun "the noun" or "noun"
+        ActionNoun_Singular
+        ActionNoun_Plural
+        ActionNoun
+        Compound_Noun_Singular (Singular)(singular)
+        Compound_Noun_Plural (Singular)(plural)
+        Compound_ActionNoun_Singular (Singular)(action singular)
+        Compound_ActionNoun_Plural (Singular)(action plural)
+        Adjective
+        Verb
+        Verb_SimplePresent
+        Verb_SimplePast
+        Verb_PastParticiple
+        Verb_PresentParticiple
+        Compound_Verb_PresentParticiple (verb present participle)(singular)
+  
+  Faction: Rules for generating faction names
+        Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
+          Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
+          
+  Squad: Rules for generating squad names
+        Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
+          Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
+          
+  Item: Rules for generating item names
+        Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
+          Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
+          
+  EnemyName: Rules for generating names of enemies
+        Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
+          Part: Supports arbitrary number of these. Used in order.  Allowed options defined above          
+  -->
+  <Faction>
+    <Rule>
+      <Part>Compound_Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>Land</Part>
+      <Part>Of</Part>
+      <Part>Noun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>Kingdom</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Noun_Singular</Part>
+      <Part>Kingdom</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PastParticiple</Part>
+      <Part>Land</Part>
+    </Rule>
+  </Faction>
+  <Squad>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PresentParticiple</Part>
+      <Part>Noun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PresentParticiple</Part>
+      <Part>Noun_Plural</Part>
+      <Part>Of</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>Noun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PastParticiple</Part>
+      <Part>Noun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>Noun_Plural</Part>
+      <Part>Of</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>Adjective</Part>
+      <Part>Noun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>Verb_PastParticiple</Part>
+      <Part>Noun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>ActionNoun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>Adjective</Part>
+      <Part>ActionNoun_Plural</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>ActionNoun_Plural</Part>
+      <Part>Of</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Compound_ActionNoun_Plural</Part>
+      <Part>Of</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Compound_ActionNoun_Plural</Part>
+    </Rule>
+  </Squad>
+  <Item>
+    <Rule>
+      <Part>The</Part>
+      <Part>Noun_Singular</Part>
+      <Part>Of</Part>
+      <Part>The_Noun</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>Noun_Singular</Part>
+      <Part>Of</Part>
+      <Part>The_Noun</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>ActionNoun_Singular</Part>
+      <Part>Of</Part>
+      <Part>The_Noun</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>ActionNoun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PresentParticiple</Part>
+      <Part>Of</Part>
+      <Part>The_Noun</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PresentParticiple</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PastParticiple</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PastParticiple</Part>
+      <Part>ActionNoun</Part>
+    </Rule>
+    <Rule>
+      <Part>Compound_Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Compound_Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>Compound_ActionNoun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Compound_ActionNoun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Compound_Verb_PresentParticiple</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>GenericNoun</Part>
+      <Part>Of</Part>
+      <Part>Noun</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Verb_PresentParticiple</Part>
+      <Part>GenericNoun</Part>
+    </Rule>
+    <Rule>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>GenericNoun</Part>
+    </Rule>
+  </Item>
+  <EnemyName>
+    <Rule>
+      <Part>ProperNoun</Part>
+      <Part>The</Part>
+      <Part>Compound_ActionNoun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>ProperNoun</Part>
+      <Part>The</Part>
+      <Part>ActionNoun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>ProperNoun</Part>
+      <Part>The</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>ProperNoun</Part>
+      <Part>The</Part>
+      <Part>Verb_PresentParticiple</Part>
+      <Part>Noun_Singular</Part>
+    </Rule>
+    <Rule>
+      <Part>ProperNoun</Part>
+      <Part>The</Part>
+      <Part>GenericNoun</Part>
+      <Part>Of</Part>
+      <Part>Noun</Part>
+    </Rule>
+    <Rule>
+      <Part>ProperNoun</Part>
+      <Part>The</Part>
+      <Part>Adjective</Part>
+      <Part>GenericNoun</Part>
+    </Rule>
+  </EnemyName>
+</NameRules>

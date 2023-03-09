@@ -1,0 +1,3421 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Items>
+  <!--Item
+        ID: Defines ID for this item referenced everywhere else
+        Prefix (optional): Used before the material in the name. Default is no Prefix
+        Name (optional): Displayed name of item.  Format is "{Prefix} {Material} {Name} {Suffix}"
+        Description (optional): Description displayed when viewing this item.
+                                Default is [AN_ITEM_NAME].
+                                [ITEM_NAME] in the description will be replaced with the name of the item
+                                [AN_ITEM_NAME] in the description will be replaced with the name of a or an followed by the name of the item
+        ObtainDescription (optional): Text displayed when hovering over "?" in workshop
+        GroupName (optional): Used in various places to describe the generic version when no specific material can be used.  Name is used if GroupName is omitted
+        Suffix (optional): Used after name.
+        Effect (optional)
+          Effect: EffectType.  Available options - Food, Drink, Storage, Rots, LightSource
+          Amount: Amount associated with Effect
+        Thickness (optional): Default 1. Multiplier for hitpoints defined by material.  Only valid for equipped items
+        TwoHanded (optional): Default is false.  Determines if two hands are required to carry
+        BaseValue (optional): Default is 0. Starting value of item.
+        Value (optional): Default is 1.  This setting is multiplied by the combined value of all components before being added to BaseValue
+        HasQuality (optional): Default is true.  Generates a quality when crafted
+        WeaponSize (optional): Default is 1. Used when determining damage in combat
+        CombatRatingModifier (optional): Default is 0.  Used to determine if a gnome is afraid of an enemy.  Higher values give more confidence
+        WeaponDef (optional)
+          Skill: Associated skill used for this weapon
+          AttackMove: Supports an arbitrary number of these
+            Verb: Used in combat log
+            SFXEventName (optional): sound effect that fires for this attack
+            AttackType: Type of attack.  Used for defending against this attack.  Available types - Swing, Thrust, HandToHand, Projectile
+            AttackTime (optional, seconds): Default is 3.  Time before another attack can be attempted after this one
+            AttackRange (optional) [min, max] values are in distance squared: Defines min and max distance attack can be used.
+            RequiresAmmo (optional): Default is false.  If true, requires ammo to be available and consumes on use
+            Weight (optional): Weight that this attack will be selected
+            MinimumSkillLevel (optional): Minimum skill level before this attack can be made
+            DamageScale (optional): Multiplier that scales damage for this attack
+            Damage:  Type of damage this weapon applies. Supports multiple.  Damage is applied in order listed.  ex, Claymore will first do slash damage then apply blunt damage.  If slash damage cuts through a layer (skin, muscle), blunt damage will be applied to the next layer
+          TargetedAttackMove (optional): Supports an arbitrary number
+            TargetedMaterial: Material which determines if this attack will be used
+            AttackDef:  AttackMove defined above
+          DefendMove (optional): Supports an arbitrary number
+            Verb: Used in combat log
+            SFXEventName (optional): sound effect that fires for this defend move        
+            DefendTime (optional, seconds): Default is 1.  Time before this weapon can be used to defend with again
+            AttackDelay (optional, seconds): Default is 1.  Delays next attack by this amount when defending.
+            DefendType: Supports an arbitrary number of these.  AttackType that this move can defend against
+          Point (optional): Default is 0.  Used for determining damage of pierce attacks
+          Edge (optional): Default is 0.   Used for determining damage of slash attacks
+          BluntModifier (optional): Default is 1. Used for determining damage of blunt attacks
+          ProjectileModifier (optional): Default is 1.  Used for determing damage of ranged attacks
+          VelocityModifier (optional): Default is 1.  Used for determining damage of melee attacks as well as difficulty to defend against this weapon
+          KnockbackModifier (optional): Default is 0.  Determines chance of knocking an enemy back when hit
+          AmmoItemID (optional): ItemID of ammo used by this weapon for ranged attacks
+        EquipSlot (optional): Defines where this item can be equipped.  Available values - Head, Body, Arm, Leg, Glove, Foot, Back
+        EquippedMovePenalty (optional): Default is 0.  Percent value that this item reduces movement by when equipped.  ex 10 reduces movement to 90% base
+        EquippedJobPenalty (optional): Default is 0.  Percent value that this item reduces job completion speed by when equipped.  ex 10 reduces job speed to 90% base
+        SpriteID: Supports arbitrary number of these which are rendered in order
+          SpriteID: Actual ID of sprite rendered
+          SpriteIDByMaterialID (optional): Supports arbitrary number of these.  Uses this sprite instead of SpriteID when item is this material
+            Key: Material
+            Value: ID of sprite rendered
+          MaterialIndex (optional): Default 0. Component index used to determine material to tint this sprite.  A value of -1 will not tint the sprite.
+        StateSprite (optional): Sprites for special states
+          Key: Name of state
+          Value:
+            Item: Supports arbitrary number of these which are rendered in order
+              SpriteID: Actual ID of sprite rendered
+              SpriteIDByMaterialID (optional): Supports arbitrary number of these.  Uses this sprite instead of SpriteID when construction is this material
+                Key: Material
+                Value: ID of sprite rendered
+              MaterialIndex (optional): Default 0. Component index used to determine material to tint this sprite.  A value of -1 will not tint the sprite.
+         EquippedSpriteID (optional): ID of sprite used when this item is equipped
+         EquippedDetailSpriteID (optional): Additional ID of sprite used when this item is equipped.  Will get merged with EquippedSpriteID in the future to allow for an arbitrary number of sprite IDs
+         HeldSpriteID (optional): Sprite used when this item is being carried
+          SpriteID: Actual ID of sprite rendered
+          SpriteIDByMaterialID (optional): Supports arbitrary number of these.  Uses this sprite instead of SpriteID when item is this material
+            Key: Material
+            Value: ID of sprite rendered
+          MaterialIndex (optional): Default 0. Component index used to determine material to tint this sprite.  A value of -1 will not tint the sprite.
+  -->
+  <Item>
+    <ID>RawSoil</ID>
+    <Name>clump</Name>
+    <ObtainDescription>Raw soil found naturally</ObtainDescription>
+    
+    <Value>0</Value>
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>RawSoil</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawStone</ID>
+    <Prefix>raw</Prefix>
+    <ObtainDescription>Raw stone found naturally</ObtainDescription>
+    <GroupName>stone</GroupName>
+    
+    <Value>0</Value>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>RawStone</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawWood</ID>
+    <Name>log</Name>
+    <ObtainDescription>Obtained by felling trees</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>RawWood</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawCoal</ID>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Found in stone walls and
+  crafted in a Furnace from logs</ObtainDescription>
+    <GroupName>coal</GroupName>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>RawCoal</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawOre</ID>
+    <Name>ore</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Found in stone walls</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>RawOre</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawGem</ID>
+    <Prefix>raw</Prefix>
+    <ObtainDescription>Found in stone walls</ObtainDescription>
+    <GroupName>gem</GroupName>
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>RawGem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawCloth</ID>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Grown from cotton or
+  sheared from alpaca</ObtainDescription>
+    <GroupName>fiber</GroupName>
+    <Value>1</Value>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Fiber</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>RawHide</ID>
+    <Name>hide</Name>
+    <ObtainDescription>Cut from animals
+  at a Butcher Shop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>RawHide</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Seed</ID>
+    <Name>seed</Name>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Seed</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <StateSprite>
+      <Key>Planted</Key>
+      <Value>
+        <Item>
+          <SpriteID>PlantedSoil</SpriteID>
+          <SpriteIDByMaterialID>
+            <Key>Grape</Key>
+            <Value>GrapeVine</Value>
+          </SpriteIDByMaterialID>
+        </Item>
+      </Value>
+    </StateSprite>
+  </Item>
+  <Item>
+    <ID>Clipping</ID>
+    <Name>clipping</Name>
+    <ObtainDescription>Cut from trees</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Clipping</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Wheat</ID>
+    <Name>grain</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Grown in a farm</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Grain</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Fruit</ID>
+    <ObtainDescription>Grown in a farm or
+  foraged from trees</ObtainDescription>
+    <GroupName>fruit</GroupName>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>15</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Strawberry</SpriteID>
+      <SpriteIDByMaterialID>
+        <Key>Apple</Key>
+        <Value>Apple</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Grape</Key>
+        <Value>GrapeItem</Value>        
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Orange</Key>
+        <Value>OrangeItem</Value>
+      </SpriteIDByMaterialID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Egg</ID>
+    <Name>egg</Name>
+    <Description>A raw [ITEM_NAME].</Description>
+    <ObtainDescription>Gathered from animals</ObtainDescription>      
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>15</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Egg</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bread</ID>
+    <Prefix>loaf of</Prefix>
+    <Name>bread</Name>
+    <ObtainDescription>Baked in a Kitchen</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>20</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bread</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Meat</ID>
+    <Name>meat</Name>
+    <Description>Raw [ITEM_NAME].</Description>
+    <ObtainDescription>Cut from animals
+  at a Butcher Shop</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>5</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>Meat</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Sausage</ID>
+    <Name>sausage</Name>
+    <ObtainDescription>Cooked in a kitchen</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>20</Amount>
+    </Effect>
+    <SpriteID>
+      <SpriteID>Sausage</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Sandwich</ID>
+    <Name>sandwich</Name>
+    <Description>[AN_ITEM_NAME].  The pinnacle of culinary art.</Description>
+    <ObtainDescription>Made in a Kitchen</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>50</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Sandwich</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Milk</ID>
+    <Name>milk</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Milked from animals</ObtainDescription>
+    <Effect>
+      <Effect>Drink</Effect>
+      <Amount>25</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Milk</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Wine</ID>
+    <Name>wine</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Made in a Distillery</ObtainDescription>
+    <Effect>
+      <Effect>Drink</Effect>
+      <Amount>50</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Wine</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Beer</ID>
+    <Name>beer</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Brewed in a Distillery</ObtainDescription>
+    <Effect>
+      <Effect>Drink</Effect>
+      <Amount>50</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Beer</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bone</ID>
+    <Name>bone</Name>
+    <ObtainDescription>Taken from animals
+  at a Butcher Shop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bone</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Skull</ID>
+    <Name>skull</Name>
+    <ObtainDescription>Taken from animals
+  at a Butcher's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Skull</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Block</ID>
+    <Name>block</Name>
+    <ObtainDescription>Cut in a Stonecutter's workshop</ObtainDescription>
+    
+    <BaseValue>1</BaseValue>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Block</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Plank</ID>
+    <Name>plank</Name>
+    <ObtainDescription>Cut in a Sawmill</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>100</WeaponSize>
+    <SpriteID>
+      <SpriteID>Plank</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bar</ID>
+    <Name>bar</Name>
+    <ObtainDescription>Crafted in a Forge</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>20</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bar</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Gem</ID>
+    <Prefix>cut</Prefix>
+    <Name>gem</Name>
+    <ObtainDescription>Cut in a Gemcutter's workshop</ObtainDescription>
+    <SpriteID>
+      <SpriteID>Gem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bolt</ID>
+    <Name>bolt</Name>
+    <ObtainDescription>Woven with a Loom</ObtainDescription>
+    <GroupName>bolt of cloth</GroupName>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bolt</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bandage</ID>
+    <Name>bandage</Name>
+    <ObtainDescription>Crafted at a Tailor</ObtainDescription>
+    <Effect>
+      <Effect>Heal</Effect>
+      <Amount>1</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bandage</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Rod</ID>
+    <Name>rod</Name>
+    <ObtainDescription>Crafted in a Machine shop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>30</WeaponSize>
+    <SpriteID>
+      <SpriteID>AxleItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Gear</ID>
+    <Name>gear</Name>
+    <ObtainDescription>Crafted in a Machine shop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>20</WeaponSize>
+    <SpriteID>
+      <SpriteID>Gear</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Spring</ID>
+    <Name>spring</Name>
+    <ObtainDescription>Crafted in a Machine shop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Spring</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>PetRock</ID>
+    <Name>pet rock</Name>
+    <Description>[AN_ITEM_NAME].  Friendship guaranteed.</Description>
+    <Value>25</Value>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>PetRock</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>PuzzleBox</ID>
+    <Name>puzzle box</Name>
+    <Description>[AN_ITEM_NAME].  It is actually impossible to open.</Description>
+    <Value>25</Value>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>PuzzleBox</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CommemorativeCoin</ID>
+    <Prefix>commemorative</Prefix>
+    <Name>coin</Name>
+    <Description>[AN_ITEM_NAME].  Celebrate the occasion with a coin.</Description>
+    <Value>25</Value>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>CommemorativeCoin</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Statuette</ID>
+    <Name>statuette</Name>
+    <Description>[AN_ITEM_NAME].  Exactly like a statue but smaller.</Description>
+    <Value>25</Value>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Statuette</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Ring</ID>
+    <Name>ring</Name>
+    <Value>25</Value>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>JewelryPile</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>GemmedRing</ID>
+    <Name>ring</Name>
+    <GroupName>gemmed ring</GroupName>
+    <Value>25</Value>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>JewelryPile</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Necklace</ID>
+    <Name>necklace</Name>
+    <Value>25</Value>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>JewelryPile</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>GemmedNecklace</ID>
+    <Name>necklace</Name>
+    <GroupName>gemmed necklace</GroupName>
+    <Value>25</Value>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>JewelryPile</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Axle</ID>
+    <Name>axle</Name>
+    <Description>[AN_ITEM_NAME].  Used to connect mechanisms in a straight line.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>AxleItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Gearbox</ID>
+    <Name>gearbox</Name>
+    <Description>[AN_ITEM_NAME].  Used to connect mechanisms at different angles.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>GearBoxBaseItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GearBoxFrameItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Handcrank</ID>
+    <Name>handcrank</Name>
+    <Description>[AN_ITEM_NAME].  Provides power when operated.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>HandcrankFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Lever</ID>
+    <Name>lever</Name>
+    <Description>[AN_ITEM_NAME].  Manually toggles connections.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>LeverBaseFL</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>LeverOnFL</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>PressurePlate</ID>
+    <Name>pressure plate</Name>
+    <Description>[AN_ITEM_NAME].  Toggles connections when under pressure.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>PressurePlateItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>MechanicalWall</ID>
+    <Name>mechanical wall</Name>
+    <Description>[AN_ITEM_NAME].  Converts to a wall when power is provided.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>MechanicalWallItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Hatch</ID>
+    <Name>hatch</Name>
+    <Description>[AN_ITEM_NAME].  Converts to a floor when power is provided.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>HatchFrameItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HatchItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>SpikeTrap</ID>
+    <Name>spike trap</Name>
+    <Description>[AN_ITEM_NAME].  It needs to be reset after being triggered.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop.</ObtainDescription>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>SpikeTrapItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>SpikeTrapItemSpike</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BladeTrap</ID>
+    <Name>blade trap</Name>
+    <Description>[AN_ITEM_NAME].  It needs to be reset after being triggered.</Description>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>BladeTrapItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>BladeTrapItemBlade</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>ResourcePile</ID>
+    <Name>pile</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>64</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>RawStone</SpriteID>
+      <SpriteIDByMaterialID>
+        <Key>Dirt</Key>
+        <Value>RawSoil</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Clay</Key>
+        <Value>RawSoil</Value>
+      </SpriteIDByMaterialID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Crate</ID>
+    <Name>crate</Name>
+    <Description>[AN_ITEM_NAME].  Used to store various items.</Description>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>Crate</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Barrel</ID>
+    <Name>barrel</Name>
+    <Description>[AN_ITEM_NAME].  Used to store liquids.</Description>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>64</Amount>
+    </Effect>
+    
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>Barrel</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bag</ID>
+    <Name>bag</Name>
+    <Description>[AN_ITEM_NAME].  Used to store various items.</Description>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bag</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>WoodDoor</ID>
+    <Name>door</Name>
+    <Description>[AN_ITEM_NAME].  It opens AND closes.</Description>
+    <GroupName>wood door</GroupName>
+    
+    <Value>3</Value>
+    <WeaponSize>1000</WeaponSize>      
+    <SpriteID>
+      <SpriteID>WoodDoor</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>StoneDoor</ID>
+    <Name>door</Name>
+    <Description>[AN_ITEM_NAME].  It opens AND closes.</Description>
+    <GroupName>stone door</GroupName>
+    
+    <Value>3</Value>
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>StoneDoor</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Table</ID>
+    <Name>table</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <Value>5</Value>
+    <WeaponSize>500</WeaponSize>
+    <SpriteID>
+      <SpriteID>WoodTable</SpriteID>
+      <SpriteIDByMaterialID>
+        <Key>Granite</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Basalt</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Marble</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Sandstone</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Bauxite</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Serpentine</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>LapisLazuli</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Obsidian</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Brick</Key>
+        <Value>StoneTable</Value>
+      </SpriteIDByMaterialID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Chair</ID>
+    <Name>chair</Name>
+    <ObtainDescription>Crafted at a Crude Workbench or a Carpenter's workshop</ObtainDescription>
+    
+    <Value>5</Value>
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>WoodChairFL</SpriteID>
+      <SpriteIDByMaterialID>
+        <Key>Granite</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Basalt</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Marble</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Sandstone</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Bauxite</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Serpentine</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>LapisLazuli</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Obsidian</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+      <SpriteIDByMaterialID>
+        <Key>Brick</Key>
+        <Value>StoneChairFL</Value>
+      </SpriteIDByMaterialID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bed</ID>
+    <Name>bed</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <Value>5</Value>
+    <WeaponSize>2000</WeaponSize>
+    <SpriteID>
+      <SpriteID>WoodBedFL</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>WoodBedSheetsFL</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>FancyBed</ID>
+    <Name>four poster bed</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <Value>5</Value>
+    <WeaponSize>2000</WeaponSize>
+    <SpriteID>
+      <SpriteID>FancyWoodBedFL</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>FancyWoodBedSheetsFL</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>FancyWoodBedTopFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Statue</ID>
+    <Name>statue</Name>
+    
+    <Value>25</Value>
+    <WeaponSize>10000</WeaponSize>
+    <SpriteID>
+      <SpriteID>StoneStatueFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Pickaxe</ID>
+    <Name>pickaxe</Name>
+    <Description>[AN_ITEM_NAME].  Used for mining.</Description>
+    
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <Point>1</Point>
+      
+      <VelocityModifier>0.8</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>PickAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>PickAxe</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomePickAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomePickAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>FellingAxe</ID>
+    <Name>felling axe</Name>
+    <Description>[AN_ITEM_NAME].  Used to fell trees.</Description>
+    
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Axe</Skill>
+      <AttackMove>
+        <Verb>chops</Verb>
+        <AttackType>Swing</AttackType>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <Edge>0.75</Edge>
+      <BluntModifier>0.3</BluntModifier>
+      <VelocityModifier>0.8</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>FellingAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>FellingAxe</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeFellingAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeFellingAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Sword</ID>
+    <Name>sword</Name>
+    
+    <Value>20</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <TargetedAttackMove>
+        <TargetedMaterial>Metal</TargetedMaterial>
+        <TargetedMaterial>Bone</TargetedMaterial>
+        <TargetedMaterial>Stone</TargetedMaterial>
+        <AttackDef>
+          <Verb>stabs</Verb>
+          <AttackType>Thrust</AttackType>
+          <AttackTime>3</AttackTime>
+          <Damage>Pierce</Damage>
+        </AttackDef>
+      </TargetedAttackMove>
+      <DefendMove>
+        <Verb>parries</Verb>
+        <SFXEventName>PARRY</SFXEventName>
+        <DefendTime>4</DefendTime>
+        <AttackDelay>0.3</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+      </DefendMove>
+      <Point>1</Point>
+      
+      <Edge>0.6833333</Edge>
+      <BluntModifier>0.2875</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>SwordBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Sword</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeSwordBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeSword</SpriteID>
+    </HeldSpriteID>    
+  </Item>
+  <Item>
+    <ID>HandAxe</ID>
+    <Name>hand axe</Name>
+    
+    <Value>20</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Axe</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <Edge>1.0</Edge>
+      <BluntModifier>0.525</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>HandAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HandAxe</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Hammer</ID>
+    <Name>hammer</Name>
+    
+    <Value>20</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <BluntModifier>1.25</BluntModifier>
+      <VelocityModifier>0.8</VelocityModifier>
+      <KnockbackModifier>1.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Hammer</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammer</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Claymore</ID>
+    <Name>claymore</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <Value>20</Value>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Slash</Damage>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      
+      <Edge>0.84166</Edge>
+      <BluntModifier>0.84166</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>ClaymoreBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Claymore</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeClaymoreBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeClaymore</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>BattleAxe</ID>
+    <Name>battle axe</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <Value>20</Value>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Axe</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <Edge>2</Edge>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>BattleAxe</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>BattleAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeBattleAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeBattleAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Warhammer</ID>
+    <Name>warhammer</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <Value>20</Value>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <BluntModifier>2.5</BluntModifier>
+      <VelocityModifier>0.8</VelocityModifier>
+      <KnockbackModifier>3.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Warhammer</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>WarhammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeWarhammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeWarhammer</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Shield</ID>
+    <Name>shield</Name>
+    
+    <Value>20</Value>
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Shield</Skill>
+      <AttackMove>
+        <Verb>bashes</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>2</DefendTime>
+        <AttackDelay>0.5</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+        <DefendType>HandToHand</DefendType>
+        <DefendType>Projectile</DefendType>
+      </DefendMove>
+      <BluntModifier>2</BluntModifier>
+      <VelocityModifier>0.5</VelocityModifier>
+      <KnockbackModifier>2.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>ShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Shield</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeShield</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Torch</ID>
+    <Name>torch</Name>
+    <Description>[AN_ITEM_NAME].  Provides light when placed or held.</Description>
+    <Effect>
+      <Effect>LightSource</Effect>
+      <Amount>16</Amount>
+    </Effect>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>25</WeaponSize>
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+        <Damage>Heat</Damage>          
+      </AttackMove>
+      <AttackMove>
+        <Verb>thrusts</Verb>
+        <AttackType>Thrust</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Heat</Damage>
+      </AttackMove>
+      <BluntModifier>1</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>GroundTorchBase</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GroundTorchFlame1</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeTorchBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeTorch</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Helmet</ID>
+    <Name>helmet</Name>
+    
+    <Value>8.5</Value>
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Head</EquipSlot>
+    <EquippedMovePenalty>4</EquippedMovePenalty>
+    <EquippedJobPenalty>10.56</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeHelmetItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeHelmetHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeHelmet</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeHelmetHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>Breastplate</ID>
+    <Name>breastplate</Name>
+    
+    <Value>10</Value>
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Body</EquipSlot>
+    <EquippedMovePenalty>7</EquippedMovePenalty>
+    <EquippedJobPenalty>18.48</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeBreastPlateItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeBreastPlateHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeBreastPlate</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeBreastPlateHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>Pauldron</ID>
+    <Name>pauldron</Name>
+    
+    <Value>6</Value>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Arm</EquipSlot>
+    <EquippedMovePenalty>2.5</EquippedMovePenalty>
+    <EquippedJobPenalty>6.6</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomePauldronItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomePauldronHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeRightPauldron</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeRightPauldronHighlight</EquippedDetailSpriteID>    
+  </Item>
+  <Item>
+    <ID>Greave</ID>
+    <Name>greave</Name>
+    
+    <Value>4</Value>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Leg</EquipSlot>
+    <EquippedMovePenalty>2.5</EquippedMovePenalty>
+    <EquippedJobPenalty>6.6</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Gauntlet</ID>
+    <Name>gauntlet</Name>
+    
+    <Value>4</Value>
+    <CombatRatingModifier>0.5</CombatRatingModifier>
+    <EquipSlot>Glove</EquipSlot>
+    <EquippedMovePenalty>1</EquippedMovePenalty>
+    <EquippedJobPenalty>2.64</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeGauntletItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeGauntletHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeRightGauntlet</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeRightGauntletHighlight</EquippedDetailSpriteID>    
+  </Item>
+  <Item>
+    <ID>Boot</ID>
+    <Name>boot</Name>
+    
+    <Value>4</Value>
+    <CombatRatingModifier>0.5</CombatRatingModifier>
+    <EquipSlot>Foot</EquipSlot>
+    <EquippedMovePenalty>1</EquippedMovePenalty>
+    <EquippedJobPenalty>2.64</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeMetalRightBoot</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeMetalRightBootHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherHelm</ID>
+    <Name>leather helm</Name>
+    
+    <Thickness>0.75</Thickness>
+    <Value>6</Value>
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Head</EquipSlot>
+    <EquippedMovePenalty>1.6</EquippedMovePenalty>
+    <EquippedJobPenalty>4</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeHelmItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeHelm</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherCuirass</ID>
+    <Name>leather cuirass</Name>
+    
+    <Thickness>0.75</Thickness>
+    <Value>6</Value>
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Body</EquipSlot>
+    <EquippedMovePenalty>2.8</EquippedMovePenalty>
+    <EquippedJobPenalty>7</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeCuirassItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeCuirass</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherBracer</ID>
+    <Name>leather bracer</Name>
+    
+    <Thickness>0.75</Thickness>
+    <Value>4</Value>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Arm</EquipSlot>
+    <EquippedMovePenalty>1</EquippedMovePenalty>
+    <EquippedJobPenalty>2.5</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeBracerItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeRightBracer</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherGreave</ID>
+    <Name>leather greave</Name>
+    
+    <Thickness>0.75</Thickness>
+    <Value>2.5</Value>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Leg</EquipSlot>
+    <EquippedMovePenalty>1</EquippedMovePenalty>
+    <EquippedJobPenalty>2.5</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeLeatherBootItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherGlove</ID>
+    <Name>leather glove</Name>
+    
+    <Thickness>0.75</Thickness>
+    <Value>2</Value>
+    <CombatRatingModifier>0.5</CombatRatingModifier>
+    <EquipSlot>Glove</EquipSlot>
+    <EquippedMovePenalty>0.4</EquippedMovePenalty>
+    <EquippedJobPenalty>1</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeGloveItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeRightGlove</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherBoot</ID>
+    <Name>leather boot</Name>
+    
+    <Thickness>0.75</Thickness>
+    <Value>2</Value>
+    <CombatRatingModifier>0.5</CombatRatingModifier>
+    <EquipSlot>Foot</EquipSlot>
+    <EquippedMovePenalty>0.4</EquippedMovePenalty>
+    <EquippedJobPenalty>1</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeLeatherBootItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeLeatherRightBoot</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>Corpse</ID>
+    <Name>corpse</Name>
+    <Effect>
+      <Effect>Rots</Effect>
+      <Amount>4</Amount>
+    </Effect>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>RawStone</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BodyPart</ID>
+    <Name>limb</Name>
+    <Effect>
+      <Effect>Rots</Effect>
+      <Amount>4</Amount>
+    </Effect>
+    
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>RawStone</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Pistol</ID>
+    <Name>flintlock pistol</Name>
+    
+    <Value>31</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Gun</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <AttackMove>
+        <Verb>shoots</Verb>
+        <SFXEventName>PISTOL_FIRE</SFXEventName>
+        <AttackType>Projectile</AttackType>
+        <AttackTime>6</AttackTime>
+        <AttackRange>0 25</AttackRange>
+        <RequiresAmmo>true</RequiresAmmo>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <BluntModifier>0.5</BluntModifier>
+      <ProjectileModifier>0.5</ProjectileModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+      <AmmoItemID>MusketRound</AmmoItemID>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>PistolBarrel</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>PistolBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomePistolBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomePistol</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Blunderbuss</ID>
+    <Name>blunderbuss</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <Value>30</Value>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Gun</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <AttackMove>
+        <Verb>shoots</Verb>
+        <SFXEventName>BLUNDERBUSS_FIRE</SFXEventName>
+        <AttackType>Projectile</AttackType>
+        <AttackTime>12</AttackTime>
+        <AttackRange>3 64</AttackRange>
+        <RequiresAmmo>true</RequiresAmmo>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <BluntModifier>1.0</BluntModifier>
+      <ProjectileModifier>2.0</ProjectileModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+      <AmmoItemID>MusketRound</AmmoItemID>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>BlunderbussBarrel</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>BlunderbussBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeBlunderbussBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeBlunderbussBarrel</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Crossbow</ID>
+    <Name>crossbow</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <Value>50</Value>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Crossbow</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <AttackMove>
+        <Verb>shoots</Verb>
+        <SFXEventName>CROSSBOW_FIRE</SFXEventName>
+        <AttackType>Projectile</AttackType>
+        <AttackTime>6</AttackTime>
+        <AttackRange>3 256</AttackRange>
+        <RequiresAmmo>true</RequiresAmmo>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <BluntModifier>1.0</BluntModifier>
+      <ProjectileModifier>1.5</ProjectileModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+      <AmmoItemID>CrossbowBolt</AmmoItemID>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>CrossbowBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Crossbow</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeCrossbowBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeCrossbow</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>MusketRound</ID>
+    <Name>musket round</Name>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>MusketRoundPile</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CrossbowBolt</ID>
+    <Name>bolt</Name>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>BoltRoundPile</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>MusketRoundPile</ID>
+    <Name>musket round pile</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>MusketRoundPile</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CrossbowBoltPile</ID>
+    <Name>bolt pile</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>16</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>BoltRoundPile</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>AmmoPouch</ID>
+    <Name>ammo pouch</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    
+    <WeaponSize>0</WeaponSize>
+    <EquipSlot>Back</EquipSlot>
+    <SpriteID>
+      <SpriteID>Bag</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeAmmoPouch</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>Quiver</ID>
+    <Name>quiver</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>16</Amount>
+    </Effect>
+    
+    <WeaponSize>0</WeaponSize>
+    <EquipSlot>Back</EquipSlot>
+    <SpriteID>
+      <SpriteID>Bag</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>GnomeQuiver</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>Pillar</ID>
+    <Name>pillar</Name>
+    
+    <Value>25</Value>
+    <WeaponSize>10000</WeaponSize>
+    <SpriteID>
+      <SpriteID>StonePillar</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Workbench</ID>
+    <Name>workbench</Name>
+    <ObtainDescription>Crafted at a Crude Workbench or a Carpenter's workshop</ObtainDescription>
+    
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>WorkbenchFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Chisel</ID>
+    <Name>chisel</Name>
+    <ObtainDescription>Crafted at a Crude Workbench or a Stonemason's workshop</ObtainDescription>
+    
+    <BaseValue>1</BaseValue>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Chisel</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Stick</ID>
+    <Name>stick</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>50</WeaponSize>
+    <SpriteID>
+      <SpriteID>FellingAxeBase</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Loom</ID>
+    <Name>loom</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>LoomFL</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>LoomFaceFL</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Hilt</ID>
+    <Name>hilt</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>SwordBase</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>StoneKnifeBlade</ID>
+    <Name>knife blade</Name>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>KnifeBlade</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Knife</ID>
+    <Name>knife</Name>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>stabs</Verb>
+        <AttackType>Thrust</AttackType>
+        <AttackTime>1</AttackTime>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <Point>0.5</Point>
+      
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>KnifeBlade</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>KnifeHilt</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Needle</ID>
+    <Name>bone needle</Name>
+    <ObtainDescription>Crafted in a Bonecarver's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>BoneNeedle</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Sawblade</ID>
+    <Name>sawblade</Name>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Gear</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Hearth</ID>
+    <Name>hearth</Name>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>Forge</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Mold</ID>
+    <Name>mold</Name>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>MoldFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Furnace</ID>
+    <Name>furnace</Name>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <WeaponSize>1000</WeaponSize>
+    <SpriteID>
+      <SpriteID>FurnaceFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bellows</ID>
+    <Name>bellows</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>BellowsFL</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>BellowsNozzleFL</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Anvil</ID>
+    <Name>anvil</Name>
+    <ObtainDescription>Crafted in a Forge</ObtainDescription>
+    
+    <WeaponSize>100</WeaponSize>
+    <SpriteID>
+      <SpriteID>AnvilFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CuttingWheel</ID>
+    <Name>cutting wheel</Name>
+    <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
+    
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Gear</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>File</ID>
+    <Name>file</Name>
+    <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
+    
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Sword</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BallPeenHammer</ID>
+    <Name>ball-peen hammer</Name>
+    <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
+    
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <Point>1</Point>
+      
+      <VelocityModifier>0.8</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Hammer</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HammerBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammerBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammer</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>Wrench</ID>
+    <Name>wrench</Name>
+    <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
+    
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <Point>1</Point>
+      
+      <VelocityModifier>0.8</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Wrench</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Haft</ID>
+    <Name>haft</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <Point>1</Point>
+      
+      <VelocityModifier>0.8</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>FellingAxeBase</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Mattress</ID>
+    <Name>mattress</Name>
+    <ObtainDescription>Crafted at a Tailor</ObtainDescription>
+    
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Mattress</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BedFrame</ID>
+    <Name>bed frame</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <WeaponSize>2000</WeaponSize>
+    <SpriteID>
+      <SpriteID>WoodBedFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>FancyBedFrame</ID>
+    <Name>four poster bed frame</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <WeaponSize>2000</WeaponSize>
+    <SpriteID>
+      <SpriteID>FancyWoodBedFL</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>FancyWoodBedTopFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Straw</ID>
+    <Name>straw</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Harvested from a wheat farm</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Wheat</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>StrawPile</ID>
+    <Name>straw pile</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>16</Amount>
+    </Effect>
+    
+    <HasQuality>false</HasQuality>      
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Wheat</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>String</ID>
+    <Name>string</Name>
+    <ObtainDescription>Crafted at a Tailor</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>String</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Padding</ID>
+    <Name>padding</Name>
+    <ObtainDescription>Crafted at a Tailor</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Fiber</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>PickaxeHead</ID>
+    <Name>pickaxe head</Name>
+    <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>PickAxe</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>FellingAxeHead</ID>
+    <Name>felling axe head</Name>
+    <ObtainDescription>Crafted aint a Blacksmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>FellingAxe</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>SwordBlade</ID>
+    <Name>sword blade</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Sword</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>HandAxeHead</ID>
+    <Name>hand axe head</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>HandAxe</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>HammerHead</ID>
+    <Name>hammer head</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Hammer</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>ClaymoreBlade</ID>
+    <Name>claymore blade</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Claymore</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BattleAxeHead</ID>
+    <Name>battle axe head</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>BattleAxe</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>WarhammerHead</ID>
+    <Name>warhammer head</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Warhammer</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>ShieldBoss</ID>
+    <Name>shield boss</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Shield</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>ShieldBacking</ID>
+    <Name>shield backing</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Shield</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherStrap</ID>
+    <Name>leather strap</Name>
+    <ObtainDescription>Crafted in a Leatherworker's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>LeatherStrip</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>LeatherArmorPanel</ID>
+    <Name>leather panel</Name>
+    <ObtainDescription>Crafted in a Leatherworker's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>LeatherPanel</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>ArmorPlate</ID>
+    <Name>armor plate</Name>
+    <ObtainDescription>Crafted in an Armorer's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>20</WeaponSize>
+    <SpriteID>
+      <SpriteID>ArmorPlate</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>PistolStock</ID>
+    <Name>pistol stock</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>PistolBase</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>PistolBarrel</ID>
+    <Name>pistol barrel</Name>
+    <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>PistolBarrel</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BlunderbussStock</ID>
+    <Name>blunderbuss stock</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>BlunderbussBase</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>BlunderbussBarrel</ID>
+    <Name>blunderbuss barrel</Name>
+    <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>BlunderbussBarrel</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CrossbowBow</ID>
+    <Name>crossbow bow</Name>
+    <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Crossbow</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CrossbowStock</ID>
+    <Name>crossbow stock</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>CrossbowBase</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>TrapBase</ID>
+    <Name>trap base</Name>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    
+    <Value>3</Value>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>GearBoxBaseItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GearBoxFrameItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Spike</ID>
+    <Name>spike</Name>
+    <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>50</WeaponSize>
+    <SpriteID>
+      <SpriteID>Spike</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>MechanismBase</ID>
+    <Name>mechanism base</Name>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>GearBoxBaseItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GearBoxFrameItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>WindmillBlade</ID>
+    <Name>windmill blade</Name>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>WindmillBlade</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Cylinder</ID>
+    <Name>cylinder</Name>
+    <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Cylinder</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>TrainingDummy</ID>
+    <Name>training dummy</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <WeaponSize>50</WeaponSize>
+    <SpriteID>
+      <SpriteID>TrainingDummyFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Dresser</ID>
+    <Name>dresser</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <Value>10</Value>
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>DresserFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Cabinet</ID>
+    <Name>cabinet</Name>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    
+    <Value>10</Value>
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>CabinetFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>SkullHelmet</ID>
+    <Name>skull helmet</Name>
+    
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Head</EquipSlot>
+    <EquippedMovePenalty>1.6</EquippedMovePenalty>
+    <EquippedJobPenalty>3.2</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>Skull</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>SkeletonHead</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>BoneShirt</ID>
+    <Name>bone shirt</Name>
+    
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Body</EquipSlot>
+    <EquippedMovePenalty>2.8</EquippedMovePenalty>
+    <EquippedJobPenalty>5.6</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>BoneShirt</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>SkeletonTorso</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>Screw</ID>
+    <Name>screw</Name>
+    <ObtainDescription>Crafted in a Machine shop</ObtainDescription>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>30</WeaponSize>
+    <SpriteID>
+      <SpriteID>Screw</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>WornHelmet</ID>
+    <Prefix>worn</Prefix>
+    <Name>helmet</Name>
+    
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Head</EquipSlot>
+    <EquippedMovePenalty>4</EquippedMovePenalty>
+    <EquippedJobPenalty>10.56</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeHelmetItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeHelmetHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeHelmet</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeHelmetHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>WornBreastplate</ID>
+    <Prefix>worn</Prefix>
+    <Name>breastplate</Name>
+    
+    <CombatRatingModifier>2</CombatRatingModifier>
+    <EquipSlot>Body</EquipSlot>
+    <EquippedMovePenalty>7</EquippedMovePenalty>
+    <EquippedJobPenalty>18.48</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeBreastPlateItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeBreastPlateHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeBreastPlate</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeBreastPlateHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>WornPauldron</ID>
+    <Prefix>worn</Prefix>
+    <Name>pauldron</Name>
+    
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Arm</EquipSlot>
+    <EquippedMovePenalty>2.5</EquippedMovePenalty>
+    <EquippedJobPenalty>6.6</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomePauldronItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomePauldronHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeRightPauldron</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeRightPauldronHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>WornGreave</ID>
+    <Prefix>worn</Prefix>
+    <Name>greave</Name>
+    
+    <CombatRatingModifier>1</CombatRatingModifier>
+    <EquipSlot>Leg</EquipSlot>
+    <EquippedMovePenalty>2.5</EquippedMovePenalty>
+    <EquippedJobPenalty>6.6</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>WornGauntlet</ID>
+    <Prefix>worn</Prefix>
+    <Name>gauntlet</Name>
+    
+    <CombatRatingModifier>0.5</CombatRatingModifier>
+    <EquipSlot>Glove</EquipSlot>
+    <EquippedMovePenalty>1</EquippedMovePenalty>
+    <EquippedJobPenalty>2.64</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeGauntletItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeGauntletHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeRightGauntlet</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeRightGauntletHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>WornBoot</ID>
+    <Prefix>worn</Prefix>
+    <Name>boot</Name>
+    
+    <CombatRatingModifier>0.5</CombatRatingModifier>
+    <EquipSlot>Foot</EquipSlot>
+    <EquippedMovePenalty>1</EquippedMovePenalty>
+    <EquippedJobPenalty>2.64</EquippedJobPenalty>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>GnomeMetalBootHighlightItem</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>GnomeMetalRightBoot</EquippedSpriteID>
+    <EquippedDetailSpriteID>GnomeMetalRightBootHighlight</EquippedDetailSpriteID>
+  </Item>
+  <Item>
+    <ID>WornSword</ID>
+    <Prefix>worn</Prefix>
+    <Name>sword</Name>
+    
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <TargetedAttackMove>
+        <TargetedMaterial>Metal</TargetedMaterial>
+        <TargetedMaterial>Bone</TargetedMaterial>
+        <TargetedMaterial>Stone</TargetedMaterial>
+        <AttackDef>
+          <Verb>stabs</Verb>
+          <AttackType>Thrust</AttackType>
+          <AttackTime>3</AttackTime>
+          <Damage>Pierce</Damage>
+        </AttackDef>
+      </TargetedAttackMove>
+      <DefendMove>
+        <Verb>parries</Verb>
+        <SFXEventName>PARRY</SFXEventName>
+        <DefendTime>4</DefendTime>
+        <AttackDelay>0.3</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+      </DefendMove>
+      <Point>1</Point>
+      
+      <Edge>0.6833333</Edge>
+      <BluntModifier>0.2875</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>SwordBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Sword</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeSwordBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeSword</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>WornHandAxe</ID>
+    <Prefix>worn</Prefix>
+    <Name>hand axe</Name>
+    
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Axe</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <Edge>1.0</Edge>
+      <BluntModifier>0.525</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>HandAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HandAxe</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>WornHammer</ID>
+    <Prefix>worn</Prefix>
+    <Name>hammer</Name>
+    
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <BluntModifier>1.25</BluntModifier>
+      <VelocityModifier>0.8</VelocityModifier>
+      <KnockbackModifier>1.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Hammer</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammer</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>WornClaymore</ID>
+    <Prefix>worn</Prefix>
+    <Name>claymore</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Slash</Damage>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      
+      <Edge>0.84166</Edge>
+      <BluntModifier>0.84166</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>ClaymoreBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Claymore</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeClaymoreBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeClaymore</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>WornBattleAxe</ID>
+    <Prefix>worn</Prefix>
+    <Name>battle axe</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Axe</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <Edge>2</Edge>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>BattleAxe</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>BattleAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeBattleAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeBattleAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>WornWarhammer</ID>
+    <Prefix>worn</Prefix>
+    <Name>warhammer</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <WeaponSize>200</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>6</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <BluntModifier>2.5</BluntModifier>
+      <VelocityModifier>0.8</VelocityModifier>
+      <KnockbackModifier>3.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Warhammer</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>WarhammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeWarhammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeWarhammer</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>WornShield</ID>
+    <Prefix>worn</Prefix>
+    <Name>shield</Name>
+    
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Shield</Skill>
+      <AttackMove>
+        <Verb>bashes</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>2</DefendTime>
+        <AttackDelay>0.5</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+        <DefendType>HandToHand</DefendType>
+        <DefendType>Projectile</DefendType>
+      </DefendMove>
+      <BluntModifier>2</BluntModifier>
+      <VelocityModifier>0.5</VelocityModifier>
+      <KnockbackModifier>2.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>ShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Shield</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeShield</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>MetalSliver</ID>
+    <Name>sliver</Name>
+    <ObtainDescription>Crafted in a Smelter</ObtainDescription>
+    <GroupName>metal sliver</GroupName>
+    
+    <Value>0.2</Value>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>20</WeaponSize>
+    <SpriteID>
+      <SpriteID>MetalSliver</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Trough</ID>
+    <Name>trough</Name>
+    <Description>[AN_ITEM_NAME].  Used to feed pastured animals.</Description>
+    <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
+    
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>TroughFL</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Mushroom</ID>
+    <ObtainDescription>Grown in a farm or
+  foraged underground</ObtainDescription>
+    <GroupName>mushroom</GroupName>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>10</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>MushroomItem</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Cheese</ID>
+    <Name>cheese</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Made in a Kitchen.</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>10</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Cheese</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>CheeseOmelette</ID>
+    <Name>cheese omelette</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Made in a Kitchen.</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>25</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Omelette</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>SausageOmelette</ID>
+    <Name>sausage omelette</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Made in a Kitchen.</ObtainDescription>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>45</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Omelette</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>MushroomOmelette</ID>
+    <Name>omelette</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Made in a Kitchen.</ObtainDescription>
+    <GroupName>mushroom omelette</GroupName>
+    <Effect>
+      <Effect>Food</Effect>
+      <Amount>35</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Omelette</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Tea</ID>
+    <Name>tea</Name>
+    <Description>[ITEM_NAME].</Description>
+    <ObtainDescription>Brewed in a Distillery</ObtainDescription>
+    <Effect>
+      <Effect>Drink</Effect>
+      <Amount>25</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Beer</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Wheelbarrow</ID>
+    <Name>wheelbarrow</Name>
+    <Description>[AN_ITEM_NAME].  Used to haul various items.</Description>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    
+    <WeaponSize>200</WeaponSize>
+    <SpriteID>
+      <SpriteID>WheelbarrowBackHandle</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>WheelbarrowRight</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>Wheelbarrow</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>AlarmBell</ID>
+    <Name>alarm bell</Name>
+    <Description></Description>
+    
+    <WeaponSize>100</WeaponSize>
+    <SpriteID>
+      <SpriteID>AlarmBellBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>AlarmBellBell</SpriteID>
+      <MaterialIndex>0</MaterialIndex>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>WoodenShield</ID>
+    <Name>shield</Name>
+    <GroupName>wooden shield</GroupName>
+    
+    <Value>20</Value>
+    <WeaponSize>50</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Shield</Skill>
+      <AttackMove>
+        <Verb>bashes</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>2</DefendTime>
+        <AttackDelay>0.5</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+        <DefendType>HandToHand</DefendType>
+        <DefendType>Projectile</DefendType>
+      </DefendMove>
+      <BluntModifier>2</BluntModifier>
+      <VelocityModifier>0.5</VelocityModifier>
+      <KnockbackModifier>2.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>ShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Shield</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeShield</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>TowerShield</ID>
+    <Name>tower shield</Name>
+    
+    <TwoHanded>true</TwoHanded>
+    <Value>40</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>6</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Shield</Skill>
+      <AttackMove>
+        <Verb>bashes</Verb>
+        <AttackType>HandToHand</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>0.5</DefendTime>
+        <AttackDelay>0.25</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+        <DefendType>HandToHand</DefendType>
+        <DefendType>Projectile</DefendType>
+      </DefendMove>
+      <BluntModifier>2</BluntModifier>
+      <VelocityModifier>0.5</VelocityModifier>
+      <KnockbackModifier>4.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>TowerShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>TowerShield</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeTowerShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeTowerShield</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>StoneSword</ID>
+    <Name>sword</Name>
+    <GroupName>stone sword</GroupName>
+    
+    <Value>20</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Sword</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <TargetedAttackMove>
+        <TargetedMaterial>Metal</TargetedMaterial>
+        <TargetedMaterial>Bone</TargetedMaterial>
+        <TargetedMaterial>Stone</TargetedMaterial>
+        <AttackDef>
+          <Verb>stabs</Verb>
+          <AttackType>Thrust</AttackType>
+          <AttackTime>3</AttackTime>
+          <Damage>Pierce</Damage>
+        </AttackDef>
+      </TargetedAttackMove>
+      <DefendMove>
+        <Verb>parries</Verb>
+        <SFXEventName>PARRY</SFXEventName>
+        <DefendTime>4</DefendTime>
+        <AttackDelay>0.3</AttackDelay>
+        <DefendType>Swing</DefendType>
+        <DefendType>Thrust</DefendType>
+      </DefendMove>
+      <Point>1</Point>
+      
+      <Edge>0.6833333</Edge>
+      <BluntModifier>0.2875</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>SwordBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>Sword</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeSwordBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeSword</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>StoneHandAxe</ID>
+    <Name>hand axe</Name>
+    <GroupName>stone hand axe</GroupName>
+    
+    <Value>20</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Axe</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <Edge>1.0</Edge>
+      <BluntModifier>0.525</BluntModifier>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>HandAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HandAxe</SpriteID>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeAxeBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeAxe</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>StoneHammer</ID>
+    <Name>hammer</Name>
+    <GroupName>stone hammer</GroupName>
+    
+    <Value>20</Value>
+    <WeaponSize>100</WeaponSize>
+    <CombatRatingModifier>3</CombatRatingModifier>
+    <WeaponDef>
+      <Skill>Hammer</Skill>
+      <AttackMove>
+        <Verb>swings</Verb>
+        <AttackType>Swing</AttackType>
+        <AttackTime>3</AttackTime>
+        <Damage>Blunt</Damage>
+      </AttackMove>
+      <DefendMove>
+        <Verb>blocks</Verb>
+        <SFXEventName>BLOCK</SFXEventName>
+        <DefendTime>6</DefendTime>
+        <AttackDelay>0.75</AttackDelay>
+        <DefendType>Swing</DefendType>
+      </DefendMove>
+      <BluntModifier>1.25</BluntModifier>
+      <VelocityModifier>0.8</VelocityModifier>
+      <KnockbackModifier>1.0</KnockbackModifier>
+    </WeaponDef>
+    <SpriteID>
+      <SpriteID>Hammer</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>HammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </SpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammerBase</SpriteID>
+      <MaterialIndex>1</MaterialIndex>
+    </HeldSpriteID>
+    <HeldSpriteID>
+      <SpriteID>GnomeHammer</SpriteID>
+    </HeldSpriteID>
+  </Item>
+  <Item>
+    <ID>TowerShieldBacking</ID>
+    <Name>tower shield backing</Name>
+    <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>TowerShieldBase</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>TowerShield</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Bucket</ID>
+    <Name>bucket</Name>
+    <Description>[AN_ITEM_NAME].  Used to haul liquids.</Description>
+    <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    
+    <WeaponSize>50</WeaponSize>
+    <SpriteID>
+      <SpriteID>Bucket</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Sack</ID>
+    <Name>sack</Name>
+    <Description>[AN_ITEM_NAME].  Used to haul various items.</Description>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>16</Amount>
+    </Effect>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Sack</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Silica</ID>
+    <ObtainDescription>Obtained through Prospecting</ObtainDescription>
+    <GroupName>silica</GroupName>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Silica</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>SilicaPile</ID>
+    <Name>pile</Name>
+    <Effect>
+      <Effect>Storage</Effect>
+      <Amount>32</Amount>
+    </Effect>
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Silica</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>Tile</ID>
+    <Name>tile</Name>
+    <ObtainDescription>Fired in a Kiln</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>10</WeaponSize>
+    <SpriteID>
+      <SpriteID>Block</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>GlassPane</ID>
+    <Name>pane</Name>
+    <ObtainDescription>Fired in a Kiln</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <WeaponSize>0</WeaponSize>
+    <SpriteID>
+      <SpriteID>Block</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>ArtificialArm</ID>
+    <Name>arm</Name>
+    <GroupName>prosthetic arm</GroupName>
+    
+    <SpriteID>
+      <SpriteID>ArtificialRightArmItem</SpriteID>
+    </SpriteID>
+    <SpriteID>
+      <SpriteID>ArtificialRightArmHandItem</SpriteID>
+      <MaterialIndex>3</MaterialIndex>
+    </SpriteID>
+    <EquippedSpriteID>ArtificialRightArm</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>ArtificialHand</ID>
+    <Name>hand</Name>
+    <GroupName>prosthetic hand</GroupName>
+    
+    <SpriteID>
+      <SpriteID>ArtificialRightHandItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>ArtificialRightHand</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>ArtificialLeg</ID>
+    <Name>leg</Name>
+    <GroupName>prosthetic leg</GroupName>
+    
+    <SpriteID>
+      <SpriteID>ArtificialRightLegItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>ArtificialRightLeg</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>ArtificialFoot</ID>
+    <Name>foot</Name>
+    <GroupName>prosthetic foot</GroupName>
+    
+    <SpriteID>
+      <SpriteID>ArtificialRightLegItem</SpriteID>
+    </SpriteID>
+    <EquippedSpriteID>ArtificialRightLeg</EquippedSpriteID>
+  </Item>
+  <Item>
+    <ID>Automaton</ID>
+    <Name>automaton</Name>
+    <Value>6</Value>
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>AutomatonTorso</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>GolemCore</ID>
+    <Name>golem core</Name>
+    <ObtainDescription>Occasionally found on golems</ObtainDescription>
+    
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>GolemCore</SpriteID>
+    </SpriteID>
+  </Item>
+  <Item>
+    <ID>AutomatonCore</ID>
+    <Name>core</Name>
+    <GroupName>automaton core</GroupName>
+    
+    <HasQuality>false</HasQuality>
+    <SpriteID>
+      <SpriteID>GolemCore</SpriteID>
+    </SpriteID>
+  </Item>
+</Items>

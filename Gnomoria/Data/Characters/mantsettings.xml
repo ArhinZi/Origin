@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MantSettings>
+  <!--DesirableItemID: ID of item that mant workers will try to steal-->
+  <DesirableItemID>Fruit</DesirableItemID>
+  <DesirableItemID>Egg</DesirableItemID>
+  <DesirableItemID>Bread</DesirableItemID>
+  <DesirableItemID>Meat</DesirableItemID>
+  <DesirableItemID>Sausage</DesirableItemID>
+  <DesirableItemID>Sandwich</DesirableItemID>
+  <DesirableItemID>Milk</DesirableItemID>
+  <DesirableItemID>Wine</DesirableItemID>
+  <DesirableItemID>Beer</DesirableItemID>
+  <DesirableItemID>Mushroom</DesirableItemID>
+  <DesirableItemID>Cheese</DesirableItemID>
+  <DesirableItemID>CheeseOmelette</DesirableItemID>
+  <DesirableItemID>SausageOmelette</DesirableItemID>
+  <DesirableItemID>MushroomOmelette</DesirableItemID>
+  <DesirableItemID>Tea</DesirableItemID>
+</MantSettings>

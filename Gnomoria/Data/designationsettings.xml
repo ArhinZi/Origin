@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DesignationSettings>
+  <!--DesignationFloor: Sprite to indicate area of designation
+        SpriteID: Supports an arbitrary amount of these
+          SpriteID: ID of sprite to render
+  -->
+  <!--TilledSoilSprite: Sprite for when soil is tilled
+        SpriteID: Supports an arbitrary amount of these
+          SpriteID: ID of sprite to render
+  -->
+  <!--MudSprite: Sprite for mud
+        SpriteID: Supports an arbitrary amount of these
+          SpriteID: ID of sprite to render
+  -->
+  <!--FarmSeedItemID: ID of item used when populating Farm UI for selecting a crop-->
+  <!--GroveClippingItemID: ID of item used when populating Grove UI for selecting a crop-->
+  <!--FarmMaterialID: ID of material that farms can be designated on-->
+  <!--UndergroundFarmMaterialID: ID of material that underground farms can be designated on-->
+  <!--GroveMaterialID: ID of material that groves can be designated on-->
+  <DesignationFloor>
+    <SpriteID>
+      <SpriteID>SolidSelectionFloor</SpriteID>
+    </SpriteID>
+  </DesignationFloor>
+  <TilledSoilSprite>
+    <SpriteID>
+      <SpriteID>TilledSoil</SpriteID>
+    </SpriteID>
+  </TilledSoilSprite>
+  <MudSprite>
+    <SpriteID>
+      <SpriteID>RoughSoilFloor</SpriteID>
+    </SpriteID>
+  </MudSprite>
+  <FarmSeedItemID>Seed</FarmSeedItemID>
+  <GroveClippingItemID>Clipping</GroveClippingItemID>
+  <FarmMaterialID>Dirt</FarmMaterialID>
+  <UndergroundFarmMaterialID>Dirt</UndergroundFarmMaterialID>
+  <GroveMaterialID>Dirt</GroveMaterialID>
+</DesignationSettings>

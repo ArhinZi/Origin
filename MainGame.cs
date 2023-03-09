@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Origin.Draw;
+using Origin.IO;
+using Origin.World;
 using SimplexNoise;
 
 namespace Origin
@@ -14,11 +17,14 @@ namespace Origin
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont spriteFont;
-        KeyboardController kbController;
-        Map map;
 
+        KeyboardController kbController;
+        MainWorld _world;
+        TileSet tileset;
 
         public static Camera2D cam;
+        public static InfoDrawer debug;
+
         private SimpleFps _frameCounter = new SimpleFps();
 
         public static int ScreenWidth;
@@ -45,11 +51,13 @@ namespace Origin
             cam.Pos = new Vector2(0,0);
             cam.Zoom = 1;
 
-            kbController = new KeyboardController();
+            _world = new MainWorld();
             
 
-            ScreenHeight = graphics.PreferredBackBufferHeight;
-            ScreenWidth = graphics.PreferredBackBufferWidth;
+            kbController = new KeyboardController(_world);
+            
+
+            
 
             graphics.PreferredBackBufferWidth = 1024;
             graphics.PreferredBackBufferHeight = 768;
@@ -70,8 +78,10 @@ namespace Origin
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            map = new Map();
             spriteFont = Content.Load<SpriteFont>("basefont");
+            debug = new InfoDrawer(spriteFont, new Point(10, 10), Color.Black);
+
+            tileset = new TileSet();
 
             // TODO: use this.Content to load your game content here
         }
@@ -92,12 +102,18 @@ namespace Origin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            kbController.Update(gameTime);
-            map.Update();
-            _frameCounter.Update(gameTime);
-
             ScreenHeight = graphics.PreferredBackBufferHeight;
             ScreenWidth = graphics.PreferredBackBufferWidth;
+            _frameCounter.Update(gameTime);
+            debug.Set(_frameCounter.msg);
+
+            kbController.Update(gameTime);
+
+            _world.Update();
+
+
+            MouseState currentMouseState = Mouse.GetState();
+            debug.Add(currentMouseState.Position.ToString());
 
             // TODO: Add your update logic here
 
@@ -112,11 +128,13 @@ namespace Origin
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            map.Draw();
+            _world.Draw();
+
+            _frameCounter.Draw();
+
+            
             spriteBatch.Begin();
-            
-            _frameCounter.DrawFps(spriteBatch, spriteFont, new Vector2(10, 10), Color.Black);
-            
+            debug.Draw(spriteBatch);
 
             // TODO: Add your drawing code here
 

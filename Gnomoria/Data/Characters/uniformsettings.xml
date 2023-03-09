@@ -1,0 +1,205 @@
+﻿<UniformSettings>
+  <!--DefaultUniform: Supports arbitrary number of DefaultUniforms that are used to populate Military Uniform UI
+        Name: Name of uniform
+        HeadItemID: ID of item in head slot.  Must be a valid item that can be equipped
+        BodyItemID: ID of item in body slot.  Must be a valid item that can be equipped
+        ArmItemID: ID of item in arm slot.  Must be a valid item that can be equipped
+        LegItemID: ID of item in leg slot.  Must be a valid item that can be equipped
+        GloveItemID: ID of item in glove slot.  Must be a valid item that can be equipped
+        FootItemID: ID of item in foot slot.  Must be a valid item that can be equipped
+        LeftHandItemID: ID of item in left hand slot.  Must be a valid item that can be equipped
+        RightHandItemID: ID of item in right hand slot.  Must be a valid item that can be equipped
+  -->
+  <!--MaterialGroup: Materials allowed for the listed item IDs.  Items in multiple groups have their materials ordered in the order of these groups. Really only used for when ITEMID_ANY is used
+        OrderedMaterialID: Order that materials are prioritized when any material is selected in the uniform. ie If Helmet is selected and no material specific gnomes will first look for Steel Helmets then Iron, etc
+        ItemID: ID of item that allows for materials in this group
+  -->
+  <!--Weapons: Populates Left and Right Hand in Military Uniform UI
+        ItemID: ID of item
+  -->
+  <!--Shield: Items listed here are considered Shields for Military Perks
+        ItemID: ID of item
+  -->
+  <!--Armor: Populates armor slots in Military Uniform UI based on EquipSlot defined in Items
+        ItemID: ID of item
+  -->
+  <!--Any1HWeapon: Items to consider when ITEMID_ANY is selected for a hand.  Supports an aribitrary number of Any1HWeapons.
+                   Items are prioritized first by the order each set listed here followed by highest skill for a given item within each set.
+                   Ex. Gnomes will first look for Sword, HandAxe, Hammer, Pistol and if none are found then look for StoneSword, StoneHandAxe, StoneHammer.  If that gnome's highest weapon skill is Sword then he will prioritize swords, etc.
+  -->
+  <!--Any2HWeapon: Items to consider when ITEMID_ANY2H is selected for hands.  Supports an aribitrary number of Any2HWeapons.
+                   Items are prioritized first by the order each set listed here followed by highest skill for a given item within each set.
+  -->
+  <DefaultUniform>
+    <Name>Platemail</Name>
+    <HeadItemID>Helmet</HeadItemID>
+    <BodyItemID>Breastplate</BodyItemID>
+    <ArmItemID>Pauldron</ArmItemID>
+    <LegItemID>Greave</LegItemID>
+    <GloveItemID>Gauntlet</GloveItemID>
+    <FootItemID>Boot</FootItemID>
+    <LeftHandItemID>Shield</LeftHandItemID>
+    <RightHandItemID>ITEMID_ANY</RightHandItemID>
+  </DefaultUniform>
+  <MaterialGroup>
+    <OrderedMaterialID>Steel</OrderedMaterialID>
+    <OrderedMaterialID>Iron</OrderedMaterialID>
+    <OrderedMaterialID>Lead</OrderedMaterialID>
+    <OrderedMaterialID>Bronze</OrderedMaterialID>
+    <OrderedMaterialID>Copper</OrderedMaterialID>
+    <OrderedMaterialID>Malachite</OrderedMaterialID>
+    <OrderedMaterialID>Silver</OrderedMaterialID>
+    <OrderedMaterialID>Gold</OrderedMaterialID>
+    <OrderedMaterialID>RoseGold</OrderedMaterialID>
+    <OrderedMaterialID>Platinum</OrderedMaterialID>
+    <OrderedMaterialID>Tin</OrderedMaterialID>
+    <ItemID>Helmet</ItemID>      
+    <ItemID>Breastplate</ItemID>
+    <ItemID>Pauldron</ItemID>
+    <ItemID>Greave</ItemID>
+    <ItemID>Gauntlet</ItemID>
+    <ItemID>Boot</ItemID>
+    <ItemID>Shield</ItemID>
+    <ItemID>TowerShield</ItemID>
+    <ItemID>Sword</ItemID>
+    <ItemID>HandAxe</ItemID>
+    <ItemID>Hammer</ItemID>
+    <ItemID>Pistol</ItemID>
+    <ItemID>Claymore</ItemID>
+    <ItemID>BattleAxe</ItemID>
+    <ItemID>Warhammer</ItemID>
+    <ItemID>Crossbow</ItemID>
+    <ItemID>Blunderbuss</ItemID>
+    <ItemID>Pickaxe</ItemID>
+    <ItemID>FellingAxe</ItemID>
+    <ItemID>MusketRound</ItemID>
+    <ItemID>CrossbowBolt</ItemID>
+    <ItemID>ITEMID_ANY</ItemID>
+    <ItemID>ITEMID_ANY2H</ItemID>      
+  </MaterialGroup>
+  <MaterialGroup>
+    <OrderedMaterialID>Obsidian</OrderedMaterialID>
+    <OrderedMaterialID>Granite</OrderedMaterialID>
+    <OrderedMaterialID>Basalt</OrderedMaterialID>
+    <OrderedMaterialID>Marble</OrderedMaterialID>
+    <OrderedMaterialID>Sandstone</OrderedMaterialID>
+    <OrderedMaterialID>Bauxite</OrderedMaterialID>
+    <OrderedMaterialID>Serpentine</OrderedMaterialID>
+    <OrderedMaterialID>LapisLazuli</OrderedMaterialID>
+    <OrderedMaterialID>Brick</OrderedMaterialID>
+    <ItemID>StoneSword</ItemID>
+    <ItemID>StoneHandAxe</ItemID>
+    <ItemID>StoneHammer</ItemID>
+    <ItemID>MusketRound</ItemID>
+    <ItemID>CrossbowBolt</ItemID>
+    <ItemID>ITEMID_ANY</ItemID>
+  </MaterialGroup>
+  <MaterialGroup>
+    <OrderedMaterialID>Pine</OrderedMaterialID>
+    <OrderedMaterialID>AppleWood</OrderedMaterialID>
+    <OrderedMaterialID>Birch</OrderedMaterialID>
+    <OrderedMaterialID>OrangeWood</OrderedMaterialID>
+    <ItemID>WoodenShield</ItemID>
+    <ItemID>Torch</ItemID>
+    <ItemID>ITEMID_ANY</ItemID>
+  </MaterialGroup>
+  <MaterialGroup>
+    <OrderedMaterialID>TwoHeadedOgreBone</OrderedMaterialID>
+    <OrderedMaterialID>OgreBone</OrderedMaterialID>
+    <OrderedMaterialID>StandardBone</OrderedMaterialID>
+    <OrderedMaterialID>BearBone</OrderedMaterialID>
+    <OrderedMaterialID>MonitorLizardBone</OrderedMaterialID>
+    <OrderedMaterialID>HoneyBadgerBone</OrderedMaterialID>
+    <OrderedMaterialID>YakBone</OrderedMaterialID>
+    <OrderedMaterialID>AlpacaBone</OrderedMaterialID>
+    <OrderedMaterialID>EmuBone</OrderedMaterialID>
+    <OrderedMaterialID>TwoHeadedOgreSkull</OrderedMaterialID>
+    <OrderedMaterialID>OgreSkull</OrderedMaterialID>
+    <OrderedMaterialID>StandardShell</OrderedMaterialID>
+    <OrderedMaterialID>BearSkull</OrderedMaterialID>
+    <OrderedMaterialID>MonitorLizardSkull</OrderedMaterialID>
+    <OrderedMaterialID>HoneyBadgerSkull</OrderedMaterialID>
+    <OrderedMaterialID>YakSkull</OrderedMaterialID>
+    <OrderedMaterialID>AlpacaSkull</OrderedMaterialID>
+    <OrderedMaterialID>EmuSkull</OrderedMaterialID>
+    <ItemID>SkullHelmet</ItemID>
+    <ItemID>BoneShirt</ItemID>
+    <ItemID>ITEMID_ANY</ItemID>
+  </MaterialGroup>
+  <MaterialGroup>
+    <OrderedMaterialID>ToughOgreHide</OrderedMaterialID>
+    <OrderedMaterialID>OgreHide</OrderedMaterialID>
+    <OrderedMaterialID>BearHide</OrderedMaterialID>
+    <OrderedMaterialID>MonitorLizardHide</OrderedMaterialID>
+    <OrderedMaterialID>HoneyBadgerHide</OrderedMaterialID>
+    <OrderedMaterialID>YakHide</OrderedMaterialID>
+    <OrderedMaterialID>AlpacaHide</OrderedMaterialID>
+    <OrderedMaterialID>EmuHide</OrderedMaterialID>
+    <ItemID>LeatherHelm</ItemID>
+    <ItemID>LeatherCuirass</ItemID>
+    <ItemID>LeatherBracer</ItemID>
+    <ItemID>LeatherGreave</ItemID>
+    <ItemID>LeatherGlove</ItemID>
+    <ItemID>LeatherBoot</ItemID>
+    <ItemID>ITEMID_ANY</ItemID>
+  </MaterialGroup>
+  <Weapons>
+    <ItemID>StoneSword</ItemID>
+    <ItemID>StoneHandAxe</ItemID>
+    <ItemID>StoneHammer</ItemID>
+    <ItemID>WoodenShield</ItemID>
+    <ItemID>Sword</ItemID>
+    <ItemID>HandAxe</ItemID>
+    <ItemID>Hammer</ItemID>
+    <ItemID>Pistol</ItemID>
+    <ItemID>Claymore</ItemID>
+    <ItemID>BattleAxe</ItemID>
+    <ItemID>Warhammer</ItemID>
+    <ItemID>Crossbow</ItemID>
+    <ItemID>Blunderbuss</ItemID>
+    <ItemID>Shield</ItemID>
+    <ItemID>TowerShield</ItemID>
+    <ItemID>Torch</ItemID>
+    <ItemID>Pickaxe</ItemID>
+    <ItemID>FellingAxe</ItemID>
+  </Weapons>
+  <Shield>
+    <ItemID>Shield</ItemID>
+    <ItemID>WoodenShield</ItemID>
+    <ItemID>TowerShield</ItemID>
+  </Shield>
+  <Armor>
+    <ItemID>Helmet</ItemID>
+    <ItemID>Breastplate</ItemID>
+    <ItemID>Pauldron</ItemID>
+    <ItemID>Greave</ItemID>
+    <ItemID>Gauntlet</ItemID>
+    <ItemID>Boot</ItemID>
+    <ItemID>LeatherHelm</ItemID>
+    <ItemID>LeatherCuirass</ItemID>
+    <ItemID>LeatherBracer</ItemID>
+    <ItemID>LeatherGreave</ItemID>
+    <ItemID>LeatherGlove</ItemID>
+    <ItemID>LeatherBoot</ItemID>
+    <ItemID>SkullHelmet</ItemID>
+    <ItemID>BoneShirt</ItemID>
+  </Armor>
+  <Any1HWeapon>
+    <Item>Sword</Item>
+    <Item>HandAxe</Item>
+    <Item>Hammer</Item>
+    <Item>Pistol</Item>
+  </Any1HWeapon>
+  <Any1HWeapon>
+    <Item>StoneSword</Item>
+    <Item>StoneHandAxe</Item>
+    <Item>StoneHammer</Item>
+  </Any1HWeapon>
+  <Any2HWeapon>
+    <Item>Claymore</Item>
+    <Item>BattleAxe</Item>
+    <Item>Warhammer</Item>
+    <Item>Blunderbuss</Item>
+    <Item>Crossbow</Item>
+  </Any2HWeapon>
+</UniformSettings>

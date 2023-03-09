@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Traps>
+  <Item>
+    <TrapID>SpikeTrap</TrapID>
+    <AttackSpeed>3</AttackSpeed>
+    <WeaponSize>100</WeaponSize>
+    <WeaponDef>
+      <Skill>Count</Skill>
+      <AttackMove>
+        <Verb>triggers</Verb>
+        <AttackType>Thrust</AttackType>
+        <Damage>Pierce</Damage>
+      </AttackMove>
+      <Point>1</Point>
+      <PenetrationDepth>25</PenetrationDepth>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+  </Item>
+  <Item>
+    <TrapID>BladeTrap</TrapID>
+    <AttackSpeed>3</AttackSpeed>
+    <WeaponSize>100</WeaponSize>
+    <WeaponDef>
+      <Skill>Count</Skill>
+      <AttackMove>
+        <Verb>triggers</Verb>
+        <AttackType>Swing</AttackType>
+        <Damage>Slash</Damage>
+      </AttackMove>
+      <Edge>1</Edge>
+      <VelocityModifier>1.0</VelocityModifier>
+    </WeaponDef>
+  </Item>
+</Traps>

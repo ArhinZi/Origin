@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Plants>
+  <!--Item:
+        PlantID: ID of plant
+        SpriteID: Supports arbitrary number of these which are rendered in order
+          SpriteID: Actual ID of sprite rendered
+          SpriteIDByMaterialID (optional): Supports arbitrary number of these.  Uses this sprite instead of SpriteID when item is this material
+            Key: Material
+            Value: ID of sprite rendered
+          MaterialIndex (optional): Default 0. Component index used to determine material to tint this sprite.  A value of -1 will not tint the sprite.
+        StateSprite (optional): Sprites for special states
+          Key: Name of state
+          Value:
+            Item: Supports arbitrary number of these which are rendered in order
+              SpriteID: Actual ID of sprite rendered
+              SpriteIDByMaterialID (optional): Supports arbitrary number of these.  Uses this sprite instead of SpriteID when construction is this material
+                Key: Material
+                Value: ID of sprite rendered
+              MaterialIndex (optional): Default 0. Component index used to determine material to tint this sprite.  A value of -1 will not tint the sprite.
+        HarvestItem: Supports arbitrary number of these.  Item to be created when foraging or felling
+          ItemID: ID of item
+          MaterialID: ID of material
+        SeedItemID: ID of item used to grow this plant as well as created when foraging or cutting clippings
+        GrowTimeMin: Minimum amount of days of sunlight it takes to grow
+        GrowTimeMax: Maximum amount of days of sunlight it takes to grow
+        Underground (optional): Default is false. Determines whether this plant requires to be underground
+        FruitID: ID of item created when picking fruit
+        FruitGrowTimeMin: Minimum amount of days of sunlight it takes to grow
+        FruitGrowTimeMax: Maximum amount of days of sunlight it takes to grow
+  -->
+  <Item>
+    <PlantID>Strawberry</PlantID>
+    <SpriteID>
+      <SpriteID>StrawberryPlant</SpriteID>
+    </SpriteID>
+    <HarvestedItem>
+      <ItemID>Fruit</ItemID>
+      <MaterialID>Strawberry</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Seed</SeedItemID>
+    <GrowTimeMin>2.05</GrowTimeMin>
+    <GrowTimeMax>2.45</GrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>Cotton</PlantID>
+    <SpriteID>
+      <SpriteID>CottonPlant</SpriteID>
+    </SpriteID>
+    <HarvestedItem>
+      <ItemID>RawCloth</ItemID>
+      <MaterialID>Cotton</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Seed</SeedItemID>
+    <GrowTimeMin>1.8</GrowTimeMin>
+    <GrowTimeMax>2.2</GrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>Wheat</PlantID>
+    <SpriteID>
+      <SpriteID>WheatPlant</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <HarvestedItem>
+      <ItemID>Wheat</ItemID>
+      <MaterialID>Wheat</MaterialID>
+    </HarvestedItem>
+    <HarvestedItem>
+      <ItemID>Straw</ItemID>
+      <MaterialID>Wheat</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Seed</SeedItemID>
+    <GrowTimeMin>2.7</GrowTimeMin>
+    <GrowTimeMax>3.3</GrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>PineTree</PlantID>
+    <SpriteID>
+      <SpriteID>PineTree</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <StateSprite>
+      <Key>NoLeaves</Key>
+      <Value>
+        <Item>
+          <SpriteID>PineTreeNoLeaves</SpriteID>
+          <MaterialIndex>-1</MaterialIndex>
+        </Item>
+      </Value>
+    </StateSprite>
+    <StateSprite>
+      <Key>Sapling</Key>
+      <Value>
+        <Item>
+          <SpriteID>Sapling</SpriteID>
+        </Item>
+      </Value>
+    </StateSprite>
+    <HarvestedItem>
+      <ItemID>RawWood</ItemID>
+      <MaterialID>Pine</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Clipping</SeedItemID>
+    <GrowTimeMin>3.8</GrowTimeMin>
+    <GrowTimeMax>4.2</GrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>AppleTree</PlantID>
+    <SpriteID>
+      <SpriteID>AppleTree</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <StateSprite>
+      <Key>NoLeaves</Key>
+      <Value>
+        <Item>
+          <SpriteID>AppleTreeNoLeaves</SpriteID>
+          <MaterialIndex>-1</MaterialIndex>
+        </Item>
+      </Value>
+    </StateSprite>
+    <StateSprite>
+      <Key>Fruit</Key>
+      <Value>
+        <Item>
+          <SpriteID>AppleFruitOnTrue</SpriteID>
+          <MaterialIndex>-1</MaterialIndex>
+        </Item>
+      </Value>
+    </StateSprite>
+    <StateSprite>
+      <Key>Sapling</Key>
+      <Value>
+        <Item>
+          <SpriteID>Sapling</SpriteID>
+        </Item>
+      </Value>
+    </StateSprite>
+    <HarvestedItem>
+      <ItemID>RawWood</ItemID>
+      <MaterialID>AppleWood</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Clipping</SeedItemID>
+    <GrowTimeMin>3.8</GrowTimeMin>
+    <GrowTimeMax>4.2</GrowTimeMax>
+    <FruitID>Fruit</FruitID>
+    <FruitGrowTimeMin>1.8</FruitGrowTimeMin>
+    <FruitGrowTimeMax>2.2</FruitGrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>BirchTree</PlantID>
+    <SpriteID>
+      <SpriteID>BirchTree</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <StateSprite>
+      <Key>NoLeaves</Key>
+      <Value>
+        <Item>
+          <SpriteID>BirchTreeNoLeaves</SpriteID>
+          <MaterialIndex>-1</MaterialIndex>
+        </Item>
+      </Value>
+    </StateSprite>
+    <StateSprite>
+      <Key>Sapling</Key>
+      <Value>
+        <Item>
+          <SpriteID>Sapling</SpriteID>
+        </Item>
+      </Value>
+    </StateSprite>
+    <HarvestedItem>
+      <ItemID>RawWood</ItemID>
+      <MaterialID>Birch</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Clipping</SeedItemID>
+    <GrowTimeMin>3.8</GrowTimeMin>
+    <GrowTimeMax>4.2</GrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>Grape</PlantID>
+    <SpriteID>
+      <SpriteID>GrapesOnVine</SpriteID>
+    </SpriteID>
+    <HarvestedItem>
+      <ItemID>Fruit</ItemID>
+      <MaterialID>Grape</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Seed</SeedItemID>
+    <GrowTimeMin>2.05</GrowTimeMin>
+    <GrowTimeMax>2.45</GrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>OrangeTree</PlantID>
+    <SpriteID>
+      <SpriteID>OrangeTree</SpriteID>
+      <MaterialIndex>-1</MaterialIndex>
+    </SpriteID>
+    <StateSprite>
+      <Key>NoLeaves</Key>
+      <Value>
+        <Item>
+          <SpriteID>OrangeTreeNoLeaves</SpriteID>
+          <MaterialIndex>-1</MaterialIndex>
+        </Item>
+      </Value>
+    </StateSprite>
+    <StateSprite>
+      <Key>Fruit</Key>
+      <Value>
+        <Item>
+          <SpriteID>OrangeFruitOnTree</SpriteID>
+          <MaterialIndex>-1</MaterialIndex>
+        </Item>
+      </Value>
+    </StateSprite>
+    <StateSprite>
+      <Key>Sapling</Key>
+      <Value>
+        <Item>
+          <SpriteID>Sapling</SpriteID>
+        </Item>
+      </Value>
+    </StateSprite>
+    <HarvestedItem>
+      <ItemID>RawWood</ItemID>
+      <MaterialID>OrangeWood</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Clipping</SeedItemID>
+    <GrowTimeMin>3.8</GrowTimeMin>
+    <GrowTimeMax>4.2</GrowTimeMax>
+    <FruitID>Fruit</FruitID>
+    <FruitGrowTimeMin>1.8</FruitGrowTimeMin>
+    <FruitGrowTimeMax>2.2</FruitGrowTimeMax>
+  </Item>
+  <Item>
+    <PlantID>Mushroom</PlantID>
+    <SpriteID>
+      <SpriteID>MushroomPlant</SpriteID>
+    </SpriteID>
+    <HarvestedItem>
+      <ItemID>Mushroom</ItemID>
+      <MaterialID>Mushroom</MaterialID>
+    </HarvestedItem>
+    <SeedItemID>Seed</SeedItemID>
+    <GrowTimeMin>3.6</GrowTimeMin>
+    <GrowTimeMax>4.4</GrowTimeMax>
+    <Underground>true</Underground>
+  </Item>
+</Plants>
