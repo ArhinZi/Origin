@@ -44,7 +44,6 @@
     <Compile Include="Draw\Camera2D.cs" />
     <Compile Include="Draw\MainDrawer.cs" />
     <Compile Include="Draw\SiteRenderer.cs" />
-    <Compile Include="Model\Chunk.cs" />
     <Compile Include="Utils\ByteField.cs" />
     <Compile Include="Utils\DiffUtils.cs" />
     <Compile Include="Utils\InfoDrawer.cs" />

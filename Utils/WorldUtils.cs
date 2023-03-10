@@ -56,7 +56,7 @@ namespace Origin.Utils
                     for (int z = 0; z < worldDepth; z++)
                     {
                         // Set the voxel value based on the height and the current z position
-                        worldArray[x, y, z] = new SiteBlock((ushort)(z < height ? 1 : 0), (ushort)(z < height ? 1 : 0));
+                        worldArray[x, y, z] = new SiteBlock((ushort)(z < height ? 1 : 100), (ushort)(z < height ? 1 : 100));
                     }
                 }
             }
