@@ -30,6 +30,9 @@ namespace Origin.Draw
 		private GraphicsDevice _graphicsDevice;
 		private SpriteBatch _spriteBatch;
 
+		public static float Z_DIAGONAL_OFFSET = 0.01f;
+		//public static Point BASE_CHUNK_SIZE = new Point(64, 64);
+
 
 		Matrix worldMatrix;
 		public SiteRenderer(Site site, GraphicsDevice graphicDevice)
@@ -86,24 +89,24 @@ namespace Origin.Draw
 								(DiffUtils.InBounds<int>(y + 1, 0, _site.Size.Y)
 								&& _site.Blocks[x, y + 1, z].wallId != 100))
 							{
-								_visBuffer[x, y, z].SetBit((byte)VisBufField.WallVisible, false);
+								ByteField.SetBit(_visBuffer[x, y, z], (byte)VisBufField.WallVisible, false);
 
 								if (DiffUtils.InBounds<int>(z + 1, 0, _site.Size.Z))
 								{
 									if (_site.Blocks[x, y, z + 1].wallId == 100)
 									{
-										_visBuffer[x, y, z].SetBit((byte)VisBufField.FloorVisible, true);
+										ByteField.SetBit(_visBuffer[x, y, z], (byte)VisBufField.FloorVisible, true);
 									}
 									else
 									{
-										_visBuffer[x, y, z].SetBit((byte)VisBufField.FloorVisible, false);
+										ByteField.SetBit(_visBuffer[x, y, z], (byte)VisBufField.FloorVisible, false);
 									}
 								}
 							}
 							else
 							{
-								_visBuffer[x, y, z].SetBit((byte)VisBufField.WallVisible, true);
-								_visBuffer[x, y, z].SetBit((byte)VisBufField.FloorVisible, true);
+								ByteField.SetBit(_visBuffer[x, y, z], (byte)VisBufField.WallVisible, true);
+								ByteField.SetBit(_visBuffer[x, y, z], (byte)VisBufField.FloorVisible, true);
 
 							}
 
@@ -115,12 +118,15 @@ namespace Origin.Draw
 			}
 		}
 
-		private void VerticeAdder(TileTexture tt, int x, int y, int z, ref int index, ref VertexPositionColorTexture[] vertices, Vector2 offset )
+		private void VerticeChanger(TileTexture tt, int x, int y, int z,
+			ref DynamicVertexBuffer[,,] buffer, Vector2 offset, Color c)
         {
+			VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[6];
+
 			Rectangle textureRect = tt.RectPos;
 			var VertexX = ((x - y) * TileSet.TILE_SIZE.X / 2) + offset.X;
 			var VertexY = ((y + x) * TileSet.TILE_SIZE.Y / 2) - z * (TileSet.TILE_SIZE.Y + TileSet.FLOOR_YOFFSET) + offset.Y;
-			var VertexZ = 0;
+			var VertexZ = (x + y) * Z_DIAGONAL_OFFSET;
 
 
 			Vector3 topLeft =
@@ -140,13 +146,52 @@ namespace Origin.Draw
 			Vector2 textureBottomRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Bottom / tt.Texture.Height);
 
 			// Add the vertices for the tile to the vertex buffer
-			vertices[index++] = new VertexPositionColorTexture(topLeft, Color.White, textureTopLeft);
-			vertices[index++] = new VertexPositionColorTexture(topRight, Color.White, textureTopRight);
-			vertices[index++] = new VertexPositionColorTexture(bottomLeft, Color.White, textureBottomLeft);
+			vertices[0] = new VertexPositionColorTexture(topLeft, c, textureTopLeft);
+			vertices[1] = new VertexPositionColorTexture(topRight, c, textureTopRight);
+			vertices[2] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
 
-			vertices[index++] = new VertexPositionColorTexture(topRight, Color.White, textureTopRight);
-			vertices[index++] = new VertexPositionColorTexture(bottomRight, Color.White, textureBottomRight);
-			vertices[index++] = new VertexPositionColorTexture(bottomLeft, Color.White, textureBottomLeft);
+			vertices[3] = new VertexPositionColorTexture(topRight, c, textureTopRight);
+			vertices[4] = new VertexPositionColorTexture(bottomRight, c, textureBottomRight);
+			vertices[5] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
+
+			int startIndex = (x * _site.Size.Y * 6) + _site.Size.X * 6;
+
+			buffer[0, 0, z].SetData(vertices, 0, 6);
+		}
+
+		private void VerticeAdder(TileTexture tt, int x, int y, int z, 
+			ref int index, ref VertexPositionColorTexture[] vertices, Vector2 offset, Color c)
+        {
+			Rectangle textureRect = tt.RectPos;
+			var VertexX = ((x - y) * TileSet.TILE_SIZE.X / 2) + offset.X;
+			var VertexY = ((y + x) * TileSet.TILE_SIZE.Y / 2) - z * (TileSet.TILE_SIZE.Y + TileSet.FLOOR_YOFFSET) + offset.Y;
+			var VertexZ = (x+y)*Z_DIAGONAL_OFFSET;
+
+
+			Vector3 topLeft =
+				new Vector3(VertexX, VertexY, VertexZ);
+			Vector3 topRight =
+				new Vector3(VertexX + textureRect.Width, VertexY, VertexZ);
+			Vector3 bottomLeft =
+				new Vector3(VertexX, VertexY + textureRect.Height, VertexZ);
+			Vector3 bottomRight =
+				new Vector3(VertexX + textureRect.Width, VertexY + textureRect.Height, VertexZ);
+
+
+			// Calculate the texture coordinates for the tile
+			Vector2 textureTopLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
+			Vector2 textureTopRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
+			Vector2 textureBottomLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Bottom / tt.Texture.Height);
+			Vector2 textureBottomRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Bottom / tt.Texture.Height);
+
+			// Add the vertices for the tile to the vertex buffer
+			vertices[index++] = new VertexPositionColorTexture(topLeft, c, textureTopLeft);
+			vertices[index++] = new VertexPositionColorTexture(topRight, c, textureTopRight);
+			vertices[index++] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
+
+			vertices[index++] = new VertexPositionColorTexture(topRight, c, textureTopRight);
+			vertices[index++] = new VertexPositionColorTexture(bottomRight, c, textureBottomRight);
+			vertices[index++] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
 
 		}
 
@@ -170,12 +215,13 @@ namespace Origin.Draw
 				for (int y = 0; y < chunkSize.Y; y++)
 				{
 					SiteBlock tile = _site.Blocks[x, y, position.Z];
-					if (tile.wallId != 100 && _visBuffer[x, y, position.Z].GetBit((byte)VisBufField.WallVisible))
+					if (tile.wallId != 100 && ByteField.GetBit(_visBuffer[x, y, position.Z], (byte)VisBufField.WallVisible))
 					{
 						TileTexture tt;
 						Color c = new Color(255, 255, 255, 255);
 						tt = TileSet.WallSet[tile.wallId];
-						VerticeAdder(tt, x,y,position.Z, ref index, ref vertices, Vector2.Zero);
+						VerticeAdder(tt, x,y,position.Z, ref index, ref vertices, Vector2.Zero, c);
+						//VerticeChanger(tt, x, y, position.Z, ref _vertexBuffersLayer, Vector2.Zero, c);
 					}
                     else
                     {
@@ -203,12 +249,12 @@ namespace Origin.Draw
 				for (int y = 0; y < chunkSize.Y; y++)
 				{
 					SiteBlock tile = _site.Blocks[x, y, position.Z];
-					if (tile.wallId != 100 && _visBuffer[x, y, position.Z].GetBit((byte)VisBufField.FloorVisible))
+					if (tile.wallId != 100 && ByteField.GetBit(_visBuffer[x, y, position.Z], (byte)VisBufField.FloorVisible))
 					{
 						TileTexture tt;
 						Color c = new Color(255, 255, 255, 255);
 						tt = TileSet.FloorSet[tile.floorId];
-						VerticeAdder(tt, x,y,position.Z,ref index, ref vertices, new Vector2(0,-4));
+						VerticeAdder(tt, x,y,position.Z,ref index, ref vertices, new Vector2(0,-4), c);
 					}
 					else
 					{
@@ -263,6 +309,7 @@ namespace Origin.Draw
 				_graphicsDevice.DrawPrimitives(
 						PrimitiveType.TriangleList, 0, _vertexBuffersLayer[0, 0, z].VertexCount/3);
 
+				if (z == _site.CurrentLevel) continue;
 				_graphicsDevice.SetVertexBuffer(_vertexBuffersGround[0, 0, z]);
 				_graphicsDevice.DrawPrimitives(
 						PrimitiveType.TriangleList, 0, _vertexBuffersLayer[0, 0, z].VertexCount / 3);
@@ -285,7 +332,7 @@ namespace Origin.Draw
 						SiteBlock b = _site.Blocks[x, y, i];
 						Vector2 mts = MapToScreen(x, y, i);
 
-						if (_visBuffer[x, y, i].GetBit((byte)VisBufField.WallVisible))
+						if (ByteField.GetBit(_visBuffer[x, y, i], (byte)VisBufField.WallVisible))
 						//if(b.wallId != 0)
 						{
 							TileTexture wt = TileSet.WallSet[b.wallId - 1];
@@ -296,7 +343,7 @@ namespace Origin.Draw
 								Color.White
 								);
 						}
-						if (_visBuffer[x, y, i].GetBit((byte)VisBufField.FloorVisible))
+						if (ByteField.GetBit(_visBuffer[x, y, i], (byte)VisBufField.FloorVisible))
 						//if(b.floorId != 0)
 						{
 							TileTexture ft = TileSet.FloorSet[b.floorId - 1];

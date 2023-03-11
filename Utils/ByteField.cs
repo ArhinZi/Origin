@@ -14,22 +14,22 @@ namespace Origin.Utils
         {
             value = 0;
         }
-        public void SetBit(byte bitNumber, bool state)
+        public static void SetBit(ByteField value, byte bitNumber, bool state)
         {
             if (bitNumber < 1 || bitNumber > 8)
                 throw new ArgumentOutOfRangeException("bitNumber", "Must be 1 - 8");
 
-            value = state ?
-                (byte)(value | (1 << (bitNumber - 1))) :
-                (byte)(value & ~(1 << (bitNumber - 1)));
+            value.value = state ?
+                (byte)(value.value | (1 << (bitNumber - 1))) :
+                (byte)(value.value & ~(1 << (bitNumber - 1)));
         }
 
-        public bool GetBit(byte bitNumber)
+        public static bool GetBit(ByteField value, byte bitNumber)
         {
             if (bitNumber < 1 || bitNumber > 8)
                 throw new ArgumentOutOfRangeException("bitNumber", "Must be 1 - 16");
 
-            return (value & (1 << (bitNumber - 1))) >= 1;
+            return (value.value & (1 << (bitNumber - 1))) >= 1;
         }
 
         public override string ToString()
@@ -37,7 +37,8 @@ namespace Origin.Utils
             string s = "";
             for (byte i = 1; i <= 8; i++)
             {
-                s += GetBit(i) ? "1" : "0";
+                s += i.ToString() + ":"; 
+                s += GetBit(this, i) ? "1" : "0";
             }
             return s;
         }
