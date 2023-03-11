@@ -133,7 +133,6 @@ namespace Origin.Draw
 				new Vector3(VertexX + textureRect.Width, VertexY + textureRect.Height, VertexZ);
 
 
-
 			// Calculate the texture coordinates for the tile
 			Vector2 textureTopLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
 			Vector2 textureTopRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
@@ -150,6 +149,7 @@ namespace Origin.Draw
 			vertices[index++] = new VertexPositionColorTexture(bottomLeft, Color.White, textureBottomLeft);
 
 		}
+
 
 		private void ReFillVertexBuffer(Point3 position)
 		{
@@ -177,6 +177,10 @@ namespace Origin.Draw
 						tt = TileSet.WallSet[tile.wallId];
 						VerticeAdder(tt, x,y,position.Z, ref index, ref vertices, Vector2.Zero);
 					}
+                    else
+                    {
+						index += 6;
+                    }
 				}
 			}
 			// Set the data of the vertex buffer
@@ -205,44 +209,10 @@ namespace Origin.Draw
 						Color c = new Color(255, 255, 255, 255);
 						tt = TileSet.FloorSet[tile.floorId];
 						VerticeAdder(tt, x,y,position.Z,ref index, ref vertices, new Vector2(0,-4));
-						/*TileTexture tt;
-						Color c = new Color(255, 255, 255, 255);
-						tt = TileSet.FloorSet[tile.floorId];
-						Rectangle textureRect = tt.RectPos;
-						var VertexX = ((x - y) * TileSet.TILE_SIZE.X / 2);
-						var VertexY = ((y + x) * TileSet.TILE_SIZE.Y / 2) 
-							- position.Z * (TileSet.TILE_SIZE.Y + TileSet.FLOOR_YOFFSET) - 4;
-						var VertexZ = 0;
-
-						VertexY += -1;
-
-
-						Vector3 topLeft =
-							new Vector3(VertexX, VertexY, VertexZ);
-						Vector3 topRight =
-							new Vector3(VertexX + textureRect.Width, VertexY, VertexZ);
-						Vector3 bottomLeft =
-							new Vector3(VertexX, VertexY + textureRect.Height, VertexZ);
-						Vector3 bottomRight =
-							new Vector3(VertexX + textureRect.Width, VertexY + textureRect.Height, VertexZ);
-
-
-
-						// Calculate the texture coordinates for the tile
-						Vector2 textureTopLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
-						Vector2 textureTopRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
-						Vector2 textureBottomLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Bottom / tt.Texture.Height);
-						Vector2 textureBottomRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Bottom / tt.Texture.Height);
-
-						// Add the vertices for the tile to the vertex buffer
-						vertices[index++] = new VertexPositionColorTexture(topLeft, Color.White, textureTopLeft);
-						vertices[index++] = new VertexPositionColorTexture(topRight, Color.White, textureTopRight);
-						vertices[index++] = new VertexPositionColorTexture(bottomLeft, Color.White, textureBottomLeft);
-
-						vertices[index++] = new VertexPositionColorTexture(topRight, Color.White, textureTopRight);
-						vertices[index++] = new VertexPositionColorTexture(bottomRight, Color.White, textureBottomRight);
-						vertices[index++] = new VertexPositionColorTexture(bottomLeft, Color.White, textureBottomLeft);
-						*/
+					}
+					else
+					{
+						index += 6;
 					}
 
 				}
