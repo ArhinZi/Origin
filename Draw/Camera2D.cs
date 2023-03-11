@@ -40,7 +40,11 @@ namespace Origin.Draw
         public float Zoom
         {
             get { return _zoom; }
-            set { _zoom = value; if (_zoom < 0.05f) _zoom = 0.05f; } // Negative zoom will flip image
+            set { 
+                _zoom = value; 
+                if (_zoom < 0.05f) _zoom = 0.05f;
+                if (_zoom > 4f) _zoom = 4f;
+            } // Negative zoom will flip image
         }
 
         public float Rotation

@@ -23,6 +23,7 @@ namespace Origin.Draw
 		private ByteField[,,] _visBuffer;
 
 		private Point3 _chunksCount;
+		private Point _chunkSize;
 		private DynamicVertexBuffer[,,] _vertexBuffersLayer;
 		private DynamicVertexBuffer[,,] _vertexBuffersGround;
 		private BasicEffect effect;
@@ -31,7 +32,7 @@ namespace Origin.Draw
 		private SpriteBatch _spriteBatch;
 
 		public static float Z_DIAGONAL_OFFSET = 0.01f;
-		//public static Point BASE_CHUNK_SIZE = new Point(64, 64);
+		public static Point BASE_CHUNK_SIZE = new Point(64, 64);
 
 
 		Matrix worldMatrix;
@@ -40,7 +41,12 @@ namespace Origin.Draw
 			_site = site;
 			_visBuffer = new ByteField[_site.Size.X, _site.Size.Y, _site.Size.Z];
 
-			_chunksCount = new Point3(1, 1, _site.Size.Z);
+			_chunkSize = BASE_CHUNK_SIZE;
+			if (_chunkSize.X < _site.Size.X) _chunkSize.X = _site.Size.X;
+			if (_chunkSize.Y < _site.Size.Y) _chunkSize.Y = _site.Size.Y;
+			if (_site.Size.X % _chunkSize.X != 0 || _site.Size.Y % _chunkSize.Y != 0) throw new Exception("Site size is invalid!");
+
+			_chunksCount = new Point3(_site.Size.X / _chunkSize.X, _site.Size.Y / _chunkSize.Y, _site.Size.Z);
 			_vertexBuffersLayer = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y, _chunksCount.Z];
 			_vertexBuffersGround = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y, _chunksCount.Z];
 
@@ -273,7 +279,14 @@ namespace Origin.Draw
 		{
 			for (int z = 0; z < _chunksCount.Z; z++)
 			{
-				ReFillVertexBuffer(new Point3(0, 0, z));
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+						ReFillVertexBuffer(new Point3(0, 0, z));
+					}
+                }
+				
 			}
 		}
 
@@ -305,14 +318,21 @@ namespace Origin.Draw
 			for (int z = DiffUtils.GetOrBound<int>(_site.CurrentLevel-32,0, _site.Size.Z); 
 				z <= _site.CurrentLevel; z++)
 			{
-				_graphicsDevice.SetVertexBuffer(_vertexBuffersLayer[0, 0, z]);
-				_graphicsDevice.DrawPrimitives(
-						PrimitiveType.TriangleList, 0, _vertexBuffersLayer[0, 0, z].VertexCount/3);
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+						_graphicsDevice.SetVertexBuffer(_vertexBuffersLayer[x, y, z]);
+						_graphicsDevice.DrawPrimitives(
+								PrimitiveType.TriangleList, 0, _vertexBuffersLayer[x, y, z].VertexCount / 3);
 
-				if (z == _site.CurrentLevel) continue;
-				_graphicsDevice.SetVertexBuffer(_vertexBuffersGround[0, 0, z]);
-				_graphicsDevice.DrawPrimitives(
-						PrimitiveType.TriangleList, 0, _vertexBuffersLayer[0, 0, z].VertexCount / 3);
+						if (z == _site.CurrentLevel) continue;
+						_graphicsDevice.SetVertexBuffer(_vertexBuffersGround[x, y, z]);
+						_graphicsDevice.DrawPrimitives(
+								PrimitiveType.TriangleList, 0, _vertexBuffersLayer[x, y, z].VertexCount / 3);
+
+					}
+				}
 			}
 		}
 
