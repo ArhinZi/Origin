@@ -1,10 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Draw
 {
@@ -15,33 +9,34 @@ namespace Origin.Draw
         public Vector2 _pos; // Camera Position
         protected float _rotation; // Camera Rotation
 
-
         public Camera2D()
         {
             _zoom = 1.0f;
             _rotation = 0.0f;
             _pos = Vector2.Zero;
         }
+
         public Matrix GetTransformation()
         {
             _transform =       // Thanks to o KB o for this solution
-              Matrix.CreateTranslation(-_pos.X, -_pos.Y, 1)*
+              Matrix.CreateTranslation(-_pos.X, -_pos.Y, 1) *
             //Matrix.CreateRotationZ(Rotation)*
-            Matrix.CreateScale(Zoom, Zoom, 1)*
+            Matrix.CreateScale(Zoom, Zoom, 1) *
             Matrix.CreateTranslation(new Vector3(MainGame.ScreenWidth * 0.5f, MainGame.ScreenHeight * 0.5f, 0));
             return _transform;
         }
 
         public Matrix TransformMatrix => Matrix.CreateTranslation(new Vector3(-Pos.X, -Pos.Y, 0)) *
                                       Matrix.CreateScale(Zoom) *
-                                      Matrix.CreateTranslation(new Vector3(MainGame.instance.GraphicsDevice.Viewport.Width * 0.5f, MainGame.instance.GraphicsDevice.Viewport.Height * 0.5f, 0));
+                                      Matrix.CreateTranslation(new Vector3(MainGame.Instance.GraphicsDevice.Viewport.Width * 0.5f, MainGame.Instance.GraphicsDevice.Viewport.Height * 0.5f, 0));
 
         // Sets and gets zoom
         public float Zoom
         {
             get { return _zoom; }
-            set { 
-                _zoom = value; 
+            set
+            {
+                _zoom = value;
                 if (_zoom < 0.05f) _zoom = 0.05f;
                 if (_zoom > 4f) _zoom = 4f;
             } // Negative zoom will flip image
@@ -58,6 +53,7 @@ namespace Origin.Draw
         {
             _pos += amount;
         }
+
         // Get set position
         public Vector2 Pos
         {

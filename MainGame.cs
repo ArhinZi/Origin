@@ -1,10 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Entities;
+using MonoGame.Extended.Screens;
+using MonoGame.Extended.Screens.Transitions;
 using Origin.Draw;
+using Origin.ECS;
 using Origin.IO;
-using Origin.World;
-using SimplexNoise;
+using Origin.Screens;
 
 namespace Origin
 {
@@ -13,30 +16,44 @@ namespace Origin
     /// </summary>
     public class MainGame : Game
     {
-        public static MainGame instance;
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        SpriteFont spriteFont;
+        public static MainGame Instance { get; private set; }
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private SpriteFont spriteFont;
 
-        KeyboardController kbController;
-        MainWorld _world;
-        TileSet tileset;
+        private ScreenManager _screenManager;
+        private World _ecs;
+        public FpsCountComp fpsCounter;
+        public ControlComp control;
+        public InfoDrawer debug;
+
+        private TileSet tileset;
 
         public static Camera2D cam;
-        public static InfoDrawer debug;
-
-        private SimpleFps _frameCounter = new SimpleFps();
 
         public static int ScreenWidth;
         public static int ScreenHeight;
 
-
         public MainGame()
         {
-            instance = this;
+            Instance = this;
             graphics = new GraphicsDeviceManager(this);
             Window.AllowUserResizing = true;
             Content.RootDirectory = "Content";
+
+            _ecs = new WorldBuilder()
+                .Build();
+
+            _screenManager = new ScreenManager();
+            fpsCounter = new FpsCountComp();
+            control = new ControlComp();
+            debug = new InfoDrawer(new Point(10, 10), Color.Black);
+
+            Components.Add(_ecs);
+            Components.Add(_screenManager);
+            Components.Add(fpsCounter);
+            Components.Add(control);
+            Components.Add(debug);
         }
 
         /// <summary>
@@ -47,26 +64,19 @@ namespace Origin
         /// </summary>
         protected override void Initialize()
         {
-            cam = new Camera2D();
-            cam.Pos = new Vector2(0,0);
-            cam.Zoom = 1;
-
-            _world = new MainWorld();
-            
-
-            kbController = new KeyboardController(_world);
-            
-
-            
-
-            graphics.PreferredBackBufferWidth = 1024;
-            graphics.PreferredBackBufferHeight = 768;
+            ScreenHeight = graphics.PreferredBackBufferHeight = 800;
+            ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
             graphics.ApplyChanges();
-
 
             IsMouseVisible = true;
 
+            cam = new Camera2D
+            {
+                Pos = new Vector2(0, 0),
+                Zoom = 1
+            };
 
+            InputManager.Initialise(this);
             base.Initialize();
         }
 
@@ -79,11 +89,13 @@ namespace Origin
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             spriteFont = Content.Load<SpriteFont>("basefont");
-            debug = new InfoDrawer(spriteFont, new Point(10, 10), Color.Black);
 
             tileset = new TileSet();
 
-            // TODO: use this.Content to load your game content here
+            debug.spriteBatch = spriteBatch;
+            debug.font = spriteFont;
+            //LoadMenuMainScreen();
+            LoadGameScreen();
         }
 
         /// <summary>
@@ -102,22 +114,20 @@ namespace Origin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            ScreenHeight = graphics.PreferredBackBufferHeight;
-            ScreenWidth = graphics.PreferredBackBufferWidth;
-            _frameCounter.Update(gameTime);
-            debug.Set(_frameCounter.msg);
+            InputManager.Update();
+            debug.Clear();
 
-            kbController.Update(gameTime);
-
-            _world.Update();
-
+            debug.Add(fpsCounter.msg);
 
             MouseState currentMouseState = Mouse.GetState();
-            debug.Add(currentMouseState.Position.ToString());
+            debug.Add("Mouse POS: " + currentMouseState.Position.ToString());
+            debug.Add("Cam ZOOM: " + cam.Zoom.ToString());
+            debug.Add("Cam POS: " + cam.Pos.ToString());
 
-            // TODO: Add your update logic here
+            _ecs.Update(gameTime);
 
             base.Update(gameTime);
+            InputManager.FinalUpdate();
         }
 
         /// <summary>
@@ -127,22 +137,19 @@ namespace Origin
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            _world.Draw();
-
-            _frameCounter.Draw();
-
-            
-            spriteBatch.Begin();
-            debug.Draw(spriteBatch);
-
-            // TODO: Add your drawing code here
-
-            spriteBatch.End();
-
-            
+            _ecs.Draw(gameTime);
 
             base.Draw(gameTime);
+        }
+
+        private void LoadMenuMainScreen()
+        {
+            _screenManager.LoadScreen(new ScreenMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+        }
+
+        private void LoadGameScreen()
+        {
+            _screenManager.LoadScreen(new ScreenMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
     }
 }

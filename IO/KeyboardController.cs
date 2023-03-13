@@ -1,51 +1,46 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Origin.World;
+using Origin.WorldComps;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.IO
 {
-    class KeyboardController : IUpdateable
+    internal class KeyboardController : IUpdateable
     {
         public bool Enabled
         {
             get; set;
         } = true;
+
         public int UpdateOrder
         {
             get; set;
         } = 0;
 
         public event EventHandler<EventArgs> EnabledChanged;
+
         public event EventHandler<EventArgs> UpdateOrderChanged;
 
-        MainWorld _world;
+        private MainWorld _world;
 
-        public KeyboardController(MainWorld w, bool enabled=true, int order=0)
+        public KeyboardController(MainWorld w, bool enabled = true, int order = 0)
         {
             _world = w;
             Enabled = enabled;
             UpdateOrder = order;
-            
         }
-
-
 
         public void Update(GameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                MainGame.instance.Exit();
+                MainGame.Instance.Exit();
 
             int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? 30 : 5;
 
             if (keyboardState.IsKeyDown(Keys.Left))
-                MainGame.cam.Move(new Vector2(-1* movemod, 0));
+                MainGame.cam.Move(new Vector2(-1 * movemod, 0));
             if (keyboardState.IsKeyDown(Keys.Right))
                 MainGame.cam.Move(new Vector2(1 * movemod, 0));
             if (keyboardState.IsKeyDown(Keys.Up))
@@ -61,9 +56,10 @@ namespace Origin.IO
             if (keyboardState.IsKeyDown(Keys.OemPlus))
                 MainGame.cam.Zoom += 0.02f;
             if (keyboardState.IsKeyDown(Keys.OemMinus))
-                    MainGame.cam.Zoom -= 0.02f;
+                MainGame.cam.Zoom -= 0.02f;
         }
 
-        public void Draw(GameTime gameTime) { }
+        public void Draw(GameTime gameTime)
+        { }
     }
 }

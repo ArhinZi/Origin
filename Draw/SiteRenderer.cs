@@ -3,21 +3,18 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Origin.Utils;
 using Origin.View;
-using Origin.World;
+using Origin.WorldComps;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Draw
 {
-    enum VisBufField : byte
+    internal enum VisBufField : byte
     {
         FloorVisible = 1,
         WallVisible
     }
-    class SiteRenderer
+
+    internal class SiteRenderer
     {
         private Site _site;
         private byte[,,] _visBuffer;
@@ -34,8 +31,8 @@ namespace Origin.Draw
         public static float Z_DIAGONAL_OFFSET = 0.01f;
         public static Point BASE_CHUNK_SIZE = new Point(64, 64);
 
+        private Matrix worldMatrix;
 
-        Matrix worldMatrix;
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
             _site = site;
@@ -51,16 +48,14 @@ namespace Origin.Draw
             _vertexBuffersGround = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y, _chunksCount.Z];
 
             _graphicsDevice = graphicDevice;
-            _spriteBatch = new SpriteBatch(MainGame.instance.GraphicsDevice);
-
+            _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
             CalcVisBuffer();
-
 
             worldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), new Vector3(0, 0, -1), Vector3.Up);
 
             ReCalcVertexBuffers();
-            effect = new BasicEffect(MainGame.instance.GraphicsDevice);
+            effect = new BasicEffect(MainGame.Instance.GraphicsDevice);
             effect.TextureEnabled = true;
             effect.VertexColorEnabled = true;
             effect.Texture = TileSet.texture;
@@ -113,7 +108,6 @@ namespace Origin.Draw
                             {
                                 ByteField.SetBit(ref _visBuffer[x, y, z], (byte)VisBufField.WallVisible, true);
                                 ByteField.SetBit(ref _visBuffer[x, y, z], (byte)VisBufField.FloorVisible, true);
-
                             }
                         }
                     }
@@ -131,7 +125,6 @@ namespace Origin.Draw
             var VertexY = ((y + x) * TileSet.TILE_SIZE.Y / 2) - z * (TileSet.TILE_SIZE.Y + TileSet.FLOOR_YOFFSET) - offset.Y;
             var VertexZ = (x + y) * Z_DIAGONAL_OFFSET;
 
-
             Vector3 topLeft =
                 new Vector3(VertexX, VertexY, VertexZ);
             Vector3 topRight =
@@ -140,7 +133,6 @@ namespace Origin.Draw
                 new Vector3(VertexX, VertexY + textureRect.Height, VertexZ);
             Vector3 bottomRight =
                 new Vector3(VertexX + textureRect.Width, VertexY + textureRect.Height, VertexZ);
-
 
             // Calculate the texture coordinates for the tile
             Vector2 textureTopLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
@@ -171,7 +163,6 @@ namespace Origin.Draw
             var VertexZ = 0;
             //(x+y)*Z_DIAGONAL_OFFSET;
 
-
             Vector3 topLeft =
                 new Vector3(VertexX, VertexY, VertexZ);
             Vector3 topRight =
@@ -180,7 +171,6 @@ namespace Origin.Draw
                 new Vector3(VertexX, VertexY + textureRect.Height, VertexZ);
             Vector3 bottomRight =
                 new Vector3(VertexX + textureRect.Width, VertexY + textureRect.Height, VertexZ);
-
 
             // Calculate the texture coordinates for the tile
             Vector2 textureTopLeft = new Vector2((float)textureRect.Left / tt.Texture.Width, (float)textureRect.Top / tt.Texture.Height);
@@ -196,9 +186,7 @@ namespace Origin.Draw
             vertices[index++] = new VertexPositionColorTexture(topRight, c, textureTopRight);
             vertices[index++] = new VertexPositionColorTexture(bottomRight, c, textureBottomRight);
             vertices[index++] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
-
         }
-
 
         private void ReFillVertexBuffer(Point3 chunkCoord)
         {
@@ -267,15 +255,13 @@ namespace Origin.Draw
                     {
                         index += 6;
                     }
-
                 }
             }
 
             // Set the data of the vertex buffer
             _vertexBuffersGround[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].SetData(vertices);
-
-
         }
+
         private void ReCalcVertexBuffers()
         {
             for (int z = 0; z < _chunksCount.Z; z++)
@@ -287,26 +273,20 @@ namespace Origin.Draw
                         ReFillVertexBuffer(new Point3(x, y, z));
                     }
                 }
-
             }
         }
-
 
         public void Update()
         {
             Point m = Mouse.GetState().Position;
             Point sel = WorldUtils.MouseScreenToMap(m, _site.CurrentLevel);
-            MainGame.debug.Add("Block: " + sel.ToString());
+            MainGame.Instance.debug.Add("Block: " + sel.ToString());
             //_site.SetSelected(new Point3(sel.X, sel.Y, _site.CurrentLevel));
-
         }
-
-
 
         public void Draw()
         {
             DrawVertices();
-
         }
 
         private void DrawVertices()
@@ -331,7 +311,6 @@ namespace Origin.Draw
                         _graphicsDevice.SetVertexBuffer(_vertexBuffersGround[x, y, z]);
                         _graphicsDevice.DrawPrimitives(
                                 PrimitiveType.TriangleList, 0, _vertexBuffersLayer[x, y, z].VertexCount / 3);
-
                     }
                 }
             }
@@ -349,7 +328,6 @@ namespace Origin.Draw
                 {
                     for (int x = 0; x < _site.Size.X; x++)
                     {
-
                         SiteBlock b = _site.Blocks[x, y, i];
                         Vector2 mts = MapToScreen(x, y, i);
 
