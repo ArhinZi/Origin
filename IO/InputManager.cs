@@ -123,6 +123,7 @@ namespace Origin.IO
             BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets));
 
             //Game
+            BindKey("game.fpswitch", new Keybind(Keys.L));
             BindKey("game.exit", new Keybind(Keys.Escape));
         }
 
@@ -364,7 +365,7 @@ namespace Origin.IO
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool Released(string name)
+        public static bool JustReleased(string name)
         {
             if (keybinds.ContainsKey(name.ToLower()))
             {
@@ -381,7 +382,7 @@ namespace Origin.IO
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static bool PressedStart(string name)
+        public static bool JustPressed(string name)
         {
             if (keybinds.ContainsKey(name.ToLower()))
             {

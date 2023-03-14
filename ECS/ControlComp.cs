@@ -20,10 +20,13 @@ namespace Origin.ECS
 
         public override void Update(GameTime gameTime)
         {
-            if (InputManager.PressedStart("game.exit")) MainGame.Instance.Exit();
+            if (InputManager.JustPressed("game.exit")) MainGame.Instance.Exit();
 
             keyboardState = Keyboard.GetState();
             int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult;
+
+            if (InputManager.JustPressed("game.fpswitch"))
+                MainGame.Instance.debug.Visible = !MainGame.Instance.debug.Visible;
 
             if (InputManager.IsPressed("camera.left"))
                 MainGame.cam.Move(new Vector2(-1 * movemod, 0));
@@ -34,14 +37,14 @@ namespace Origin.ECS
             if (InputManager.IsPressed("camera.down"))
                 MainGame.cam.Move(new Vector2(0, 1 * movemod));
 
-            if (keyboardState.IsKeyDown(Keys.OemOpenBrackets))
+            if (InputManager.JustPressed("world.level.minus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
-            if (keyboardState.IsKeyDown(Keys.OemCloseBrackets))
+            if (InputManager.JustPressed("world.level.plus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
-            if (keyboardState.IsKeyDown(Keys.OemPlus))
+            if (InputManager.IsPressed("camera.zoom.plus"))
                 MainGame.cam.Zoom += zoom_step;
-            if (keyboardState.IsKeyDown(Keys.OemMinus))
+            if (InputManager.IsPressed("camera.zoom.minus"))
                 MainGame.cam.Zoom -= zoom_step;
         }
     }

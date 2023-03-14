@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Screens;
 using Origin.WorldComps;
 
@@ -22,6 +23,13 @@ namespace Origin.Screens
 
         public override void Update(GameTime gameTime)
         {
+            MouseState currentMouseState = Mouse.GetState();
+            Game.debug.Add("Mouse POS: " + currentMouseState.Position.ToString());
+            Game.debug.Add("Cam ZOOM: " + MainGame.cam.Zoom.ToString());
+            Game.debug.Add("Cam POS: " + MainGame.cam.Pos.ToString());
+
+            Game.debug.Add("Curr LEVEL: " + _world.ActiveSite.CurrentLevel.ToString());
+
             _world.Update();
         }
 

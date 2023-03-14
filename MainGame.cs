@@ -116,13 +116,7 @@ namespace Origin
         {
             InputManager.Update();
             debug.Clear();
-
             debug.Add(fpsCounter.msg);
-
-            MouseState currentMouseState = Mouse.GetState();
-            debug.Add("Mouse POS: " + currentMouseState.Position.ToString());
-            debug.Add("Cam ZOOM: " + cam.Zoom.ToString());
-            debug.Add("Cam POS: " + cam.Pos.ToString());
 
             _ecs.Update(gameTime);
 

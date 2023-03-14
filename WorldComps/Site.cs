@@ -3,7 +3,7 @@ using Origin.Utils;
 
 namespace Origin.WorldComps
 {
-    internal class Site
+    public class Site
     {
         private SiteBlock[,,] _blocks;
         public Point3 Size { get; private set; }

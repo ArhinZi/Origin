@@ -14,7 +14,7 @@ namespace Origin.Draw
         WallVisible
     }
 
-    internal class SiteRenderer
+    public class SiteRenderer
     {
         private Site _site;
         private byte[,,] _visBuffer;

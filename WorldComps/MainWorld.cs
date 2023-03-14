@@ -2,7 +2,7 @@
 
 namespace Origin.WorldComps
 {
-    internal class MainWorld
+    public class MainWorld
     {
         public static MainWorld Instance { get; private set; }
 
