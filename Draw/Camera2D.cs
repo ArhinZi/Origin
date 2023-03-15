@@ -4,33 +4,12 @@ namespace Origin.Draw
 {
     public class Camera2D
     {
-        protected float _zoom; // Camera Zoom
-        public Matrix _transform; // Matrix Transform
-        public Vector2 _pos; // Camera Position
-        protected float _rotation; // Camera Rotation
+        private float _zoom;
+        private Matrix _projection;
+        private Matrix _transformation;
 
-        public Camera2D()
-        {
-            _zoom = 1.0f;
-            _rotation = 0.0f;
-            _pos = Vector2.Zero;
-        }
+        #region Set Get
 
-        public Matrix GetTransformation()
-        {
-            _transform =       // Thanks to o KB o for this solution
-              Matrix.CreateTranslation(-_pos.X, -_pos.Y, 1) *
-            //Matrix.CreateRotationZ(Rotation)*
-            Matrix.CreateScale(Zoom, Zoom, 1) *
-            Matrix.CreateTranslation(new Vector3(MainGame.ScreenWidth * 0.5f, MainGame.ScreenHeight * 0.5f, 0));
-            return _transform;
-        }
-
-        public Matrix TransformMatrix => Matrix.CreateTranslation(new Vector3(-Pos.X, -Pos.Y, 0)) *
-                                      Matrix.CreateScale(Zoom) *
-                                      Matrix.CreateTranslation(new Vector3(MainGame.Instance.GraphicsDevice.Viewport.Width * 0.5f, MainGame.Instance.GraphicsDevice.Viewport.Height * 0.5f, 0));
-
-        // Sets and gets zoom
         public float Zoom
         {
             get { return _zoom; }
@@ -42,25 +21,61 @@ namespace Origin.Draw
             } // Negative zoom will flip image
         }
 
-        public float Rotation
+        public Vector2 Pos { get; set; }
+
+        protected float Rotation { get; private set; }
+
+        public Matrix WorldMatrix { get; private set; }
+
+        public Matrix Projection
         {
-            get { return _rotation; }
-            set { _rotation = value; }
+            get
+            {
+                _projection = Matrix.CreateOrthographicOffCenter(0, MainGame.ScreenWidth, MainGame.ScreenHeight, 0, -1, 100);
+                return _projection;
+            }
+            private set
+            {
+                _projection = value;
+            }
+        }
+
+        public Matrix Transformation
+        {
+            get
+            {
+                _transformation =
+                    Matrix.CreateTranslation(-Pos.X, -Pos.Y, 1) *
+                    Matrix.CreateScale(Zoom, Zoom, 1) *
+                    Matrix.CreateTranslation(new Vector3(MainGame.ScreenWidth * 0.5f, MainGame.ScreenHeight * 0.5f, 0));
+                return _transformation;
+            }
+            private set
+            {
+                _transformation = value;
+            }
+        }
+
+        #endregion Set Get
+
+        public Camera2D()
+        {
+            Zoom = 1.0f;
+            Rotation = 0.0f;
+            Pos = Vector2.Zero;
+
+            WorldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), new Vector3(0, 0, -1), Vector3.Up);
         }
 
         // Auxiliary function to move the camera
         public void Move(Vector2 amount)
         {
-            _pos += amount;
+            Pos += amount;
         }
 
-        // Get set position
-        public Vector2 Pos
+        public Vector2 ScreenToWorld(Vector2 screenPos, int currentLevel)
         {
-            get { return _pos; }
-            set { _pos = value; }
+            return Vector2.Zero;
         }
-
-        public float ViewportWidth { get; private set; }
     }
 }

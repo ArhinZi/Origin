@@ -22,7 +22,7 @@ namespace Origin.ECS
             elapsed = (double)(now - last);
             if (elapsed > msgFrequency)
             {
-                msg = " Fps: " + ((int)(frames / elapsed)).ToString() + "\n Elapsed time: " + elapsed.ToString() + "\n Updates: " + updates.ToString() + "\n Frames: " + frames.ToString() + "\n";
+                msg = " Fps: " + ((int)(frames / elapsed)).ToString() + "\n Elapsed time: " + elapsed.ToString("##.##") + "\n Updates: " + updates.ToString() + "\n Frames: " + frames.ToString() + "\n";
                 //Console.WriteLine(msg);
                 elapsed = 0;
                 frames = 0;

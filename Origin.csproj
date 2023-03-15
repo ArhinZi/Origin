@@ -43,7 +43,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Draw\Camera2D.cs" />
-    <Compile Include="Draw\MainDrawer.cs" />
     <Compile Include="Draw\SiteRenderer.cs" />
     <Compile Include="ECS\ControlComp.cs" />
     <Compile Include="ECS\FpsCountComp.cs" />
@@ -51,6 +50,7 @@
     <Compile Include="Screens\ScreenMainGame.cs" />
     <Compile Include="Screens\ScreenMenuMain.cs" />
     <Compile Include="Utils\ByteField.cs" />
+    <Compile Include="Utils\CircleSliceArray.cs" />
     <Compile Include="Utils\DiffUtils.cs" />
     <Compile Include="ECS\InfoDrawer.cs" />
     <Compile Include="Utils\Point3.cs" />
@@ -58,7 +58,6 @@
     <Compile Include="Utils\Interfaces\IDraw.cs" />
     <Compile Include="Utils\Interfaces\IDrawTile.cs" />
     <Compile Include="Utils\Interfaces\IUpdate.cs" />
-    <Compile Include="IO\KeyboardController.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

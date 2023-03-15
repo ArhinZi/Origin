@@ -8,6 +8,8 @@ using Origin.Draw;
 using Origin.ECS;
 using Origin.IO;
 using Origin.Screens;
+using Origin.Utils;
+using System.Diagnostics;
 
 namespace Origin
 {
@@ -54,6 +56,44 @@ namespace Origin
             Components.Add(fpsCounter);
             Components.Add(control);
             Components.Add(debug);
+
+            /*CircleSliceArray<int> a = new CircleSliceArray<int>(5);
+
+            for (int i = 0; i <= 25; i++)
+            {
+                a[i] = i;
+            }
+            for (int i = 24; i >= 15; i--)
+            {
+                a[i] = i;
+            }
+            for (int i = 15; i <= 19; i++)
+            {
+                a[i] = i + 100;
+            }
+            for (int i = 100; i < 105; i++)
+            {
+                a[i] = i;
+            }*/
+
+            /*for (int i = 0; i <= 25; i++)
+            {
+                a.AddAfterTail(i);
+            }
+            for (int i = a.Start; i < a.Start + a.Count; i++)
+            {
+                Debug.WriteLine(a[i]);
+            }
+            Debug.WriteLine("-----------");
+            int c = a.Start - 5;
+            for (int i = a.Start; i > c; i--)
+            {
+                a.AddBeforeHead(i);
+            }
+            for (int i = a.Start; i < a.Start + a.Count; i++)
+            {
+                Debug.WriteLine(a[i]);
+            }*/
         }
 
         /// <summary>
@@ -115,6 +155,10 @@ namespace Origin
         protected override void Update(GameTime gameTime)
         {
             InputManager.Update();
+
+            ScreenHeight = graphics.PreferredBackBufferHeight;
+            ScreenWidth = graphics.PreferredBackBufferWidth;
+
             debug.Clear();
             debug.Add(fpsCounter.msg);
 

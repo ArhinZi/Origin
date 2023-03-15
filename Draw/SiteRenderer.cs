@@ -30,8 +30,7 @@ namespace Origin.Draw
 
         public static float Z_DIAGONAL_OFFSET = 0.01f;
         public static Point BASE_CHUNK_SIZE = new Point(64, 64);
-
-        private Matrix worldMatrix;
+        public static int ONE_MOMENT_DRAW_LEVELS = 16;
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
@@ -51,8 +50,6 @@ namespace Origin.Draw
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
             CalcVisBuffer();
-
-            worldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), new Vector3(0, 0, -1), Vector3.Up);
 
             ReCalcVertexBuffers();
             effect = new BasicEffect(MainGame.Instance.GraphicsDevice);
@@ -190,12 +187,10 @@ namespace Origin.Draw
 
         private void ReFillVertexBuffer(Point3 chunkCoord)
         {
-            // Create the vertex buffer
-            _vertexBuffersLayer[chunkCoord.X, chunkCoord.Y, chunkCoord.Z] =
-                new DynamicVertexBuffer(_graphicsDevice,
-                    typeof(VertexPositionColorTexture),
-                    _chunkSize.X * _chunkSize.Y * 6,
-                    BufferUsage.WriteOnly);
+            _vertexBuffersLayer[chunkCoord.X, chunkCoord.Y, chunkCoord.Z] = new DynamicVertexBuffer(_graphicsDevice,
+                 typeof(VertexPositionColorTexture),
+                 _chunkSize.X * _chunkSize.Y * 6,
+                 BufferUsage.WriteOnly);
             VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
             int index = 0;
@@ -291,12 +286,12 @@ namespace Origin.Draw
 
         private void DrawVertices()
         {
-            effect.World = worldMatrix;
-            effect.View = MainGame.cam.TransformMatrix;
-            effect.Projection = Matrix.CreateOrthographicOffCenter(0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height, 0, -1, 100); ;
+            effect.World = MainGame.cam.WorldMatrix;
+            effect.View = MainGame.cam.Transformation;
+            effect.Projection = MainGame.cam.Projection;
             effect.CurrentTechnique.Passes[0].Apply();
 
-            for (int z = DiffUtils.GetOrBound<int>(_site.CurrentLevel - 32, 0, _site.Size.Z);
+            for (int z = DiffUtils.GetOrBound<int>(_site.CurrentLevel - ONE_MOMENT_DRAW_LEVELS, 0, _site.Size.Z);
                 z <= _site.CurrentLevel; z++)
             {
                 for (int x = 0; x < _chunksCount.X; x++)
@@ -319,10 +314,10 @@ namespace Origin.Draw
         private void DrawSprites()
         {
             _spriteBatch.Begin(
-                transformMatrix: MainGame.cam.GetTransformation()
+                transformMatrix: MainGame.cam.Transformation
                 );
 
-            for (int i = DiffUtils.GetOrBound<int>(_site.CurrentLevel - 32, 0, _site.Size.Z); i < _site.CurrentLevel; i++)
+            for (int i = DiffUtils.GetOrBound<int>(_site.CurrentLevel - ONE_MOMENT_DRAW_LEVELS, 0, _site.Size.Z); i < _site.CurrentLevel; i++)
             {
                 for (int y = 0; y < _site.Size.Y; y++)
                 {
