@@ -21,15 +21,18 @@ namespace Origin.Draw
 
         private Point3 _chunksCount;
         private Point _chunkSize;
-        private DynamicVertexBuffer[,,] _vertexBuffersLayer;
-        private DynamicVertexBuffer[,,] _vertexBuffersGround;
+        private int _drawLowest;
+        private int _drawHighest;
+        private VertexPositionColorTexture[] _vertices;
+        private CircleSliceArray<DynamicVertexBuffer[,]> _vertexBuffersBlock;
+        private CircleSliceArray<DynamicVertexBuffer[,]> _vertexBuffersGround;
         private BasicEffect effect;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
 
         public static float Z_DIAGONAL_OFFSET = 0.01f;
-        public static Point BASE_CHUNK_SIZE = new Point(64, 64);
+        public static Point BASE_CHUNK_SIZE = new Point(32, 32);
         public static int ONE_MOMENT_DRAW_LEVELS = 16;
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
@@ -42,16 +45,19 @@ namespace Origin.Draw
             //if (_chunkSize.Y < _site.Size.Y) _chunkSize.Y = _site.Size.Y;
             if (_site.Size.X % _chunkSize.X != 0 || _site.Size.Y % _chunkSize.Y != 0) throw new Exception("Site size is invalid!");
 
+            _drawHighest = _site.CurrentLevel;
+            _drawLowest = DiffUtils.GetOrBound<int>(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+
             _chunksCount = new Point3(_site.Size.X / _chunkSize.X, _site.Size.Y / _chunkSize.Y, _site.Size.Z);
-            _vertexBuffersLayer = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y, _chunksCount.Z];
-            _vertexBuffersGround = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y, _chunksCount.Z];
+            _vertexBuffersBlock = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
+            _vertexBuffersGround = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
 
             _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
             CalcVisBuffer();
 
-            ReCalcVertexBuffers();
+            //ReCalcVertexBuffers();
             effect = new BasicEffect(MainGame.Instance.GraphicsDevice);
             effect.TextureEnabled = true;
             effect.VertexColorEnabled = true;
@@ -72,7 +78,6 @@ namespace Origin.Draw
 
         private void CalcVisBuffer()
         {
-            _visBuffer = new byte[_site.Size.X, _site.Size.Y, _site.Size.Z];
             for (int z = _site.Size.Z - 1; z >= 0; z--)
             {
                 for (int y = _site.Size.Y - 1; y >= 0; y--)
@@ -82,10 +87,14 @@ namespace Origin.Draw
                         _visBuffer[x, y, z] = new byte();
                         if (_site.Blocks[x, y, z].floorId != 0 && _site.Blocks[x, y, z].wallId != 0)
                         {
-                            if ((DiffUtils.InBounds<int>(x + 1, 0, _site.Size.X)
+                            if ((DiffUtils.InBounds<int>(x + 1, -1, _site.Size.X)
                                 && _site.Blocks[x + 1, y, z].wallId != 100) &&
-                                (DiffUtils.InBounds<int>(y + 1, 0, _site.Size.Y)
-                                && _site.Blocks[x, y + 1, z].wallId != 100))
+                                (DiffUtils.InBounds<int>(y + 1, -1, _site.Size.Y)
+                                && _site.Blocks[x, y + 1, z].wallId != 100) &&
+                                (DiffUtils.InBounds<int>(x - 1, -1, _site.Size.X)
+                                && _site.Blocks[x - 1, y, z].wallId != 100) &&
+                                (DiffUtils.InBounds<int>(y - 1, -1, _site.Size.Y)
+                                && _site.Blocks[x, y - 1, z].wallId != 100))
                             {
                                 ByteField.SetBit(ref _visBuffer[x, y, z], (byte)VisBufField.WallVisible, false);
 
@@ -115,7 +124,7 @@ namespace Origin.Draw
         private void VerticeChanger(TileTexture tt, int x, int y, int z,
             ref DynamicVertexBuffer[,,] buffer, Vector2 offset, Color c)
         {
-            VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[6];
+            _vertices = new VertexPositionColorTexture[6];
 
             Rectangle textureRect = tt.RectPos;
             var VertexX = ((x - y) * TileSet.TILE_SIZE.X / 2) + offset.X;
@@ -138,17 +147,17 @@ namespace Origin.Draw
             Vector2 textureBottomRight = new Vector2((float)textureRect.Right / tt.Texture.Width, (float)textureRect.Bottom / tt.Texture.Height);
 
             // Add the vertices for the tile to the vertex buffer
-            vertices[0] = new VertexPositionColorTexture(topLeft, c, textureTopLeft);
-            vertices[1] = new VertexPositionColorTexture(topRight, c, textureTopRight);
-            vertices[2] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
+            _vertices[0] = new VertexPositionColorTexture(topLeft, c, textureTopLeft);
+            _vertices[1] = new VertexPositionColorTexture(topRight, c, textureTopRight);
+            _vertices[2] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
 
-            vertices[3] = new VertexPositionColorTexture(topRight, c, textureTopRight);
-            vertices[4] = new VertexPositionColorTexture(bottomRight, c, textureBottomRight);
-            vertices[5] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
+            _vertices[3] = new VertexPositionColorTexture(topRight, c, textureTopRight);
+            _vertices[4] = new VertexPositionColorTexture(bottomRight, c, textureBottomRight);
+            _vertices[5] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
 
             int startIndex = (x * _site.Size.Y * 6) + _site.Size.X * 6;
 
-            buffer[0, 0, z].SetData(vertices, 0, 6);
+            buffer[0, 0, z].SetData(_vertices, 0, 6);
         }
 
         private void VerticeAdder(TileTexture tt, int x, int y, int z,
@@ -187,11 +196,12 @@ namespace Origin.Draw
 
         private void ReFillVertexBuffer(Point3 chunkCoord)
         {
-            _vertexBuffersLayer[chunkCoord.X, chunkCoord.Y, chunkCoord.Z] = new DynamicVertexBuffer(_graphicsDevice,
-                 typeof(VertexPositionColorTexture),
-                 _chunkSize.X * _chunkSize.Y * 6,
-                 BufferUsage.WriteOnly);
-            VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _vertexBuffersBlock[chunkCoord.Z][chunkCoord.X, chunkCoord.Y] =
+                new DynamicVertexBuffer(_graphicsDevice,
+                     typeof(VertexPositionColorTexture),
+                     _chunkSize.X * _chunkSize.Y * 6,
+                     BufferUsage.WriteOnly);
+            _vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
             int index = 0;
 
@@ -206,10 +216,16 @@ namespace Origin.Draw
                     if (tile.wallId != 100 && ByteField.GetBit(_visBuffer[tileCoordX, tileCoordY, chunkCoord.Z], (byte)VisBufField.WallVisible))
                     {
                         TileTexture tt;
-                        Color c = new Color(255, 255, 255, 255);
+                        Color c = new Color(0, chunkCoord.Z * 2, 0, 255);
                         tt = TileSet.WallSet[tile.wallId];
-                        VerticeAdder(tt, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref vertices, Vector2.Zero, c);
-                        //VerticeChanger(tt, x, y, position.Z, ref _vertexBuffersLayer, Vector2.Zero, c);
+                        VerticeAdder(tt, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, Vector2.Zero, c);
+                    }
+                    else if (!ByteField.GetBit(_visBuffer[tileCoordX, tileCoordY, chunkCoord.Z], (byte)VisBufField.WallVisible))
+                    {
+                        TileTexture tt;
+                        Color c = new Color(150, 150, 150, 255);
+                        tt = TileSet.WallSet[0];
+                        VerticeAdder(tt, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, Vector2.Zero, c);
                     }
                     else
                     {
@@ -218,16 +234,17 @@ namespace Origin.Draw
                 }
             }
             // Set the data of the vertex buffer
-            _vertexBuffersLayer[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].SetData(vertices);
+            _vertexBuffersBlock[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].SetData(_vertices);
+            //_vertexBuffersBlock[chunkCoord.Z];
 
             //---------------------------------------------------------------------------------------------------
             // Create the vertex buffer
-            _vertexBuffersGround[chunkCoord.X, chunkCoord.Y, chunkCoord.Z] =
+            _vertexBuffersGround[chunkCoord.Z][chunkCoord.X, chunkCoord.Y] =
                 new DynamicVertexBuffer(_graphicsDevice,
                     typeof(VertexPositionColorTexture),
                     _chunkSize.X * _chunkSize.Y * 6,
                     BufferUsage.WriteOnly);
-            vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
             index = 0;
 
@@ -242,9 +259,9 @@ namespace Origin.Draw
                     if (tile.wallId != 100 && ByteField.GetBit(_visBuffer[tileCoordX, tileCoordY, chunkCoord.Z], (byte)VisBufField.FloorVisible))
                     {
                         TileTexture tt;
-                        Color c = new Color(255, 255, 255, 255);
+                        Color c = new Color(0, 0, chunkCoord.Z * 2, 255);
                         tt = TileSet.FloorSet[tile.floorId];
-                        VerticeAdder(tt, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref vertices, new Vector2(0, -4), c);
+                        VerticeAdder(tt, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, new Vector2(0, -4), c);
                     }
                     else
                     {
@@ -254,12 +271,41 @@ namespace Origin.Draw
             }
 
             // Set the data of the vertex buffer
-            _vertexBuffersGround[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].SetData(vertices);
+            _vertexBuffersGround[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].SetData(_vertices);
+        }
+
+        private void LevelDispose(int level)
+        {
+            if (_vertexBuffersBlock[level] != null)
+            {
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+                        if (_vertexBuffersBlock[level][x, y] != null) _vertexBuffersBlock[level][x, y].Dispose();
+                        if (_vertexBuffersGround[level][x, y] != null) _vertexBuffersGround[level][x, y].Dispose();
+                    }
+                }
+            }
+        }
+
+        private void FillLevel(int level)
+        {
+            LevelDispose(level);
+            _vertexBuffersBlock[level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+            _vertexBuffersGround[level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+            for (int x = 0; x < _chunksCount.X; x++)
+            {
+                for (int y = 0; y < _chunksCount.Y; y++)
+                {
+                    ReFillVertexBuffer(new Point3(x, y, level));
+                }
+            }
         }
 
         private void ReCalcVertexBuffers()
         {
-            for (int z = 0; z < _chunksCount.Z; z++)
+            for (int z = _drawLowest; z < _drawHighest; z++)
             {
                 for (int x = 0; x < _chunksCount.X; x++)
                 {
@@ -276,7 +322,24 @@ namespace Origin.Draw
             Point m = Mouse.GetState().Position;
             Point sel = WorldUtils.MouseScreenToMap(m, _site.CurrentLevel);
             MainGame.Instance.debug.Add("Block: " + sel.ToString());
-            //_site.SetSelected(new Point3(sel.X, sel.Y, _site.CurrentLevel));
+
+            if (_drawHighest != _site.CurrentLevel)
+            {
+                //MainGame.Instance.GraphicsDevice.Flush();
+
+                bool IsUp = true;
+                if (_drawHighest > _site.CurrentLevel) IsUp = false;
+                _drawHighest = _site.CurrentLevel;
+                _drawLowest = DiffUtils.GetOrBound<int>(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+                if (IsUp) FillLevel(_drawHighest);
+                if (!IsUp) FillLevel(_drawLowest);
+            }
+            if (_vertexBuffersBlock.Count < ONE_MOMENT_DRAW_LEVELS)
+            {
+                int chunkCoordZ = _drawLowest + _vertexBuffersBlock.Count;
+                //_vertexBuffersBlock[chunkCoordZ].
+                FillLevel(chunkCoordZ);
+            }
         }
 
         public void Draw()
@@ -291,21 +354,27 @@ namespace Origin.Draw
             effect.Projection = MainGame.cam.Projection;
             effect.CurrentTechnique.Passes[0].Apply();
 
-            for (int z = DiffUtils.GetOrBound<int>(_site.CurrentLevel - ONE_MOMENT_DRAW_LEVELS, 0, _site.Size.Z);
-                z <= _site.CurrentLevel; z++)
+            for (int z = _drawLowest; z <= _drawHighest; z++)
             {
                 for (int x = 0; x < _chunksCount.X; x++)
                 {
                     for (int y = 0; y < _chunksCount.Y; y++)
                     {
-                        _graphicsDevice.SetVertexBuffer(_vertexBuffersLayer[x, y, z]);
-                        _graphicsDevice.DrawPrimitives(
-                                PrimitiveType.TriangleList, 0, _vertexBuffersLayer[x, y, z].VertexCount / 3);
+                        if (z < _vertexBuffersBlock.Start + _vertexBuffersBlock.Count)
+                        {
+                            DynamicVertexBuffer vb = _vertexBuffersBlock[z][x, y];
+                            _graphicsDevice.SetVertexBuffer(vb);
+                            _graphicsDevice.DrawPrimitives(
+                                    PrimitiveType.TriangleList, 0, vb.VertexCount / 3);
+                        }
 
-                        if (z == _site.CurrentLevel) continue;
-                        _graphicsDevice.SetVertexBuffer(_vertexBuffersGround[x, y, z]);
-                        _graphicsDevice.DrawPrimitives(
-                                PrimitiveType.TriangleList, 0, _vertexBuffersLayer[x, y, z].VertexCount / 3);
+                        if (z < _vertexBuffersBlock.Start + _vertexBuffersBlock.Count)
+                        {
+                            if (z == _drawHighest) continue;
+                            _graphicsDevice.SetVertexBuffer(_vertexBuffersGround[z][x, y]);
+                            _graphicsDevice.DrawPrimitives(
+                                    PrimitiveType.TriangleList, 0, _vertexBuffersGround[z][x, y].VertexCount / 3);
+                        }
                     }
                 }
             }
