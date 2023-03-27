@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites TextureName="default">
+    <!-- 
+        SpriteID - sprite name
+        SpriteRect - sprite rectangle in atlas
+        SpriteDir - sprite direction (NONE, TL, TR, BL, BR)
+        SpriteEffect - sprite effect (FlipVertically, FlipHorizontally, ReflectVertically, ReflectHorizontally)
+    -->
+    <!-- <Sprite>
+        <SpriteID></SpriteID>
+        <SourceRect></SourceRect>
+        <SpriteDir></SpriteDir>
+        <SpriteEffect></SpriteEffect>
+    </Sprite> -->
+    <Sprite>
+        <SpriteID>SolidSelectionWall</SpriteID>
+        <SourceRect>32 20 32 32</SourceRect>
+    </Sprite>
+    <Sprite>
+        <SpriteID>SolidSelectionFloor</SpriteID>
+        <SourceRect>32 0 32 20</SourceRect>
+    </Sprite>
+    <Sprite>
+        <SpriteID>SelectionWall</SpriteID>
+        <SourceRect>0 20 32 32</SourceRect>
+    </Sprite>
+    <Sprite>
+        <SpriteID>SelectionFloor</SpriteID>
+        <SourceRect>0 0 32 20</SourceRect>
+    </Sprite>
+    <Sprite>
+        <SpriteID>RoughStoneWall</SpriteID>
+        <SourceRect>32 72 32 32</SourceRect>
+    </Sprite>
+    <Sprite>
+        <SpriteID>RoughStoneFloor</SpriteID>
+        <SourceRect>32 52 32 20</SourceRect>
+    </Sprite>
+</Sprites>

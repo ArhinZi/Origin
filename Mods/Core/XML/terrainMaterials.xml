@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TerraMats>
+	<!--<Material>
+		<MaterialID></MaterialID>
+		<MaterialColor></MaterialColor>
+		<SpriteDict>
+			<Entry>
+				<Key></Key>
+				<Value></Value>
+			</Entry>
+		</SpriteDict>
+	</Material>-->
+	<Material>
+		<MaterialID>Air</MaterialID>
+		<MaterialColor>0 0 0 128</MaterialColor>
+	</Material>
+	<Material>
+		<MaterialID>Hidden</MaterialID>
+		<MaterialColor>38 38 38 255</MaterialColor>
+		<SpriteDict>
+			<Entry>
+				<Key>Wall</Key>
+				<Value>SolidSelectionWall</Value>
+			</Entry>
+		</SpriteDict>
+	</Material>
+	<Material>
+		<MaterialID>Granite</MaterialID>
+		<MaterialColor>128 128 128 255</MaterialColor>
+		<SpriteDict>
+			<Entry>
+				<Key>Wall</Key>
+				<Value>RoughStoneWall</Value>
+			</Entry>
+			<Entry>
+				<Key>Floor</Key>
+				<Value>RoughStoneFloor</Value>
+			</Entry>
+			<Entry>
+				<Key>HalfWall</Key>
+				<Value>RoughStoneFloor</Value>
+			</Entry>
+		</SpriteDict>
+	</Material>
+</TerraMats>
