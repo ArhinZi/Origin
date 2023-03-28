@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Origin.Source.Draw
 {
@@ -31,7 +32,8 @@ namespace Origin.Source.Draw
         {
             get
             {
-                _projection = Matrix.CreateOrthographicOffCenter(0, MainGame.ScreenWidth, MainGame.ScreenHeight, 0, -1, 100);
+                float aspectRatio = (float)MainGame.Instance.GraphicsDevice.Viewport.Width / MainGame.Instance.GraphicsDevice.Viewport.Height;
+                _projection = Matrix.CreateOrthographicOffCenter(0, MainGame.ScreenWidth, MainGame.ScreenHeight, 0, -1, 100) * Matrix.CreateScale(1f, aspectRatio, 1f);
                 return _projection;
             }
             private set
