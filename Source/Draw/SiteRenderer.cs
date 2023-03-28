@@ -239,14 +239,18 @@ namespace Origin.Source.Draw
             vertices[index++] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
         }
 
-        private int FillWallVertices(
-            CircleSliceArray<DynamicVertexBuffer[,]> vb,
+        private (int, int) FillVertices(
+            CircleSliceArray<DynamicVertexBuffer[,]> vbWalls,
             Point3 chunkCoord,
+            bool fillWalls,
+            bool fillFloors,
             bool drawHidden = false)
         {
             _wallVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _floorVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
-            int index = 0;
+            int indexWalls = 0;
+            int indexFloors = 0;
 
             // Loop through each tile block in the chunk
             for (int tileInChunkCoordX = 0; tileInChunkCoordX < _chunkSize.X; tileInChunkCoordX++)
@@ -256,34 +260,51 @@ namespace Origin.Source.Draw
                     int tileCoordX = chunkCoord.X * _chunkSize.X + tileInChunkCoordX;
                     int tileCoordY = chunkCoord.Y * _chunkSize.Y + tileInChunkCoordY;
                     SiteCell tile = _site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
-                    if (tile.WallID != WorldUtils.AIR_NULL_MAT_ID && tile.IsWallVisible)
+
+                    if (fillWalls)
                     {
-                        TerrainMaterial tm = TerrainMaterial.TerraMats[tile.WallID];
-                        Sprite sprite;
-                        Color c = Color.Wheat;
-                        sprite = tm.Sprites["Wall"];
-                        c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _wallVertices, Vector2.Zero, c);
+                        if (tile.WallID != WorldUtils.AIR_NULL_MAT_ID && tile.IsWallVisible)
+                        {
+                            TerrainMaterial tm = TerrainMaterial.TerraMats[tile.WallID];
+                            Sprite sprite;
+                            Color c = Color.Wheat;
+                            sprite = tm.Sprites["Wall"];
+                            c = tm.TerraColor;
+                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexWalls, ref _wallVertices, Vector2.Zero, c);
+                        }
+                        else if (drawHidden && tile.WallID != WorldUtils.AIR_NULL_MAT_ID && !tile.IsWallVisible)
+                        {
+                            TerrainMaterial tm = TerrainMaterial.TerraMats[WorldUtils.HIDDEN_MAT_ID];
+                            Sprite sprite;
+                            Color c = Color.Wheat;
+                            sprite = tm.Sprites["Wall"];
+                            c = tm.TerraColor;
+                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexWalls, ref _wallVertices, Vector2.Zero, c);
+                        }
                     }
-                    else if (drawHidden && tile.WallID != WorldUtils.AIR_NULL_MAT_ID && !tile.IsWallVisible)
+
+                    if (fillFloors)
                     {
-                        TerrainMaterial tm = TerrainMaterial.TerraMats[WorldUtils.HIDDEN_MAT_ID];
-                        Sprite sprite;
-                        Color c = Color.Wheat;
-                        sprite = tm.Sprites["Wall"];
-                        c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _wallVertices, Vector2.Zero, c);
+                        if (tile.FloorID != WorldUtils.AIR_NULL_MAT_ID && tile.IsFloorVisible)
+                        {
+                            TerrainMaterial tm = TerrainMaterial.TerraMats[tile.FloorID];
+                            Sprite sprite;
+                            Color c = Color.Wheat;
+                            sprite = tm.Sprites["Floor"];
+                            c = tm.TerraColor;
+                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexFloors, ref _floorVertices, new Vector2(0, -4), c);
+                        }
                     }
                 }
             }
-            return index;
+            return (indexWalls, indexFloors);
         }
 
-        private int FillFloorVertices(CircleSliceArray<DynamicVertexBuffer[,]> vb, Point3 chunkCoord)
+        /*private int FillFloorVertices(CircleSliceArray<DynamicVertexBuffer[,]> vbFloors, Point3 chunkCoord)
         {
             _floorVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
-            int index = 0;
+            int indexFloors = 0;
 
             // Loop through each tile in the chunk
             for (int tileInChunkCoordX = 0; tileInChunkCoordX < _chunkSize.X; tileInChunkCoordX++)
@@ -300,12 +321,12 @@ namespace Origin.Source.Draw
                         Color c = Color.Wheat;
                         sprite = tm.Sprites["Floor"];
                         c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _floorVertices, new Vector2(0, -4), c);
+                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexFloors, ref _floorVertices, new Vector2(0, -4), c);
                     }
                 }
             }
-            return index;
-        }
+            return indexFloors;
+        }*/
 
         private void LevelDispose(int level)
         {
@@ -336,17 +357,8 @@ namespace Origin.Source.Draw
                 {
                     int wallIndex = 0;
                     int floorIndex = 0;
-                    Task t1 = Task.Run(() =>
-                    {
-                        if (fillWalls)
-                            wallIndex = FillWallVertices(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, level), hidden);
-                    });
-                    Task t2 = Task.Run(() =>
-                    {
-                        if (fillFloors)
-                            floorIndex = FillFloorVertices(_renderLayers[(int)RenderLayer.Floor], new Point3(x, y, level));
-                    });
-                    Task.WaitAll(t1, t2);
+
+                    (wallIndex, floorIndex) = FillVertices(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, level), fillWalls, fillFloors, hidden);
 
                     // Create the vertex buffer
                     _renderLayers[(int)RenderLayer.Block][level][x, y] =
