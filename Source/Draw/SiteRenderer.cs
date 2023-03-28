@@ -7,6 +7,7 @@ using Origin.Source.Utils;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Origin.Source.Draw
 {
@@ -22,16 +23,18 @@ namespace Origin.Source.Draw
         Floor
     }
 
-    public class SiteRenderer
+    public class SiteRenderer : IDisposable
     {
         private Site _site;
-        private byte[,,] _visBuffer;
+        //private byte[,,] _visBuffer;
 
         private Point3 _chunksCount;
         private Point _chunkSize;
         private int _drawLowest;
         private int _drawHighest;
-        private VertexPositionColorTexture[] _vertices;
+        private VertexPositionColorTexture[] _wallVertices;
+
+        private VertexPositionColorTexture[] _floorVertices;
 
         /// <summary>
         /// Layer 0 - Block
@@ -55,7 +58,7 @@ namespace Origin.Source.Draw
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
             _site = site;
-            _visBuffer = new byte[_site.Size.X, _site.Size.Y, _site.Size.Z];
+            //_visBuffer = new byte[_site.Size.X, _site.Size.Y, _site.Size.Z];
 
             _chunkSize = BASE_CHUNK_SIZE;
             //if (_chunkSize.X < _site.Size.X) _chunkSize.X = _site.Size.X;
@@ -66,6 +69,7 @@ namespace Origin.Source.Draw
             _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
 
             _chunksCount = new Point3(_site.Size.X / _chunkSize.X, _site.Size.Y / _chunkSize.Y, _site.Size.Z);
+
             _renderLayers = new CircleSliceArray<DynamicVertexBuffer[,]>[LAYER_COUNT];
             _renderLayers[(int)RenderLayer.Block] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
             _renderLayers[(int)RenderLayer.Floor] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
@@ -73,7 +77,8 @@ namespace Origin.Source.Draw
             _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
-            CalcVisBuffer();
+            //CalcVisBuffer();
+            CalcVisibility();
 
             //ReCalcVertexBuffers();
             effect = new BasicEffect(MainGame.Instance.GraphicsDevice);
@@ -94,7 +99,7 @@ namespace Origin.Source.Draw
             return res;
         }
 
-        private void CalcVisBuffer()
+        /*private void CalcVisBuffer()
         {
             for (int z = _site.Size.Z - 1; z >= 0; z--)
             {
@@ -134,6 +139,63 @@ namespace Origin.Source.Draw
                                 ByteField.SetBit(ref _visBuffer[x, y, z], (byte)VisBufField.FloorVisible, true);
                             }
                         }
+                    }
+                }
+            }
+        }*/
+
+        private void CalcChunkCellsVisibility(Point3 chunkCoord)
+        {
+            for (int tileInChunkCoordX = 0; tileInChunkCoordX < _chunkSize.X; tileInChunkCoordX++)
+            {
+                for (int tileInChunkCoordY = 0; tileInChunkCoordY < _chunkSize.Y; tileInChunkCoordY++)
+                {
+                    int tileCoordX = chunkCoord.X * _chunkSize.X + tileInChunkCoordX;
+                    int tileCoordY = chunkCoord.Y * _chunkSize.Y + tileInChunkCoordY;
+                    SiteCell tile = _site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
+                    if (tile.FloorID != WorldUtils.AIR_NULL_MAT_ID)
+                    {
+                        if (
+                            (DiffUtils.InBounds(tileCoordX + 1, -1, _site.Size.X) && _site.Blocks[tileCoordX + 1, tileCoordY, chunkCoord.Z].WallID != WorldUtils.AIR_NULL_MAT_ID)
+                                &&
+                            (DiffUtils.InBounds(tileCoordY + 1, -1, _site.Size.Y) && _site.Blocks[tileCoordX, tileCoordY + 1, chunkCoord.Z].WallID != WorldUtils.AIR_NULL_MAT_ID)
+                                &&
+                            (DiffUtils.InBounds(tileCoordX - 1, -1, _site.Size.X) && _site.Blocks[tileCoordX - 1, tileCoordY, chunkCoord.Z].WallID != WorldUtils.AIR_NULL_MAT_ID)
+                                &&
+                            (DiffUtils.InBounds(tileCoordY - 1, -1, _site.Size.Y) && _site.Blocks[tileCoordX, tileCoordY - 1, chunkCoord.Z].WallID != WorldUtils.AIR_NULL_MAT_ID))
+                        {
+                            tile.IsWallVisible = false;
+                            if (DiffUtils.InBounds(chunkCoord.Z + 1, 0, _site.Size.Z))
+                            {
+                                if (_site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z + 1].WallID == WorldUtils.AIR_NULL_MAT_ID)
+                                {
+                                    tile.IsFloorVisible = true;
+                                }
+                                else
+                                {
+                                    tile.IsFloorVisible = false;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tile.IsWallVisible = true;
+                            tile.IsFloorVisible = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CalcVisibility()
+        {
+            for (int l = 0; l < _chunksCount.Z; l++)
+            {
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+                        CalcChunkCellsVisibility(new Point3(x, y, l));
                     }
                 }
             }
@@ -177,12 +239,12 @@ namespace Origin.Source.Draw
             vertices[index++] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
         }
 
-        private void FillWallVertexBuffer(
+        private int FillWallVertices(
             CircleSliceArray<DynamicVertexBuffer[,]> vb,
             Point3 chunkCoord,
             bool drawHidden = false)
         {
-            _vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _wallVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
             int index = 0;
 
@@ -194,41 +256,32 @@ namespace Origin.Source.Draw
                     int tileCoordX = chunkCoord.X * _chunkSize.X + tileInChunkCoordX;
                     int tileCoordY = chunkCoord.Y * _chunkSize.Y + tileInChunkCoordY;
                     SiteCell tile = _site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
-                    if (tile.WallID != WorldUtils.AIR_NULL_MAT_ID && ByteField.GetBit(_visBuffer[tileCoordX, tileCoordY, chunkCoord.Z], (byte)VisBufField.WallVisible))
+                    if (tile.WallID != WorldUtils.AIR_NULL_MAT_ID && tile.IsWallVisible)
                     {
                         TerrainMaterial tm = TerrainMaterial.TerraMats[tile.WallID];
                         Sprite sprite;
                         Color c = Color.Wheat;
                         sprite = tm.Sprites["Wall"];
                         c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, Vector2.Zero, c);
+                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _wallVertices, Vector2.Zero, c);
                     }
-                    else if (drawHidden &&
-                        tile.WallID != WorldUtils.AIR_NULL_MAT_ID &&
-                        !ByteField.GetBit(_visBuffer[tileCoordX, tileCoordY, chunkCoord.Z], (byte)VisBufField.WallVisible))
+                    else if (drawHidden && tile.WallID != WorldUtils.AIR_NULL_MAT_ID && !tile.IsWallVisible)
                     {
                         TerrainMaterial tm = TerrainMaterial.TerraMats[WorldUtils.HIDDEN_MAT_ID];
                         Sprite sprite;
                         Color c = Color.Wheat;
                         sprite = tm.Sprites["Wall"];
                         c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, Vector2.Zero, c);
+                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _wallVertices, Vector2.Zero, c);
                     }
                 }
             }
-            // Set the data of the vertex buffer
-            vb[chunkCoord.Z][chunkCoord.X, chunkCoord.Y] =
-                new DynamicVertexBuffer(_graphicsDevice,
-                     typeof(VertexPositionColorTexture),
-                     index,
-                     BufferUsage.WriteOnly);
-            if (index != 0) vb[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].SetData(_vertices, 0, index);
-            //_vertexBuffersBlock[chunkCoord.Z];
+            return index;
         }
 
-        private void FillFloorVertexBuffer(CircleSliceArray<DynamicVertexBuffer[,]> vb, Point3 chunkCoord)
+        private int FillFloorVertices(CircleSliceArray<DynamicVertexBuffer[,]> vb, Point3 chunkCoord)
         {
-            _vertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _floorVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
             int index = 0;
 
@@ -240,26 +293,18 @@ namespace Origin.Source.Draw
                     int tileCoordX = chunkCoord.X * _chunkSize.X + tileInChunkCoordX;
                     int tileCoordY = chunkCoord.Y * _chunkSize.Y + tileInChunkCoordY;
                     SiteCell tile = _site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
-                    if (tile.FloorID != WorldUtils.AIR_NULL_MAT_ID && ByteField.GetBit(_visBuffer[tileCoordX, tileCoordY, chunkCoord.Z], (byte)VisBufField.FloorVisible))
+                    if (tile.FloorID != WorldUtils.AIR_NULL_MAT_ID && tile.IsFloorVisible)
                     {
                         TerrainMaterial tm = TerrainMaterial.TerraMats[tile.FloorID];
                         Sprite sprite;
                         Color c = Color.Wheat;
                         sprite = tm.Sprites["Floor"];
                         c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, new Vector2(0, -4), c);
+                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _floorVertices, new Vector2(0, -4), c);
                     }
                 }
             }
-
-            // Set the data of the vertex buffer
-            // Create the vertex buffer
-            vb[chunkCoord.Z][chunkCoord.X, chunkCoord.Y] =
-                new DynamicVertexBuffer(_graphicsDevice,
-                    typeof(VertexPositionColorTexture),
-                    index,
-                    BufferUsage.WriteOnly);
-            if (index != 0) vb[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].SetData(_vertices, 0, index);
+            return index;
         }
 
         private void LevelDispose(int level)
@@ -277,7 +322,7 @@ namespace Origin.Source.Draw
             }
         }
 
-        private void FillLevel(int level)
+        private void FillLevel(int level, bool fillWalls = true, bool fillFloors = true)
         {
             LevelDispose(level);
 
@@ -289,58 +334,72 @@ namespace Origin.Source.Draw
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
-                    FillWallVertexBuffer(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, level), hidden);
-                    FillFloorVertexBuffer(_renderLayers[(int)RenderLayer.Floor], new Point3(x, y, level));
-                }
-            }
-        }
-
-        private void ReCalcVertexBuffers()
-        {
-            for (int z = _drawLowest; z < _drawHighest; z++)
-            {
-                for (int x = 0; x < _chunksCount.X; x++)
-                {
-                    for (int y = 0; y < _chunksCount.Y; y++)
+                    int wallIndex = 0;
+                    int floorIndex = 0;
+                    Task t1 = Task.Run(() =>
                     {
-                        FillWallVertexBuffer(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, z));
-                    }
+                        if (fillWalls)
+                            wallIndex = FillWallVertices(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, level), hidden);
+                    });
+                    Task t2 = Task.Run(() =>
+                    {
+                        if (fillFloors)
+                            floorIndex = FillFloorVertices(_renderLayers[(int)RenderLayer.Floor], new Point3(x, y, level));
+                    });
+                    Task.WaitAll(t1, t2);
+
+                    // Create the vertex buffer
+                    _renderLayers[(int)RenderLayer.Block][level][x, y] =
+                        new DynamicVertexBuffer(_graphicsDevice,
+                             typeof(VertexPositionColorTexture),
+                             wallIndex,
+                             BufferUsage.WriteOnly);
+                    // Set the data of the vertex buffer
+                    if (wallIndex != 0) _renderLayers[(int)RenderLayer.Block][level][x, y].SetData(_wallVertices, 0, wallIndex);
+
+                    // Create the vertex buffer
+                    _renderLayers[(int)RenderLayer.Floor][level][x, y] =
+                        new DynamicVertexBuffer(_graphicsDevice,
+                            typeof(VertexPositionColorTexture),
+                            floorIndex,
+                            BufferUsage.WriteOnly);
+                    // Set the data of the vertex buffer
+                    if (floorIndex != 0) _renderLayers[(int)RenderLayer.Floor][level][x, y].SetData(_floorVertices, 0, floorIndex);
                 }
             }
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
             Point sel = WorldUtils.MouseScreenToMap(m, _site.CurrentLevel);
             MainGame.Instance.debug.Add("Block: " + sel.ToString());
-
-            if (_drawHighest != _site.CurrentLevel)
-            {
-                bool IsUp = true;
-                if (_drawHighest > _site.CurrentLevel) IsUp = false;
-                _drawHighest = _site.CurrentLevel;
-                _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
-                FillLevel(_drawHighest);
-                FillLevel(_drawLowest);
-            }
             if (_renderLayers[(int)RenderLayer.Block].Count < ONE_MOMENT_DRAW_LEVELS)
             {
-                int chunkCoordZ = _drawLowest + _renderLayers[(int)RenderLayer.Block].Count;
-                //_vertexBuffersBlock[chunkCoordZ].
-                FillLevel(chunkCoordZ);
+                if (gameTime.TotalGameTime.Ticks % 5 == 0)
+                {
+                    int chunkCoordZ = _drawLowest + _renderLayers[(int)RenderLayer.Block].Count;
+                    FillLevel(chunkCoordZ);
+                }
+            }
+            else if (_drawHighest != _site.CurrentLevel)
+            {
+                bool MoveUp = true;
+                if (_drawHighest > _site.CurrentLevel) MoveUp = false;
+                _drawHighest = _site.CurrentLevel;
+                _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+
+                FillLevel(_drawHighest, true, false);
+
+                if (MoveUp)
+                    FillLevel(_drawHighest - 1);
+                else
+                    FillLevel(_drawLowest);
             }
         }
 
         public void Draw()
         {
-            /*SpriteBatch batch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
-            batch.Begin();
-            //batch.Draw(Texture.GetTextureByName("default"), new Vector2(0,0), Texture.GetTextureByName("default").Bounds, Color.Aqua);
-            Sprite s = Sprite.SpriteSet["SolidSelectionWall"];
-            batch.Draw(s.Texture,Vector2.Zero,s.RectPos, Color.Aqua);
-
-            batch.End();*/
             DrawVertices();
         }
 
@@ -360,7 +419,7 @@ namespace Origin.Source.Draw
                         if (z < _renderLayers[(int)RenderLayer.Block].Start + _renderLayers[(int)RenderLayer.Block].Count)
                         {
                             DynamicVertexBuffer vb = _renderLayers[(int)RenderLayer.Block][z][x, y];
-                            if (vb.VertexCount != 0)
+                            if (vb != null && vb.VertexCount != 0)
                             {
                                 _graphicsDevice.SetVertexBuffer(vb);
                                 _graphicsDevice.DrawPrimitives(
@@ -372,7 +431,7 @@ namespace Origin.Source.Draw
                         {
                             if (z == _drawHighest) continue;
                             DynamicVertexBuffer vb = _renderLayers[(int)RenderLayer.Floor][z][x, y];
-                            if (vb.VertexCount != 0)
+                            if (vb != null && vb.VertexCount != 0)
                             {
                                 _graphicsDevice.SetVertexBuffer(vb);
                                 _graphicsDevice.DrawPrimitives(
@@ -381,6 +440,14 @@ namespace Origin.Source.Draw
                         }
                     }
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            for (int i = _drawLowest; i < _drawHighest; i++)
+            {
+                LevelDispose(i);
             }
         }
 

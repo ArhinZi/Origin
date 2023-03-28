@@ -1,9 +1,13 @@
-﻿using Origin.Source.Draw;
+﻿using Microsoft.Xna.Framework;
+
+using Origin.Source.Draw;
 using Origin.Source.Utils;
+
+using System;
 
 namespace Origin.Source
 {
-    public class Site
+    public class Site : IDisposable
     {
         private SiteCell[,,] _blocks;
         public Point3 Size { get; private set; }
@@ -12,7 +16,8 @@ namespace Origin.Source
         private int _currentLevel;
         private SiteRenderer _renderer;
 
-        public Site() : this(new Point3(128, 128, 100))
+        // 64 128 192 256
+        public Site() : this(new Point3(256, 256, 100))
         {
         }
 
@@ -75,14 +80,19 @@ namespace Origin.Source
             CurrentLevel = (int)(Size.Z * 0.7f);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            Renderer.Update();
+            Renderer.Update(gameTime);
         }
 
         public void Draw()
         {
             Renderer.Draw();
+        }
+
+        public void Dispose()
+        {
+            Renderer.Dispose();
         }
     }
 }

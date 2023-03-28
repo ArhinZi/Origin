@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework;
+
+using System;
+using System.Collections.Generic;
 
 namespace Origin.Source
 {
-    public class MainWorld
+    public class MainWorld : IDisposable
     {
         public static MainWorld Instance { get; private set; }
 
@@ -19,17 +22,25 @@ namespace Origin.Source
             };
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             foreach (var item in Sites)
             {
-                item.Update();
+                item.Update(gameTime);
             }
         }
 
         public void Draw()
         {
             ActiveSite.Draw();
+        }
+
+        public void Dispose()
+        {
+            foreach (var item in Sites)
+            {
+                item.Dispose();
+            }
         }
     }
 }

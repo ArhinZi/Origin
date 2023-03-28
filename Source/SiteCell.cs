@@ -4,13 +4,13 @@
     {
         public string WallID;
         public string FloorID;
-        public bool IsVisible { get; set; }
+        public bool IsWallVisible { get; set; } = false;
+        public bool IsFloorVisible { get; set; } = false;
 
         public SiteCell(string wmatid = null, string fmatid = null)
         {
             WallID = wmatid;
             FloorID = fmatid;
-            IsVisible = false;
         }
     }
 }
