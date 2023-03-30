@@ -7,7 +7,7 @@ namespace Origin.Source
 {
     public static class Texture
     {
-        public static readonly string MAIN_TEXTURE_NAME = "default";
+        public static readonly string MAIN_TEXTURE_NAME = "default2";
 
         public static Dictionary<string, Texture2D> textures { get; private set; } =
             new Dictionary<string, Texture2D>();

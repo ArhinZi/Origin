@@ -36,7 +36,7 @@ namespace Origin.Source
     public class Sprite
     {
         public static readonly Point TILE_SIZE = new Point(32, 16);
-        public static readonly int FLOOR_YOFFSET = 4;
+        public static readonly int FLOOR_YOFFSET = 3;
 
         public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
 
