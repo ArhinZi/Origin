@@ -267,7 +267,7 @@ namespace Origin.Source
                             sprite = tm.Sprites["Floor"][tile.seed % tm.Sprites["Floor"].Count];
                             //sprite = tm.Sprites["Floor"][0];
                             c = tm.TerraColor;
-                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexFloors, ref _floorVertices, new Vector2(0, -4), c);
+                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexFloors, ref _floorVertices, new Vector2(0, -Sprite.FLOOR_YOFFSET), c);
                         }
                     }
                 }
