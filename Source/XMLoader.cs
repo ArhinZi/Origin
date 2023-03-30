@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,8 +28,14 @@ namespace Origin.Source
             {
                 var id = spriteElement.Element("SpriteID").Value;
                 var sourceRect = ParseRectangle(spriteElement.Element("SourceRect").Value);
+                var dir = spriteElement.Element("SpriteDir") != null ?
+                    (SpriteDirection)Enum.Parse(typeof(SpriteDirection), spriteElement.Element("SpriteDir").Value) :
+                    SpriteDirection.NONE;
+                var effect = spriteElement.Element("SpriteEffect") != null ?
+                    (SpriteEffects)Enum.Parse(typeof(SpriteEffects), spriteElement.Element("SpriteEffect").Value) :
+                    SpriteEffects.None;
 
-                new Sprite(id, texture, sourceRect);
+                new Sprite(id, texture, sourceRect, dir, effect);
             }
         }
 
@@ -52,15 +60,29 @@ namespace Origin.Source
                     matColor = default;
                 }
 
-                Dictionary<string, Sprite> matSprites = new Dictionary<string, Sprite>();
+                Dictionary<string, List<Sprite>> matSprites = new();
                 if (matElem.Element("SpriteDict") != null)
                 {
                     foreach (var entryElem in matElem.Element("SpriteDict").Elements("Entry"))
                     {
+                        List<Sprite> list = new();
                         string key = entryElem.Element("Key").Value;
-                        string value = entryElem.Element("Value").Value;
-                        Sprite sprite = Sprite.SpriteSet[value];
-                        matSprites.Add(key, sprite);
+                        if (entryElem.Element("Value").Element("List") != null)
+                        {
+                            foreach (var item in entryElem.Element("Value").Element("List").Elements("Item"))
+                            {
+                                Sprite sprite = Sprite.SpriteSet[item.Value];
+                                list.Add(sprite);
+                            }
+                        }
+                        else
+                        {
+                            string value = entryElem.Element("Value").Value;
+                            Sprite sprite = Sprite.SpriteSet[value];
+                            list.Add(sprite);
+                        }
+
+                        matSprites.Add(key, list);
                     }
                 }
 

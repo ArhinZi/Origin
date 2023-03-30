@@ -30,7 +30,14 @@ namespace Origin.Source.Screens
 
             Game.debug.Add("Curr LEVEL: " + _world.ActiveSite.CurrentLevel.ToString());
 
-            _world.Update();
+            _world.Update(gameTime);
+        }
+
+        public override void Dispose()
+        {
+            // TODO: Check Disposing of World and sites inside properly
+            _world.Dispose();
+            base.Dispose();
         }
 
         public override void Draw(GameTime gameTime)

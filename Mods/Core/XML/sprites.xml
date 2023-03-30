@@ -1,39 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Sprites TextureName="default2">
-    <!-- 
-        SpriteID - sprite name
-        SpriteRect - sprite rectangle in atlas
-        SpriteDir - sprite direction (NONE, TL, TR, BL, BR)
-        SpriteEffect - sprite effect (FlipVertically, FlipHorizontally, ReflectVertically, ReflectHorizontally)
+	<!--
+        SpriteID* - sprite name
+        SpriteRect* - sprite rectangle in atlas
+        SpriteDir - sprite direction (NONE, TL, TR, BL, BR). NONE - by default
+        SpriteEffect - sprite effect (
+		FlipVertically - flip by horizontal line,
+		FlipHorizontally - flip by vertical line
+		). None - by default
     -->
-    <!-- <Sprite>
+	<!-- <Sprite>
         <SpriteID></SpriteID>
         <SourceRect></SourceRect>
         <SpriteDir></SpriteDir>
         <SpriteEffect></SpriteEffect>
     </Sprite> -->
-    <Sprite>
-        <SpriteID>SolidSelectionWall</SpriteID>
-        <SourceRect>32 0 32 32</SourceRect>
-    </Sprite>
-    <Sprite>
-        <SpriteID>SolidSelectionFloor</SpriteID>
-        <SourceRect>32 0 32 20</SourceRect>
-    </Sprite>
-    <Sprite>
-        <SpriteID>SelectionWall</SpriteID>
-        <SourceRect>0 20 32 32</SourceRect>
-    </Sprite>
-    <Sprite>
-        <SpriteID>SelectionFloor</SpriteID>
-        <SourceRect>0 0 32 20</SourceRect>
-    </Sprite>
-    <Sprite>
-        <SpriteID>RoughStoneWall</SpriteID>
-        <SourceRect>64 0 32 32</SourceRect>
-    </Sprite>
-    <Sprite>
-        <SpriteID>RoughStoneFloor</SpriteID>
-        <SourceRect>0 32 32 19</SourceRect>
-    </Sprite>
+	<Sprite>
+		<SpriteID>SolidSelectionWall</SpriteID>
+		<SourceRect>32 0 32 32</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>SolidSelectionFloor</SpriteID>
+		<SourceRect>32 0 32 20</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>SelectionWall</SpriteID>
+		<SourceRect>0 20 32 32</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>SelectionFloor</SpriteID>
+		<SourceRect>0 0 32 20</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>RoughStoneWall</SpriteID>
+		<SourceRect>64 0 32 32</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>RoughStoneFloor</SpriteID>
+		<SourceRect>0 32 32 20</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>RoughStoneFloorFH</SpriteID>
+		<SourceRect>0 32 32 20</SourceRect>
+		<SpriteEffect>FlipHorizontally</SpriteEffect>
+	</Sprite>
 </Sprites>

@@ -1,18 +1,23 @@
-﻿using Origin.Source.Draw;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+
 using Origin.Source.Utils;
+
+using System;
 
 namespace Origin.Source
 {
-    public class Site
+    public class Site : IDisposable
     {
         private SiteCell[,,] _blocks;
         public Point3 Size { get; private set; }
 
-        private SiteCell _selectedBlock;
+        public SiteCell selectedBlock;
         private int _currentLevel;
         private SiteRenderer _renderer;
 
-        public Site() : this(new Point3(128, 128, 100))
+        // 64 128 192 256
+        public Site() : this(new Point3(256, 256, 100))
         {
         }
 
@@ -63,7 +68,7 @@ namespace Origin.Source
 
         public void SetSelected(Point3 pos)
         {
-            _selectedBlock = Blocks[pos.X, pos.Y, pos.Z];
+            selectedBlock = Blocks[pos.X, pos.Y, pos.Z];
         }
 
         private void GenerateBlockMap()
@@ -72,17 +77,26 @@ namespace Origin.Source
             //float[,] heightMap = WorldUtils.GenerateFlatHeightMap(Size.X, Size.Y, 0.6f);
 
             Blocks = WorldUtils.Generate3dWorldArray(heightMap, Size.X, Size.Y, Size.Z, (int)(Size.Z * 0.7f), 10);
-            CurrentLevel = (int)(Size.Z * 0.7f);
+            CurrentLevel = (int)(Size.Z * 0.8f);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            Renderer.Update();
+            Point m = Mouse.GetState().Position;
+            Point sel = WorldUtils.MouseScreenToMap(m, CurrentLevel);
+            MainGame.Instance.debug.Add("Block: " + sel.ToString());
+
+            Renderer.Update(gameTime);
         }
 
         public void Draw()
         {
             Renderer.Draw();
+        }
+
+        public void Dispose()
+        {
+            Renderer.Dispose();
         }
     }
 }
