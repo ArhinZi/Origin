@@ -1,6 +1,0 @@
-Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Users/ARHIN/source/repos/Origin/Content/basefont2.spritefont","C:/Users/ARHIN/source/repos/Origin/Content/bin/Windows/basefont.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21521,0,4321085
-"C:/Users/ARHIN/source/repos/Origin/Content/default.png","C:/Users/ARHIN/source/repos/Origin/Content/bin/Windows/default.xnb","TextureProcessor","Texture2DContent",145929,4194389,0,2213614
-"C:/Users/ARHIN/source/repos/Origin/Content/map atlas.png","C:/Users/ARHIN/source/repos/Origin/Content/bin/Windows/map atlas.xnb","TextureProcessor","Texture2DContent",5298,2000085,0,1130815
-"C:/Users/ARHIN/source/repos/Origin/Content/tile0.png","C:/Users/ARHIN/source/repos/Origin/Content/bin/Windows/tile0.xnb","TextureProcessor","Texture2DContent",19822,65621,0,0070008
-"C:/Users/ARHIN/source/repos/Origin/Content/tile1.png","C:/Users/ARHIN/source/repos/Origin/Content/bin/Windows/tile1.xnb","TextureProcessor","Texture2DContent",6237,65621,0,0070034

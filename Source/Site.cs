@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-using Origin.Source.Draw;
 using Origin.Source.Utils;
 
 using System;
@@ -78,7 +77,7 @@ namespace Origin.Source
             //float[,] heightMap = WorldUtils.GenerateFlatHeightMap(Size.X, Size.Y, 0.6f);
 
             Blocks = WorldUtils.Generate3dWorldArray(heightMap, Size.X, Size.Y, Size.Z, (int)(Size.Z * 0.7f), 10);
-            CurrentLevel = (int)(Size.Z * 0.7f);
+            CurrentLevel = (int)(Size.Z * 0.8f);
         }
 
         public void Update(GameTime gameTime)

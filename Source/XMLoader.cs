@@ -28,8 +28,14 @@ namespace Origin.Source
             {
                 var id = spriteElement.Element("SpriteID").Value;
                 var sourceRect = ParseRectangle(spriteElement.Element("SourceRect").Value);
+                var dir = spriteElement.Element("SpriteDir") != null ?
+                    (SpriteDirection)Enum.Parse(typeof(SpriteDirection), spriteElement.Element("SpriteDir").Value) :
+                    SpriteDirection.NONE;
+                var effect = spriteElement.Element("SpriteEffect") != null ?
+                    (SpriteEffects)Enum.Parse(typeof(SpriteEffects), spriteElement.Element("SpriteEffect").Value) :
+                    SpriteEffects.None;
 
-                new Sprite(id, texture, sourceRect);
+                new Sprite(id, texture, sourceRect, dir, effect);
             }
         }
 
