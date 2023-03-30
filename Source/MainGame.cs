@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
-using Origin.Source.Draw;
 using Origin.Source.GCs;
 using Origin.Source.IO;
 using Origin.Source.Screens;
@@ -41,7 +40,7 @@ namespace Origin.Source
             _screenManager = new ScreenManager();
             fpsCounter = new FpsCountGC();
             control = new ControlGC();
-            debug = new InfoDrawerGC(new Point(10, 10), Color.Black);
+            debug = new InfoDrawerGC(new Point(10, 10), Color.Aqua);
 
             Components.Add(_screenManager);
             Components.Add(fpsCounter);
@@ -115,6 +114,7 @@ namespace Origin.Source
             ScreenWidth = graphics.PreferredBackBufferWidth;
 
             debug.Clear();
+            debug.Add("-/+ to zoom; [/] to change level; arrows to move");
             debug.Add(fpsCounter.msg);
 
             base.Update(gameTime);
