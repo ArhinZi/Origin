@@ -247,7 +247,7 @@ namespace Origin.Source.Draw
                         Color c = Color.Wheat;
                         sprite = tm.Sprites["Floor"];
                         c = tm.TerraColor;
-                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, new Vector2(0, -4), c);
+                        VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref index, ref _vertices, new Vector2(0, -3), c);
                     }
                 }
             }
@@ -346,10 +346,12 @@ namespace Origin.Source.Draw
 
         private void DrawVertices()
         {
+            effect.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             effect.World = MainGame.cam.WorldMatrix;
             effect.View = MainGame.cam.Transformation;
             effect.Projection = MainGame.cam.Projection;
             effect.CurrentTechnique.Passes[0].Apply();
+            //effect.GraphicsDevice.VertexSamplerStates[0] = SamplerState.PointClamp;
 
             for (int z = _drawLowest; z <= _drawHighest; z++)
             {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Sprites TextureName="default">
+<Sprites TextureName="default2">
     <!-- 
         SpriteID - sprite name
         SpriteRect - sprite rectangle in atlas
@@ -14,7 +14,7 @@
     </Sprite> -->
     <Sprite>
         <SpriteID>SolidSelectionWall</SpriteID>
-        <SourceRect>32 20 32 32</SourceRect>
+        <SourceRect>32 0 32 32</SourceRect>
     </Sprite>
     <Sprite>
         <SpriteID>SolidSelectionFloor</SpriteID>
@@ -30,10 +30,10 @@
     </Sprite>
     <Sprite>
         <SpriteID>RoughStoneWall</SpriteID>
-        <SourceRect>32 72 32 32</SourceRect>
+        <SourceRect>64 0 32 32</SourceRect>
     </Sprite>
     <Sprite>
         <SpriteID>RoughStoneFloor</SpriteID>
-        <SourceRect>32 52 32 20</SourceRect>
+        <SourceRect>0 32 32 19</SourceRect>
     </Sprite>
 </Sprites>
