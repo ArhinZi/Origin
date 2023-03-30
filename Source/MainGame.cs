@@ -35,7 +35,7 @@ namespace Origin.Source
         {
             Instance = this;
             graphics = new GraphicsDeviceManager(this);
-            //Window.AllowUserResizing = true;
+            Window.AllowUserResizing = true;
             Content.RootDirectory = "Content";
 
             _screenManager = new ScreenManager();
@@ -59,6 +59,7 @@ namespace Origin.Source
         {
             ScreenHeight = graphics.PreferredBackBufferHeight = 800;
             ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
+            //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
 
             IsMouseVisible = true;

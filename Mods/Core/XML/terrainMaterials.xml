@@ -34,7 +34,12 @@
 			</Entry>
 			<Entry>
 				<Key>Floor</Key>
-				<Value>RoughStoneFloor</Value>
+				<Value>
+					<List>
+						<Item>RoughStoneFloor</Item>
+						<Item>SelectionFloor</Item>
+					</List>
+				</Value>
 			</Entry>
 			<Entry>
 				<Key>HalfWall</Key>

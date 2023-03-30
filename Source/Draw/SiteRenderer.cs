@@ -268,7 +268,8 @@ namespace Origin.Source.Draw
                             TerrainMaterial tm = TerrainMaterial.TerraMats[tile.WallID];
                             Sprite sprite;
                             Color c = Color.Wheat;
-                            sprite = tm.Sprites["Wall"];
+                            sprite = tm.Sprites["Wall"][tile.seed % tm.Sprites["Wall"].Count];
+                            //sprite = tm.Sprites["Wall"][0];
                             c = tm.TerraColor;
                             VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexWalls, ref _wallVertices, Vector2.Zero, c);
                         }
@@ -277,7 +278,8 @@ namespace Origin.Source.Draw
                             TerrainMaterial tm = TerrainMaterial.TerraMats[WorldUtils.HIDDEN_MAT_ID];
                             Sprite sprite;
                             Color c = Color.Wheat;
-                            sprite = tm.Sprites["Wall"];
+                            sprite = tm.Sprites["Wall"][tile.seed % tm.Sprites["Wall"].Count];
+                            //sprite = tm.Sprites["Wall"][0];
                             c = tm.TerraColor;
                             VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexWalls, ref _wallVertices, Vector2.Zero, c);
                         }
@@ -290,7 +292,8 @@ namespace Origin.Source.Draw
                             TerrainMaterial tm = TerrainMaterial.TerraMats[tile.FloorID];
                             Sprite sprite;
                             Color c = Color.Wheat;
-                            sprite = tm.Sprites["Floor"];
+                            sprite = tm.Sprites["Floor"][tile.seed % tm.Sprites["Floor"].Count];
+                            //sprite = tm.Sprites["Floor"][0];
                             c = tm.TerraColor;
                             VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexFloors, ref _floorVertices, new Vector2(0, -4), c);
                         }
@@ -349,7 +352,9 @@ namespace Origin.Source.Draw
 
             bool hidden = false;
             if (level == _drawHighest) hidden = true;
+            //if (_renderLayers[(int)RenderLayer.Block][level] == null)
             _renderLayers[(int)RenderLayer.Block][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+            //if (_renderLayers[(int)RenderLayer.Floor][level] == null)
             _renderLayers[(int)RenderLayer.Floor][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
             for (int x = 0; x < _chunksCount.X; x++)
             {
@@ -361,6 +366,7 @@ namespace Origin.Source.Draw
                     (wallIndex, floorIndex) = FillVertices(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, level), fillWalls, fillFloors, hidden);
 
                     // Create the vertex buffer
+                    //if (_renderLayers[(int)RenderLayer.Block][level][x, y] == null)
                     _renderLayers[(int)RenderLayer.Block][level][x, y] =
                         new DynamicVertexBuffer(_graphicsDevice,
                              typeof(VertexPositionColorTexture),
@@ -370,6 +376,7 @@ namespace Origin.Source.Draw
                     if (wallIndex != 0) _renderLayers[(int)RenderLayer.Block][level][x, y].SetData(_wallVertices, 0, wallIndex);
 
                     // Create the vertex buffer
+                    //if (_renderLayers[(int)RenderLayer.Floor][level][x, y] == null)
                     _renderLayers[(int)RenderLayer.Floor][level][x, y] =
                         new DynamicVertexBuffer(_graphicsDevice,
                             typeof(VertexPositionColorTexture),
@@ -383,9 +390,6 @@ namespace Origin.Source.Draw
 
         public void Update(GameTime gameTime)
         {
-            Point m = Mouse.GetState().Position;
-            Point sel = WorldUtils.MouseScreenToMap(m, _site.CurrentLevel);
-            MainGame.Instance.debug.Add("Block: " + sel.ToString());
             if (_renderLayers[(int)RenderLayer.Block].Count < ONE_MOMENT_DRAW_LEVELS)
             {
                 if (gameTime.TotalGameTime.Ticks % 5 == 0)

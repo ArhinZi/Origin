@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.Draw;
 using Origin.Source.Utils;
@@ -12,7 +13,7 @@ namespace Origin.Source
         private SiteCell[,,] _blocks;
         public Point3 Size { get; private set; }
 
-        private SiteCell _selectedBlock;
+        public SiteCell selectedBlock;
         private int _currentLevel;
         private SiteRenderer _renderer;
 
@@ -68,7 +69,7 @@ namespace Origin.Source
 
         public void SetSelected(Point3 pos)
         {
-            _selectedBlock = Blocks[pos.X, pos.Y, pos.Z];
+            selectedBlock = Blocks[pos.X, pos.Y, pos.Z];
         }
 
         private void GenerateBlockMap()
@@ -82,6 +83,10 @@ namespace Origin.Source
 
         public void Update(GameTime gameTime)
         {
+            Point m = Mouse.GetState().Position;
+            Point sel = WorldUtils.MouseScreenToMap(m, CurrentLevel);
+            MainGame.Instance.debug.Add("Block: " + sel.ToString());
+
             Renderer.Update(gameTime);
         }
 
