@@ -76,7 +76,7 @@ namespace Origin.Source
             float[,] heightMap = WorldUtils.GenerateHeightMap(Size.X, Size.Y, 0.005f);
             //float[,] heightMap = WorldUtils.GenerateFlatHeightMap(Size.X, Size.Y, 0.6f);
 
-            Blocks = WorldUtils.Generate3dWorldArray(heightMap, Size.X, Size.Y, Size.Z, (int)(Size.Z * 0.7f), 10);
+            Blocks = WorldUtils.Generate3dWorldArray(heightMap, Size, (int)(Size.Z * 0.7f), 10);
             CurrentLevel = (int)(Size.Z * 0.8f);
         }
 

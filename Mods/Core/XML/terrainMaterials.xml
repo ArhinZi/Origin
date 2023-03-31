@@ -36,20 +36,17 @@
 	<Material>
 		<MaterialID>Granite</MaterialID>
 		<MaterialColor>230 230 230 255</MaterialColor>
-		<!--<MaterialColor>255 255 255 255</MaterialColor>-->
 		<SpriteDict>
 			<Entry>
 				<Key>Wall</Key>
 				<Value>RoughStoneWall</Value>
-				<!--<Value>DirtWall</Value>-->
 			</Entry>
 			<Entry>
 				<Key>Floor</Key>
 				<Value>
 					<List>
 						<Item>RoughStoneFloor</Item>
-						<!--<Item>EmbeddedGrassFloor1</Item>-->
-						<!--<Item>EmbeddedGrassFloor2</Item>-->
+						<Item>RoughStoneFloorFH</Item>
 					</List>
 				</Value>
 			</Entry>
@@ -85,6 +82,7 @@
 
 	<Material>
 		<MaterialID>Grass</MaterialID>
+		<IsEmbedded>true</IsEmbedded>
 		<MaterialColor>255 255 255 255</MaterialColor>
 		<SpriteDict>
 			<Entry>
