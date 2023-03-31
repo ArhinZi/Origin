@@ -30,6 +30,7 @@ namespace Origin.Source
 
             //if (UseItemColor) TerraColor = GetItemColor();
 
+            //if(TerraMats.Keys)
             TerraMats.Add(ID, this);
         }
 
