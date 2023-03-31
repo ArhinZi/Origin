@@ -19,8 +19,10 @@ namespace Origin.Source
 
     internal enum RenderLayer : int
     {
-        Block,
-        Floor
+        Wall,
+        Floor,
+        EmbeddedWall,
+        EmbeddedFloor
     }
 
     public class SiteRenderer : IDisposable
@@ -32,13 +34,17 @@ namespace Origin.Source
         private Point _chunkSize;
         private int _drawLowest;
         private int _drawHighest;
-        private VertexPositionColorTexture[] _wallVertices;
 
+        private VertexPositionColorTexture[] _wallVertices;
         private VertexPositionColorTexture[] _floorVertices;
+        private VertexPositionColorTexture[] _embWallVertices;
+        private VertexPositionColorTexture[] _embFloorVertices;
 
         /// <summary>
-        /// Layer 0 - Block
+        /// Layer 0 - Wall
         /// Layer 1 - Floor
+        /// Layer 2 - EmbeddedWall
+        /// Layer 3 - EmbeddedFloor
         /// </summary>
         private CircleSliceArray<DynamicVertexBuffer[,]>[] _renderLayers;
 
@@ -53,7 +59,7 @@ namespace Origin.Source
         public static readonly Point BASE_CHUNK_SIZE = new Point(64, 64);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 16;
 
-        public static readonly int LAYER_COUNT = 2;
+        public static readonly int LAYER_COUNT = 4;
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
@@ -71,8 +77,10 @@ namespace Origin.Source
             _chunksCount = new Point3(_site.Size.X / _chunkSize.X, _site.Size.Y / _chunkSize.Y, _site.Size.Z);
 
             _renderLayers = new CircleSliceArray<DynamicVertexBuffer[,]>[LAYER_COUNT];
-            _renderLayers[(int)RenderLayer.Block] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
+            _renderLayers[(int)RenderLayer.Wall] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
             _renderLayers[(int)RenderLayer.Floor] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
+            _renderLayers[(int)RenderLayer.EmbeddedWall] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
+            _renderLayers[(int)RenderLayer.EmbeddedFloor] = new CircleSliceArray<DynamicVertexBuffer[,]>(ONE_MOMENT_DRAW_LEVELS);
 
             _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
@@ -207,18 +215,24 @@ namespace Origin.Source
             vertices[index++] = new VertexPositionColorTexture(bottomLeft, c, textureBottomLeft);
         }
 
-        private (int, int) FillVertices(
+        private (int, int, int, int) FillVertices(
             CircleSliceArray<DynamicVertexBuffer[,]> vbWalls,
             Point3 chunkCoord,
             bool fillWalls,
             bool fillFloors,
+            bool fillEmbWall,
+            bool fillEmbFloor,
             bool drawHidden = false)
         {
             _wallVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
             _floorVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _embWallVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
+            _embFloorVertices = new VertexPositionColorTexture[_chunkSize.X * _chunkSize.Y * 6];
 
             int indexWalls = 0;
             int indexFloors = 0;
+            int indexEmbWall = 0;
+            int indexEmbFloor = 0;
 
             // Loop through each tile block in the chunk
             for (int tileInChunkCoordX = 0; tileInChunkCoordX < _chunkSize.X; tileInChunkCoordX++)
@@ -263,24 +277,40 @@ namespace Origin.Source
                             sprite = tm.Sprites["Floor"][tile.seed % tm.Sprites["Floor"].Count];
                             //sprite = tm.Sprites["Floor"][0];
                             c = tm.TerraColor;
-                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexFloors, ref _floorVertices, new Vector2(0, -Sprite.FLOOR_YOFFSET), c);
+                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexEmbFloor, ref _embFloorVertices, new Vector2(0, -Sprite.FLOOR_YOFFSET), c);
+                        }
+                    }
+
+                    if (fillEmbFloor)
+                    {
+                        if (tile.EmbeddedFloorID != WorldUtils.AIR_NULL_MAT_ID && tile.IsFloorVisible)
+                        {
+                            TerrainMaterial tm = TerrainMaterial.TerraMats[tile.EmbeddedFloorID];
+                            Sprite sprite;
+                            Color c = Color.Wheat;
+                            sprite = tm.Sprites["Floor"][tile.seed % tm.Sprites["Floor"].Count];
+                            //sprite = tm.Sprites["Floor"][0];
+                            c = tm.TerraColor;
+                            VerticeAdder(sprite, tileCoordX, tileCoordY, chunkCoord.Z, ref indexEmbFloor, ref _embFloorVertices, new Vector2(0, -Sprite.FLOOR_YOFFSET), c);
                         }
                     }
                 }
             }
-            return (indexWalls, indexFloors);
+            return (indexWalls, indexEmbWall, indexFloors, indexEmbFloor);
         }
 
         private void LevelDispose(int level)
         {
-            if (_renderLayers[(int)RenderLayer.Block][level] != null)
+            if (_renderLayers[(int)RenderLayer.Wall][level] != null)
             {
                 for (int x = 0; x < _chunksCount.X; x++)
                 {
                     for (int y = 0; y < _chunksCount.Y; y++)
                     {
-                        if (_renderLayers[(int)RenderLayer.Block][level][x, y] != null) _renderLayers[(int)RenderLayer.Block][level][x, y].Dispose();
+                        if (_renderLayers[(int)RenderLayer.Wall][level][x, y] != null) _renderLayers[(int)RenderLayer.Wall][level][x, y].Dispose();
                         if (_renderLayers[(int)RenderLayer.Floor][level][x, y] != null) _renderLayers[(int)RenderLayer.Floor][level][x, y].Dispose();
+                        if (_renderLayers[(int)RenderLayer.EmbeddedWall][level][x, y] != null) _renderLayers[(int)RenderLayer.EmbeddedWall][level][x, y].Dispose();
+                        if (_renderLayers[(int)RenderLayer.EmbeddedFloor][level][x, y] != null) _renderLayers[(int)RenderLayer.EmbeddedFloor][level][x, y].Dispose();
                     }
                 }
             }
@@ -292,28 +322,32 @@ namespace Origin.Source
 
             bool hidden = false;
             if (level == _drawHighest) hidden = true;
-            //if (_renderLayers[(int)RenderLayer.Block][level] == null)
-            _renderLayers[(int)RenderLayer.Block][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
-            //if (_renderLayers[(int)RenderLayer.Floor][level] == null)
+            _renderLayers[(int)RenderLayer.Wall][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+            _renderLayers[(int)RenderLayer.EmbeddedWall][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+
             _renderLayers[(int)RenderLayer.Floor][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+            _renderLayers[(int)RenderLayer.EmbeddedFloor][level] = new DynamicVertexBuffer[_chunksCount.X, _chunksCount.Y];
+
             for (int x = 0; x < _chunksCount.X; x++)
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
                     int wallIndex = 0;
+                    int embWallIndex = 0;
                     int floorIndex = 0;
+                    int embFloorIndex = 0;
 
-                    (wallIndex, floorIndex) = FillVertices(_renderLayers[(int)RenderLayer.Block], new Point3(x, y, level), fillWalls, fillFloors, hidden);
+                    (wallIndex, embWallIndex, floorIndex, embFloorIndex) = FillVertices(_renderLayers[(int)RenderLayer.Wall], new Point3(x, y, level), fillWalls, fillWalls, fillFloors, fillFloors, hidden);
 
                     // Create the vertex buffer
                     //if (_renderLayers[(int)RenderLayer.Block][level][x, y] == null)
-                    _renderLayers[(int)RenderLayer.Block][level][x, y] =
+                    _renderLayers[(int)RenderLayer.Wall][level][x, y] =
                         new DynamicVertexBuffer(_graphicsDevice,
                              typeof(VertexPositionColorTexture),
                              wallIndex,
                              BufferUsage.WriteOnly);
                     // Set the data of the vertex buffer
-                    if (wallIndex != 0) _renderLayers[(int)RenderLayer.Block][level][x, y].SetData(_wallVertices, 0, wallIndex);
+                    if (wallIndex != 0) _renderLayers[(int)RenderLayer.Wall][level][x, y].SetData(_wallVertices, 0, wallIndex);
 
                     // Create the vertex buffer
                     //if (_renderLayers[(int)RenderLayer.Floor][level][x, y] == null)
@@ -324,17 +358,27 @@ namespace Origin.Source
                             BufferUsage.WriteOnly);
                     // Set the data of the vertex buffer
                     if (floorIndex != 0) _renderLayers[(int)RenderLayer.Floor][level][x, y].SetData(_floorVertices, 0, floorIndex);
+
+                    // Create the vertex buffer
+                    //if (_renderLayers[(int)RenderLayer.Block][level][x, y] == null)
+                    _renderLayers[(int)RenderLayer.EmbeddedFloor][level][x, y] =
+                        new DynamicVertexBuffer(_graphicsDevice,
+                             typeof(VertexPositionColorTexture),
+                             embFloorIndex,
+                             BufferUsage.WriteOnly);
+                    // Set the data of the vertex buffer
+                    if (embFloorIndex != 0) _renderLayers[(int)RenderLayer.EmbeddedFloor][level][x, y].SetData(_embFloorVertices, 0, embFloorIndex);
                 }
             }
         }
 
         public void Update(GameTime gameTime)
         {
-            if (_renderLayers[(int)RenderLayer.Block].Count < ONE_MOMENT_DRAW_LEVELS)
+            if (_renderLayers[(int)RenderLayer.Wall].Count < ONE_MOMENT_DRAW_LEVELS)
             {
                 if (gameTime.TotalGameTime.Ticks % 5 == 0)
                 {
-                    int chunkCoordZ = _drawLowest + _renderLayers[(int)RenderLayer.Block].Count;
+                    int chunkCoordZ = _drawLowest + _renderLayers[(int)RenderLayer.Wall].Count;
                     FillLevel(chunkCoordZ);
                 }
             }
@@ -376,9 +420,9 @@ namespace Origin.Source
                 {
                     for (int y = 0; y < _chunksCount.Y; y++)
                     {
-                        if (z < _renderLayers[(int)RenderLayer.Block].Start + _renderLayers[(int)RenderLayer.Block].Count)
+                        if (z < _renderLayers[(int)RenderLayer.Wall].Start + _renderLayers[(int)RenderLayer.Wall].Count)
                         {
-                            DynamicVertexBuffer vb = _renderLayers[(int)RenderLayer.Block][z][x, y];
+                            DynamicVertexBuffer vb = _renderLayers[(int)RenderLayer.Wall][z][x, y];
                             if (vb != null && vb.VertexCount != 0)
                             {
                                 _graphicsDevice.SetVertexBuffer(vb);
@@ -391,6 +435,13 @@ namespace Origin.Source
                         {
                             if (z == _drawHighest) continue;
                             DynamicVertexBuffer vb = _renderLayers[(int)RenderLayer.Floor][z][x, y];
+                            if (vb != null && vb.VertexCount != 0)
+                            {
+                                _graphicsDevice.SetVertexBuffer(vb);
+                                _graphicsDevice.DrawPrimitives(
+                                       PrimitiveType.TriangleList, 0, vb.VertexCount / 3);
+                            }
+                            vb = _renderLayers[(int)RenderLayer.EmbeddedFloor][z][x, y];
                             if (vb != null && vb.VertexCount != 0)
                             {
                                 _graphicsDevice.SetVertexBuffer(vb);

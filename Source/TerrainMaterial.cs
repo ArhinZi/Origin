@@ -12,7 +12,7 @@ namespace Origin.Source
         public static readonly Color UNKNOWN_COLOR = new Color(245, 66, 224);
 
         public string ID { get; private set; }
-        public bool IsEmbeded { get; private set; }
+        public bool IsEmbedded { get; private set; }
         public Dictionary<string, List<Sprite>> Sprites { get; private set; }
 
         public Color TerraColor { get; private set; }
@@ -21,10 +21,10 @@ namespace Origin.Source
             string name,
             Dictionary<string, List<Sprite>> sprites,
             Color c = default,
-            bool isEmbeded = false)
+            bool isEmbedded = false)
         {
             ID = name;
-            IsEmbeded = isEmbeded;
+            IsEmbedded = isEmbedded;
             Sprites = sprites;
             TerraColor = c.Equals(default(Color)) ? UNKNOWN_COLOR : c;
 

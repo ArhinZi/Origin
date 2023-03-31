@@ -25,7 +25,7 @@
 	</Sprite>
 	<Sprite>
 		<SpriteID>SelectionWall</SpriteID>
-		<SourceRect>0 20 32 32</SourceRect>
+		<SourceRect>0 0 32 32</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>SelectionFloor</SpriteID>
@@ -33,15 +33,14 @@
 	</Sprite>
 	<Sprite>
 		<SpriteID>RoughStoneWall</SpriteID>
-		<SourceRect>64 0 32 32</SourceRect>
+		<SourceRect>32 32 32 32</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>RoughStoneFloor</SpriteID>
-		<SourceRect>0 32 32 20</SourceRect>
+		<SourceRect>64 32 32 20</SourceRect>
 	</Sprite>
 	<Sprite>
-		<SpriteID>RoughStoneFloorFH</SpriteID>
+		<SpriteID>GrassFloor0</SpriteID>
 		<SourceRect>0 32 32 20</SourceRect>
-		<SpriteEffect>FlipHorizontally</SpriteEffect>
 	</Sprite>
 </Sprites>
