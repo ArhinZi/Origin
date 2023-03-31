@@ -42,9 +42,9 @@ namespace Origin.Source
         /// </summary>
         private CircleSliceArray<DynamicVertexBuffer[,]>[] _renderLayers;
 
-        //private CircleSliceArray<DynamicVertexBuffer[,]> _vertexBuffersBlock;
-        //private CircleSliceArray<DynamicVertexBuffer[,]> _vertexBuffersGround;
-        private BasicEffect effect;
+        // Shader with fix alpha blend
+        // Using instead of BasicEffect, but fixes problem with bad alpha blending with z offset
+        private AlphaTestEffect _alphaTestEffect;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
@@ -77,14 +77,11 @@ namespace Origin.Source
             _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
-            //CalcVisBuffer();
             CalcVisibility();
 
-            //ReCalcVertexBuffers();
-            effect = new BasicEffect(MainGame.Instance.GraphicsDevice);
-            effect.TextureEnabled = true;
-            effect.VertexColorEnabled = true;
-            effect.Texture = Texture.GetTextureByName(Texture.MAIN_TEXTURE_NAME);
+            _alphaTestEffect = new AlphaTestEffect(MainGame.Instance.GraphicsDevice);
+            _alphaTestEffect.VertexColorEnabled = true;
+            _alphaTestEffect.Texture = Texture.GetTextureByName(Texture.MAIN_TEXTURE_NAME);
         }
 
         private Vector2 MapToScreen(int mapX, int mapY, int mapZ)
@@ -172,8 +169,7 @@ namespace Origin.Source
             Rectangle textureRect = sprite.RectPos;
             var VertexX = (x - y) * Sprite.TILE_SIZE.X / 2 + offset.X;
             var VertexY = (y + x) * Sprite.TILE_SIZE.Y / 2 - z * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET) + offset.Y;
-            var VertexZ = 0;
-            //(x+y)*Z_DIAGONAL_OFFSET;
+            var VertexZ = (x + y) * Z_DIAGONAL_OFFSET;
 
             Vector3 topLeft =
                 new Vector3(VertexX, VertexY, VertexZ);
@@ -365,11 +361,14 @@ namespace Origin.Source
 
         private void DrawVertices()
         {
-            effect.World = MainGame.cam.WorldMatrix;
-            effect.View = MainGame.cam.Transformation;
-            effect.Projection = MainGame.cam.Projection;
-            effect.CurrentTechnique.Passes[0].Apply();
-            effect.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            _alphaTestEffect.World = MainGame.cam.WorldMatrix;
+            _alphaTestEffect.View = MainGame.cam.Transformation;
+            _alphaTestEffect.Projection = MainGame.cam.Projection;
+
+            _alphaTestEffect.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _alphaTestEffect.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
+            _alphaTestEffect.CurrentTechnique.Passes[0].Apply();
 
             for (int z = _drawLowest; z <= _drawHighest; z++)
             {
