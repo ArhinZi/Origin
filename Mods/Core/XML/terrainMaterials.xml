@@ -21,9 +21,10 @@
 		<MaterialID>Air</MaterialID>
 		<MaterialColor>0 0 0 128</MaterialColor>
 	</Material>
+
 	<Material>
 		<MaterialID>Hidden</MaterialID>
-		<MaterialColor>38 38 38 255</MaterialColor>
+		<MaterialColor>70 70 70 255</MaterialColor>
 		<SpriteDict>
 			<Entry>
 				<Key>Wall</Key>
@@ -31,9 +32,10 @@
 			</Entry>
 		</SpriteDict>
 	</Material>
+
 	<Material>
 		<MaterialID>Granite</MaterialID>
-		<MaterialColor>115 71 0 255</MaterialColor>
+		<MaterialColor>230 230 230 255</MaterialColor>
 		<SpriteDict>
 			<Entry>
 				<Key>Wall</Key>
@@ -44,13 +46,52 @@
 				<Value>
 					<List>
 						<Item>RoughStoneFloor</Item>
-						<Item>RoughStoneFloorFH</Item>
 					</List>
 				</Value>
 			</Entry>
 			<Entry>
 				<Key>HalfWall</Key>
 				<Value>RoughStoneFloor</Value>
+			</Entry>
+		</SpriteDict>
+	</Material>
+
+	<Material>
+		<MaterialID>Dirt</MaterialID>
+		<MaterialColor>255 145 0 255</MaterialColor>
+		<SpriteDict>
+			<Entry>
+				<Key>Wall</Key>
+				<Value>DirtWall</Value>
+			</Entry>
+			<Entry>
+				<Key>Floor</Key>
+				<Value>
+					<List>
+						<Item>DirtFloor</Item>
+					</List>
+				</Value>
+			</Entry>
+			<Entry>
+				<Key>HalfWall</Key>
+				<Value>DirtFloor</Value>
+			</Entry>
+		</SpriteDict>
+	</Material>
+
+	<Material>
+		<MaterialID>Grass</MaterialID>
+		<IsEmbedded>true</IsEmbedded>
+		<MaterialColor>255 255 255 255</MaterialColor>
+		<SpriteDict>
+			<Entry>
+				<Key>Floor</Key>
+				<Value>
+					<List>
+						<Item>EmbeddedGrassFloor1</Item>
+						<Item>EmbeddedGrassFloor2</Item>
+					</List>
+				</Value>
 			</Entry>
 		</SpriteDict>
 	</Material>

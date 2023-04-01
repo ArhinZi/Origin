@@ -60,6 +60,12 @@ namespace Origin.Source
                     matColor = default;
                 }
 
+                bool isEmbedded = false;
+                if (matElem.Element("IsEmbedded") != null)
+                {
+                    isEmbedded = Boolean.Parse(matElem.Element("IsEmbedded").Value);
+                }
+
                 Dictionary<string, List<Sprite>> matSprites = new();
                 if (matElem.Element("SpriteDict") != null)
                 {
@@ -86,7 +92,7 @@ namespace Origin.Source
                     }
                 }
 
-                new TerrainMaterial(matId, matSprites, matColor);
+                new TerrainMaterial(matId, matSprites, matColor, isEmbedded);
             }
         }
 

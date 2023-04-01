@@ -39,9 +39,9 @@ namespace Origin.Source.GCs
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
             if (InputManager.IsPressed("camera.zoom.plus"))
-                MainGame.cam.Zoom += zoom_step;
+                MainGame.cam.Zoom += zoom_step * MainGame.cam.Zoom;
             if (InputManager.IsPressed("camera.zoom.minus"))
-                MainGame.cam.Zoom -= zoom_step;
+                MainGame.cam.Zoom -= zoom_step * MainGame.cam.Zoom;
         }
     }
 }

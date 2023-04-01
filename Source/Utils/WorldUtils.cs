@@ -36,21 +36,46 @@ namespace Origin.Source.Utils
             return heightMap;
         }
 
-        public static SiteCell[,,] Generate3dWorldArray(float[,] heightMap, int worldWidth, int worldHeight, int worldDepth, int baseHeight, float scale)
+        public static SiteCell[,,] Generate3dWorldArray(
+            float[,] heightMap,
+            Point3 worldSize,
+            int baseHeight,
+            float scale,
+            TerraGenParameters tgp = default)
         {
-            SiteCell[,,] worldArray = new SiteCell[worldWidth, worldHeight, worldDepth];
+            if (tgp.Equals(default(TerraGenParameters))) tgp = TerraGenParameters.Default;
+            SiteCell[,,] worldArray = new SiteCell[worldSize.X, worldSize.Y, worldSize.Z];
 
             // Loop through each voxel in the world array
-            for (int x = 0; x < worldWidth; x++)
+            for (int x = 0; x < worldSize.X; x++)
             {
-                for (int y = 0; y < worldHeight; y++)
+                for (int y = 0; y < worldSize.Y; y++)
                 {
                     // Calculate the height of the voxel based on the height map
-                    float height = heightMap[x, y] * scale + baseHeight;
-                    for (int z = 0; z < worldDepth; z++)
+                    int height = (int)(heightMap[x, y] * scale + baseHeight);
+                    for (int z = 0; z < worldSize.Z; z++)
                     {
                         // Set the voxel value based on the height and the current z position
-                        worldArray[x, y, z] = new SiteCell(wmatid: (z < height ? "Granite" : AIR_NULL_MAT_ID), (z < height ? "Granite" : AIR_NULL_MAT_ID));
+                        string wall, floor, embWall, embFloor;
+                        wall = floor = embWall = embFloor = null;
+                        if (z <= height - tgp.DirtDepth)
+                        {
+                            wall = floor = "Granite";
+                        }
+                        else if (z > height - tgp.DirtDepth && z <= height)
+                        {
+                            wall = floor = "Dirt";
+                            if (z == height)
+                            {
+                                embFloor = "Grass";
+                            }
+                        }
+                        else
+                        {
+                            wall = floor = AIR_NULL_MAT_ID;
+                        }
+
+                        worldArray[x, y, z] = new SiteCell(wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor);
                     }
                 }
             }
