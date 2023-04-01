@@ -60,6 +60,7 @@ namespace Origin.Source
             ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
             //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
+            Window.Title = "Dwarf`s Origin";
 
             IsMouseVisible = true;
 
