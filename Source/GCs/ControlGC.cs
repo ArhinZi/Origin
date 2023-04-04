@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 using Origin.Source.IO;
+using Origin.Source.Utils;
 
 namespace Origin.Source.GCs
 {
@@ -24,24 +25,33 @@ namespace Origin.Source.GCs
             if (InputManager.JustPressed("game.fpswitch"))
                 MainGame.Instance.debug.Visible = !MainGame.Instance.debug.Visible;
 
-            if (InputManager.IsPressed("camera.left"))
-                MainGame.cam.Move(new Vector2(-1 * movemod, 0));
-            if (InputManager.IsPressed("camera.right"))
-                MainGame.cam.Move(new Vector2(1 * movemod, 0));
-            if (InputManager.IsPressed("camera.up"))
-                MainGame.cam.Move(new Vector2(0, -1 * movemod));
-            if (InputManager.IsPressed("camera.down"))
-                MainGame.cam.Move(new Vector2(0, 1 * movemod));
+            if (InputManager.IsPressed("Camera.left"))
+                MainGame.Camera.Move(new Vector2(-1 * movemod, 0));
+            if (InputManager.IsPressed("Camera.right"))
+                MainGame.Camera.Move(new Vector2(1 * movemod, 0));
+            if (InputManager.IsPressed("Camera.up"))
+                MainGame.Camera.Move(new Vector2(0, -1 * movemod));
+            if (InputManager.IsPressed("Camera.down"))
+                MainGame.Camera.Move(new Vector2(0, 1 * movemod));
 
             if (InputManager.JustPressed("world.level.minus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
             if (InputManager.JustPressed("world.level.plus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
-            if (InputManager.IsPressed("camera.zoom.plus"))
-                MainGame.cam.Zoom += zoom_step * MainGame.cam.Zoom;
-            if (InputManager.IsPressed("camera.zoom.minus"))
-                MainGame.cam.Zoom -= zoom_step * MainGame.cam.Zoom;
+            if (InputManager.IsPressed("Camera.zoom.plus"))
+                MainGame.Camera.Zoom += zoom_step * MainGame.Camera.Zoom;
+            if (InputManager.IsPressed("Camera.zoom.minus"))
+                MainGame.Camera.Zoom -= zoom_step * MainGame.Camera.Zoom;
+
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                if (MainWorld.Instance.ActiveSite.selectedBlock != null)
+                {
+                    MainWorld.Instance.ActiveSite.selectedBlock.RemoveWall();
+                    MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.selectedBlock.Position);
+                }
+            }
         }
     }
 }

@@ -1,14 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+using MonoGame.Extended;
 
 using SimplexNoise;
+
+using System;
 
 namespace Origin.Source.Utils
 {
     internal class WorldUtils
     {
-        public static readonly string AIR_NULL_MAT_ID = "Air";
-        public static readonly string HIDDEN_MAT_ID = "Hidden";
-
         public static float[,] GenerateHeightMap(int width, int height, float scale)
         {
             float[,] heightMap = new float[width, height];
@@ -37,6 +39,7 @@ namespace Origin.Source.Utils
         }
 
         public static SiteCell[,,] Generate3dWorldArray(
+            Site site,
             float[,] heightMap,
             Point3 worldSize,
             int baseHeight,
@@ -72,10 +75,11 @@ namespace Origin.Source.Utils
                         }
                         else
                         {
-                            wall = floor = AIR_NULL_MAT_ID;
+                            wall = floor = TerrainMaterial.AIR_NULL_MAT_ID;
                         }
 
-                        worldArray[x, y, z] = new SiteCell(wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor);
+                        worldArray[x, y, z] = new SiteCell(site, new Point3(x, y, z),
+                            wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor);
                     }
                 }
             }
@@ -83,23 +87,39 @@ namespace Origin.Source.Utils
             return worldArray;
         }
 
-        public static Point MouseScreenToMap(Point mousePos, int level)
+        public static Point3 MouseScreenToMap(Point mousePos, int level)
         {
-            Vector2 cursor = new Vector2(mousePos.X, mousePos.Y);
+            Camera2D c = MainGame.Camera;
 
-            cursor /= MainGame.cam.Zoom;
-            cursor += MainGame.cam.Pos;
+            Vector3 worldPos = MainGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), c.Projection, c.Transformation, c.WorldMatrix);
+            worldPos += new Vector3(0, level * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET), 0);
+            // Also works
+            //int tileX = (int)Math.Round((worldPos.X / Sprite.TILE_SIZE.X + worldPos.Y / Sprite.TILE_SIZE.Y - 1));
+            //int tileY = (int)Math.Round((worldPos.Y / Sprite.TILE_SIZE.Y - worldPos.X / Sprite.TILE_SIZE.X));
 
-            cursor += new Vector2(0, Sprite.TILE_SIZE.Y * level + 4);
+            var cellPosX = (worldPos.X / Sprite.TILE_SIZE.X) - 0.5;
+            var cellPosY = (worldPos.Y / Sprite.TILE_SIZE.Y) - 0.5;
 
-            var x = cursor.X + 2 * cursor.Y - Sprite.TILE_SIZE.X / 2;
-            int mapX = x < 0 ? -1 : (int)(x / Sprite.TILE_SIZE.X);
+            Vector3 cellPos = new Vector3()
+            {
+                X = (float)Math.Round((cellPosX + cellPosY)),
+                Y = (float)Math.Round((cellPosY - cellPosX))
+            };
+            return new Point3(cellPos);
+        }
 
-            var y = -cursor.X + 2 * cursor.Y + Sprite.TILE_SIZE.X / 2;
-            int mapY = y < 0 ? -1 : (int)(y / Sprite.TILE_SIZE.X);
+        public static Point GetSpritePositionByCellPosition(Point3 cellPos)
+        {
+            var VertexX = (cellPos.X - cellPos.Y) * Sprite.TILE_SIZE.X / 2;
+            var VertexY = ((cellPos.X + cellPos.Y) * Sprite.TILE_SIZE.Y / 2)
+                    - cellPos.Z * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET);
+            return new Point(VertexX, VertexY);
+        }
 
-            //Vector2 res = new Vector2(mapX, mapY);
-            return new Point(mapX, mapY);
+        public static float GetSpriteZOffsetByCellPos(Point3 cellPos)
+        {
+            var VertexZ = (cellPos.X + cellPos.Y) * SiteRenderer.Z_DIAGONAL_OFFSET;
+            return (float)VertexZ;
         }
     }
 }

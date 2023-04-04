@@ -7,6 +7,7 @@ using MonoGame.Extended.Screens.Transitions;
 using Origin.Source.GCs;
 using Origin.Source.IO;
 using Origin.Source.Screens;
+using Origin.Source.Utils;
 
 namespace Origin.Source
 {
@@ -21,14 +22,15 @@ namespace Origin.Source
         private SpriteFont spriteFont;
 
         private ScreenManager _screenManager;
+
         public FpsCountGC fpsCounter;
         public ControlGC control;
         public InfoDrawerGC debug;
 
-        public static Camera2D cam;
+        public static Camera2D Camera { get; private set; }
 
-        public static int ScreenWidth;
-        public static int ScreenHeight;
+        public static int ScreenWidth { get; private set; }
+        public static int ScreenHeight { get; private set; }
 
         public MainGame()
         {
@@ -56,7 +58,7 @@ namespace Origin.Source
         /// </summary>
         protected override void Initialize()
         {
-            ScreenHeight = graphics.PreferredBackBufferHeight = 800;
+            ScreenHeight = graphics.PreferredBackBufferHeight = 1024;
             ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
             //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
@@ -64,9 +66,8 @@ namespace Origin.Source
 
             IsMouseVisible = true;
 
-            cam = new Camera2D
+            Camera = new Camera2D
             {
-                Pos = new Vector2(0, 0),
                 Zoom = 1
             };
 
@@ -115,7 +116,7 @@ namespace Origin.Source
             ScreenWidth = graphics.PreferredBackBufferWidth;
 
             debug.Clear();
-            debug.Add("-/+ to zoom; [/] to change level; arrows to move");
+            debug.Add("-/+ to zoom; [/] to change level; arrows to move; esc to exit");
             debug.Add(fpsCounter.msg);
 
             base.Update(gameTime);

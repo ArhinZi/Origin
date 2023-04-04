@@ -22,9 +22,15 @@ namespace Origin.Source
             } // Negative zoom will flip image
         }
 
-        public Vector2 Pos { get; set; }
+        public float AspectPatio
+        {
+            get
+            {
+                return (float)MainGame.Instance.GraphicsDevice.Viewport.Width / MainGame.Instance.GraphicsDevice.Viewport.Height;
+            }
+        }
 
-        protected float Rotation { get; private set; }
+        public Vector2 Position { get; set; }
 
         public Matrix WorldMatrix { get; private set; }
 
@@ -32,13 +38,8 @@ namespace Origin.Source
         {
             get
             {
-                float aspectRatio = (float)MainGame.Instance.GraphicsDevice.Viewport.Width / MainGame.Instance.GraphicsDevice.Viewport.Height;
-                _projection = Matrix.CreateOrthographicOffCenter(0, MainGame.ScreenWidth, MainGame.ScreenHeight, 0, -100, 100) * Matrix.CreateScale(1f, aspectRatio, 1f);
+                _projection = Matrix.CreateOrthographicOffCenter(0, MainGame.ScreenWidth, MainGame.ScreenHeight, 0, -100, 100) * Matrix.CreateScale(1, AspectPatio, 1);
                 return _projection;
-            }
-            private set
-            {
-                _projection = value;
             }
         }
 
@@ -47,7 +48,7 @@ namespace Origin.Source
             get
             {
                 _transformation =
-                    Matrix.CreateTranslation(-Pos.X, -Pos.Y, 1) *
+                    Matrix.CreateTranslation(-Position.X, -Position.Y, 1) *
                     Matrix.CreateScale(Zoom, Zoom, 1) *
                     Matrix.CreateTranslation(new Vector3(MainGame.ScreenWidth * 0.5f, MainGame.ScreenHeight * 0.5f, 0));
                 return _transformation;
@@ -63,8 +64,7 @@ namespace Origin.Source
         public Camera2D()
         {
             Zoom = 1.0f;
-            Rotation = 0.0f;
-            Pos = Vector2.Zero;
+            Position = Vector2.Zero;
 
             WorldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), new Vector3(0, 0, -1), Vector3.Up);
         }
@@ -72,7 +72,7 @@ namespace Origin.Source
         // Auxiliary function to move the camera
         public void Move(Vector2 amount)
         {
-            Pos += amount;
+            Position += amount;
         }
 
         public Vector2 ScreenToWorld(Vector2 screenPos, int currentLevel)
