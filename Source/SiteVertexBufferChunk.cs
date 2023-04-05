@@ -25,6 +25,7 @@ namespace Origin.Source
         private static int _maxVertexCount = 64 * 64 * 6;
 
         public Point3 ChunkPos { get; private set; }
+        public SiteRenderer Renderer { get; private set; }
 
         private int _staticVertexIndex = 0;
         private GraphicsDevice _device;
@@ -36,10 +37,10 @@ namespace Origin.Source
         public Dictionary<Texture2D, List<VertexPositionColorTexture[]>> DynamicVertices { get; private set; }
         public Dictionary<Texture2D, List<VertexBuffer>> DynamicVertexBuffer { get; set; }
 
-        public SiteVertexBufferChunk(Point3 pos)
+        public SiteVertexBufferChunk(SiteRenderer renderer, Point3 pos)
         {
             //DynamicVertexBuffer = new Dictionary<Texture2D, List<VertexBuffer>>();
-
+            Renderer = renderer;
             ChunkPos = pos;
             _device = MainGame.Instance.GraphicsDevice;
             Reset();
@@ -68,8 +69,8 @@ namespace Origin.Source
 
         public void AddSprite(VertexBufferType type, Sprite sprite, Color col, Point3 cellPos, Point offset)
         {
-            if (cellPos.X / SiteRenderer.BASE_CHUNK_SIZE.X != ChunkPos.X &&
-               cellPos.Y / SiteRenderer.BASE_CHUNK_SIZE.Y != ChunkPos.Y)
+            if (cellPos.X / Renderer.ChunkSize.X != ChunkPos.X &&
+               cellPos.Y / Renderer.ChunkSize.Y != ChunkPos.Y)
             {
                 throw new Exception("The Cell is not from this Chunk");
             }

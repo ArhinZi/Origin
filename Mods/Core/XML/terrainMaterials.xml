@@ -30,6 +30,10 @@
 				<Key>Wall</Key>
 				<Value>SolidSelectionWall</Value>
 			</Entry>
+			<Entry>
+				<Key>Floor</Key>
+				<Value>SolidSelectionFloor</Value>
+			</Entry>
 		</SpriteDict>
 	</Material>
 

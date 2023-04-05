@@ -121,5 +121,14 @@ namespace Origin.Source.Utils
             var VertexZ = (cellPos.X + cellPos.Y) * SiteRenderer.Z_DIAGONAL_OFFSET;
             return (float)VertexZ;
         }
+
+        public static Point3 GetChunkByCell(Point3 cellPos, Point3 chunkSize)
+        {
+            Point3 chunkPos = new Point3(
+                cellPos.X / chunkSize.X,
+                cellPos.Y / chunkSize.Y,
+                cellPos.Z);
+            return chunkPos;
+        }
     }
 }
