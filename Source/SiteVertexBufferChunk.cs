@@ -82,7 +82,15 @@ namespace Origin.Source
                     {
                         foreach (var key in _dynamicVertices.Keys)
                         {
-                            _dynamicVertices[key][i].Clear();
+                            if (_dynamicVertices[key][i] != null)
+                            {
+                                if (_dynamicVertices[key][i].Count >= 1)
+                                    Array.Clear(_dynamicVertices[key][i][0]);
+                                for (int ilist = 1; ilist < _dynamicVertices[key][i].Count; ilist++)
+                                {
+                                    _dynamicVertices[key][i].Remove(_dynamicVertices[key][i][ilist]);
+                                }
+                            }
                         }
                         _dynamicVertexIndex[i] = 0;
                     }
@@ -94,7 +102,6 @@ namespace Origin.Source
             }
         }
 
-        // TODO: Fix GC Pressure for dynamic draws
         public void AddSprite(VertexBufferType type, VertexBufferLayer vblayer,
             Sprite sprite, Color col, Point3 cellPos, Point offsetPosition,
             float offsetZ = 0,
@@ -302,7 +309,7 @@ namespace Origin.Source
                         for (int i = 0; i < listVP.Count; i++)
                         {
                             int count = (i == listVP.Count - 1) ? _dynamicVertexIndex[(int)layer] : _maxVertexCount;
-                            _device.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, count / 3);
+                            if (count > 0) _device.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, count / 3);
                         }
                     }
                 }
