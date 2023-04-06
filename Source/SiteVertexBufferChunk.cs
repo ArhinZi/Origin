@@ -94,6 +94,7 @@ namespace Origin.Source
             }
         }
 
+        // TODO: Fix GC Pressure for dynamic draws
         public void AddSprite(VertexBufferType type, VertexBufferLayer vblayer,
             Sprite sprite, Color col, Point3 cellPos, Point offsetPosition,
             float offsetZ = 0,
@@ -166,15 +167,23 @@ namespace Origin.Source
             Vector2 textureBottomLeft = new Vector2((float)textureRect.Left / sprite.Texture.Width, (float)textureRect.Bottom / sprite.Texture.Height);
             Vector2 textureBottomRight = new Vector2((float)textureRect.Right / sprite.Texture.Width, (float)textureRect.Bottom / sprite.Texture.Height);
 
-            if (sprite.Effect == SpriteEffects.FlipHorizontally)
+            if (sprite.Effect == MySpriteEffect.FlipHorizontally)
             {
                 (textureTopLeft, textureTopRight) = (textureTopRight, textureTopLeft);
                 (textureBottomLeft, textureBottomRight) = (textureBottomRight, textureBottomLeft);
             }
-            if (sprite.Effect == SpriteEffects.FlipVertically)
+            if (sprite.Effect == MySpriteEffect.FlipVertically)
             {
                 (textureTopLeft, textureBottomLeft) = (textureBottomLeft, textureTopLeft);
                 (textureTopRight, textureBottomRight) = (textureBottomRight, textureTopRight);
+            }
+            if (sprite.Effect == MySpriteEffect.FlipBLTR)
+            {
+                (textureBottomLeft, textureTopRight) = (textureTopRight, textureBottomLeft);
+            }
+            if (sprite.Effect == MySpriteEffect.FlipTLBR)
+            {
+                (textureTopLeft, textureBottomRight) = (textureBottomRight, textureTopLeft);
             }
 
             // Add the vertices for the tile to the vertex buffer

@@ -31,9 +31,17 @@ namespace Origin.Source
                 var dir = spriteElement.Element("SpriteDir") != null ?
                     (IsometricDirection)Enum.Parse(typeof(IsometricDirection), spriteElement.Element("SpriteDir").Value) :
                     IsometricDirection.NONE;
-                var effect = spriteElement.Element("SpriteEffect") != null ?
-                    (SpriteEffects)Enum.Parse(typeof(SpriteEffects), spriteElement.Element("SpriteEffect").Value) :
-                    SpriteEffects.None;
+
+                var effect = MySpriteEffect.None;
+                if (spriteElement.Element("SpriteEffect") != null)
+                {
+                    string s = spriteElement.Element("SpriteEffect").Value;
+                    var ss = s.Split('|');
+                    foreach (var item in ss)
+                    {
+                        effect |= (MySpriteEffect)Enum.Parse(typeof(MySpriteEffect), item);
+                    }
+                }
 
                 new Sprite(id, texture, sourceRect, dir, effect);
             }

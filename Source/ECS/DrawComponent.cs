@@ -8,6 +8,6 @@ namespace Origin.Source.ECS
 {
     internal struct DrawComponent
     {
-        public Sprite Sprite { get; set; }
+        public Sprite[] Sprites { get; set; }
     }
 }

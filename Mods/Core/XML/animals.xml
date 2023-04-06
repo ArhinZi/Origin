@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Sprites TextureName="animals2">
+	<Sprite>
+		<SpriteID>CarpBL</SpriteID>
+		<SourceRect>0 384 128 128</SourceRect>
+		<SpriteDir>BL</SpriteDir>
+		<SpriteEffect>None</SpriteEffect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>CarpBR</SpriteID>
+		<SourceRect>0 384 128 128</SourceRect>
+		<SpriteDir>BR</SpriteDir>
+		<SpriteEffect>FlipHorizontally</SpriteEffect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>CarpTR</SpriteID>
+		<SourceRect>0 384 128 128</SourceRect>
+		<SpriteDir>TR</SpriteDir>
+		<SpriteEffect>FlipBLTR</SpriteEffect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>CarpTL</SpriteID>
+		<SourceRect>0 384 128 128</SourceRect>
+		<SpriteDir>TL</SpriteDir>
+		<SpriteEffect>FlipHorizontally|FlipTLBR</SpriteEffect>
+	</Sprite>
+</Sprites>

@@ -12,6 +12,8 @@ namespace Origin.Source.ECS
     {
         public SiteCell Cell { get; set; }
 
+        public IsometricDirection DirectionOfView { get; set; }
+
         public Site Site
         {
             get => Cell.ParentSite;

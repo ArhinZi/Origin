@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using System;
 using System.Collections.Generic;
 
 namespace Origin.Source
@@ -13,6 +14,16 @@ namespace Origin.Source
         NONE,
 
         /// <summary>
+        /// Bottom Left direction
+        /// </summary>
+        BL,
+
+        /// <summary>
+        /// Bottom Right direction
+        /// </summary>
+        BR,
+
+        /// <summary>
         /// Top Left direction
         /// </summary>
         TL,
@@ -21,16 +32,24 @@ namespace Origin.Source
         /// Top Right direction
         /// </summary>
         TR,
+    }
 
-        /// <summary>
-        /// Bottom Left direction
-        /// </summary>
-        BL,
+    [Flags]
+    public enum MySpriteEffect
+    {
+        None = 0,
 
-        /// <summary>
-        /// Bottom Right direction
-        /// </summary>
-        BR
+        //(-)
+        FlipHorizontally = 0b1,
+
+        //(|)
+        FlipVertically = 0b10,
+
+        //(/)
+        FlipBLTR = 0b100,
+
+        //(\)
+        FlipTLBR = 0b1000
     }
 
     public class Sprite
@@ -45,11 +64,11 @@ namespace Origin.Source
         public readonly Texture2D Texture;
         public readonly Rectangle RectPos;
         public IsometricDirection Direction;
-        public SpriteEffects Effect;
+        public MySpriteEffect Effect;
 
         public Sprite(string id, Texture2D texture, Rectangle pos,
             IsometricDirection dir = IsometricDirection.NONE,
-            SpriteEffects effs = SpriteEffects.None)
+            MySpriteEffect effs = MySpriteEffect.None)
         {
             ID = id;
             Texture = texture;

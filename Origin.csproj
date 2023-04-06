@@ -39,6 +39,7 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="Mods\Core\XML\animals.xml" />
 	  <None Remove="Mods\Core\XML\pawnSprite.xml" />
 	</ItemGroup>
 	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">

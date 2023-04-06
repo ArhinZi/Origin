@@ -5,8 +5,15 @@
         SpriteRect* - sprite rectangle in atlas
         SpriteDir - sprite direction (NONE, TL, TR, BL, BR). NONE - by default
         SpriteEffect - sprite effect (
-			FlipVertically - flip by horizontal line,
-			FlipHorizontally - flip by vertical line
+			None,
+			//(-)
+			FlipHorizontally,
+			//(|)
+			FlipVertically,
+			//(/)
+			FlipBLTR,
+			//(\)
+			FlipTLBR
 			). None - by default
     -->
 	<!-- <Sprite>

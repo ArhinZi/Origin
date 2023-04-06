@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -445,7 +446,17 @@ namespace Origin.Source
                     _renderChunkArray[position.Position.Z] != null &&
                     position.Site == Site)
                 {
-                    Sprite sprite = draw.Sprite;
+                    Sprite sprite;
+                    if (position.DirectionOfView != IsometricDirection.NONE)
+                    {
+                        sprite = draw.Sprites[(int)position.DirectionOfView] != null ?
+                        draw.Sprites[(int)position.DirectionOfView] :
+                        draw.Sprites[draw.Sprites[0] != null ? 0 : 1];
+                    }
+                    else
+                    {
+                        sprite = draw.Sprites[draw.Sprites[0] != null ? 0 : 1];
+                    }
                     _renderChunkArray[position.Position.Z][position.Position.X / ChunkSize.X, position.Position.Y / ChunkSize.Y].AddSprite(
                         VertexBufferType.Dynamic,
                         VertexBufferLayer.Back,
