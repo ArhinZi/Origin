@@ -37,6 +37,17 @@ namespace Origin.Source
             EmbeddedFloorID = embFloorMatID;
         }
 
+        public bool PassAbility()
+        {
+            if (WallID == TerrainMaterial.AIR_NULL_MAT_ID)
+            {
+                SiteCell sc = ParentSite.GetOrNull(Position + new Point3(0, 0, -1));
+                if (sc != null && sc.FloorID != TerrainMaterial.AIR_NULL_MAT_ID)
+                    return true;
+            }
+            return false;
+        }
+
         public void RemoveWall()
         {
             WallID = TerrainMaterial.AIR_NULL_MAT_ID;
@@ -54,6 +65,35 @@ namespace Origin.Source
         {
             RemoveBlock();
             RemoveFloor();
+        }
+
+        public SiteCell GetNextCellByDirection(IsometricDirection dir)
+        {
+            SiteCell sc = null;
+            if (dir == IsometricDirection.TL)
+                sc = ParentSite.GetOrNull(Position + new Point3(-1, 0, 0));
+            else if (dir == IsometricDirection.TR)
+                sc = ParentSite.GetOrNull(Position + new Point3(0, -1, 0));
+            else if (dir == IsometricDirection.BL)
+                sc = ParentSite.GetOrNull(Position + new Point3(0, +1, 0));
+            else if (dir == IsometricDirection.BR)
+                sc = ParentSite.GetOrNull(Position + new Point3(+1, 0, 0));
+
+            if (sc != null)
+            {
+                if (sc.PassAbility()) return sc;
+                sc = ParentSite.GetOrNull(sc.Position + new Point3(0, 0, +1));
+                if (sc != null)
+                {
+                    if (sc.PassAbility()) return sc;
+                    sc = ParentSite.GetOrNull(sc.Position + new Point3(0, 0, -2));
+                    if (sc != null)
+                    {
+                        if (sc.PassAbility()) return sc;
+                    }
+                }
+            }
+            return this;
         }
     }
 }

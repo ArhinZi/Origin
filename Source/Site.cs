@@ -13,19 +13,17 @@ namespace Origin.Source
         private SiteCell[,,] _blocks;
         public Point3 Size { get; private set; }
 
-        public SiteCell selectedBlock;
+        public MainWorld World { get; private set; }
+        public SiteCell SelectedBlock { get; private set; }
+
         private int _currentLevel;
         private SiteRenderer _renderer;
 
         public List<Point3> BlocksToReload { get; private set; }
 
-        // 64 128 192 256
-        public Site() : this(new Point3(128, 128, 100))
+        public Site(MainWorld world, Point3 size)
         {
-        }
-
-        public Site(Point3 size)
-        {
+            World = world;
             Size = size;
             GenerateBlockMap();
             MainGame.Camera.Move(new Vector2(0,
@@ -78,9 +76,9 @@ namespace Origin.Source
         public void SetSelected(Point3 pos)
         {
             if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
-                selectedBlock = null;
+                SelectedBlock = null;
             else
-                selectedBlock = Blocks[pos.X, pos.Y, pos.Z];
+                SelectedBlock = Blocks[pos.X, pos.Y, pos.Z];
         }
 
         private void GenerateBlockMap()
@@ -90,6 +88,14 @@ namespace Origin.Source
 
             Blocks = WorldUtils.Generate3dWorldArray(this, heightMap, Size, (int)(Size.Z * 0.7f), 5);
             CurrentLevel = (int)(Size.Z * 0.8f);
+        }
+
+        public SiteCell GetOrNull(Point3 pos)
+        {
+            if (pos.X >= 0 && pos.Y >= 0 && pos.Z >= 0 &&
+                pos.X < Size.X && pos.Y < Size.Y && pos.Z < Size.Z)
+                return Blocks[pos.X, pos.Y, pos.Z];
+            return null;
         }
 
         public void Update(GameTime gameTime)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Origin.Source
 {
-    public enum SpriteDirection
+    public enum IsometricDirection
     {
         /// <summary>
         /// No defined direction
@@ -36,6 +36,7 @@ namespace Origin.Source
     public class Sprite
     {
         public static readonly Point TILE_SIZE = new Point(32, 16);
+        public static readonly Point SPRITE_SIZE = new Point(32, 32);
         public static readonly int FLOOR_YOFFSET = 4;
 
         public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
@@ -43,11 +44,11 @@ namespace Origin.Source
         public readonly string ID;
         public readonly Texture2D Texture;
         public readonly Rectangle RectPos;
-        public SpriteDirection Direction;
+        public IsometricDirection Direction;
         public SpriteEffects Effect;
 
         public Sprite(string id, Texture2D texture, Rectangle pos,
-            SpriteDirection dir = SpriteDirection.NONE,
+            IsometricDirection dir = IsometricDirection.NONE,
             SpriteEffects effs = SpriteEffects.None)
         {
             ID = id;

@@ -46,10 +46,10 @@ namespace Origin.Source.GCs
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (MainWorld.Instance.ActiveSite.selectedBlock != null)
+                if (MainWorld.Instance.ActiveSite.SelectedBlock != null)
                 {
-                    MainWorld.Instance.ActiveSite.selectedBlock.RemoveWall();
-                    MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.selectedBlock.Position);
+                    MainWorld.Instance.ActiveSite.SelectedBlock.RemoveWall();
+                    MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.SelectedBlock.Position);
                 }
             }
         }

@@ -126,6 +126,12 @@ namespace Origin.Source.IO
             //Game
             BindKey("game.fpswitch", new Keybind(Keys.L));
             BindKey("game.exit", new Keybind(Keys.Escape));
+
+            // Manual control
+            BindKey("manual.tr", new Keybind(Keys.W));
+            BindKey("manual.tl", new Keybind(Keys.A));
+            BindKey("manual.br", new Keybind(Keys.D));
+            BindKey("manual.bl", new Keybind(Keys.S));
         }
 
         private static void BindKey(string name, Keybind fallback)

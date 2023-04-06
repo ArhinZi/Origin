@@ -1,17 +1,23 @@
 ﻿using Arch.Core;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using Origin.Source.ECS;
 using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
+
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Origin.Source
 {
@@ -60,7 +66,7 @@ namespace Origin.Source
         /// </summary>
         public static readonly float Z_DIAGONAL_OFFSET = 0.01f;
 
-        public static readonly Point BASE_CHUNK_SIZE = new Point(32, 32);
+        public static readonly Point BASE_CHUNK_SIZE = new Point(64, 64);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 16;
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
@@ -151,7 +157,7 @@ namespace Origin.Source
                             }
 
                             // Check if tile have neighbor above
-                            if (chunkCoord.Z + 1 <= Site.Size.Z &&
+                            if (chunkCoord.Z + 1 < Site.Size.Z &&
                                 Site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z + 1].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                             {
                                 // Then floor is invisible
@@ -223,7 +229,9 @@ namespace Origin.Source
                             //sprite = tm.Sprites["Wall"][0];
                             c = tm.TerraColor;
                             _renderChunkArray[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].AddSprite(
-                                VertexBufferType.Static, sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                                VertexBufferType.Static,
+                                VertexBufferLayer.Back,
+                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
 
                             if (tile.EmbeddedWallID != null && tile.WallVisual.HasFlag(CellVisual.Visible))
                             {
@@ -231,7 +239,9 @@ namespace Origin.Source
                                 sprite = tm.Sprites["Wall"][tile.seed % tm.Sprites["Wall"].Count];
                                 c = tm.TerraColor;
                                 _renderChunkArray[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].AddSprite(
-                                    VertexBufferType.Static, sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                                    VertexBufferType.Static,
+                                    VertexBufferLayer.Back,
+                                    sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                             }
                         }
                         else if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID &&
@@ -244,7 +254,9 @@ namespace Origin.Source
                             //sprite = tm.Sprites["Wall"][0];
                             c = tm.TerraColor;
                             _renderChunkArray[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].AddSprite(
-                                VertexBufferType.Static, sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                                VertexBufferType.Static,
+                                VertexBufferLayer.Back,
+                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                         }
                     }
 
@@ -259,7 +271,9 @@ namespace Origin.Source
                             //sprite = tm.Sprites["Floor"][0];
                             c = tm.TerraColor;
                             _renderChunkArray[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].AddSprite(
-                                VertexBufferType.Static, sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                VertexBufferType.Static,
+                                VertexBufferLayer.Front,
+                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
 
                             if (tile.EmbeddedFloorID != null && tile.FloorVisual.HasFlag(CellVisual.Visible))
                             {
@@ -268,7 +282,9 @@ namespace Origin.Source
                                 //sprite = tm.Sprites["Floor"][0];
                                 c = tm.TerraColor;
                                 _renderChunkArray[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].AddSprite(
-                                    VertexBufferType.Static, sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                    VertexBufferType.Static,
+                                    VertexBufferLayer.Front,
+                                    sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                             }
                         }
                         else if (tile.FloorID != TerrainMaterial.AIR_NULL_MAT_ID &&
@@ -280,7 +296,9 @@ namespace Origin.Source
                             sprite = tm.Sprites["Floor"][0];
                             c = tm.TerraColor;
                             _renderChunkArray[chunkCoord.Z][chunkCoord.X, chunkCoord.Y].AddSprite(
-                                VertexBufferType.Static, sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                VertexBufferType.Static,
+                                VertexBufferLayer.Front,
+                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                         }
                     }
                 }
@@ -329,7 +347,7 @@ namespace Origin.Source
             if (chunkPos.Z == _drawHighest)
                 forceVisible = true;
 
-            if (_renderChunkArray[chunkPos.Z][chunkPos.X, chunkPos.Y] == null)
+            if (_renderChunkArray[chunkPos.Z] != null && _renderChunkArray[chunkPos.Z][chunkPos.X, chunkPos.Y] == null)
                 _renderChunkArray[chunkPos.Z][chunkPos.X, chunkPos.Y] = new SiteVertexBufferChunk(this, new Point3(chunkPos.X, chunkPos.Y, chunkPos.Z));
             _renderChunkArray[chunkPos.Z][chunkPos.X, chunkPos.Y].Clear(VertexBufferType.Static);
             FillChunkVertices(new Point3(chunkPos.X, chunkPos.Y, chunkPos.Z), fillWalls, fillFloors, forceVisible);
@@ -400,19 +418,43 @@ namespace Origin.Source
             _reloadChunkList.Clear();
 
             // Test drawing mouse selection on selectedBlock
-            SiteCell tile = Site.selectedBlock;
-            if (tile != null && _renderChunkArray[tile.Position.Z] != null)
             {
-                Sprite sprite;
-                sprite = Sprite.SpriteSet["SolidSelectionWall"];
-                _renderChunkArray[tile.Position.Z][tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y].AddSprite(
-                    VertexBufferType.Dynamic, sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, 0)
-                    );
-                /*sprite = Sprite.SpriteSet["SolidSelectionFloor"];
-                _renderChunkArray[tile.Position.Z][tile.Position.X / BASE_CHUNK_SIZE.X, tile.Position.Y / BASE_CHUNK_SIZE.Y].AddSprite(
-                    VertexBufferType.Dynamic, sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, -Sprite.FLOOR_YOFFSET)
-                    );*/
+                SiteCell tile = Site.SelectedBlock;
+                if (tile != null && _renderChunkArray[tile.Position.Z] != null)
+                {
+                    Sprite sprite;
+                    sprite = Sprite.SpriteSet["SolidSelectionWall"];
+                    _renderChunkArray[tile.Position.Z][tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y].AddSprite(
+                        VertexBufferType.Dynamic,
+                        VertexBufferLayer.Front,
+                        sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, 0)
+                        );
+                    /*sprite = Sprite.SpriteSet["SolidSelectionFloor"];
+                    _renderChunkArray[tile.Position.Z][tile.Position.X / BASE_CHUNK_SIZE.X, tile.Position.Y / BASE_CHUNK_SIZE.Y].AddSprite(
+                        VertexBufferType.Dynamic, sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, -Sprite.FLOOR_YOFFSET)
+                        );*/
+                }
             }
+
+            var query = new QueryDescription().WithAll<DrawComponent, SitePositionComponent>();
+            Site.World.ECSworld.Query(in query, (in Entity entity) =>
+            {
+                var position = entity.Get<SitePositionComponent>();
+                var draw = entity.Get<DrawComponent>();
+                if (position.Position.Z <= _drawHighest && position.Position.Z > _drawLowest &&
+                    _renderChunkArray[position.Position.Z] != null &&
+                    position.Site == Site)
+                {
+                    Sprite sprite = draw.Sprite;
+                    _renderChunkArray[position.Position.Z][position.Position.X / ChunkSize.X, position.Position.Y / ChunkSize.Y].AddSprite(
+                        VertexBufferType.Dynamic,
+                        VertexBufferLayer.Back,
+                        sprite, Color.White, position.Position, new Point(0, 0),
+                        //offsetZ: -SiteRenderer.Z_DIAGONAL_OFFSET / 2,
+                        drawSize: Sprite.SPRITE_SIZE
+                        );
+                }
+            });
         }
 
         public void Draw()
