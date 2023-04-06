@@ -2,7 +2,7 @@
 
 namespace Origin.Source.Utils
 {
-    public class Point3
+    public struct Point3
     {
         public int X;
         public int Y;

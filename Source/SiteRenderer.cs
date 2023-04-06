@@ -320,7 +320,7 @@ namespace Origin.Source
             if (level == _drawHighest)
                 forceVisible = true;
 
-            for (int x = 0; x < _chunksCount.X; x++)
+            Parallel.For(0, _chunksCount.X, x =>
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
@@ -330,7 +330,8 @@ namespace Origin.Source
 
                     FillChunkVertices(new Point3(x, y, level), fillWalls, fillFloors, forceVisible);
                 }
-            }
+            });
+
             for (int x = 0; x < _chunksCount.X; x++)
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
@@ -360,7 +361,7 @@ namespace Origin.Source
             // First time slow drawing layer by layer
             if (_renderChunkArray.Count < ONE_MOMENT_DRAW_LEVELS)
             {
-                if (gameTime.TotalGameTime.Ticks % 5 == 0)
+                if (gameTime.TotalGameTime.Ticks % 3 == 0)
                 {
                     int chunkCoordZ = _drawLowest + _renderChunkArray.Count;
                     FillLevel(chunkCoordZ, fillFloors: true);
@@ -422,8 +423,7 @@ namespace Origin.Source
                 SiteCell tile = Site.SelectedBlock;
                 if (tile != null && _renderChunkArray[tile.Position.Z] != null)
                 {
-                    Sprite sprite;
-                    sprite = Sprite.SpriteSet["SolidSelectionWall"];
+                    Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
                     _renderChunkArray[tile.Position.Z][tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y].AddSprite(
                         VertexBufferType.Dynamic,
                         VertexBufferLayer.Front,

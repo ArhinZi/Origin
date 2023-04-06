@@ -30,7 +30,7 @@ namespace Origin.Source
         {
             Instance = this;
 
-            // 64 128 192 256
+            // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(256, 256, 100));
             Sites = new List<Site>
             {

@@ -32,6 +32,8 @@ namespace Origin.Source
 
     public class SiteVertexBufferChunk : IDisposable
     {
+        // Count of element in one vertex array
+        // There can be more then one vertex arrays in one chunk
         private static int _maxVertexCount = 64 * 64 * 6;
 
         public Point3 ChunkPos { get; private set; }
@@ -75,8 +77,20 @@ namespace Origin.Source
             else if (type == VertexBufferType.Dynamic)
             {
                 //DisposeDynamicBuffer();
-                _dynamicVertices = new Dictionary<Texture2D, List<VertexPositionColorTexture[]>[]>();
-                _dynamicVertexIndex = new int[Enum.GetNames(typeof(VertexBufferLayer)).Length];
+                if (_dynamicVertices != null)
+                    for (int i = 0; i < Enum.GetNames(typeof(VertexBufferLayer)).Length; i++)
+                    {
+                        foreach (var key in _dynamicVertices.Keys)
+                        {
+                            _dynamicVertices[key][i].Clear();
+                        }
+                        _dynamicVertexIndex[i] = 0;
+                    }
+                else
+                {
+                    _dynamicVertices = new Dictionary<Texture2D, List<VertexPositionColorTexture[]>[]>();
+                    _dynamicVertexIndex = new int[Enum.GetNames(typeof(VertexBufferLayer)).Length];
+                }
             }
         }
 
@@ -173,6 +187,10 @@ namespace Origin.Source
             vertices[index++] = new VertexPositionColorTexture(bottomLeft, col, textureBottomLeft);
         }
 
+        /// <summary>
+        /// Sends vertex buffers to videochip. Something like Update button.
+        /// Caution! Dont run it in threads. It causes suspension;
+        /// </summary>
         public void SetStaticBuffer()
         {
             DisposeStaticBuffer();
