@@ -25,13 +25,16 @@ namespace Origin.Source
 
     public enum VertexBufferLayer
     {
-        Back = 0,
-        Middle = 1,
-        Front = 2
+        HiddenBack,
+        Back,
+        HiddenFront,
+        Front
     }
 
     public class SiteVertexBufferChunk : IDisposable
     {
+        private static readonly object Lock = new object();
+
         // Count of element in one vertex array
         // There can be more then one vertex arrays in one chunk
         private static int _maxVertexCount = 64 * 64 * 6;
@@ -40,7 +43,7 @@ namespace Origin.Source
         public SiteRenderer Renderer { get; private set; }
 
         private GraphicsDevice _device;
-        private HashSet<Texture2D> _texture2Ds;
+        private static HashSet<Texture2D> _texture2Ds;
 
         private int[] _staticVertexIndex;
         private Dictionary<Texture2D, List<VertexPositionColorTexture[]>[]> _staticVertices;
@@ -130,15 +133,18 @@ namespace Origin.Source
                 throw new NotImplementedException();
             }
 
-            if (!vertexBatches.ContainsKey(sprite.Texture))
+            lock (Lock)
             {
-                List<VertexPositionColorTexture[]>[] tmp = new List<VertexPositionColorTexture[]>[Enum.GetNames(typeof(VertexBufferLayer)).Length];
-                for (int i = 0; i < tmp.Length; i++)
+                if (!vertexBatches.ContainsKey(sprite.Texture))
                 {
-                    tmp[i] = new List<VertexPositionColorTexture[]>();
+                    List<VertexPositionColorTexture[]>[] tmp = new List<VertexPositionColorTexture[]>[Enum.GetNames(typeof(VertexBufferLayer)).Length];
+                    for (int i = 0; i < tmp.Length; i++)
+                    {
+                        tmp[i] = new List<VertexPositionColorTexture[]>();
+                    }
+                    vertexBatches.Add(sprite.Texture, tmp);
+                    _texture2Ds.Add(sprite.Texture);
                 }
-                vertexBatches.Add(sprite.Texture, tmp);
-                _texture2Ds.Add(sprite.Texture);
             }
             List<VertexPositionColorTexture[]> verticesList = vertexBatches[sprite.Texture][(int)vblayer];
             if (verticesList.Count == 0 ||
@@ -229,6 +235,7 @@ namespace Origin.Source
                         vb.SetData(tarr, 0, count);
                         lvb[ilayer].Add(vb);
                     }
+                    list.Clear();
                 }
                 _staticVertexBuffer.Add(key, lvb);
             }
@@ -284,9 +291,10 @@ namespace Origin.Source
             }
         }*/
 
-        public void Draw(AlphaTestEffect effect)
+        public void Draw(AlphaTestEffect effect, Array typesToDraw = null)
         {
-            foreach (var layer in Enum.GetValues(typeof(VertexBufferLayer)))
+            if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
+            foreach (var layer in typesToDraw)
             {
                 foreach (var key in _texture2Ds)
                 {

@@ -10,14 +10,14 @@ namespace Origin.Source
 {
     public class Site : IDisposable
     {
-        private SiteCell[,,] _blocks;
+        public SiteCell[,,] Blocks { get; set; }
         public Point3 Size { get; private set; }
 
         public MainWorld World { get; private set; }
         public SiteCell SelectedBlock { get; private set; }
 
         private int _currentLevel;
-        private SiteRenderer _renderer;
+        private SiteRenderer Renderer { get; }
 
         public List<Point3> BlocksToReload { get; private set; }
 
@@ -25,6 +25,7 @@ namespace Origin.Source
         {
             World = world;
             Size = size;
+            Blocks = new SiteCell[Size.X, Size.Y, Size.Z];
             GenerateBlockMap();
             MainGame.Camera.Move(new Vector2(0,
                 -(CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
@@ -32,6 +33,8 @@ namespace Origin.Source
                  )));
 
             BlocksToReload = new List<Point3>();
+
+            Renderer = new SiteRenderer(this, MainGame.Instance.GraphicsDevice);
         }
 
         public int CurrentLevel
@@ -42,34 +45,6 @@ namespace Origin.Source
                 if (value < 0) _currentLevel = 0;
                 else if (value > Size.Z - 1) _currentLevel = Size.Z - 1;
                 else _currentLevel = value;
-            }
-        }
-
-        public SiteRenderer Renderer
-        {
-            get
-            {
-                if (_renderer == null)
-                {
-                    _renderer = new SiteRenderer(this, MainGame.Instance.GraphicsDevice);
-                }
-                return _renderer;
-            }
-        }
-
-        public SiteCell[,,] Blocks
-        {
-            get
-            {
-                if (_blocks == null)
-                {
-                    _blocks = new SiteCell[Size.X, Size.Y, Size.Z];
-                }
-                return _blocks;
-            }
-            private set
-            {
-                _blocks = value;
             }
         }
 

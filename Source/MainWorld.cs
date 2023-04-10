@@ -31,7 +31,7 @@ namespace Origin.Source
             Instance = this;
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Utils.Point3(256, 256, 100));
+            ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
             Sites = new List<Site>
             {
                 ActiveSite
@@ -40,7 +40,7 @@ namespace Origin.Source
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = Sprite.SpriteSet["tempPawn"];
             var entity = ECSworld.Create(new UserControlPawnComponent(),
-                new SitePositionComponent() { Cell = ActiveSite.Blocks[0, 0, 76] },
+                new SitePositionComponent() { Cell = ActiveSite.Blocks[0, 0, 95] },
                 new DrawComponent() { Sprites = sd });
         }
 
