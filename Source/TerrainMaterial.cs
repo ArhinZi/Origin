@@ -10,6 +10,8 @@ namespace Origin.Source
             new Dictionary<string, TerrainMaterial>();
 
         public static readonly Color UNKNOWN_COLOR = new Color(245, 66, 224);
+        public static readonly string AIR_NULL_MAT_ID = "Air";
+        public static readonly string HIDDEN_MAT_ID = "Hidden";
 
         public string ID { get; private set; }
         public bool IsEmbedded { get; private set; }

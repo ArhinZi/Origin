@@ -25,8 +25,11 @@ namespace Origin.Source.Screens
         {
             MouseState currentMouseState = Mouse.GetState();
             Game.debug.Add("Mouse POS: " + currentMouseState.Position.ToString());
-            Game.debug.Add("Cam ZOOM: " + MainGame.cam.Zoom.ToString());
-            Game.debug.Add("Cam POS: " + MainGame.cam.Pos.ToString());
+
+            Game.debug.Add("Cam ZOOM: " + MainGame.Camera.Zoom.ToString());
+            Game.debug.Add("Cam POS: " + MainGame.Camera.Position.ToString());
+            //Game.debug.Add("Cam Projection: " + MainGame.Camera.Projection.ToString());
+            //Game.debug.Add("Cam Transformation: " + MainGame.Camera.Transformation.ToString());
 
             Game.debug.Add("Curr LEVEL: " + _world.ActiveSite.CurrentLevel.ToString());
 

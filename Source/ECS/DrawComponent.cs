@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.ECS
 {
-    public struct PositionComponent
+    internal struct DrawComponent
     {
-        public int x;
-        public int y;
-        public int z;
+        public Sprite[] Sprites { get; set; }
     }
 }

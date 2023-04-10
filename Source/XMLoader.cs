@@ -29,11 +29,19 @@ namespace Origin.Source
                 var id = spriteElement.Element("SpriteID").Value;
                 var sourceRect = ParseRectangle(spriteElement.Element("SourceRect").Value);
                 var dir = spriteElement.Element("SpriteDir") != null ?
-                    (SpriteDirection)Enum.Parse(typeof(SpriteDirection), spriteElement.Element("SpriteDir").Value) :
-                    SpriteDirection.NONE;
-                var effect = spriteElement.Element("SpriteEffect") != null ?
-                    (SpriteEffects)Enum.Parse(typeof(SpriteEffects), spriteElement.Element("SpriteEffect").Value) :
-                    SpriteEffects.None;
+                    (IsometricDirection)Enum.Parse(typeof(IsometricDirection), spriteElement.Element("SpriteDir").Value) :
+                    IsometricDirection.NONE;
+
+                var effect = MySpriteEffect.None;
+                if (spriteElement.Element("SpriteEffect") != null)
+                {
+                    string s = spriteElement.Element("SpriteEffect").Value;
+                    var ss = s.Split('|');
+                    foreach (var item in ss)
+                    {
+                        effect |= (MySpriteEffect)Enum.Parse(typeof(MySpriteEffect), item);
+                    }
+                }
 
                 new Sprite(id, texture, sourceRect, dir, effect);
             }
