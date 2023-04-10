@@ -129,10 +129,10 @@ namespace Origin.Source.IO
             BindKey("game.exit", new Keybind(Keys.Escape));
 
             // Manual control
-            BindKey("manual.tr", new Keybind(Keys.W));
-            BindKey("manual.tl", new Keybind(Keys.A));
-            BindKey("manual.br", new Keybind(Keys.D));
-            BindKey("manual.bl", new Keybind(Keys.S));
+            BindKey("manual.tr", new Keybind(Keys.W, 30, 10));
+            BindKey("manual.tl", new Keybind(Keys.A, 30, 10));
+            BindKey("manual.br", new Keybind(Keys.D, 30, 10));
+            BindKey("manual.bl", new Keybind(Keys.S, 30, 10));
         }
 
         private static void BindKey(string name, Keybind fallback)

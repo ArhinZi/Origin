@@ -38,10 +38,7 @@ namespace Origin.Source
             };
 
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
-            sd[(int)IsometricDirection.TL] = Sprite.SpriteSet["CarpTL"];
-            sd[(int)IsometricDirection.TR] = Sprite.SpriteSet["CarpTR"];
-            sd[(int)IsometricDirection.BL] = Sprite.SpriteSet["CarpBL"];
-            sd[(int)IsometricDirection.BR] = Sprite.SpriteSet["CarpBR"];
+            sd[(int)IsometricDirection.NONE] = Sprite.SpriteSet["tempPawn"];
             var entity = ECSworld.Create(new UserControlPawnComponent(),
                 new SitePositionComponent() { Cell = ActiveSite.Blocks[0, 0, 76] },
                 new DrawComponent() { Sprites = sd });
@@ -62,22 +59,22 @@ namespace Origin.Source
                     var position = entity.Get<SitePositionComponent>();
                     SiteCell sc = null;
                     IsometricDirection dir = IsometricDirection.NONE;
-                    if (InputManager.IsPressed("manual.tl"))
+                    if (InputManager.JustPressedAndHoldDelayed("manual.tl"))
                     {
                         sc = position.Cell.GetNextCellByDirection(IsometricDirection.TL);
                         dir = IsometricDirection.TL;
                     }
-                    if (InputManager.IsPressed("manual.tr"))
+                    if (InputManager.JustPressedAndHoldDelayed("manual.tr"))
                     {
                         sc = position.Cell.GetNextCellByDirection(IsometricDirection.TR);
                         dir = IsometricDirection.TR;
                     }
-                    if (InputManager.IsPressed("manual.bl"))
+                    if (InputManager.JustPressedAndHoldDelayed("manual.bl"))
                     {
                         sc = position.Cell.GetNextCellByDirection(IsometricDirection.BL);
                         dir = IsometricDirection.BL;
                     }
-                    if (InputManager.IsPressed("manual.br"))
+                    if (InputManager.JustPressedAndHoldDelayed("manual.br"))
                     {
                         sc = position.Cell.GetNextCellByDirection(IsometricDirection.BR);
                         dir = IsometricDirection.BR;
