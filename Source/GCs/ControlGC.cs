@@ -34,9 +34,9 @@ namespace Origin.Source.GCs
             if (InputManager.IsPressed("Camera.down"))
                 MainGame.Camera.Move(new Vector2(0, 1 * movemod));
 
-            if (InputManager.JustPressed("world.level.minus"))
+            if (InputManager.JustPressedAndHoldDelayed("world.level.minus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
-            if (InputManager.JustPressed("world.level.plus"))
+            if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
             if (InputManager.IsPressed("Camera.zoom.plus"))

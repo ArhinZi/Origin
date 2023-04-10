@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Origin.Source.IO
 {
@@ -120,8 +121,8 @@ namespace Origin.Source.IO
             BindKey("camera.zoom.minus", new Keybind(Keys.OemMinus));
 
             //World
-            BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets));
-            BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets));
+            BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets, 30, 10));
+            BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 30, 10));
 
             //Game
             BindKey("game.fpswitch", new Keybind(Keys.L));
@@ -170,7 +171,7 @@ namespace Origin.Source.IO
         /// <returns></returns>
         public static Keybind CaptureBinding()
         {
-            Keybind currentBinding = new Keybind();
+            Keybind currentBinding = null;
 
             //Get the first element in the current keyboard keys
             currentBinding.keyboardBinding = CurrentKeys.GetPressedKeys()[0];
@@ -353,8 +354,6 @@ namespace Origin.Source.IO
         /// <summary>
         /// Returns whether the keybind is currently pressed.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static bool IsPressed(string name)
         {
             if (keybinds.ContainsKey(name.ToLower()))
@@ -370,8 +369,6 @@ namespace Origin.Source.IO
         /// <summary>
         /// Returns whether the keybind was released
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static bool JustReleased(string name)
         {
             if (keybinds.ContainsKey(name.ToLower()))
@@ -387,13 +384,36 @@ namespace Origin.Source.IO
         /// <summary>
         /// Returns whether the keybind started being pressed
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
         public static bool JustPressed(string name)
         {
             if (keybinds.ContainsKey(name.ToLower()))
             {
-                return IsKeybindPressedCurrent(keybinds[name.ToLower()]) == true && IsKeybindPressedPrevious(keybinds[name.ToLower()]) == false;
+                bool res = IsKeybindPressedCurrent(keybinds[name.ToLower()]) == true && IsKeybindPressedPrevious(keybinds[name.ToLower()]) == false;
+                return res;
+            }
+
+            Console.Error.WriteLine("Keybind \"" + name.ToLower() + "\" doesn't exist! (ERR_KEYBIND_NULL)");
+
+            return false;
+        }
+
+        public static bool JustPressedAndHoldDelayed(string name)
+        {
+            if (keybinds.ContainsKey(name.ToLower()))
+            {
+                bool justPressed = IsKeybindPressedCurrent(keybinds[name.ToLower()]) == true && IsKeybindPressedPrevious(keybinds[name.ToLower()]) == false;
+                if (justPressed)
+                {
+                    keybinds[name.ToLower()].SetInitialDelay();
+                    return true;
+                }
+                bool isPressed = IsKeybindPressedCurrent(keybinds[name.ToLower()]) && keybinds[name.ToLower()].delayTimer == 0;
+                if (isPressed)
+                {
+                    keybinds[name.ToLower()].SetRepeatDelay();
+                    return true;
+                }
+                return false;
             }
 
             Console.Error.WriteLine("Keybind \"" + name.ToLower() + "\" doesn't exist! (ERR_KEYBIND_NULL)");
@@ -468,6 +488,11 @@ namespace Origin.Source.IO
             //Set the current state
             CurrentKeys = Keyboard.GetState();
             CurrentMouse = Mouse.GetState();
+
+            foreach (var kbkey in keybinds.Keys)
+            {
+                keybinds[kbkey].TickTimer();
+            }
         }
 
         public static void FinalUpdate()
@@ -556,11 +581,15 @@ namespace Origin.Source.IO
 
     #region Enums
 
-    public struct Keybind
+    public class Keybind
     {
         public Keys keyboardBinding;
         public MouseButton mouseBinding;
         public Buttons gamepadBinding;
+
+        public ushort initialDelay = 0;
+        public ushort repeatDelay = 0;
+        public ushort delayTimer = 0;
 
         /// <summary>
         /// Whether to use keyboard or mouse on this keybind
@@ -579,6 +608,19 @@ namespace Origin.Source.IO
             keyboardBinding = key;
             mouseBinding = new MouseButton();
             gamepadBinding = new Buttons();
+
+            GamepadOnly = false;
+            PreferKeyboard = true;
+        }
+
+        public Keybind(Keys key, ushort initDelay, ushort repDelay)
+        {
+            keyboardBinding = key;
+            mouseBinding = new MouseButton();
+            gamepadBinding = new Buttons();
+
+            initialDelay = initDelay;
+            repeatDelay = repDelay;
 
             GamepadOnly = false;
             PreferKeyboard = true;
@@ -625,6 +667,25 @@ namespace Origin.Source.IO
         }
 
         #endregion Constructors
+
+        #region Methods
+
+        public void TickTimer()
+        {
+            if (delayTimer > 0) delayTimer--;
+        }
+
+        public void SetInitialDelay()
+        {
+            delayTimer = initialDelay;
+        }
+
+        public void SetRepeatDelay()
+        {
+            delayTimer = repeatDelay;
+        }
+
+        #endregion Methods
     }
 
     /// <summary>
