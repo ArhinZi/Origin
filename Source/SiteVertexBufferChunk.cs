@@ -43,7 +43,7 @@ namespace Origin.Source
         public SiteRenderer Renderer { get; private set; }
 
         private GraphicsDevice _device;
-        private static HashSet<Texture2D> _texture2Ds;
+        private static HashSet<Texture2D> _texture2Ds = new HashSet<Texture2D>();
 
         private int[] _staticVertexIndex;
         private Dictionary<Texture2D, List<VertexPositionColorTexture[]>[]> _staticVertices;
@@ -66,7 +66,6 @@ namespace Origin.Source
         {
             Clear(VertexBufferType.Static);
             Clear(VertexBufferType.Dynamic);
-            _texture2Ds = new HashSet<Texture2D>();
         }
 
         public void Clear(VertexBufferType type)
@@ -291,14 +290,14 @@ namespace Origin.Source
             }
         }*/
 
-        public void Draw(AlphaTestEffect effect, Array typesToDraw = null)
+        public void Draw(Effect effect, Array typesToDraw = null)
         {
             if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
             foreach (var layer in typesToDraw)
             {
                 foreach (var key in _texture2Ds)
                 {
-                    effect.Texture = key;
+                    effect.Parameters["Texture"].SetValue(key);
                     effect.CurrentTechnique.Passes[0].Apply();
                     if (_staticVertexBuffer.ContainsKey(key))
                     {

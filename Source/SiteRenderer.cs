@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
@@ -52,11 +51,8 @@ namespace Origin.Source
 
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
 
-        // Shader with fix alpha blend
-        // Using instead of BasicEffect, but fixes problem with bad alpha blending with z offset
+        private Effect _customEffect;
         private AlphaTestEffect _alphaTestEffect;
-
-        private BasicEffect _basicEffect;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
@@ -94,26 +90,14 @@ namespace Origin.Source
             _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
+            _customEffect = MainGame.Instance.Content.Load<Effect>("FX/MegaShader");
+            _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
+
             CalcVisibility();
             for (int z = 0; z < _chunksCount.Z; z++)
             {
                 FillLevel(z);
             }
-
-            _alphaTestEffect = new AlphaTestEffect(MainGame.Instance.GraphicsDevice);
-            _alphaTestEffect.VertexColorEnabled = true;
-        }
-
-        private Vector2 MapToScreen(int mapX, int mapY, int mapZ)
-        {
-            var screenX = (mapX - mapY) * Sprite.TILE_SIZE.X / 2;
-            var screenY = (mapY + mapX) * Sprite.TILE_SIZE.Y / 2 + -mapZ * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET);
-
-            Vector2 res = new Vector2(screenX, screenY);
-            //res += MainGame.cam.Pos;
-            //res *= MainGame.cam.Zoom;
-            //Matrix inverted = Matrix.Invert(MainGame.cam.get_transformation(MainGame.instance.GraphicsDevice));
-            return res;
         }
 
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
@@ -437,12 +421,15 @@ namespace Origin.Source
 
         private void DrawVertices()
         {
-            _alphaTestEffect.World = MainGame.Camera.WorldMatrix;
-            _alphaTestEffect.View = MainGame.Camera.Transformation;
-            _alphaTestEffect.Projection = MainGame.Camera.Projection;
-            _alphaTestEffect.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            _alphaTestEffect.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            Matrix WVP = Matrix.Multiply(Matrix.Multiply(MainGame.Camera.WorldMatrix, MainGame.Camera.Transformation),
+                MainGame.Camera.Projection);
 
+            _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
+            //_customEffect.Parameters["AlphaTest"].SetValue(alphaTest);
+
+            _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             /*SamplerState samplerState = new SamplerState
             {
                 Filter = TextureFilter.Linear,
@@ -459,10 +446,10 @@ namespace Origin.Source
                     for (int y = 0; y < _chunksCount.Y; y++)
                     {
                         if (z == _drawHighest)
-                            _renderChunkArray[x, y, z].Draw(_alphaTestEffect,
+                            _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new VertexBufferLayer[] { VertexBufferLayer.HiddenBack, VertexBufferLayer.Back }.ToArray());
                         else
-                            _renderChunkArray[x, y, z].Draw(_alphaTestEffect,
+                            _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new VertexBufferLayer[] { VertexBufferLayer.Back, VertexBufferLayer.Front }.ToArray());
 
                         _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);

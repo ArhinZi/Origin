@@ -17,6 +17,8 @@ namespace Origin.Source
         public SiteCell SelectedBlock { get; private set; }
 
         private int _currentLevel;
+
+        public float SiteTime = 0.5f;
         private SiteRenderer Renderer { get; }
 
         public List<Point3> BlocksToReload { get; private set; }
@@ -80,6 +82,8 @@ namespace Origin.Source
             SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
             MainGame.Instance.debug.Add("Block: " + sel.ToString());
 
+            SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
+            MainGame.Instance.debug.Add("DayTime: " + (SiteTime).ToString("#.##"));
             Renderer.Update(gameTime);
         }
 
