@@ -63,23 +63,16 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target0
     // clip pixel if too opakue
     clip((color.a < 0.1) ? -1 : 1);
     
-    // Define the sunrise and sunset colors
-    float3 sunriseColor = float3(1.0, 0.7, 0.6);
-    float3 sunsetColor = float3(1.0, 0.4, 0.3);
-    
     // calc and apply light
     float1 light = 1 - abs(DayTime * 2 - 1);
-    color.rgb = color.rgb * light;
     
-    // Compute the final color
-    if (DayTime < 0.5)
-    {
-        color.rgb *= lerp(sunriseColor, sunsetColor, light);
-    }
-    else
-    {
-        color.rgb *= lerp(sunsetColor, sunriseColor, light);
-    }
+    // light darken
+    //color.rgb = color.rgb * light;
+    
+    // light desaturation
+    float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
+    float3 grayScale = float3(luminance, luminance, luminance)/2;
+    color.rgb = lerp(grayScale, color.rgb, float3(light,light,light));
     
     return color;
 }
