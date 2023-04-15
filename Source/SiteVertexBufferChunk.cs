@@ -37,10 +37,12 @@ namespace Origin.Source
 
         // Count of element in one vertex array
         // There can be more then one vertex arrays in one chunk
-        private static int _maxVertexCount = 64 * 64 * 6;
+        private static int _maxVertexCount = SiteRenderer.BASE_CHUNK_SIZE.X * SiteRenderer.BASE_CHUNK_SIZE.Y * 6;
 
         public Point3 ChunkPos { get; private set; }
         public SiteRenderer Renderer { get; private set; }
+
+        public bool IsSet { get; private set; }
 
         private GraphicsDevice _device;
         private static HashSet<Texture2D> _texture2Ds = new HashSet<Texture2D>();
@@ -261,6 +263,7 @@ namespace Origin.Source
                 }
                 _staticVertexBuffer.Add(key, vbarray);
             }*/
+            IsSet = true;
         }
 
         /*public void SetDynamicBuffer()

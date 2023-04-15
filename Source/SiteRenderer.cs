@@ -94,10 +94,15 @@ namespace Origin.Source
             _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
 
             CalcVisibility();
-            for (int z = 0; z < _chunksCount.Z; z++)
+            Parallel.For(0, _chunksCount.Z, z =>
+            //for (int z = 0; z < _chunksCount.Z; z++)
             {
                 FillLevel(z);
-            }
+            });
+            /*for (int z = 0; z < _chunksCount.Z; z++)
+            {
+                SetLevel(z);
+            }*/
         }
 
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
@@ -297,8 +302,8 @@ namespace Origin.Source
         /// <param name="fillFloors"></param>
         private void FillLevel(int level)
         {
-            //for (int x = 0; x < _chunksCount.X; x++)
-            Parallel.For(0, _chunksCount.X, x =>
+            for (int x = 0; x < _chunksCount.X; x++)
+            //Parallel.For(0, _chunksCount.X, x =>
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
@@ -308,13 +313,15 @@ namespace Origin.Source
 
                     FillChunkVertices(new Point3(x, y, level));
                 }
-            });
+            };
+        }
 
+        private void SetLevel(int level)
+        {
             for (int x = 0; x < _chunksCount.X; x++)
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
-                    //if (_renderChunkArray[level][x, y] != null)
                     _renderChunkArray[x, y, level].SetStaticBuffer();
                 }
             }
@@ -425,19 +432,10 @@ namespace Origin.Source
                 MainGame.Camera.Projection);
 
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
-            //_customEffect.Parameters["AlphaTest"].SetValue(alphaTest);
-
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-            /*SamplerState samplerState = new SamplerState
-            {
-                Filter = TextureFilter.Linear,
-                *//*AddressU = TextureAddressMode.Clamp,
-                AddressV = TextureAddressMode.Clamp,
-                AddressW = TextureAddressMode.Clamp*//*
-            };
-            _graphicsDevice.SamplerStates[0] = samplerState;*/
 
             for (int z = _drawLowest; z <= _drawHighest; z++)
             {
@@ -445,6 +443,9 @@ namespace Origin.Source
                 {
                     for (int y = 0; y < _chunksCount.Y; y++)
                     {
+                        if (!_renderChunkArray[x, y, z].IsSet)
+                            _renderChunkArray[x, y, z].SetStaticBuffer();
+
                         if (z == _drawHighest)
                             _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new VertexBufferLayer[] { VertexBufferLayer.HiddenBack, VertexBufferLayer.Back }.ToArray());
