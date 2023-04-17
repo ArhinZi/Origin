@@ -9,6 +9,8 @@
 
 float4x4 WorldViewProjection;
 
+float2 MinMaxLevel;
+
 Texture2D Texture;
 sampler2D TextureSampler = sampler_state
 {
@@ -29,17 +31,18 @@ float4 AmbientColor = float4(1, 1, 1, 1);
 
 struct VertexShaderInput
 {
-    float4 Position : SV_Position;
+    float4 Position : POSITION0;
+    float4 Color : COLOR0;
     float2 TextureCoordinates : TEXCOORD0;
-    float4 Color : COLOR;
+    float3 BlockPosition : TEXCOORD1;
 };
 
 struct VertexShaderOutput
 {
     float4 Position : POSITION0;
-    float2 TextureCoordinates : TEXCOORD1;
+    float2 TextureCoordinates : TEXCOORD0;
     float4 Diffuse : COLOR0;
-    float4 LayerNNN : TEXCOORD2;
+    float3 BlockPosition : TEXCOORD1;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -49,7 +52,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     output.Position = mul(input.Position, WorldViewProjection);
     output.TextureCoordinates = input.TextureCoordinates;
     output.Diffuse = input.Color;
-    output.LayerNNN = float4(0, 0, 0, 0);
+    output.BlockPosition = input.BlockPosition;
 
     return output;
 }
@@ -74,7 +77,13 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target0
     float3 grayScale = float3(luminance, luminance, luminance)/2;
     color.rgb = lerp(grayScale, color.rgb, float3(light,light,light));
     
-    return color;
+    // level shading
+    color.rgb *= (1- (MinMaxLevel.y - input.BlockPosition.z) * 0.05);
+    //if (input.BlockPosition.z == 0)
+      //  color.rgb = float3(0, 0, 0);
+    //color.rgb *= 1;
+    //color.rgb = input.BlockPosition.rgb;
+        return color;
 }
 
 technique MainTech

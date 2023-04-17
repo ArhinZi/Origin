@@ -433,6 +433,7 @@ namespace Origin.Source
 
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+            _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
