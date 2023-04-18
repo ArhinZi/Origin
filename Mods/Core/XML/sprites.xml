@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Sprites TextureName="default2">
+<Sprites TextureName="default0">
 	<!--
         SpriteID* - sprite name
         SpriteRect* - sprite rectangle in atlas
