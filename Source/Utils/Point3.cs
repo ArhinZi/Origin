@@ -85,6 +85,11 @@ namespace Origin.Source.Utils
             return $"({X}, {Y}, {Z})";
         }
 
+        public Vector3 ToVector3()
+        {
+            return new Vector3(X, Y, Z);
+        }
+
         public override int GetHashCode()
         {
             return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();

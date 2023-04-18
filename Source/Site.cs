@@ -17,7 +17,9 @@ namespace Origin.Source
         public SiteCell SelectedBlock { get; private set; }
 
         private int _currentLevel;
-        private SiteRenderer Renderer { get; }
+
+        public float SiteTime = 0.5f;
+        private SiteRenderer Renderer { get; set; }
 
         public List<Point3> BlocksToReload { get; private set; }
 
@@ -26,7 +28,10 @@ namespace Origin.Source
             World = world;
             Size = size;
             Blocks = new SiteCell[Size.X, Size.Y, Size.Z];
-            GenerateBlockMap();
+        }
+
+        public void Init()
+        {
             MainGame.Camera.Move(new Vector2(0,
                 -(CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
                     - Sprite.TILE_SIZE.Y * (Size.X / 2)
@@ -56,15 +61,6 @@ namespace Origin.Source
                 SelectedBlock = Blocks[pos.X, pos.Y, pos.Z];
         }
 
-        private void GenerateBlockMap()
-        {
-            float[,] heightMap = WorldUtils.GenerateHeightMap(Size.X, Size.Y, 0.005f);
-            //float[,] heightMap = WorldUtils.GenerateFlatHeightMap(Size.X, Size.Y);
-
-            Blocks = WorldUtils.Generate3dWorldArray(this, heightMap, Size, (int)(Size.Z * 0.7f), 5);
-            CurrentLevel = (int)(Size.Z * 0.8f);
-        }
-
         public SiteCell GetOrNull(Point3 pos)
         {
             if (pos.X >= 0 && pos.Y >= 0 && pos.Z >= 0 &&
@@ -80,6 +76,9 @@ namespace Origin.Source
             SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
             MainGame.Instance.debug.Add("Block: " + sel.ToString());
 
+            //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
+            SiteTime = 0.5f;
+            MainGame.Instance.debug.Add("DayTime: " + (SiteTime).ToString("#.##"));
             Renderer.Update(gameTime);
         }
 

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SiteGenParameters>
+	// Types: Int, Float
+	<Parameter Type="Int">
+		<Name>DirtDepth</Name>
+		<Min>0</Min>
+		<DefaultValue>4</DefaultValue>
+		<Max>100</Max>
+	</Parameter>
+	<Parameter Type="Float">
+		<Name>Scale</Name>
+		<Min>0</Min>
+		<DefaultValue>0,005</DefaultValue>
+		<Max>1</Max>
+	</Parameter>
+</SiteGenParameters>

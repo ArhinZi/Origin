@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SitePasses>
+	<Pass>
+		<Class>Origin.Source.SiteGenerator.TerrainPass</Class>
+		<Order>0</Order>
+	</Pass>
+</SitePasses>

@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
@@ -52,11 +51,8 @@ namespace Origin.Source
 
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
 
-        // Shader with fix alpha blend
-        // Using instead of BasicEffect, but fixes problem with bad alpha blending with z offset
+        private Effect _customEffect;
         private AlphaTestEffect _alphaTestEffect;
-
-        private BasicEffect _basicEffect;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
@@ -94,26 +90,19 @@ namespace Origin.Source
             _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
 
+            _customEffect = MainGame.Instance.Content.Load<Effect>("FX/MegaShader");
+            _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
+
             CalcVisibility();
-            for (int z = 0; z < _chunksCount.Z; z++)
+            Parallel.For(0, _chunksCount.Z, z =>
+            //for (int z = 0; z < _chunksCount.Z; z++)
             {
                 FillLevel(z);
-            }
-
-            _alphaTestEffect = new AlphaTestEffect(MainGame.Instance.GraphicsDevice);
-            _alphaTestEffect.VertexColorEnabled = true;
-        }
-
-        private Vector2 MapToScreen(int mapX, int mapY, int mapZ)
-        {
-            var screenX = (mapX - mapY) * Sprite.TILE_SIZE.X / 2;
-            var screenY = (mapY + mapX) * Sprite.TILE_SIZE.Y / 2 + -mapZ * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET);
-
-            Vector2 res = new Vector2(screenX, screenY);
-            //res += MainGame.cam.Pos;
-            //res *= MainGame.cam.Zoom;
-            //Matrix inverted = Matrix.Invert(MainGame.cam.get_transformation(MainGame.instance.GraphicsDevice));
-            return res;
+            });
+            /*for (int z = 0; z < _chunksCount.Z; z++)
+            {
+                SetLevel(z);
+            }*/
         }
 
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
@@ -313,8 +302,8 @@ namespace Origin.Source
         /// <param name="fillFloors"></param>
         private void FillLevel(int level)
         {
-            //for (int x = 0; x < _chunksCount.X; x++)
-            Parallel.For(0, _chunksCount.X, x =>
+            for (int x = 0; x < _chunksCount.X; x++)
+            //Parallel.For(0, _chunksCount.X, x =>
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
@@ -324,13 +313,15 @@ namespace Origin.Source
 
                     FillChunkVertices(new Point3(x, y, level));
                 }
-            });
+            };
+        }
 
+        private void SetLevel(int level)
+        {
             for (int x = 0; x < _chunksCount.X; x++)
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
-                    //if (_renderChunkArray[level][x, y] != null)
                     _renderChunkArray[x, y, level].SetStaticBuffer();
                 }
             }
@@ -371,11 +362,31 @@ namespace Origin.Source
                 {
                     if (toReload.Z - 1 >= 0)
                     {
-                        CalcChunkCellsVisibility(toReload + new Point3(0, 0, -1));
-                        FillChunk(toReload + new Point3(0, 0, -1));
+                        for (int i = -1; i <= 1; i++)
+                            for (int j = -1; j <= 1; j++)
+                            {
+                                if (toReload.X + i < _chunksCount.X &&
+                                    toReload.X + i >= 0 &&
+                                    toReload.Y + j < _chunksCount.Y &&
+                                    toReload.Y + j >= 0)
+                                {
+                                    CalcChunkCellsVisibility(toReload + new Point3(i, j, -1));
+                                    FillChunk(toReload + new Point3(i, j, -1));
+                                }
+                            }
                     }
-                    CalcChunkCellsVisibility(toReload);
-                    FillChunk(toReload);
+                    for (int i = -1; i <= 1; i++)
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            if (toReload.X + i < _chunksCount.X &&
+                                    toReload.X + i >= 0 &&
+                                    toReload.Y + j < _chunksCount.Y &&
+                                    toReload.Y + j >= 0)
+                            {
+                                CalcChunkCellsVisibility(toReload + new Point3(i, j, 0));
+                                FillChunk(toReload + new Point3(i, j, 0));
+                            }
+                        }
                 }
                 _reloadChunkList.Remove(toReload);
             }
@@ -437,20 +448,15 @@ namespace Origin.Source
 
         private void DrawVertices()
         {
-            _alphaTestEffect.World = MainGame.Camera.WorldMatrix;
-            _alphaTestEffect.View = MainGame.Camera.Transformation;
-            _alphaTestEffect.Projection = MainGame.Camera.Projection;
-            _alphaTestEffect.GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            _alphaTestEffect.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            Matrix WVP = Matrix.Multiply(Matrix.Multiply(MainGame.Camera.WorldMatrix, MainGame.Camera.Transformation),
+                MainGame.Camera.Projection);
 
-            /*SamplerState samplerState = new SamplerState
-            {
-                Filter = TextureFilter.Linear,
-                *//*AddressU = TextureAddressMode.Clamp,
-                AddressV = TextureAddressMode.Clamp,
-                AddressW = TextureAddressMode.Clamp*//*
-            };
-            _graphicsDevice.SamplerStates[0] = samplerState;*/
+            _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
+            _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+            _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
+
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             for (int z = _drawLowest; z <= _drawHighest; z++)
             {
@@ -458,11 +464,14 @@ namespace Origin.Source
                 {
                     for (int y = 0; y < _chunksCount.Y; y++)
                     {
+                        if (!_renderChunkArray[x, y, z].IsSet)
+                            _renderChunkArray[x, y, z].SetStaticBuffer();
+
                         if (z == _drawHighest)
-                            _renderChunkArray[x, y, z].Draw(_alphaTestEffect,
+                            _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new VertexBufferLayer[] { VertexBufferLayer.HiddenBack, VertexBufferLayer.Back }.ToArray());
                         else
-                            _renderChunkArray[x, y, z].Draw(_alphaTestEffect,
+                            _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new VertexBufferLayer[] { VertexBufferLayer.Back, VertexBufferLayer.Front }.ToArray());
 
                         _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
