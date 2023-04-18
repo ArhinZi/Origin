@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS;
 using Origin.Source.IO;
+using Origin.Source.SiteGenerator;
 
 using System;
 using System.Collections.Generic;
@@ -32,10 +33,15 @@ namespace Origin.Source
 
             // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
+            SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
+            SiteBlocksMaker.GenerateSite(ActiveSite, parameters);
+            ActiveSite.CurrentLevel = (int)(ActiveSite.Size.Z * 0.8f);
             Sites = new List<Site>
             {
                 ActiveSite
             };
+
+            ActiveSite.Init();
 
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = Sprite.SpriteSet["tempPawn"];

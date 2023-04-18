@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Origin.Source.SiteGenerator;
+
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +28,10 @@ namespace Origin.Source
                             XMLoader.LoadSprites(file);
                         else if (xml.Root.Name == "TerraMats")
                             XMLoader.LoadTerraMats(file);
+                        else if (xml.Root.Name == "SitePasses")
+                            SiteBlocksMaker.ReadPasses(xml.Root);
+                        else if (xml.Root.Name == "SiteGenParameters")
+                            SiteBlocksMaker.ReadParameters(xml.Root);
                     }
                 }
             }

@@ -362,11 +362,31 @@ namespace Origin.Source
                 {
                     if (toReload.Z - 1 >= 0)
                     {
-                        CalcChunkCellsVisibility(toReload + new Point3(0, 0, -1));
-                        FillChunk(toReload + new Point3(0, 0, -1));
+                        for (int i = -1; i <= 1; i++)
+                            for (int j = -1; j <= 1; j++)
+                            {
+                                if (toReload.X + i < _chunksCount.X &&
+                                    toReload.X + i >= 0 &&
+                                    toReload.Y + j < _chunksCount.Y &&
+                                    toReload.Y + j >= 0)
+                                {
+                                    CalcChunkCellsVisibility(toReload + new Point3(i, j, -1));
+                                    FillChunk(toReload + new Point3(i, j, -1));
+                                }
+                            }
                     }
-                    CalcChunkCellsVisibility(toReload);
-                    FillChunk(toReload);
+                    for (int i = -1; i <= 1; i++)
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            if (toReload.X + i < _chunksCount.X &&
+                                    toReload.X + i >= 0 &&
+                                    toReload.Y + j < _chunksCount.Y &&
+                                    toReload.Y + j >= 0)
+                            {
+                                CalcChunkCellsVisibility(toReload + new Point3(i, j, 0));
+                                FillChunk(toReload + new Point3(i, j, 0));
+                            }
+                        }
                 }
                 _reloadChunkList.Remove(toReload);
             }

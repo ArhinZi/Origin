@@ -40,6 +40,8 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Mods\Core\XML\animals.xml" />
+	  <None Remove="Mods\Core\XML\Generators\SiteGeneratorParameters.xml" />
+	  <None Remove="Mods\Core\XML\Generators\SitePasses.xml" />
 	  <None Remove="Mods\Core\XML\pawnSprite.xml" />
 	</ItemGroup>
 	<ItemGroup>

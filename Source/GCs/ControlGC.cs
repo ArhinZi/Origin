@@ -48,8 +48,8 @@ namespace Origin.Source.GCs
             {
                 if (MainWorld.Instance.ActiveSite.SelectedBlock != null)
                 {
-                    MainWorld.Instance.ActiveSite.SelectedBlock.RemoveWall();
-                    MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.SelectedBlock.Position);
+                    if (MainWorld.Instance.ActiveSite.SelectedBlock.RemoveWall())
+                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.SelectedBlock.Position);
                 }
             }
         }

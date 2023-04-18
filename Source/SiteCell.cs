@@ -48,17 +48,21 @@ namespace Origin.Source
             return false;
         }
 
-        public void RemoveWall()
+        public bool RemoveWall()
         {
+            bool res = WallID != TerrainMaterial.AIR_NULL_MAT_ID;
             WallID = TerrainMaterial.AIR_NULL_MAT_ID;
             EmbeddedWallID = null;
+            return res;
         }
 
-        public void RemoveFloor()
+        public bool RemoveFloor()
         {
+            bool res = WallID != TerrainMaterial.AIR_NULL_MAT_ID;
             FloorID = TerrainMaterial.AIR_NULL_MAT_ID;
             EmbeddedFloorID = null;
             RemoveWall();
+            return res;
         }
 
         public void RemoveBlock()
