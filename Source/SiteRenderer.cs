@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -108,7 +109,8 @@ namespace Origin.Source
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
         {
             if (chunkCoord.X >= 0 && chunkCoord.X < _chunksCount.X &&
-                chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y)
+                chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y &&
+                chunkCoord.Z >= 0 && chunkCoord.Z < _chunksCount.Z)
                 for (int tileInChunkCoordX = 0; tileInChunkCoordX < ChunkSize.X; tileInChunkCoordX++)
                 {
                     for (int tileInChunkCoordY = 0; tileInChunkCoordY < ChunkSize.Y; tileInChunkCoordY++)
@@ -195,7 +197,8 @@ namespace Origin.Source
             Point3 chunkCoord)
         {
             if (chunkCoord.X >= 0 && chunkCoord.X < _chunksCount.X &&
-                chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y)
+                chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y &&
+                chunkCoord.Z >= 0 && chunkCoord.Z < _chunksCount.Z)
                 // Loop through each tile block in the chunk
                 for (int tileInChunkCoordX = 0; tileInChunkCoordX < ChunkSize.X; tileInChunkCoordX++)
                 {
@@ -374,48 +377,33 @@ namespace Origin.Source
             if (_reloadChunkList.Count > 0 && gameTime.TotalGameTime.Ticks % 12 == 0)
             {
                 Point3 toReload = _reloadChunkList.ToList()[0];
-                {
-                    Task t1 = Task.Run(() =>
-                    {
-                        if (toReload.Z - 1 >= 0)
+
+                List<Point3> neighbours1 = new List<Point3>()
                         {
-                            CalcChunkCellsVisibility(toReload + new Point3(0, 0, -1));
-                            CalcChunkCellsVisibility(toReload + new Point3(-1, 0, -1));
-                            CalcChunkCellsVisibility(toReload + new Point3(0, -1, -1));
-                            CalcChunkCellsVisibility(toReload + new Point3(1, 0, -1));
-                            CalcChunkCellsVisibility(toReload + new Point3(0, 1, -1));
-                            FillChunk(toReload + new Point3(0, 0, -1));
-                            FillChunk(toReload + new Point3(-1, 0, -1));
-                            FillChunk(toReload + new Point3(0, -1, -1));
-                            FillChunk(toReload + new Point3(1, 0, -1));
-                            FillChunk(toReload + new Point3(0, 1, -1));
-                        }
-                    });
-                    Task t2 = Task.Run(() =>
-                    {
-                        CalcChunkCellsVisibility(toReload + new Point3(0, 0, 0));
-                        CalcChunkCellsVisibility(toReload + new Point3(-1, 0, 0));
-                        CalcChunkCellsVisibility(toReload + new Point3(0, -1, 0));
-                        CalcChunkCellsVisibility(toReload + new Point3(1, 0, 0));
-                        CalcChunkCellsVisibility(toReload + new Point3(0, 1, 0));
-                        FillChunk(toReload + new Point3(0, 0, 0));
-                        FillChunk(toReload + new Point3(-1, 0, 0));
-                        FillChunk(toReload + new Point3(0, -1, 0));
-                        FillChunk(toReload + new Point3(1, 0, 0));
-                        FillChunk(toReload + new Point3(0, 1, 0));
-                    });
-                    Task.WaitAll(t1, t2);
-                    SetChunk(toReload + new Point3(0, 0, -1));
-                    SetChunk(toReload + new Point3(-1, 0, -1));
-                    SetChunk(toReload + new Point3(0, -1, -1));
-                    SetChunk(toReload + new Point3(1, 0, -1));
-                    SetChunk(toReload + new Point3(0, 1, -1));
-                    SetChunk(toReload + new Point3(0, 0, 0));
-                    SetChunk(toReload + new Point3(-1, 0, 0));
-                    SetChunk(toReload + new Point3(0, -1, 0));
-                    SetChunk(toReload + new Point3(1, 0, 0));
-                    SetChunk(toReload + new Point3(0, 1, 0));
+                            new Point3(0, 0, -1),
+                            new Point3(-1, 0, -1),new Point3(0, -1, -1),
+                            new Point3(1, 0, -1),new Point3(0, 1, -1)
+                        };
+                foreach (var neighbor in neighbours1)
+                {
+                    CalcChunkCellsVisibility(toReload + neighbor);
+                    FillChunk(toReload + neighbor);
+                    SetChunk(toReload + neighbor);
                 }
+
+                List<Point3> neighbours2 = new List<Point3>()
+                        {
+                            new Point3(0, 0, 0),
+                            new Point3(-1, 0, 0),new Point3(0, -1, 0),
+                            new Point3(1, 0, 0),new Point3(0, 1, 0)
+                        };
+                foreach (var neighbor in neighbours2)
+                {
+                    CalcChunkCellsVisibility(toReload + neighbor);
+                    FillChunk(toReload + neighbor);
+                    SetChunk(toReload + neighbor);
+                }
+
                 _reloadChunkList.Remove(toReload);
             }
 
