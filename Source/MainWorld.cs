@@ -91,9 +91,9 @@ namespace Origin.Source
             }
         }
 
-        public void Draw()
+        public void Draw(GameTime gameTime)
         {
-            ActiveSite.Draw();
+            ActiveSite.Draw(gameTime);
         }
 
         public void Dispose()

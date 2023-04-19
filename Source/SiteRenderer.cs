@@ -456,12 +456,12 @@ namespace Origin.Source
             });
         }
 
-        public void Draw()
+        public void Draw(GameTime gameTime)
         {
-            DrawVertices();
+            DrawVertices(gameTime);
         }
 
-        private void DrawVertices()
+        private void DrawVertices(GameTime gameTime)
         {
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(MainGame.Camera.WorldMatrix, MainGame.Camera.Transformation),
                 MainGame.Camera.Projection);

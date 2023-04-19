@@ -45,7 +45,7 @@ namespace Origin.Source.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            _world.Draw();
+            _world.Draw(gameTime);
             long drawcalls = Game.GraphicsDevice.Metrics.DrawCount;
             Game.debug.Add("DrawCALLS: " + drawcalls.ToString());
         }

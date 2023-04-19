@@ -82,9 +82,9 @@ namespace Origin.Source
             Renderer.Update(gameTime);
         }
 
-        public void Draw()
+        public void Draw(GameTime gameTime)
         {
-            Renderer.Draw();
+            Renderer.Draw(gameTime);
         }
 
         public void Dispose()
