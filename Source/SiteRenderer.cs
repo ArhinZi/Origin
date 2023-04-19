@@ -373,7 +373,18 @@ namespace Origin.Source
                 }
             }
             Site.BlocksToReload.Clear();
-            // Make chunk reload 5 times in sec
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+            PrepareVertices(gameTime);
+
+            DrawVertices(gameTime);
+        }
+
+        private void PrepareVertices(GameTime gameTime)
+        {
+            // Make chunk reload smoother
             if (_reloadChunkList.Count > 0 && gameTime.TotalGameTime.Ticks % 12 == 0)
             {
                 Point3 toReload = _reloadChunkList.ToList()[0];
@@ -454,11 +465,6 @@ namespace Origin.Source
                         );
                 }
             });
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            DrawVertices(gameTime);
         }
 
         private void DrawVertices(GameTime gameTime)

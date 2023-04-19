@@ -82,21 +82,21 @@ namespace Origin.Source
             {
                 //DisposeDynamicBuffer();
                 if (_dynamicVertices != null)
-                    for (int i = 0; i < Enum.GetNames(typeof(VertexBufferLayer)).Length; i++)
+                    for (int layer = 0; layer < Enum.GetNames(typeof(VertexBufferLayer)).Length; layer++)
                     {
-                        foreach (var key in _dynamicVertices.Keys)
+                        /*foreach (var key in _dynamicVertices.Keys)
                         {
-                            if (_dynamicVertices[key][i] != null)
+                            if (_dynamicVertices[key][layer] != null)
                             {
-                                if (_dynamicVertices[key][i].Count >= 1)
-                                    Array.Clear(_dynamicVertices[key][i][0]);
-                                for (int ilist = 1; ilist < _dynamicVertices[key][i].Count; ilist++)
+                                if (_dynamicVertices[key][layer].Count > 0)
+                                    Array.Clear(_dynamicVertices[key][layer][0]);
+                                for (int ilist = 0; ilist < _dynamicVertices[key][layer].Count; ilist++)
                                 {
-                                    _dynamicVertices[key][i].Remove(_dynamicVertices[key][i][ilist]);
+                                    _dynamicVertices[key][layer].Remove(_dynamicVertices[key][layer][ilist]);
                                 }
                             }
-                        }
-                        _dynamicVertexIndex[i] = 0;
+                        }*/
+                        _dynamicVertexIndex[layer] = 0;
                     }
                 else
                 {
@@ -295,7 +295,8 @@ namespace Origin.Source
 
         public void Draw(Effect effect, Array typesToDraw = null)
         {
-            if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
+            //if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
+            typesToDraw ??= Enum.GetValues(typeof(VertexBufferLayer));
             foreach (var layer in typesToDraw)
             {
                 foreach (var key in _texture2Ds)
