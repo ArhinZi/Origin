@@ -4,19 +4,20 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
+using Origin.Source;
+using Origin.Source.GameStates;
 using Origin.Source.GCs;
 using Origin.Source.IO;
-using Origin.Source.Screens;
 using Origin.Source.Utils;
 
-namespace Origin.Source
+namespace Origin
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class MainGame : Game
+    public class OriginGame : Game
     {
-        public static MainGame Instance { get; private set; }
+        public static OriginGame Instance { get; private set; }
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private SpriteFont spriteFont;
@@ -24,15 +25,12 @@ namespace Origin.Source
         private ScreenManager _screenManager;
 
         public FpsCountGC fpsCounter;
-        public ControlGC control;
         public InfoDrawerGC debug;
-
-        public static Camera2D Camera { get; private set; }
 
         public static int ScreenWidth { get; private set; }
         public static int ScreenHeight { get; private set; }
 
-        public MainGame()
+        public OriginGame()
         {
             Instance = this;
             graphics = new GraphicsDeviceManager(this);
@@ -41,12 +39,10 @@ namespace Origin.Source
 
             _screenManager = new ScreenManager();
             fpsCounter = new FpsCountGC();
-            control = new ControlGC();
             debug = new InfoDrawerGC(new Point(10, 10), Color.Aqua);
 
             Components.Add(_screenManager);
             Components.Add(fpsCounter);
-            Components.Add(control);
             Components.Add(debug);
         }
 
@@ -65,11 +61,6 @@ namespace Origin.Source
             Window.Title = "Dwarf`s Origin";
 
             IsMouseVisible = true;
-
-            Camera = new Camera2D
-            {
-                Zoom = 1
-            };
 
             InputManager.Initialise(this);
             base.Initialize();
@@ -136,12 +127,12 @@ namespace Origin.Source
 
         private void LoadMenuMainScreen()
         {
-            _screenManager.LoadScreen(new ScreenMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+            _screenManager.LoadScreen(new StateMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
 
         private void LoadGameScreen()
         {
-            _screenManager.LoadScreen(new ScreenMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+            _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
     }
 }

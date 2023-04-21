@@ -2,13 +2,13 @@
 
 using MonoGame.Extended.Screens;
 
-namespace Origin.Source.Screens
+namespace Origin.Source.GameStates
 {
-    internal class ScreenMenuMain : GameScreen
+    internal class StateMenuMain : GameScreen
     {
-        private new MainGame Game => (MainGame)base.Game;
+        private new OriginGame Game => (OriginGame)base.Game;
 
-        public ScreenMenuMain(Game game) : base(game)
+        public StateMenuMain(Game game) : base(game)
         {
         }
 

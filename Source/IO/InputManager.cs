@@ -121,8 +121,8 @@ namespace Origin.Source.IO
             BindKey("camera.zoom.minus", new Keybind(Keys.OemMinus));
 
             //World
-            BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets, 30, 10));
-            BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 30, 10));
+            BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets, 30, 5));
+            BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 30, 5));
 
             //Game
             BindKey("game.fpswitch", new Keybind(Keys.L));

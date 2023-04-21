@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended;
 
-using Origin.Source.SiteGenerator;
+using Origin.Source.Generators;
 
 using SimplexNoise;
 
@@ -26,11 +26,9 @@ namespace Origin.Source.Utils
             return heightMap;
         }
 
-        public static Point3 MouseScreenToMap(Point mousePos, int level)
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level)
         {
-            Camera2D c = MainGame.Camera;
-
-            Vector3 worldPos = MainGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), c.Projection, c.Transformation, c.WorldMatrix);
+            Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
             worldPos += new Vector3(0, level * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET), 0);
             // Also works
             //int tileX = (int)Math.Round((worldPos.X / Sprite.TILE_SIZE.X + worldPos.Y / Sprite.TILE_SIZE.Y - 1));

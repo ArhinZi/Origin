@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Origin.Source.SiteGenerator
+namespace Origin.Source.Generators
 {
     public class SiteGeneratorParameters
     {

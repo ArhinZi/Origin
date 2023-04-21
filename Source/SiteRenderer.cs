@@ -89,9 +89,9 @@ namespace Origin.Source
             _reloadChunkList = new HashSet<Point3>();
 
             _graphicsDevice = graphicDevice;
-            _spriteBatch = new SpriteBatch(MainGame.Instance.GraphicsDevice);
+            _spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
-            _customEffect = MainGame.Instance.Content.Load<Effect>("FX/MegaShader");
+            _customEffect = OriginGame.Instance.Content.Load<Effect>("FX/MegaShader");
             _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
 
             CalcVisibility();
@@ -469,8 +469,8 @@ namespace Origin.Source
 
         private void DrawVertices(GameTime gameTime)
         {
-            Matrix WVP = Matrix.Multiply(Matrix.Multiply(MainGame.Camera.WorldMatrix, MainGame.Camera.Transformation),
-                MainGame.Camera.Projection);
+            Matrix WVP = Matrix.Multiply(Matrix.Multiply(Site.Camera.WorldMatrix, Site.Camera.Transformation),
+                Site.Camera.Projection);
 
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);

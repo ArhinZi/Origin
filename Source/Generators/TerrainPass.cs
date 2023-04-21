@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 using static System.Reflection.Metadata.BlobBuilder;
 
-namespace Origin.Source.SiteGenerator
+namespace Origin.Source.Generators
 {
     internal class TerrainPass : AbstractPass
     {
-        public override void Run(Site site, Point3 size, SiteGeneratorParameters parameters)
+        public override void Run(Site site, Point3 size, SiteGeneratorParameters parameters, int seed)
         {
             var scale = parameters.Get<float>("Float", "Scale").Value;
             float[,] heightMap = GenerateHeightMap(size.X, size.Y, scale);

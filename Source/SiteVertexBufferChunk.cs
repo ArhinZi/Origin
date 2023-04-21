@@ -60,7 +60,7 @@ namespace Origin.Source
             //DynamicVertexBuffer = new Dictionary<Texture2D, List<VertexBuffer>>();
             Renderer = renderer;
             ChunkPos = pos;
-            _device = MainGame.Instance.GraphicsDevice;
+            _device = OriginGame.Instance.GraphicsDevice;
             Reset();
         }
 

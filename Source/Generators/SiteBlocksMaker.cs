@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Origin.Source.SiteGenerator
+namespace Origin.Source.Generators
 {
     public static class SiteBlocksMaker
     {
@@ -22,11 +22,12 @@ namespace Origin.Source.SiteGenerator
 
         public static void GenerateSite(
             Site site,
-            SiteGeneratorParameters parameters)
+            SiteGeneratorParameters parameters,
+            int seed)
         {
             foreach (var item in PassList.Values)
             {
-                item.Run(site, site.Size, parameters);
+                item.Run(site, site.Size, parameters, seed);
             }
         }
 

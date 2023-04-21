@@ -3,17 +3,24 @@ using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended.Screens;
 
-namespace Origin.Source.Screens
+namespace Origin.Source.GameStates
 {
-    internal class ScreenMainGame : GameScreen
+    public class StateMainGame : GameScreen
     {
-        private new MainGame Game => (MainGame)base.Game;
+        public static int GameSpeed { get; private set; } = 1;
+        public new OriginGame Game => (OriginGame)base.Game;
 
-        private MainWorld _world;
+        public MainWorld World;
+        public static Camera2D ActiveCamera { get; private set; }
 
-        public ScreenMainGame(Game game) : base(game)
+        private InputControl _inputControl;
+
+        public StateMainGame(Game game) : base(game)
         {
-            _world = new MainWorld();
+            World = new MainWorld();
+            _inputControl = new InputControl();
+
+            ActiveCamera = World.ActiveSite.Camera;
         }
 
         public override void LoadContent()
@@ -25,27 +32,18 @@ namespace Origin.Source.Screens
         {
             MouseState currentMouseState = Mouse.GetState();
             Game.debug.Add("Mouse POS: " + currentMouseState.Position.ToString());
-
-            Game.debug.Add("Cam ZOOM: " + MainGame.Camera.Zoom.ToString());
-            Game.debug.Add("Cam POS: " + MainGame.Camera.Position.ToString());
             //Game.debug.Add("Cam Projection: " + MainGame.Camera.Projection.ToString());
             //Game.debug.Add("Cam Transformation: " + MainGame.Camera.Transformation.ToString());
 
-            Game.debug.Add("Curr LEVEL: " + _world.ActiveSite.CurrentLevel.ToString());
+            Game.debug.Add("Curr LEVEL: " + World.ActiveSite.CurrentLevel.ToString());
 
-            _world.Update(gameTime);
-        }
-
-        public override void Dispose()
-        {
-            // TODO: Check Disposing of World and sites inside properly
-            _world.Dispose();
-            base.Dispose();
+            _inputControl.Update(gameTime);
+            World.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            _world.Draw(gameTime);
+            World.Draw(gameTime);
             long drawcalls = Game.GraphicsDevice.Metrics.DrawCount;
             Game.debug.Add("DrawCALLS: " + drawcalls.ToString());
         }

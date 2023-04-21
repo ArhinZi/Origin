@@ -18,7 +18,8 @@
 		<None Remove="Content\bin\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Arch" Version="1.2.3" />
+		<PackageReference Include="Arch" Version="1.2.4" />
+		<PackageReference Include="GameTimer" Version="2.3.0" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />

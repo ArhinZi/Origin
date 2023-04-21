@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Origin.Source.SiteGenerator
+namespace Origin.Source.Generators
 {
     public abstract class AbstractPass
     {
         public int order;
 
-        public abstract void Run(Site site, Point3 size, SiteGeneratorParameters parameters);
+        public abstract void Run(Site site, Point3 size, SiteGeneratorParameters parameters, int seed);
     }
 }
