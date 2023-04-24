@@ -90,6 +90,11 @@ namespace Origin.Source.Utils
             return new Vector3(X, Y, Z);
         }
 
+        public Point ToPoint()
+        {
+            return new Point(X, Y);
+        }
+
         public override int GetHashCode()
         {
             return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
