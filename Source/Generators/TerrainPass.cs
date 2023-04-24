@@ -109,7 +109,7 @@ namespace Origin.Source.Generators
                         }
 
                         site.Blocks[x, y, z] = new SiteCell(site, new Point3(x, y, z),
-                            wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor, waterLevel: waterLevel);
+                            wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor);
                     }
                 }
             }
