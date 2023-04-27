@@ -59,12 +59,12 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 
 
 
-float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target0
+float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
 {
     // get pixel color
     float4 color = tex2D(TextureSampler, input.TextureCoordinates) * input.Diffuse;
     // clip pixel if too opakue
-    clip((color.a < 0.1) ? -1 : 1);
+    clip((color.a <= 0) ? -1 : 1);
     
     // calc and apply light
     float1 light = 1 - abs(DayTime * 2 - 1);

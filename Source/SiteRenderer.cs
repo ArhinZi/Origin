@@ -297,6 +297,18 @@ namespace Origin.Source
                                 VertexBufferLayer.HiddenFront,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                         }
+
+                        if (tile.WaterLevel > 0)
+                        {
+                            Sprite sprite = Sprite.SpriteSet["SolidSelectionFloor"];
+                            for (int i = -1; i < 7; i++)
+                            {
+                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                VertexBufferType.Static,
+                                VertexBufferLayer.Back,
+                                sprite, new Color(0, 0, 250, 50), new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, i * 2));
+                            }
+                        }
                     }
                 }
         }
@@ -478,6 +490,8 @@ namespace Origin.Source
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _graphicsDevice.BlendState = BlendState.NonPremultiplied;
 
             for (int z = _drawLowest; z <= _drawHighest; z++)
             {

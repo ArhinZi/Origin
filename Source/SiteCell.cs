@@ -20,13 +20,17 @@ namespace Origin.Source
         public string FloorID;
         public string EmbeddedFloorID;
 
+        public int WaterLevel;
+
         public Site ParentSite { get; private set; }
         public Point3 Position { get; private set; }
         public CellVisual WallVisual { get; set; } = 0;
         public CellVisual FloorVisual { get; set; } = 0;
 
         public SiteCell(Site site, Point3 pos,
-            string wallMatID = null, string floorMatID = null, string embWallMatID = null, string embFloorMatID = null)
+            string wallMatID = null, string floorMatID = null,
+            string embWallMatID = null, string embFloorMatID = null,
+            int waterLevel = 0)
         {
             ParentSite = site;
             Position = pos;
@@ -35,6 +39,7 @@ namespace Origin.Source
             seed = Seeder.Random.Next();
             EmbeddedWallID = embWallMatID;
             EmbeddedFloorID = embFloorMatID;
+            WaterLevel = waterLevel;
         }
 
         public bool PassAbility()

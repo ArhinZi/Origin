@@ -98,7 +98,7 @@ namespace Origin.Source.Generators
                                 embFloor = "Grass";
                             }
                         }
-                        else if (height < baseHeight)
+                        else if (z < 88)
                         {
                             wall = floor = TerrainMaterial.AIR_NULL_MAT_ID;
                             waterLevel = 7;
@@ -109,7 +109,8 @@ namespace Origin.Source.Generators
                         }
 
                         site.Blocks[x, y, z] = new SiteCell(site, new Point3(x, y, z),
-                            wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor);
+                            wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor,
+                            waterLevel: waterLevel);
                     }
                 }
             }
