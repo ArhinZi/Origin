@@ -10,6 +10,8 @@ using Origin.Source.GCs;
 using Origin.Source.IO;
 using Origin.Source.Utils;
 
+using System;
+
 namespace Origin
 {
     /// <summary>
@@ -36,6 +38,8 @@ namespace Origin
             graphics = new GraphicsDeviceManager(this);
             Window.AllowUserResizing = true;
             Content.RootDirectory = "Content";
+            // Sleep time when Window not in focus
+            InactiveSleepTime = TimeSpan.FromMilliseconds(100);
 
             _screenManager = new ScreenManager();
             fpsCounter = new FpsCountGC();
