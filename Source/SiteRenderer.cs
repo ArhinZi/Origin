@@ -53,7 +53,7 @@ namespace Origin.Source
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
 
         private Effect _customEffect;
-        private AlphaTestEffect _alphaTestEffect;
+        //private Effect _vertexAnimator;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
@@ -69,14 +69,16 @@ namespace Origin.Source
         public static readonly Point BASE_CHUNK_SIZE = new Point(32, 32);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 16;
 
+        /*private VertexAnimationElement[] elements;
+         private VertexAnimationIndex[] indexes;
+         public StructuredBuffer animationElementsBuffer;
+         public StructuredBuffer animationIndexesBuffer;*/
+
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
             Site = site;
-            //_visBuffer = new byte[_site.Size.X, _site.Size.Y, _site.Size.Z];
 
             ChunkSize = BASE_CHUNK_SIZE;
-            //if (ChunkSize.X < Site.Size.X) ChunkSize.X = Site.Size.X;
-            //if (ChunkSize.Y < Site.Size.Y) ChunkSize.Y = Site.Size.Y;
             if (Site.Size.X % ChunkSize.X != 0 || Site.Size.Y % ChunkSize.Y != 0) throw new Exception("Site size is invalid!");
 
             _drawHighest = Site.CurrentLevel;
@@ -92,7 +94,7 @@ namespace Origin.Source
             _spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             _customEffect = OriginGame.Instance.Content.Load<Effect>("FX/MegaShader");
-            _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
+            //_vertexAnimator = OriginGame.Instance.Content.Load<Effect>("FX/VertexAnimationCS");
 
             CalcVisibility();
             Parallel.For(0, _chunksCount.Z, z =>
@@ -104,6 +106,26 @@ namespace Origin.Source
             {
                 SetLevel(z);
             }*/
+            /*elements = new VertexAnimationElement[2 * 8];
+            elements[0] = new VertexAnimationElement()
+            {
+                texturePosition = new Vector2(0, 64 / 96f)
+            };
+            elements[1] = new VertexAnimationElement()
+            {
+                texturePosition = new Vector2(32 / 128f, 64 / 96f)
+            };
+            animationElementsBuffer = new StructuredBuffer(_graphicsDevice, typeof(VertexAnimationElement), 2 * 8, BufferUsage.WriteOnly, ShaderAccess.Read);
+            animationElementsBuffer.SetData(elements);
+
+            indexes = new VertexAnimationIndex[1];
+            indexes[0] = new VertexAnimationIndex()
+            {
+                currentIndex = 1,
+                indexCount = 2
+            };
+            animationIndexesBuffer = new StructuredBuffer(_graphicsDevice, typeof(VertexAnimationIndex), 1, BufferUsage.WriteOnly, ShaderAccess.Read);
+            animationIndexesBuffer.SetData(indexes);*/
         }
 
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
@@ -429,6 +451,44 @@ namespace Origin.Source
 
                 _reloadChunkList.Remove(toReload);
             }
+
+            // TODO: Implement Sprite animation
+            /*if (gameTime.TotalGameTime.Ticks % 1 == 0)
+            {
+                _vertexAnimator.Parameters["Elements"].SetValue(animationElementsBuffer);
+                _vertexAnimator.Parameters["ElementIndexes"].SetValue(animationIndexesBuffer);
+                _vertexAnimator.Parameters["AnimationsCount"].SetValue(1);
+                for (int z = _drawLowest; z <= _drawHighest; z++)
+                {
+                    for (int x = 0; x < _chunksCount.X; x++)
+                    {
+                        for (int y = 0; y < _chunksCount.Y; y++)
+                        {
+                            VertexBufferLayer layer = VertexBufferLayer.Front;
+                            {
+                                foreach (var key in SiteVertexBufferChunk._texture2Ds)
+                                {
+                                    if (_renderChunkArray[x, y, z]._staticVertexBuffer != null && _renderChunkArray[x, y, z]._staticVertexBuffer.ContainsKey(key))
+                                    {
+                                        List<VertexBuffer> listVB = _renderChunkArray[x, y, z]._staticVertexBuffer[key][(int)layer];
+                                        for (int i = 0; i < listVB.Count; i++)
+                                        {
+                                            _vertexAnimator.Parameters["Vertices"].SetValue(listVB[i]);
+                                            _vertexAnimator.CurrentTechnique.Passes[0].ApplyCompute();
+                                            int count = listVB[i].VertexCount / 6 / 64;
+                                            count = count < 1 ? 1 : count;
+                                            _graphicsDevice.DispatchCompute(count, 1, 1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                indexes[0].currentIndex = ((short)((short)(indexes[0].currentIndex + 1) % indexes[0].indexCount));
+                //indexes[1].currentIndex = ((short)((short)(indexes[0].currentIndex + 1) % indexes[0].indexCount));
+                animationIndexesBuffer.SetData(indexes);
+            }*/
 
             // Test drawing mouse selection on selectedBlock
             {
