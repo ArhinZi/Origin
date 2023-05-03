@@ -66,9 +66,6 @@ namespace Origin.Source.Generators
             float[,] heightMap,
             SiteGeneratorParameters parameters)
         {
-            if (site.Blocks == null)
-                site.Blocks = new SiteCell[site.Size.X, site.Size.Y, site.Size.Z];
-
             var dirtDepth = parameters.Get<int>("Int", "DirtDepth").Value;
             var baseHeight = (int)(site.Size.Z * 0.7f);
             var scale = 2;
@@ -108,7 +105,7 @@ namespace Origin.Source.Generators
                             wall = floor = TerrainMaterial.AIR_NULL_MAT_ID;
                         }
 
-                        site.Blocks[x, y, z] = new SiteCell(site, new Point3(x, y, z),
+                        site.Blocks[(ushort)x, (ushort)y, (ushort)z] = new SiteCell(site, new Point3(x, y, z),
                             wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor,
                             waterLevel: waterLevel);
                     }

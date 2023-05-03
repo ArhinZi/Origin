@@ -139,7 +139,7 @@ namespace Origin.Source
                     {
                         int tileCoordX = chunkCoord.X * ChunkSize.X + tileInChunkCoordX;
                         int tileCoordY = chunkCoord.Y * ChunkSize.Y + tileInChunkCoordY;
-                        SiteCell tile = Site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
+                        SiteCell tile = Site.Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)chunkCoord.Z];
                         if (tile.FloorID != TerrainMaterial.AIR_NULL_MAT_ID)
                         {
                             // Check if tile have neighbors in TL & TR & BL & BR borders
@@ -147,22 +147,22 @@ namespace Origin.Source
                                 // Check BR
                                 tileCoordX + 1 <= Site.Size.X &&
                                     (tileCoordX + 1 == Site.Size.X ||
-                                    Site.Blocks[tileCoordX + 1, tileCoordY, chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
+                                    Site.Blocks[(ushort)(tileCoordX + 1), (ushort)tileCoordY, (ushort)chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                                     &&
                                 // Check BL
                                 tileCoordY + 1 <= Site.Size.Y &&
                                     (tileCoordY + 1 == Site.Size.Y ||
-                                    Site.Blocks[tileCoordX, tileCoordY + 1, chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
+                                    Site.Blocks[(ushort)tileCoordX, (ushort)(tileCoordY + 1), (ushort)chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                                     &&
                                 // Check TL
                                 tileCoordX >= 0 &&
                                     (tileCoordX == 0 ||
-                                    Site.Blocks[tileCoordX - 1, tileCoordY, chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
+                                    Site.Blocks[(ushort)(tileCoordX - 1), (ushort)tileCoordY, (ushort)chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                                     &&
                                 // Check TR
                                 tileCoordY >= 0 &&
                                     (tileCoordY == 0 ||
-                                    Site.Blocks[tileCoordX, tileCoordY - 1, chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
+                                    Site.Blocks[(ushort)tileCoordX, (ushort)(tileCoordY - 1), (ushort)chunkCoord.Z].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                                     )
                             {
                                 // Then at least wall is invisible
@@ -176,7 +176,7 @@ namespace Origin.Source
 
                                 // Check if tile have neighbor above
                                 if (chunkCoord.Z + 1 < Site.Size.Z &&
-                                    Site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z + 1].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
+                                    Site.Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)(chunkCoord.Z + 1)].WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                                 {
                                     // Then floor is invisible
                                     tile.FloorVisual |= CellVisual.None;
@@ -228,7 +228,7 @@ namespace Origin.Source
                     {
                         int tileCoordX = chunkCoord.X * ChunkSize.X + tileInChunkCoordX;
                         int tileCoordY = chunkCoord.Y * ChunkSize.Y + tileInChunkCoordY;
-                        SiteCell tile = Site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
+                        SiteCell tile = Site.Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)chunkCoord.Z];
 
                         if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID && tile.WallVisual.HasFlag(CellVisual.Visible | CellVisual.Discovered))
                         {
