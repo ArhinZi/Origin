@@ -91,6 +91,16 @@ namespace Origin.Source
             throw new Exception("Wrong chunk number");
         }
 
+        public SiteCell this[Point3 p]
+        {
+            get
+            {
+                if (p != new Point3(-1, -1, -1))
+                    return this[(ushort)p.X, (ushort)p.Y, (ushort)p.Z];
+                return null;
+            }
+        }
+
         public SiteCell this[UInt16 x, UInt16 y, UInt16 z]
         {
             // get chunk -> get layer from chunk -> get cell
@@ -126,7 +136,7 @@ namespace Origin.Source
         public Camera2D Camera { get; private set; }
 
         public MainWorld World { get; private set; }
-        public SiteCell SelectedBlock { get; private set; }
+        public Point3 SelectedBlock { get; private set; }
 
         private int _currentLevel;
 
@@ -189,6 +199,17 @@ namespace Origin.Source
             Visit(0, 0, 0);
         }
 
+        public SiteCell CellGetOrCreate(Point3 pos)
+        {
+            SiteCell sc = Blocks[(ushort)pos.X, (ushort)pos.Y, (ushort)pos.Z];
+            if (sc == null)
+            {
+                sc = generator.Generate(this, pos);
+                Blocks[(ushort)pos.X, (ushort)pos.Y, (ushort)pos.Z] = sc;
+            }
+            return sc;
+        }
+
         public int CurrentLevel
         {
             get => _currentLevel;
@@ -203,9 +224,9 @@ namespace Origin.Source
         public void SetSelected(Point3 pos)
         {
             if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
-                SelectedBlock = null;
+                SelectedBlock = new Point3(-1, -1, -1);
             else
-                SelectedBlock = Blocks[(ushort)pos.X, (ushort)pos.Y, (ushort)pos.Z];
+                SelectedBlock = pos;
         }
 
         public SiteCell GetOrNull(Point3 pos)
@@ -223,7 +244,7 @@ namespace Origin.Source
 
             Point m = Mouse.GetState().Position;
             Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
-            //SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
+            SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
             OriginGame.Instance.debug.Add("Block: " + sel.ToString());
             OriginGame.Instance.debug.Add("Cam ZOOM: " + Camera.Zoom.ToString());
             OriginGame.Instance.debug.Add("Cam POS: " + Camera.Position.ToString());

@@ -7,6 +7,8 @@ using Origin.Source.GameStates;
 using Origin.Source.IO;
 using Origin.Source.Utils;
 
+using Point3 = Origin.Source.Utils.Point3;
+
 namespace Origin.Source
 {
     public class InputControl : IUpdate
@@ -47,10 +49,11 @@ namespace Origin.Source
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (MainWorld.Instance.ActiveSite.SelectedBlock != null)
+                if (MainWorld.Instance.ActiveSite.SelectedBlock != new Point3(-1, -1, -1))
                 {
-                    if (MainWorld.Instance.ActiveSite.SelectedBlock.RemoveWall())
-                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.SelectedBlock.Position);
+                    SiteCell sc = MainWorld.Instance.ActiveSite.CellGetOrCreate(MainWorld.Instance.ActiveSite.SelectedBlock);
+                    if (sc.RemoveWall())
+                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(sc.Position);
                 }
             }
         }

@@ -387,7 +387,7 @@ namespace Origin.Source
             // Collect all ChunksToReload and redraw them
             foreach (var item in Site.BlocksToReload)
             {
-                if (item.Z >= _drawLowest && item.Z <= _drawHighest)
+                if (item.Z <= _drawLowest && item.Z >= _drawHighest)
                 {
                     int chunkX = (int)item.X / ChunkSize.X;
                     int chunkY = (int)item.Y / ChunkSize.Y;
@@ -480,14 +480,14 @@ namespace Origin.Source
 
             // Test drawing mouse selection on selectedBlock
             {
-                SiteCell tile = Site.SelectedBlock;
-                if (tile != null)
+                Point3 tile = Site.SelectedBlock;
+                if (tile != new Point3(-1, -1, -1))
                 {
                     Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
-                    _renderChunkArray[tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y, tile.Position.Z].AddSprite(
+                    _renderChunkArray[tile.X / ChunkSize.X, tile.Y / ChunkSize.Y, tile.Z].AddSprite(
                         VertexBufferType.Dynamic,
                         VertexBufferLayer.Back,
-                        sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, 0)
+                        sprite, new Color(30, 0, 0, 100), tile, new Point(0, 0)
                         );
                     /*sprite = Sprite.SpriteSet["SolidSelectionFloor"];
                     _renderChunkArray[tile.Position.Z][tile.Position.X / BASE_CHUNK_SIZE.X, tile.Position.Y / BASE_CHUNK_SIZE.Y].AddSprite(
