@@ -36,9 +36,9 @@ namespace Origin.Source
 
             // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(128, 128, 128));
-            SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
-            SiteBlocksMaker.GenerateSite(ActiveSite, parameters, Seed);
-            ActiveSite.CurrentLevel = (int)(ActiveSite.Size.Z * 0.8f);
+            /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
+            SiteBlocksMaker.GenerateSite(ActiveSite, parameters, Seed);*/
+            ActiveSite.CurrentLevel = 20;
             Sites = new List<Site>
             {
                 ActiveSite
@@ -48,9 +48,9 @@ namespace Origin.Source
 
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = Sprite.SpriteSet["tempPawn"];
-            var entity = ECSworld.Create(new UserControlPawnComponent(),
-                new SitePositionComponent() { Cell = ActiveSite.Blocks[0, 0, 95] },
-                new DrawComponent() { Sprites = sd });
+            /*var entity = ECSworld.Create(new UserControlPawnComponent(),
+                new SitePositionComponent() { Cell = ActiveSite.Blocks[0, 0, 88] },
+                new DrawComponent() { Sprites = sd });*/
         }
 
         public void Update(GameTime gameTime)

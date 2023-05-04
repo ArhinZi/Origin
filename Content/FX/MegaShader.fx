@@ -9,7 +9,7 @@
 
 float4x4 WorldViewProjection;
 
-float2 MinMaxLevel;
+float2 LowHighLevel;
 
 Texture2D Texture;
 sampler2D TextureSampler = sampler_state
@@ -80,9 +80,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
     // level shading
     float4 fogColor = float4(0.8, 0.8, 0.8, 1.0); // color of fog
     float hyperKS = 0.1;
-    float shadeFactor = hyperKS / (hyperKS + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
+    float shadeFactor = hyperKS / (hyperKS + (input.BlockPosition.z - LowHighLevel.y) * 0.01);
     float hyperKF = 0.3;
-    float fogFactor = hyperKF / (hyperKF + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
+    float fogFactor = hyperKF / (hyperKF + (input.BlockPosition.z - LowHighLevel.y) * 0.01);
     //color.rgb *= hyperK / (hyperK + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
     color.rgb = lerp(color.rgb, fogColor.rgb, 1 - fogFactor) * shadeFactor;
 

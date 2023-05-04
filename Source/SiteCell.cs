@@ -27,6 +27,11 @@ namespace Origin.Source
         public CellVisual WallVisual { get; set; } = 0;
         public CellVisual FloorVisual { get; set; } = 0;
 
+        public bool IsFullAir
+        {
+            get => (WallID == TerrainMaterial.AIR_NULL_MAT_ID && FloorID == TerrainMaterial.AIR_NULL_MAT_ID);
+        }
+
         public SiteCell(Site site, Point3 pos,
             string wallMatID = null, string floorMatID = null,
             string embWallMatID = null, string embFloorMatID = null,

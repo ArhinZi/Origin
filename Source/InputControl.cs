@@ -36,9 +36,9 @@ namespace Origin.Source
                 StateMainGame.ActiveCamera.Move(new Vector2(0, 1 * movemod));
 
             if (InputManager.JustPressedAndHoldDelayed("world.level.minus"))
-                MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
-            if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
+            if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
+                MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
 
             if (InputManager.IsPressed("Camera.zoom.plus"))
                 StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom;

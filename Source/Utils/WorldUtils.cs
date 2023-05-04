@@ -49,7 +49,7 @@ namespace Origin.Source.Utils
         {
             var VertexX = (cellPos.X - cellPos.Y) * Sprite.TILE_SIZE.X / 2;
             var VertexY = ((cellPos.X + cellPos.Y) * Sprite.TILE_SIZE.Y / 2)
-                    - cellPos.Z * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET);
+                    + cellPos.Z * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET);
             return new Point(VertexX, VertexY);
         }
 

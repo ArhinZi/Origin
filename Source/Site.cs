@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using Origin.Source.Generators;
 using Origin.Source.Utils;
 
 using System;
@@ -93,7 +94,15 @@ namespace Origin.Source
         public SiteCell this[UInt16 x, UInt16 y, UInt16 z]
         {
             // get chunk -> get layer from chunk -> get cell
-            get => _mapChunks[z / SparseSiteChunk.CHUNK_HEIGHT][z][x, y];
+            get
+            {
+                if (_mapChunks[z / SparseSiteChunk.CHUNK_HEIGHT][z] != null)
+                {
+                    return _mapChunks[z / SparseSiteChunk.CHUNK_HEIGHT][z][x, y];
+                }
+                else
+                    return null;
+            }
             set
             {
                 if (z / SparseSiteChunk.CHUNK_HEIGHT == ChunksCount) AddChunk(ChunksCount);
@@ -123,6 +132,7 @@ namespace Origin.Source
 
         public float SiteTime = 0.5f;
         private SiteRenderer Renderer { get; set; }
+        private BlockGenerator generator;
 
         public List<Point3> BlocksToReload { get; private set; }
 
@@ -131,6 +141,11 @@ namespace Origin.Source
             World = world;
             Size = size;
             Blocks = new SparseSiteMap(Size);
+            generator = new BlockGenerator();
+            generator.Parameters.Add("Seed", 12345);
+            generator.Parameters.Add("Scale", 0.005f);
+            generator.Parameters.Add("BaseHeight", 25);
+            generator.Parameters.Add("DirtDepth", 4f);
         }
 
         public void Init()
@@ -142,8 +157,36 @@ namespace Origin.Source
                  )));
 
             BlocksToReload = new List<Point3>();
+            InitMapGeneration();
+            // TODO: make event for updating current size of world
+            Size = new Point3(Size.X, Size.Y, Blocks.ChunksCount * 8);
 
             Renderer = new SiteRenderer(this, OriginGame.Instance.GraphicsDevice);
+        }
+
+        private void InitMapGeneration()
+        {
+            bool[,,] visited = new bool[Size.X, Size.Y, Size.Z];
+            void Visit(int x, int y, int z)
+            {
+                if (x < 0 || y < 0 || z < 0 || x == Size.X || y == Size.Y || z == Size.Z)
+                    return;
+                if (visited[x, y, z])
+                    return;
+
+                SiteCell sc = generator.Generate(this, new Point3(x, y, z));
+                Blocks[(ushort)x, (ushort)y, (ushort)z] = sc;
+                visited[x, y, z] = true;
+
+                if (sc.IsFullAir)
+                {
+                    Visit(x + 1, y, z);
+                    Visit(x, y + 1, z);
+                    Visit(x, y, z + 1);
+                }
+            }
+
+            Visit(0, 0, 0);
         }
 
         public int CurrentLevel
@@ -175,9 +218,12 @@ namespace Origin.Source
 
         public void Update(GameTime gameTime)
         {
+            // TODO: make event for updating current size of world
+            Size = new Point3(Size.X, Size.Y, Blocks.ChunksCount * 8);
+
             Point m = Mouse.GetState().Position;
             Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
-            SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
+            //SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
             OriginGame.Instance.debug.Add("Block: " + sel.ToString());
             OriginGame.Instance.debug.Add("Cam ZOOM: " + Camera.Zoom.ToString());
             OriginGame.Instance.debug.Add("Cam POS: " + Camera.Position.ToString());

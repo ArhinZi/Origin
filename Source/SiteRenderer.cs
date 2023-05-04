@@ -82,7 +82,7 @@ namespace Origin.Source
             if (Site.Size.X % ChunkSize.X != 0 || Site.Size.Y % ChunkSize.Y != 0) throw new Exception("Site size is invalid!");
 
             _drawHighest = Site.CurrentLevel;
-            _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+            _drawLowest = DiffUtils.GetOrBound(_drawHighest + ONE_MOMENT_DRAW_LEVELS + 1, 0, Site.Size.Z - 1);
 
             _chunksCount = new Point3(Site.Size.X / ChunkSize.X, Site.Size.Y / ChunkSize.Y, Site.Size.Z);
 
@@ -96,8 +96,8 @@ namespace Origin.Source
             _customEffect = OriginGame.Instance.Content.Load<Effect>("FX/MegaShader");
             //_vertexAnimator = OriginGame.Instance.Content.Load<Effect>("FX/VertexAnimationCS");
 
-            CalcVisibility();
-            Parallel.For(0, _chunksCount.Z, z =>
+            //CalcVisibility();
+            Parallel.For(0, Site.Size.Z, z =>
             //for (int z = 0; z < _chunksCount.Z; z++)
             {
                 FillLevel(z);
@@ -230,7 +230,21 @@ namespace Origin.Source
                         int tileCoordY = chunkCoord.Y * ChunkSize.Y + tileInChunkCoordY;
                         SiteCell tile = Site.Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)chunkCoord.Z];
 
-                        if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID && tile.WallVisual.HasFlag(CellVisual.Visible | CellVisual.Discovered))
+                        if (tile == null)
+                        {
+                            TerrainMaterial tm = TerrainMaterial.TerraMats[TerrainMaterial.HIDDEN_MAT_ID];
+                            Sprite sprite;
+                            Color c = Color.Wheat;
+                            sprite = tm.Sprites["Wall"][0];
+                            //sprite = tm.Sprites["Wall"][0];
+                            c = tm.TerraColor;
+
+                            _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                VertexBufferType.Static,
+                                VertexBufferLayer.HiddenBack,
+                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                        }
+                        else if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID)
                         {
                             TerrainMaterial tm = TerrainMaterial.TerraMats[tile.WallID];
                             Sprite sprite;
@@ -243,7 +257,7 @@ namespace Origin.Source
                                 VertexBufferLayer.Back,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
 
-                            if (tile.EmbeddedWallID != null && tile.WallVisual.HasFlag(CellVisual.Visible))
+                            if (tile.EmbeddedWallID != null)
                             {
                                 tm = TerrainMaterial.TerraMats[tile.EmbeddedWallID];
                                 sprite = tm.Sprites["Wall"][tile.seed % tm.Sprites["Wall"].Count];
@@ -254,28 +268,21 @@ namespace Origin.Source
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                             }
                         }
-                        else if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID &&
-                            !tile.WallVisual.HasFlag(CellVisual.Discovered))
+
+                        if (tile == null)
                         {
                             TerrainMaterial tm = TerrainMaterial.TerraMats[TerrainMaterial.HIDDEN_MAT_ID];
                             Sprite sprite;
                             Color c = Color.Wheat;
-                            sprite = tm.Sprites["Wall"][0];
-                            //sprite = tm.Sprites["Wall"][0];
+                            sprite = tm.Sprites["Floor"][0];
                             c = tm.TerraColor;
-                            if (tile.WallVisual.HasFlag(CellVisual.Visible))
-                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
-                                    VertexBufferType.Static,
-                                    VertexBufferLayer.Back,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
-                            else
-                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
-                                    VertexBufferType.Static,
-                                    VertexBufferLayer.HiddenBack,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
-                        }
 
-                        if (tile.FloorID != TerrainMaterial.AIR_NULL_MAT_ID && tile.FloorVisual.HasFlag(CellVisual.Visible | CellVisual.Discovered))
+                            _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                            VertexBufferType.Static,
+                            VertexBufferLayer.HiddenFront,
+                            sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+                        }
+                        else if (tile.FloorID != TerrainMaterial.AIR_NULL_MAT_ID)
                         {
                             TerrainMaterial tm = TerrainMaterial.TerraMats[tile.FloorID];
                             Sprite sprite;
@@ -288,7 +295,7 @@ namespace Origin.Source
                                 VertexBufferLayer.Front,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
 
-                            if (tile.EmbeddedFloorID != null && tile.FloorVisual.HasFlag(CellVisual.Visible))
+                            if (tile.EmbeddedFloorID != null)
                             {
                                 tm = TerrainMaterial.TerraMats[tile.EmbeddedFloorID];
                                 sprite = tm.Sprites["Floor"][tile.seed % tm.Sprites["Floor"].Count];
@@ -300,27 +307,8 @@ namespace Origin.Source
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                             }
                         }
-                        else if (tile.FloorID != TerrainMaterial.AIR_NULL_MAT_ID &&
-                            !tile.FloorVisual.HasFlag(CellVisual.Discovered))
-                        {
-                            TerrainMaterial tm = TerrainMaterial.TerraMats[TerrainMaterial.HIDDEN_MAT_ID];
-                            Sprite sprite;
-                            Color c = Color.Wheat;
-                            sprite = tm.Sprites["Floor"][0];
-                            c = tm.TerraColor;
-                            if (tile.FloorVisual.HasFlag(CellVisual.Visible))
-                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
-                                    VertexBufferType.Static,
-                                    VertexBufferLayer.Front,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
-                            else
-                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
-                                VertexBufferType.Static,
-                                VertexBufferLayer.HiddenFront,
-                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
-                        }
 
-                        if (tile.WaterLevel > 0)
+                        if (tile != null && tile.WaterLevel > 0)
                         {
                             Sprite sprite = Sprite.SpriteSet["SolidSelectionFloor"];
                             for (int i = -1; i < 7; i++)
@@ -393,7 +381,7 @@ namespace Origin.Source
             if (_drawHighest != Site.CurrentLevel)
             {
                 _drawHighest = Site.CurrentLevel;
-                _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+                _drawLowest = DiffUtils.GetOrBound(_drawHighest + ONE_MOMENT_DRAW_LEVELS + 1, 0, Site.Size.Z - 1);
             }
 
             // Collect all ChunksToReload and redraw them
@@ -431,7 +419,7 @@ namespace Origin.Source
                         };
                 foreach (var neighbor in neighbours1)
                 {
-                    CalcChunkCellsVisibility(toReload + neighbor);
+                    //CalcChunkCellsVisibility(toReload + neighbor);
                     FillChunk(toReload + neighbor);
                     SetChunk(toReload + neighbor);
                 }
@@ -444,7 +432,7 @@ namespace Origin.Source
                         };
                 foreach (var neighbor in neighbours2)
                 {
-                    CalcChunkCellsVisibility(toReload + neighbor);
+                    //CalcChunkCellsVisibility(toReload + neighbor);
                     FillChunk(toReload + neighbor);
                     SetChunk(toReload + neighbor);
                 }
@@ -546,14 +534,14 @@ namespace Origin.Source
 
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
-            _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
+            _customEffect.Parameters["LowHighLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.BlendState = BlendState.NonPremultiplied;
 
-            for (int z = _drawLowest; z <= _drawHighest; z++)
+            for (int z = _drawLowest; z >= _drawHighest; z--)
             {
                 for (int x = 0; x < _chunksCount.X; x++)
                 {
@@ -566,8 +554,7 @@ namespace Origin.Source
                             _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new VertexBufferLayer[] { VertexBufferLayer.HiddenBack, VertexBufferLayer.Back }.ToArray());
                         else
-                            _renderChunkArray[x, y, z].Draw(_customEffect,
-                                new VertexBufferLayer[] { VertexBufferLayer.Back, VertexBufferLayer.Front }.ToArray());
+                            _renderChunkArray[x, y, z].Draw(_customEffect);
 
                         _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
                     }
