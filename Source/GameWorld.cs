@@ -14,9 +14,9 @@ using System.Collections.Generic;
 
 namespace Origin.Source
 {
-    public class MainWorld : IDisposable
+    public class GameWorld : IDisposable
     {
-        public static MainWorld Instance { get; private set; }
+        public static GameWorld Instance { get; private set; }
 
         public List<Site> Sites { get; private set; }
         public Site ActiveSite { get; private set; }
@@ -30,7 +30,7 @@ namespace Origin.Source
                 typeof(SitePositionComponent),
                 typeof(DrawComponent)};
 
-        public MainWorld()
+        public GameWorld()
         {
             Instance = this;
 

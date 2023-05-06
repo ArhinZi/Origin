@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml.Linq;
 
-namespace Origin.Source
+namespace Origin.Source.Utils
 {
     public static class XMLoader
     {
@@ -19,7 +19,7 @@ namespace Origin.Source
             Texture2D texture = Texture.GetTextureByName(textureName);
             if (texture == null)
             {
-                Debug.WriteLine(String.Format("ERROR: No texture with name {}", textureName));
+                Debug.WriteLine(string.Format("ERROR: No texture with name {}", textureName));
                 return;
             }
 
@@ -64,14 +64,14 @@ namespace Origin.Source
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(String.Format("Error '{0}' in {1} TerraMat", ex.Message, matId));
+                    Debug.WriteLine(string.Format("Error '{0}' in {1} TerraMat", ex.Message, matId));
                     matColor = default;
                 }
 
                 bool isEmbedded = false;
                 if (matElem.Element("IsEmbedded") != null)
                 {
-                    isEmbedded = Boolean.Parse(matElem.Element("IsEmbedded").Value);
+                    isEmbedded = bool.Parse(matElem.Element("IsEmbedded").Value);
                 }
 
                 Dictionary<string, List<Sprite>> matSprites = new();
@@ -117,7 +117,7 @@ namespace Origin.Source
             }
             catch (Exception)
             {
-                throw new FormatException(String.Format("Color parse error: {0}", s));
+                throw new FormatException(string.Format("Color parse error: {0}", s));
             }
         }
 

@@ -5,138 +5,145 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
 using Origin.Source;
+using Origin.Source.GameComponentsServices;
 using Origin.Source.GameStates;
 using Origin.Source.GCs;
 using Origin.Source.IO;
 using Origin.Source.Utils;
 
 using System;
+using System.Diagnostics;
 
-namespace Origin
+namespace Origin;
+
+/// <summary>
+/// This is the main type for your game.
+/// </summary>
+public class OriginGame : Game
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
-    public class OriginGame : Game
+    public static OriginGame Instance { get; private set; }
+    private GraphicsDeviceManager graphics;
+    private SpriteBatch spriteBatch;
+    private SpriteFont spriteFont;
+
+    private ScreenManager _screenManager;
+
+    private FpsCountGC fpsCounter;
+
+    public static int ScreenWidth { get; private set; }
+    public static int ScreenHeight { get; private set; }
+
+    public OriginGame()
     {
-        public static OriginGame Instance { get; private set; }
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-        private SpriteFont spriteFont;
+        Instance = this;
+        graphics = new GraphicsDeviceManager(this);
+        Window.AllowUserResizing = true;
+        Content.RootDirectory = "Content";
+        // Sleep time when Window not in focus
+        InactiveSleepTime = TimeSpan.FromMilliseconds(100);
 
-        private ScreenManager _screenManager;
+        _screenManager = new ScreenManager();
+        fpsCounter = new FpsCountGC();
 
-        public FpsCountGC fpsCounter;
-        public InfoDrawerGC debug;
+        Components.Add(_screenManager);
+        Components.Add(fpsCounter);
+    }
 
-        public static int ScreenWidth { get; private set; }
-        public static int ScreenHeight { get; private set; }
+    /// <summary>
+    /// Allows the game to perform any initialization it needs to before starting to run.
+    /// This is where it can query for any required services and load any non-graphic
+    /// related content.  Calling base.Initialize will enumerate through any components
+    /// and initialize them as well.
+    /// </summary>
+    protected override void Initialize()
+    {
+        ScreenHeight = graphics.PreferredBackBufferHeight = 1024;
+        ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
+        //graphics.IsFullScreen = true;
+        graphics.ApplyChanges();
+        Window.Title = "Dwarf`s Origin";
 
-        public OriginGame()
-        {
-            Instance = this;
-            graphics = new GraphicsDeviceManager(this);
-            Window.AllowUserResizing = true;
-            Content.RootDirectory = "Content";
-            // Sleep time when Window not in focus
-            InactiveSleepTime = TimeSpan.FromMilliseconds(100);
+        IsMouseVisible = true;
 
-            _screenManager = new ScreenManager();
-            fpsCounter = new FpsCountGC();
-            debug = new InfoDrawerGC(new Point(10, 10), Color.Aqua);
+        InputManager.Initialise(this);
 
-            Components.Add(_screenManager);
-            Components.Add(fpsCounter);
-            Components.Add(debug);
-        }
+        base.Initialize();
+    }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        protected override void Initialize()
-        {
-            ScreenHeight = graphics.PreferredBackBufferHeight = 1024;
-            ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
-            //graphics.IsFullScreen = true;
-            graphics.ApplyChanges();
-            Window.Title = "Dwarf`s Origin";
+    /// <summary>
+    /// LoadContent will be called once per game and is the place to load
+    /// all of your content.
+    /// </summary>
+    protected override void LoadContent()
+    {
+        // Create a new SpriteBatch, which can be used to draw textures.
+        spriteBatch = new SpriteBatch(GraphicsDevice);
+        spriteFont = Content.Load<SpriteFont>("basefont");
 
-            IsMouseVisible = true;
+        // Load Resources
+        ResourceLoader.LoadResources();
 
-            InputManager.Initialise(this);
-            base.Initialize();
-        }
+        InfoDrawerGC debug = new InfoDrawerGC(new Point(10, 10), Color.Aqua, spriteFont, spriteBatch);
+        Components.Add(debug);
+        Services.AddService(typeof(IGameInfoMonitor), debug);
+        Services.AddService(typeof(GraphicsDevice), GraphicsDevice);
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
-        protected override void LoadContent()
-        {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteFont = Content.Load<SpriteFont>("basefont");
+        //LoadMenuMainScreen();
+        LoadGameScreen();
+    }
 
-            // Load Resources
-            ResourceLoader.LoadResources();
+    /// <summary>
+    /// UnloadContent will be called once per game and is the place to unload
+    /// game-specific content.
+    /// </summary>
+    protected override void UnloadContent()
+    {
+        // TODO: Unload any non ContentManager content here
+    }
 
-            debug.spriteBatch = spriteBatch;
-            debug.font = spriteFont;
-            //LoadMenuMainScreen();
-            LoadGameScreen();
-        }
+    /// <summary>
+    /// Allows the game to run logic such as updating the world,
+    /// checking for collisions, gathering input, and playing audio.
+    /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    protected override void Update(GameTime gameTime)
+    {
+        InputManager.Update();
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
+        ScreenHeight = graphics.PreferredBackBufferHeight;
+        ScreenWidth = graphics.PreferredBackBufferWidth;
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
-        {
-            InputManager.Update();
+        IGameInfoMonitor debug = Services.GetService<IGameInfoMonitor>();
+        debug.Set("Notice", "-/+ to zoom; [/] to change level; arrows to move; esc to exit", 0);
+        debug.Set("FPS", fpsCounter.Fps.ToString(), 1);
+        debug.Set("UPS", fpsCounter.Ups.ToString(), 2);
+        debug.Set("ElapsedTime", fpsCounter.Fps.ToString(), 3);
 
-            ScreenHeight = graphics.PreferredBackBufferHeight;
-            ScreenWidth = graphics.PreferredBackBufferWidth;
+        base.Update(gameTime);
+        InputManager.FinalUpdate();
+    }
 
-            debug.Clear();
-            debug.Add("-/+ to zoom; [/] to change level; arrows to move; esc to exit");
-            debug.Add(fpsCounter.msg);
+    /// <summary>
+    /// This is called when the game should draw itself.
+    /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            base.Update(gameTime);
-            InputManager.FinalUpdate();
-        }
+        base.Draw(gameTime);
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+        long drawcalls = GraphicsDevice.Metrics.DrawCount;
+        Services.GetService<IGameInfoMonitor>().Set("DrawCALLS", drawcalls.ToString(), 7);
+    }
 
-            base.Draw(gameTime);
-        }
+    private void LoadMenuMainScreen()
+    {
+        _screenManager.LoadScreen(new StateMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+    }
 
-        private void LoadMenuMainScreen()
-        {
-            _screenManager.LoadScreen(new StateMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
-        }
-
-        private void LoadGameScreen()
-        {
-            _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
-        }
+    private void LoadGameScreen()
+    {
+        _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
     }
 }

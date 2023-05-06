@@ -1,8 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 
+using Origin.Source.GameComponentsServices;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
 using Origin.Source.Utils;
@@ -26,7 +29,7 @@ namespace Origin.Source
             int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult;
 
             if (InputManager.JustPressed("game.fpswitch"))
-                OriginGame.Instance.debug.Visible = !OriginGame.Instance.debug.Visible;
+                OriginGame.Instance.Services.GetService<IGameInfoMonitor>().Switch();
 
             if (InputManager.IsPressed("Camera.left"))
                 StateMainGame.ActiveCamera.Move(new Vector2(-1 * movemod, 0));
@@ -38,9 +41,9 @@ namespace Origin.Source
                 StateMainGame.ActiveCamera.Move(new Vector2(0, 1 * movemod));
 
             if (InputManager.JustPressedAndHoldDelayed("world.level.minus"))
-                MainWorld.Instance.ActiveSite.CurrentLevel += 1;
+                GameWorld.Instance.ActiveSite.CurrentLevel += 1;
             if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
-                MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
+                GameWorld.Instance.ActiveSite.CurrentLevel -= 1;
 
             if (InputManager.IsPressed("Camera.zoom.plus"))
                 StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom;
@@ -49,11 +52,11 @@ namespace Origin.Source
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (MainWorld.Instance.ActiveSite.SelectedBlock != new Point3(-1, -1, -1))
+                if (GameWorld.Instance.ActiveSite.SelectedBlock != new Point3(-1, -1, -1))
                 {
-                    SiteCell sc = MainWorld.Instance.ActiveSite.CellGetOrCreate(MainWorld.Instance.ActiveSite.SelectedBlock);
+                    SiteCell sc = GameWorld.Instance.ActiveSite.CellGetOrCreate(GameWorld.Instance.ActiveSite.SelectedBlock);
                     if (sc.RemoveWall())
-                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(sc.Position);
+                        GameWorld.Instance.ActiveSite.BlocksToReload.Add(sc.Position);
                 }
             }
         }
