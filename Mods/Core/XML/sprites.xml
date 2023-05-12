@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Sprites TextureName="default0">
+<Sprites TextureName="default64">
 	<!--
         SpriteID* - sprite name
         SpriteRect* - sprite rectangle in atlas
@@ -24,42 +24,42 @@
     </Sprite> -->
 	<Sprite>
 		<SpriteID>SelectionWall</SpriteID>
-		<SourceRect>0 0 32 32</SourceRect>
+		<SourceRect>0 64 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>SelectionFloor</SpriteID>
-		<SourceRect>32 0 32 32</SourceRect>
+		<SourceRect>0 0 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>SolidSelectionWall</SpriteID>
-		<SourceRect>64 0 32 32</SourceRect>
+		<SourceRect>64 64 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>SolidSelectionFloor</SpriteID>
-		<SourceRect>96 0 32 32</SourceRect>
+		<SourceRect>64 0 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>DirtWall</SpriteID>
-		<SourceRect>0 32 32 32</SourceRect>
+		<SourceRect>128 192 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>DirtFloor</SpriteID>
-		<SourceRect>32 32 32 32</SourceRect>
+		<SourceRect>128 128 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>RoughStoneWall</SpriteID>
-		<SourceRect>64 32 32 32</SourceRect>
+		<SourceRect>128 64 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>RoughStoneFloor</SpriteID>
-		<SourceRect>96 32 32 32</SourceRect>
+		<SourceRect>128 0 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>EmbeddedGrassFloor1</SpriteID>
-		<SourceRect>0 64 32 32</SourceRect>
+		<SourceRect>128 128 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
 		<SpriteID>EmbeddedGrassFloor2</SpriteID>
-		<SourceRect>32 64 32 32</SourceRect>
+		<SourceRect>128 128 64 64</SourceRect>
 	</Sprite>
 </Sprites>

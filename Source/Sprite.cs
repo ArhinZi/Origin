@@ -54,9 +54,9 @@ namespace Origin.Source
 
     public class Sprite
     {
-        public static readonly Point TILE_SIZE = new Point(32, 16);
-        public static readonly Point SPRITE_SIZE = new Point(32, 32);
-        public static readonly int FLOOR_YOFFSET = 4;
+        public static readonly Point TILE_SIZE = new Point(64, 32);
+        public static readonly Point SPRITE_SIZE = new Point(64, 64);
+        public static readonly int FLOOR_YOFFSET = 8;
 
         public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
 
