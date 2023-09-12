@@ -36,6 +36,14 @@ namespace Origin.Source
         EmbeddedFloor
     }
 
+    public enum VertexBufferLayer
+    {
+        HiddenBack,
+        Back,
+        HiddenFront,
+        Front
+    }
+
     public class SiteRenderer : IDisposable
     {
         public Site Site;
@@ -66,8 +74,8 @@ namespace Origin.Source
 
         public static readonly float Z_LEVEL_OFFSET = 0.01f;
 
-        public static readonly Point BASE_CHUNK_SIZE = new Point(32, 32);
-        public static readonly int ONE_MOMENT_DRAW_LEVELS = 16;
+        public static readonly Point BASE_CHUNK_SIZE = new Point(64, 64);
+        public static readonly int ONE_MOMENT_DRAW_LEVELS = 32;
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
@@ -218,7 +226,7 @@ namespace Origin.Source
                             c = tm.TerraColor;
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
-                                VertexBufferLayer.Back,
+                                (int)VertexBufferLayer.Back,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
 
                             if (tile.EmbeddedWallID != null && tile.WallVisual.HasFlag(CellVisual.Visible))
@@ -227,8 +235,8 @@ namespace Origin.Source
                                 sprite = tm.Sprites["Wall"][tile.seed % tm.Sprites["Wall"].Count];
                                 c = tm.TerraColor;
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
-                                    VertexBufferType.Static,
-                                    VertexBufferLayer.Back,
+                                VertexBufferType.Static,
+                                (int)VertexBufferLayer.Back,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                             }
                         }
@@ -244,12 +252,12 @@ namespace Origin.Source
                             if (tile.WallVisual.HasFlag(CellVisual.Visible))
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
-                                    VertexBufferLayer.Back,
+                                    (int)VertexBufferLayer.Back,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                             else
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
-                                    VertexBufferLayer.HiddenBack,
+                                    (int)VertexBufferLayer.HiddenBack,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                         }
 
@@ -263,7 +271,7 @@ namespace Origin.Source
                             c = tm.TerraColor;
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
-                                VertexBufferLayer.Front,
+                                (int)VertexBufferLayer.Front,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
 
                             if (tile.EmbeddedFloorID != null && tile.FloorVisual.HasFlag(CellVisual.Visible))
@@ -274,7 +282,7 @@ namespace Origin.Source
                                 c = tm.TerraColor;
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
-                                    VertexBufferLayer.Front,
+                                    (int)VertexBufferLayer.Front,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                             }
                         }
@@ -289,12 +297,12 @@ namespace Origin.Source
                             if (tile.FloorVisual.HasFlag(CellVisual.Visible))
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
-                                    VertexBufferLayer.Front,
+                                    (int)VertexBufferLayer.Front,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                             else
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
-                                VertexBufferLayer.HiddenFront,
+                                (int)VertexBufferLayer.HiddenFront,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                         }
                     }
@@ -426,7 +434,7 @@ namespace Origin.Source
                     Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
                     _renderChunkArray[tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y, tile.Position.Z].AddSprite(
                         VertexBufferType.Dynamic,
-                        VertexBufferLayer.Back,
+                        (int)VertexBufferLayer.Back,
                         sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, 0)
                         );
                     /*sprite = Sprite.SpriteSet["SolidSelectionFloor"];
@@ -458,7 +466,7 @@ namespace Origin.Source
                     }
                     _renderChunkArray[position.Position.X / ChunkSize.X, position.Position.Y / ChunkSize.Y, position.Position.Z].AddSprite(
                         VertexBufferType.Dynamic,
-                        VertexBufferLayer.Back,
+                        (int)VertexBufferLayer.Back,
                         sprite, Color.White, position.Position, new Point(0, 0),
                         //offsetZ: -SiteRenderer.Z_DIAGONAL_OFFSET / 2,
                         drawSize: Sprite.SPRITE_SIZE
@@ -490,10 +498,10 @@ namespace Origin.Source
 
                         if (z == _drawHighest)
                             _renderChunkArray[x, y, z].Draw(_customEffect,
-                                new VertexBufferLayer[] { VertexBufferLayer.HiddenBack, VertexBufferLayer.Back }.ToArray());
+                                new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
                         else
                             _renderChunkArray[x, y, z].Draw(_customEffect,
-                                new VertexBufferLayer[] { VertexBufferLayer.Back, VertexBufferLayer.Front }.ToArray());
+                                new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
 
                         _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
                     }
