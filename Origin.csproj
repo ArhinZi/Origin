@@ -14,8 +14,14 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Content\bin\**" />
+		<Compile Remove="MGUI.Core\**" />
+		<Compile Remove="MGUI.Shared\**" />
 		<EmbeddedResource Remove="Content\bin\**" />
+		<EmbeddedResource Remove="MGUI.Core\**" />
+		<EmbeddedResource Remove="MGUI.Shared\**" />
 		<None Remove="Content\bin\**" />
+		<None Remove="MGUI.Core\**" />
+		<None Remove="MGUI.Shared\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Arch" Version="1.2.6" />
@@ -51,8 +57,8 @@
 	  <Folder Include="Content\FX\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\..\MGUI\MGUI.Core\MGUI.Core.csproj" />
-	  <ProjectReference Include="..\..\MGUI\MGUI.Shared\MGUI.Shared.csproj" />
+	  <ProjectReference Include="MGUI.Core\MGUI.Core.csproj" />
+	  <ProjectReference Include="MGUI.Shared\MGUI.Shared.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Settings.Designer.cs">

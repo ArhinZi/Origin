@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/10_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/10_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/10_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/11_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/11_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/11_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/12_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/12_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/12_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/13_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/13_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/13_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/14_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/14_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/14_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/16_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/16_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/16_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/18_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/18_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/18_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/20_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/20_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/20_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/24_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/24_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/24_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/36_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/36_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/36_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/48_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/48_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/48_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/72_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/72_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/72_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/8_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/8_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/8_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/9_Bold.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/9_Italic.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Fonts/Arial/9_Normal.spritefont</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Icons/AngryMeteor_MilitaryIconsSet.png</File>
+    <File>D:/projects/Origin/Origin/MGUI.Core/Content/Icons/CheckMark_64x64.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
