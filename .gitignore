@@ -1,5 +1,3 @@
 .vs
-/bin
-/obj
-/Content/obj
-/Content/bin
+bin/
+obj/
