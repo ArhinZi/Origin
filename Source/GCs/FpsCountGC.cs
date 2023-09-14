@@ -1,6 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
+
+using Origin.Source.Events;
 
 namespace Origin.Source.GCs
 {
@@ -9,7 +13,9 @@ namespace Origin.Source.GCs
         public double frames = 0;
         public double updates = 0;
         public double elapsed = 0;
+        public double avgTickTime = 0;
         public double last = 0;
+        public double last2 = 0;
         public double now = 0;
         public double msgFrequency = 1.0f;
         public string msg = "";
@@ -21,15 +27,16 @@ namespace Origin.Source.GCs
         {
             now = gameTime.TotalGameTime.TotalSeconds;
             elapsed = now - last;
+            avgTickTime = (avgTickTime + now - last2) / 2;
             if (elapsed > msgFrequency)
             {
-                msg = " Fps: " + ((int)(frames / elapsed)).ToString() + "\n Elapsed time: " + elapsed.ToString("##.##") + "\n Updates: " + updates.ToString() + "\n Frames: " + frames.ToString() + "\n";
-                //Console.WriteLine(msg);
+                EventBus.Send(new UpdateFps((float)(frames / elapsed)));
                 elapsed = 0;
                 frames = 0;
                 updates = 0;
                 last = now;
             }
+            last2 = now;
             updates++;
         }
 

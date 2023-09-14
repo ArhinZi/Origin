@@ -1,13 +1,18 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
+
+using Origin.Source.Events;
 
 using System;
+using System.Collections.Generic;
 
 namespace Origin.Source
 {
     public class Camera2D
     {
         private float _zoom = 1f;
+        private Vector2 _position;
         private float _minZoom = 0.05f;
         private float _maxZoom = 4f;
         private Matrix _projection;
@@ -20,6 +25,10 @@ namespace Origin.Source
             get { return _zoom; }
             set
             {
+                EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
+                {
+                    ["CameraZoom"] = value.ToString("##.##")
+                }));
                 _zoom = value;
                 if (_zoom < _minZoom) _zoom = _minZoom;
                 if (_zoom > _maxZoom) _zoom = _maxZoom;
@@ -40,7 +49,22 @@ namespace Origin.Source
             }
         }
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                if (value != _position)
+                    EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
+                    {
+                        ["CameraPosition"] = value.ToString()
+                    }));
+                _position = value;
+            }
+        }
 
         public Matrix WorldMatrix { get; private set; }
 

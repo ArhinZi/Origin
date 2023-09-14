@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using Origin.Source.Events;
 using Origin.Source.Utils;
 
 using System;
@@ -20,7 +23,6 @@ namespace Origin.Source
         private int _currentLevel;
 
         public float SiteTime = 0.5f;
-        private SiteRenderer Renderer { get; set; }
 
         public List<Point3> BlocksToReload { get; private set; }
 
@@ -40,8 +42,6 @@ namespace Origin.Source
                  )));
 
             BlocksToReload = new List<Point3>();
-
-            Renderer = new SiteRenderer(this, OriginGame.Instance.GraphicsDevice);
         }
 
         public int CurrentLevel
@@ -76,23 +76,16 @@ namespace Origin.Source
             Point m = Mouse.GetState().Position;
             Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
             SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
-            OriginGame.Instance.debug.Add("Block: " + sel.ToString());
-            OriginGame.Instance.debug.Add("Cam ZOOM: " + Camera.Zoom.ToString());
-            OriginGame.Instance.debug.Add("Cam POS: " + Camera.Position.ToString());
+            EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
+            {
+                ["SelectedBlock"] = sel.ToString(),
+                ["DayTime"] = (SiteTime).ToString("#.##")
+            }));
             //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
-
-            OriginGame.Instance.debug.Add("DayTime: " + (SiteTime).ToString("#.##"));
-            Renderer.Update(gameTime);
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            Renderer.Draw(gameTime);
         }
 
         public void Dispose()
         {
-            Renderer.Dispose();
         }
     }
 }

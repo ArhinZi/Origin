@@ -1,23 +1,40 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+
+using MGUI.Core.UI;
+using MGUI.Core.UI.Brushes.Fill_Brushes;
+using MGUI.Shared.Rendering;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
 using Origin.Source;
+using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.GCs;
 using Origin.Source.IO;
+using Origin.Source.UI;
 using Origin.Source.Utils;
+
+using SharpDX.Direct2D1;
+
+using System;
+using System.Collections.Generic;
+
+using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 
 namespace Origin
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class OriginGame : Game
+    public class OriginGame : Game, IObservableUpdate
     {
         public static OriginGame Instance { get; private set; }
+        public MainRenderer MGUIRenderer { get; private set; }
+
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private SpriteFont spriteFont;
@@ -27,8 +44,14 @@ namespace Origin
         public FpsCountGC fpsCounter;
         public InfoDrawerGC debug;
 
+        public event EventHandler<TimeSpan> PreviewUpdate;
+
+        public event EventHandler<EventArgs> EndUpdate;
+
         public static int ScreenWidth { get; private set; }
         public static int ScreenHeight { get; private set; }
+
+        public UIManager UiManager;
 
         public OriginGame()
         {
@@ -43,7 +66,7 @@ namespace Origin
 
             Components.Add(_screenManager);
             Components.Add(fpsCounter);
-            Components.Add(debug);
+            //Components.Add(debug);
         }
 
         /// <summary>
@@ -61,6 +84,9 @@ namespace Origin
             Window.Title = "Dwarf`s Origin";
 
             IsMouseVisible = true;
+
+            MGUIRenderer = new(new GameRenderHost<OriginGame>(this));
+            UiManager = new UIManager();
 
             InputManager.Initialise(this);
             base.Initialize();
@@ -102,16 +128,21 @@ namespace Origin
         protected override void Update(GameTime gameTime)
         {
             InputManager.Update();
+            PreviewUpdate?.Invoke(this, gameTime.TotalGameTime);
 
             ScreenHeight = graphics.PreferredBackBufferHeight;
             ScreenWidth = graphics.PreferredBackBufferWidth;
 
             debug.Clear();
-            debug.Add("-/+ to zoom; [/] to change level; arrows to move; esc to exit");
-            debug.Add(fpsCounter.msg);
+            EventBus.Send(new DebugValueChanged(0, new Dictionary<string, string>()
+            {
+                ["Info"] = "-/+ to zoom; [/] to change level; arrows to move; esc to exit"
+            }));
 
+            UiManager.Update();
             base.Update(gameTime);
             InputManager.FinalUpdate();
+            EndUpdate?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -123,6 +154,12 @@ namespace Origin
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             base.Draw(gameTime);
+            long drawcalls = GraphicsDevice.Metrics.DrawCount;
+            EventBus.Send(new DebugValueChanged(3, new Dictionary<string, string>()
+            {
+                ["DrawCalls"] = drawcalls.ToString()
+            }));
+            UiManager.Draw();
         }
 
         private void LoadMenuMainScreen()
