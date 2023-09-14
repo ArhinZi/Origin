@@ -22,7 +22,7 @@ using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Origin.Source
 {
-    internal enum VisBufField : byte
+    /*internal enum VisBufField : byte
     {
         FloorVisible = 1,
         WallVisible
@@ -34,7 +34,7 @@ namespace Origin.Source
         Floor,
         EmbeddedWall,
         EmbeddedFloor
-    }
+    }*/
 
     public enum VertexBufferLayer
     {
@@ -431,6 +431,23 @@ namespace Origin.Source
                 SiteCell tile = Site.SelectedBlock;
                 if (tile != null)
                 {
+                    int blocksUnder = 0;
+                    for (int i = 1; i < ONE_MOMENT_DRAW_LEVELS; i++)
+                    {
+                        if (Site.Blocks[tile.Position.X, tile.Position.Y, tile.Position.Z - i].FloorID == TerrainMaterial.AIR_NULL_MAT_ID)
+                        {
+                            SiteCell subtile = Site.Blocks[tile.Position.X, tile.Position.Y, tile.Position.Z - i];
+                            Sprite sprite2 = Sprite.SpriteSet["SelectionWall"];
+                            _renderChunkArray[subtile.Position.X / ChunkSize.X,
+                                            subtile.Position.Y / ChunkSize.Y,
+                                            subtile.Position.Z].AddSprite(
+                                VertexBufferType.Dynamic,
+                                (int)VertexBufferLayer.Back,
+                                sprite2, new Color(30, 0, 0, 200), subtile.Position, new Point(0, 0)
+                                );
+                        }
+                        else break;
+                    }
                     Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
                     _renderChunkArray[tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y, tile.Position.Z].AddSprite(
                         VertexBufferType.Dynamic,
