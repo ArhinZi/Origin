@@ -5,11 +5,10 @@ using Arch.Core.Utils;
 using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS;
+using Origin.Source.Generators;
 using Origin.Source.IO;
-using Origin.Source.SiteGenerator;
 
 using System;
-using System.Collections.Generic;
 
 namespace Origin.Source
 {
@@ -17,8 +16,9 @@ namespace Origin.Source
     {
         public static MainWorld Instance { get; private set; }
 
-        public List<Site> Sites { get; private set; }
         public Site ActiveSite { get; private set; }
+        public SiteRenderer Renderer { get; private set; }
+        public int Seed { get; private set; } = 1234;
 
         public Arch.Core.World ECSworld { get; private set; } = Arch.Core.World.Create();
 
@@ -34,14 +34,11 @@ namespace Origin.Source
             // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
             SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
-            SiteBlocksMaker.GenerateSite(ActiveSite, parameters);
+            SiteBlocksMaker.GenerateSite(ActiveSite, parameters, Seed);
             ActiveSite.CurrentLevel = (int)(ActiveSite.Size.Z * 0.8f);
-            Sites = new List<Site>
-            {
-                ActiveSite
-            };
 
             ActiveSite.Init();
+            Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
 
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = Sprite.SpriteSet["tempPawn"];
@@ -52,10 +49,7 @@ namespace Origin.Source
 
         public void Update(GameTime gameTime)
         {
-            foreach (var item in Sites)
-            {
-                item.Update(gameTime);
-            }
+            ActiveSite.Update(gameTime);
 
             if (gameTime.TotalGameTime.Ticks % 10 == 0)
             {
@@ -89,19 +83,18 @@ namespace Origin.Source
                         entity.Set(new SitePositionComponent() { Cell = sc, DirectionOfView = dir });
                 });
             }
+
+            Renderer.Update(gameTime);
         }
 
-        public void Draw()
+        public void Draw(GameTime gameTime)
         {
-            ActiveSite.Draw();
+            Renderer.Draw(gameTime);
         }
 
         public void Dispose()
         {
-            foreach (var item in Sites)
-            {
-                item.Dispose();
-            }
+            ActiveSite.Dispose();
         }
     }
 }

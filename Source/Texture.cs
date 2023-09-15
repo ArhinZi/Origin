@@ -16,7 +16,7 @@ namespace Origin.Source
         {
             using (FileStream stream = new FileStream(path, FileMode.Open))
             {
-                Texture2D texture = Texture2D.FromStream(MainGame.Instance.GraphicsDevice, stream);
+                Texture2D texture = Texture2D.FromStream(OriginGame.Instance.GraphicsDevice, stream);
                 texture.Name = Path.GetFileNameWithoutExtension(path);
                 textures.Add(texture.Name, texture);
             }

@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using Origin.Source.Events;
 using Origin.Source.Utils;
 
 using System;
@@ -12,6 +15,7 @@ namespace Origin.Source
     {
         public SiteCell[,,] Blocks { get; set; }
         public Point3 Size { get; private set; }
+        public Camera2D Camera { get; private set; }
 
         public MainWorld World { get; private set; }
         public SiteCell SelectedBlock { get; private set; }
@@ -19,7 +23,6 @@ namespace Origin.Source
         private int _currentLevel;
 
         public float SiteTime = 0.5f;
-        private SiteRenderer Renderer { get; set; }
 
         public List<Point3> BlocksToReload { get; private set; }
 
@@ -32,14 +35,13 @@ namespace Origin.Source
 
         public void Init()
         {
-            MainGame.Camera.Move(new Vector2(0,
+            Camera = new Camera2D();
+            Camera.Move(new Vector2(0,
                 -(CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
                     - Sprite.TILE_SIZE.Y * (Size.X / 2)
                  )));
 
             BlocksToReload = new List<Point3>();
-
-            Renderer = new SiteRenderer(this, MainGame.Instance.GraphicsDevice);
         }
 
         public int CurrentLevel
@@ -72,24 +74,18 @@ namespace Origin.Source
         public void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
-            Point3 sel = WorldUtils.MouseScreenToMap(m, CurrentLevel);
+            Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
             SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
-            MainGame.Instance.debug.Add("Block: " + sel.ToString());
-
+            EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
+            {
+                ["SelectedBlock"] = sel.ToString(),
+                ["DayTime"] = (SiteTime).ToString("#.##")
+            }));
             //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
-            SiteTime = 0.5f;
-            MainGame.Instance.debug.Add("DayTime: " + (SiteTime).ToString("#.##"));
-            Renderer.Update(gameTime);
-        }
-
-        public void Draw()
-        {
-            Renderer.Draw();
         }
 
         public void Dispose()
         {
-            Renderer.Dispose();
         }
     }
 }

@@ -1,11 +1,20 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
+
+using Origin.Source.Events;
+
+using System;
+using System.Collections.Generic;
 
 namespace Origin.Source
 {
     public class Camera2D
     {
-        private float _zoom;
+        private float _zoom = 1f;
+        private Vector2 _position;
+        private float _minZoom = 0.05f;
+        private float _maxZoom = 4f;
         private Matrix _projection;
         private Matrix _transformation;
 
@@ -16,21 +25,46 @@ namespace Origin.Source
             get { return _zoom; }
             set
             {
+                EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
+                {
+                    ["CameraZoom"] = value.ToString("##.##")
+                }));
                 _zoom = value;
-                if (_zoom < 0.05f) _zoom = 0.05f;
-                if (_zoom > 4f) _zoom = 4f;
+                if (_zoom < _minZoom) _zoom = _minZoom;
+                if (_zoom > _maxZoom) _zoom = _maxZoom;
             } // Negative zoom will flip image
         }
+
+        public float MinZoom
+        { set { _minZoom = value; } }
+
+        public float MaxZoom
+        { set { _maxZoom = value; } }
 
         public float AspectPatio
         {
             get
             {
-                return (float)MainGame.Instance.GraphicsDevice.Viewport.Width / MainGame.Instance.GraphicsDevice.Viewport.Height;
+                return (float)OriginGame.Instance.GraphicsDevice.Viewport.Width / OriginGame.Instance.GraphicsDevice.Viewport.Height;
             }
         }
 
-        public Vector2 Position { get; set; }
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                if (value != _position)
+                    EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
+                    {
+                        ["CameraPosition"] = value.ToString()
+                    }));
+                _position = value;
+            }
+        }
 
         public Matrix WorldMatrix { get; private set; }
 
@@ -38,7 +72,7 @@ namespace Origin.Source
         {
             get
             {
-                _projection = Matrix.CreateOrthographicOffCenter(0, MainGame.ScreenWidth, MainGame.ScreenHeight, 0, -100, 100) * Matrix.CreateScale(1, AspectPatio, 1);
+                _projection = Matrix.CreateOrthographicOffCenter(0, OriginGame.ScreenWidth, OriginGame.ScreenHeight, 0, -100, 100) * Matrix.CreateScale(1, AspectPatio, 1);
                 return _projection;
             }
         }
@@ -50,7 +84,7 @@ namespace Origin.Source
                 _transformation =
                     Matrix.CreateTranslation(-Position.X, -Position.Y, 1) *
                     Matrix.CreateScale(Zoom, Zoom, 1) *
-                    Matrix.CreateTranslation(new Vector3(MainGame.ScreenWidth * 0.5f, MainGame.ScreenHeight * 0.5f, 0));
+                    Matrix.CreateTranslation(new Vector3(OriginGame.ScreenWidth * 0.5f, OriginGame.ScreenHeight * 0.5f, 0));
                 return _transformation;
             }
             private set
@@ -77,7 +111,7 @@ namespace Origin.Source
 
         public Vector2 ScreenToWorld(Vector2 screenPos, int currentLevel)
         {
-            return Vector2.Zero;
+            throw new NotImplementedException();
         }
     }
 }

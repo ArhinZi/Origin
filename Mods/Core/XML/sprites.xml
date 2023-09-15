@@ -27,6 +27,14 @@
 		<SourceRect>0 64 64 64</SourceRect>
 	</Sprite>
 	<Sprite>
+		<SpriteID>RightBorder</SpriteID>
+		<SourceRect>32 0 32 16</SourceRect>
+	</Sprite>
+	<Sprite>
+		<SpriteID>LeftBorder</SpriteID>
+		<SourceRect>0 0 32 16</SourceRect>
+	</Sprite>
+	<Sprite>
 		<SpriteID>SelectionFloor</SpriteID>
 		<SourceRect>0 0 64 64</SourceRect>
 	</Sprite>

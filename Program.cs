@@ -17,7 +17,7 @@ namespace Origin
         [STAThread]
         private static void Main()
         {
-            using (var game = new MainGame())
+            using (var game = new OriginGame())
                 game.Run();
         }
     }

@@ -14,16 +14,25 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Content\bin\**" />
+		<Compile Remove="MGUI.Core\**" />
+		<Compile Remove="MGUI.Shared\**" />
 		<EmbeddedResource Remove="Content\bin\**" />
+		<EmbeddedResource Remove="MGUI.Core\**" />
+		<EmbeddedResource Remove="MGUI.Shared\**" />
 		<None Remove="Content\bin\**" />
+		<None Remove="MGUI.Core\**" />
+		<None Remove="MGUI.Shared\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Arch" Version="1.2.3" />
+		<PackageReference Include="Arch" Version="1.2.6" />
+		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
+		<PackageReference Include="GameTimer" Version="4.0.0" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
+		<PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Icon.bmp">
@@ -46,6 +55,23 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Content\FX\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="MGUI.Core\MGUI.Core.csproj" />
+	  <ProjectReference Include="MGUI.Shared\MGUI.Shared.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Settings.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
 	</ItemGroup>
 	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
 		<Message Text="Restoring dotnet tools" Importance="High" />
