@@ -19,7 +19,9 @@ namespace Origin.Source.UI
     {
         private Dictionary<int, Dictionary<string, string>> values = new();
         private bool IsChanged = false;
-        MGStackPanel stackPanel;
+        private MGStackPanel stackPanel;
+        private List<MGTextBlock> lines = new List<MGTextBlock>();
+
         public DebugInfoViewer(MGDesktop Desktop, int Left, int Top, int Width, int Height, MGTheme Theme = null) : base(Desktop, Left, Top, Width, Height, Theme)
         {
             stackPanel = new MGStackPanel(this, Orientation.Vertical);
@@ -45,12 +47,20 @@ namespace Origin.Source.UI
         {
             var list = values.Keys.ToList();
             list.Sort();
-            stackPanel.TryRemoveAll();
+            int iter = 0;
             foreach (var order in list)
             {
                 foreach (var key in values[order].Keys)
                 {
-                    stackPanel.TryAddChild(new MGTextBlock(this, key + ": " + values[order][key]));
+                    if (lines.Count <= iter)
+                    {
+                        lines.Add(new MGTextBlock(this, key + ": " + values[order][key]));
+                        stackPanel.TryAddChild(lines[^1]);
+                    }
+                    else
+                        lines[iter].Text = key + ": " + values[order][key];
+                    iter++;
+                    /*stackPanel.TryAddChild(new MGTextBlock(this, key + ": " + values[order][key]));*/
                 }
             }
         }
@@ -64,7 +74,6 @@ namespace Origin.Source.UI
         [Event]
         public void OnDebugValueChanged(DebugValueChanged valueChanged)
         {
-            
             foreach (var key in valueChanged.values.Keys)
             {
                 if (!values.ContainsKey(valueChanged.order))

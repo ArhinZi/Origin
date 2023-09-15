@@ -80,6 +80,8 @@ namespace Origin
             ScreenHeight = graphics.PreferredBackBufferHeight = 1024;
             ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
             //graphics.IsFullScreen = true;
+            IsFixedTimeStep = true;
+            graphics.SynchronizeWithVerticalRetrace = false;
             graphics.ApplyChanges();
             Window.Title = "Dwarf`s Origin";
 
@@ -87,6 +89,11 @@ namespace Origin
 
             MGUIRenderer = new(new GameRenderHost<OriginGame>(this));
             UiManager = new UIManager();
+
+            EventBus.Send(new DebugValueChanged(0, new Dictionary<string, string>()
+            {
+                ["Info"] = "-/+ to zoom; [/] to change level; arrows to move; esc to exit"
+            }));
 
             InputManager.Initialise(this);
             base.Initialize();
@@ -134,10 +141,6 @@ namespace Origin
             ScreenWidth = graphics.PreferredBackBufferWidth;
 
             debug.Clear();
-            EventBus.Send(new DebugValueChanged(0, new Dictionary<string, string>()
-            {
-                ["Info"] = "-/+ to zoom; [/] to change level; arrows to move; esc to exit"
-            }));
 
             UiManager.Update();
             base.Update(gameTime);

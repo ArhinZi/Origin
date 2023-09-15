@@ -198,6 +198,10 @@ namespace Origin.Source
             }
         }
 
+        private Sprite lborderSprite = Sprite.SpriteSet["LeftBorder"];
+        private Sprite rborderSprite = Sprite.SpriteSet["RightBorder"];
+        private Color borderColor = new Color(0, 0, 0, 100);
+
         /// <summary>
         /// Fill chunk vertices in already created _renderChunkArray
         /// </summary>
@@ -215,6 +219,12 @@ namespace Origin.Source
                         int tileCoordX = chunkCoord.X * ChunkSize.X + tileInChunkCoordX;
                         int tileCoordY = chunkCoord.Y * ChunkSize.Y + tileInChunkCoordY;
                         SiteCell tile = Site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
+                        bool LeftBorder = false;
+                        bool RightBorder = false;
+                        if (Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].WallID == TerrainMaterial.AIR_NULL_MAT_ID)
+                            LeftBorder = true;
+                        if (Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].WallID == TerrainMaterial.AIR_NULL_MAT_ID)
+                            RightBorder = true;
 
                         if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID && tile.WallVisual.HasFlag(CellVisual.Visible | CellVisual.Discovered))
                         {
@@ -228,6 +238,16 @@ namespace Origin.Source
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.Back,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                            if (LeftBorder)
+                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                    VertexBufferType.Static,
+                                    (int)VertexBufferLayer.Back,
+                                    lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                            if (RightBorder)
+                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                    VertexBufferType.Static,
+                                    (int)VertexBufferLayer.Back,
+                                    rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(Sprite.TILE_SIZE.X / 2, 0));
 
                             if (tile.EmbeddedWallID != null && tile.WallVisual.HasFlag(CellVisual.Visible))
                             {
@@ -273,6 +293,17 @@ namespace Origin.Source
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.Front,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+
+                            if (LeftBorder)
+                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                    VertexBufferType.Static,
+                                    (int)VertexBufferLayer.Front,
+                                    lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET - 1));
+                            if (RightBorder)
+                                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                    VertexBufferType.Static,
+                                    (int)VertexBufferLayer.Front,
+                                    rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(Sprite.TILE_SIZE.X / 2, -Sprite.FLOOR_YOFFSET - 1));
 
                             if (tile.EmbeddedFloorID != null && tile.FloorVisual.HasFlag(CellVisual.Visible))
                             {

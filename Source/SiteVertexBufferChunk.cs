@@ -185,17 +185,16 @@ namespace Origin.Source
                     _texture2Ds.Add(sprite.Texture);
                 }
             }
-            List<VertexPositionColorTextureBlock[]> vertexLayer = vertexBatches[sprite.Texture][vblayer];
             ref int rindex = ref indarr[sprite.Texture][vblayer];
             int VertexPack = rindex / MaxVertexCount;
             int index = rindex % MaxVertexCount;
-            if (vertexLayer.Count == 0 ||
-                index == 0 && VertexPack >= vertexLayer.Count)
+            if (vertexBatches[sprite.Texture][vblayer].Count == 0 ||
+                index == 0 && VertexPack >= vertexBatches[sprite.Texture][vblayer].Count)
             {
-                vertexLayer.Add(new VertexPositionColorTextureBlock[MaxVertexCount]);
+                vertexBatches[sprite.Texture][vblayer].Add(new VertexPositionColorTextureBlock[MaxVertexCount]);
             }
 
-            VertexPositionColorTextureBlock[] vertices = vertexLayer[VertexPack];
+            VertexPositionColorTextureBlock[] vertices = vertexBatches[sprite.Texture][vblayer][VertexPack];
 
             Point spritePos = WorldUtils.GetSpritePositionByCellPosition(cellPos) + offsetPosition;
             float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(cellPos) + offsetZ;
@@ -264,7 +263,7 @@ namespace Origin.Source
                 List<VertexBuffer>[] lvb = new List<VertexBuffer>[Enum.GetNames(typeof(VertexBufferLayer)).Length];
                 for (int ilayer = 0; ilayer < _staticVertices[key].Length; ilayer++)
                 {
-                    List<VertexPositionColorTextureBlock[]> list = _staticVertices[key][ilayer];
+                    ref List<VertexPositionColorTextureBlock[]> list = ref _staticVertices[key][ilayer];
                     lvb[ilayer] = new List<VertexBuffer>();
                     int index = _staticVertexIndexes[key][ilayer];
                     foreach (var item in list)
@@ -306,11 +305,11 @@ namespace Origin.Source
                     }
                     if (_dynamicVertices.ContainsKey(key))
                     {
-                        List<VertexPositionColorTextureBlock[]> listVP = _dynamicVertices[key][(int)layer];
+                        ref List<VertexPositionColorTextureBlock[]> listVP = ref _dynamicVertices[key][(int)layer];
                         for (int i = 0; i < listVP.Count; i++)
                         {
                             int index = _dynamicVertexIndexes[key][layer];
-                            int count = index > listVP.Count ? MaxVertexCount : index;
+                            int count = i + 1 == listVP.Count ? index : MaxVertexCount;
                             if (count > 0) _graphicDevice.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, count / 3);
                         }
                     }
