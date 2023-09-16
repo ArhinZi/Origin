@@ -1,4 +1,4 @@
-﻿using Origin.Source.SiteGenerator;
+﻿using Origin.Source.Generators;
 
 using System.Collections.Generic;
 using System.IO;
