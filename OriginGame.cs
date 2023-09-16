@@ -63,6 +63,8 @@ namespace Origin
             _screenManager = new ScreenManager();
             fpsCounter = new FpsCountGC();
             debug = new InfoDrawerGC(new Point(10, 10), Color.Aqua);
+            // Sleep time when Window not in focus
+            InactiveSleepTime = TimeSpan.FromMilliseconds(100);
 
             Components.Add(_screenManager);
             Components.Add(fpsCounter);

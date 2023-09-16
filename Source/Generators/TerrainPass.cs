@@ -69,7 +69,7 @@ namespace Origin.Source.Generators
             }
         }
 
-        public float[,] GenerateHeightMap(int width, int height, float scale)
+        /*public float[,] GenerateHeightMap(int width, int height, float scale)
         {
             float[,] heightMap = new float[width, height];
             for (int i = 0; i < width; i++)
@@ -77,6 +77,26 @@ namespace Origin.Source.Generators
                 for (int j = 0; j < height; j++)
                 {
                     heightMap[i, j] = Noise.CalcPixel2D(i, j, scale) / 128f;
+                }
+            }
+            //heightMap = Noise.Calc2D(width, height, scale);
+            return heightMap;
+        }*/
+
+        public float[,] GenerateHeightMap(int width, int height, float scale)
+        {
+            float[,] heightMap = new float[width, height];
+            FastNoiseLite fnl = new FastNoiseLite(12345);
+            fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+            fnl.SetFractalType(FastNoiseLite.FractalType.FBm);
+            fnl.SetFractalOctaves(8);
+            fnl.SetFrequency(scale);
+            fnl.SetFractalGain(0.3f);
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    heightMap[i, j] = fnl.GetNoise(i, j) * 2 - 1;
                 }
             }
             //heightMap = Noise.Calc2D(width, height, scale);

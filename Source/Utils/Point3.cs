@@ -29,6 +29,11 @@ namespace Origin.Source.Utils
             Z = (int)v3.Z;
         }
 
+        public Point ToPoint()
+        {
+            return new Point(X, Y);
+        }
+
         public static bool operator ==(Point3 first, Point3 second)
         {
             return first.Equals(ref second);
