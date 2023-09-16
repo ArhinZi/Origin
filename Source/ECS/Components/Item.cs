@@ -1,6 +1,6 @@
-﻿namespace Origin.Source.ECS
+﻿namespace Origin.Source.ECS.Components
 {
-    public class ItemComponent
+    public struct Item
     {
         public string Name;
         public ushort StackSize;

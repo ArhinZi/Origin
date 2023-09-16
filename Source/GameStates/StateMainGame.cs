@@ -16,17 +16,14 @@ namespace Origin.Source.GameStates
         public static int GameSpeed { get; private set; } = 1;
         public new OriginGame Game => (OriginGame)base.Game;
 
-        public GameWorld World;
-        public static Camera2D ActiveCamera { get; private set; }
+        public GlobalWorld World;
 
-        private InputControl _inputControl;
+        public static InputControl InputControl;
 
         public StateMainGame(Game game) : base(game)
         {
-            World = new GameWorld();
-            _inputControl = new InputControl();
-
-            ActiveCamera = World.ActiveSite.Camera;
+            World = new GlobalWorld();
+            InputControl = new InputControl();
         }
 
         public override void LoadContent()
@@ -40,9 +37,8 @@ namespace Origin.Source.GameStates
 
             IGameInfoMonitor debug = Services.GetService<IGameInfoMonitor>();
             debug.Set("Mouse POS", currentMouseState.Position.ToString(), 5);
-            debug.Set("Mouse POS", World.ActiveSite.CurrentLevel.ToString(), 6);
 
-            _inputControl.Update(gameTime);
+            InputControl.Update(gameTime);
             World.Update(gameTime);
         }
 

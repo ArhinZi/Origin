@@ -45,6 +45,8 @@
 	  <None Remove="Mods\Core\XML\animals.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SiteGeneratorParameters.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SitePasses.xml" />
+	  <None Remove="Mods\Core\XML\material.xml" />
+	  <None Remove="Mods\Core\XML\NaturalConstructions.xml" />
 	  <None Remove="Mods\Core\XML\pawnSprite.xml" />
 	</ItemGroup>
 	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">

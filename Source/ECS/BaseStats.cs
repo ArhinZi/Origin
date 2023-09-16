@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.ECS
 {
-    internal struct UserControlPawnComponent
+    public struct BaseStats
     {
+        public uint MaxHitPoints;
+        public uint Mass;
+        public uint Volume;
+
+        public float Flammability;
     }
 }

@@ -9,7 +9,7 @@ namespace Origin.Source
     {
         public static readonly string MAIN_TEXTURE_NAME = "default2";
 
-        public static Dictionary<string, Texture2D> textures { get; private set; } =
+        public static Dictionary<string, Texture2D> Textures { get; private set; } =
             new Dictionary<string, Texture2D>();
 
         public static void LoadTexture(string path)
@@ -18,13 +18,16 @@ namespace Origin.Source
             {
                 Texture2D texture = Texture2D.FromStream(OriginGame.Instance.GraphicsDevice, stream);
                 texture.Name = Path.GetFileNameWithoutExtension(path);
-                textures.Add(texture.Name, texture);
+                if (!Textures.ContainsKey(texture.Name))
+                {
+                    Textures.Add(texture.Name, texture);
+                }
             }
         }
 
         public static Texture2D GetTextureByName(string name)
         {
-            foreach (var item in textures)
+            foreach (var item in Textures)
             {
                 if (item.Value.Name == name)
                 {

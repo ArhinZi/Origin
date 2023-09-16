@@ -1,4 +1,5 @@
-﻿using Origin.Source.Generators;
+﻿using Origin.Source.ECS;
+using Origin.Source.Generators;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
@@ -14,21 +15,33 @@ namespace Origin.Source
         public static void LoadResources()
         {
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            foreach (var modeFolder in Directory.GetDirectories(Path.Combine(path, "Mods\\")))
+            List<string> resourceLine = new List<string>()
             {
-                foreach (var file in GetAllFiles(modeFolder))
+                "Sprites", "Materials", "Entities"
+            };
+            foreach (var res in resourceLine)
+            {
+                foreach (var modeFolder in Directory.GetDirectories(Path.Combine(path, "Mods\\")))
                 {
-                    if (file.Split(".").Last() == "png")
+                    foreach (var file in GetAllFiles(modeFolder))
                     {
-                        Texture.LoadTexture(file);
-                    }
-                    else if (file.Split(".").Last() == "xml")
-                    {
-                        var xml = XDocument.Load(file);
-                        if (xml.Root.Name == "Sprites")
-                            XMLoader.LoadSprites(file);
-                        else if (xml.Root.Name == "TerraMats")
-                            XMLoader.LoadTerraMats(file);
+                        if (file.Split(".").Last() == "png")
+                        {
+                            Texture.LoadTexture(file);
+                        }
+                        else if (file.Split(".").Last() == "xml")
+                        {
+                            var xml = XDocument.Load(file);
+                            if (xml.Root.Name == res)
+                            {
+                                if (xml.Root.Name == "Sprites")
+                                    Sprite.LoadSpritesFromXML(file);
+                                else if (xml.Root.Name == "Materials")
+                                    Material.LoadMaterialsFromXML(xml.Root);
+                                else if (xml.Root.Name == "Entities")
+                                    EntityFactory.LoadPrefabsFromXML(xml.Root);
+                            }
+                        }
                     }
                 }
             }

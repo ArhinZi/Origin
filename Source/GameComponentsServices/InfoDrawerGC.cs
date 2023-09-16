@@ -3,12 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended;
 
-using Origin.Source.GameComponentsServices;
-
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Origin.Source.GCs
+namespace Origin.Source.GameComponentsServices
 {
     public class InfoDrawerGC : SimpleDrawableGameComponent, IGameInfoMonitor
     {
@@ -28,7 +27,7 @@ namespace Origin.Source.GCs
             position = displayPosition;
             color = textColor;
             this.font = font;
-            this.spriteBatch = batch;
+            spriteBatch = batch;
         }
 
         public override void Draw(GameTime gameTime)
@@ -52,6 +51,8 @@ namespace Origin.Source.GCs
 
         public void Set(string name, string value, uint order)
         {
+            /*if (data.ContainsKey(order))
+                throw new Exception("This order already exist.");*/
             data[order] = KeyValuePair.Create(name, value);
         }
 

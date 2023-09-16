@@ -5,8 +5,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using MonoGame.Extended;
+
 using Origin.Source.ECS;
+using Origin.Source.ECS.Components;
+using Origin.Source.GameComponentsServices;
+using Origin.Source.GameStates;
+using Origin.Source.IO;
 using Origin.Source.Utils;
+
+using SharpDX.Direct2D1.Effects;
 
 using System;
 using System.Collections.Generic;
@@ -18,6 +26,7 @@ using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Point3 = Origin.Source.Utils.Point3;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Origin.Source
@@ -38,7 +47,9 @@ namespace Origin.Source
 
     public class SiteRenderer : IDisposable
     {
-        public Site Site;
+        private Site _Site;
+
+        private Camera2D _Camera;
 
         public static bool ALL_DISCOVERED = false;
 
@@ -53,7 +64,7 @@ namespace Origin.Source
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
 
         private Effect _customEffect;
-        //private Effect _vertexAnimator;
+        private Effect _vertexAnimator;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
@@ -69,24 +80,39 @@ namespace Origin.Source
         public static readonly Point BASE_CHUNK_SIZE = new Point(32, 32);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 16;
 
-        /*private VertexAnimationElement[] elements;
-         private VertexAnimationIndex[] indexes;
-         public StructuredBuffer animationElementsBuffer;
-         public StructuredBuffer animationIndexesBuffer;*/
+        private VertexAnimationElement[] elements;
+        private VertexAnimationIndex[] indexes;
+        public StructuredBuffer animationElementsBuffer;
+        public StructuredBuffer animationIndexesBuffer;
+
+        private Point3 _SiteSize
+        {
+            get => _Site.StructureComponent.Size;
+        }
+
+        private int _CurrentLevel
+        {
+            get => _Site.CurrentLevel;
+        }
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
-            Site = site;
+            _Site = site;
+
+            _Camera = new Camera2D();
+            _Camera.Move(new Vector2(0,
+                -(_CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
+                    - Sprite.TILE_SIZE.Y * (_SiteSize.X / 2)
+                 )));
 
             ChunkSize = BASE_CHUNK_SIZE;
-            if (Site.Size.X % ChunkSize.X != 0 || Site.Size.Y % ChunkSize.Y != 0) throw new Exception("Site size is invalid!");
+            if (_SiteSize.X % ChunkSize.X != 0 || _SiteSize.Y % ChunkSize.Y != 0) throw new Exception("Site size is invalid!");
+            _chunksCount = new Point3(_SiteSize.X / ChunkSize.X, _SiteSize.Y / ChunkSize.Y, _SiteSize.Z);
 
-            _drawHighest = Site.CurrentLevel;
-            _drawLowest = DiffUtils.GetOrBound(_drawHighest + ONE_MOMENT_DRAW_LEVELS + 1, 0, Site.Size.Z - 1);
+            _drawHighest = _CurrentLevel;
+            _drawLowest = DiffUtils.GetOrBound(_drawHighest + ONE_MOMENT_DRAW_LEVELS + 1, 0, _SiteSize.Z - 1);
 
-            _chunksCount = new Point3(Site.Size.X / ChunkSize.X, Site.Size.Y / ChunkSize.Y, Site.Size.Z);
-
-            _renderChunkArray = new SiteVertexBufferChunk[_chunksCount.X, _chunksCount.Y, _chunksCount.Z];
+            _renderChunkArray = new SiteVertexBufferChunk[_chunksCount.X, _chunksCount.Y, 100];
 
             _reloadChunkList = new HashSet<Point3>();
 
@@ -94,10 +120,10 @@ namespace Origin.Source
             _spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             _customEffect = OriginGame.Instance.Content.Load<Effect>("FX/MegaShader");
-            //_vertexAnimator = OriginGame.Instance.Content.Load<Effect>("FX/VertexAnimationCS");
+            _vertexAnimator = OriginGame.Instance.Content.Load<Effect>("FX/VertexAnimationCS");
 
             //CalcVisibility();
-            Parallel.For(0, Site.Size.Z, z =>
+            Parallel.For(0, _SiteSize.Z, z =>
             //for (int z = 0; z < _chunksCount.Z; z++)
             {
                 FillLevel(z);
@@ -130,7 +156,7 @@ namespace Origin.Source
 
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
         {
-            if (chunkCoord.X >= 0 && chunkCoord.X < _chunksCount.X &&
+            /*if (chunkCoord.X >= 0 && chunkCoord.X < _chunksCount.X &&
                 chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y &&
                 chunkCoord.Z >= 0 && chunkCoord.Z < _chunksCount.Z)
                 for (int tileInChunkCoordX = 0; tileInChunkCoordX < ChunkSize.X; tileInChunkCoordX++)
@@ -195,7 +221,7 @@ namespace Origin.Source
                             }
                         }
                     }
-                }
+                }*/
         }
 
         private void CalcVisibility()
@@ -228,7 +254,74 @@ namespace Origin.Source
                     {
                         int tileCoordX = chunkCoord.X * ChunkSize.X + tileInChunkCoordX;
                         int tileCoordY = chunkCoord.Y * ChunkSize.Y + tileInChunkCoordY;
-                        SiteCell tile = Site.Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)chunkCoord.Z];
+
+                        var cell = _Site.StructureComponent._Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)chunkCoord.Z];
+                        Entity ewall = cell != null ? cell[CellStructure.Wall] : Entity.Null;
+                        Entity efloor = cell != null ? cell[CellStructure.Floor] : Entity.Null;
+                        if (cell == null)
+                        {
+                            Color hiddenColor = new Color(70, 70, 70, 255);
+                            Sprite hiddenWallSprite = Sprite.SpriteSet["SolidSelectionWall"];
+                            Sprite hiddenFloorSprite = Sprite.SpriteSet["SolidSelectionFloor"];
+
+                            _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                VertexBufferType.Static,
+                                VertexBufferLayer.HiddenBack,
+                                hiddenWallSprite, hiddenColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+
+                            _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                VertexBufferType.Static,
+                                VertexBufferLayer.HiddenFront,
+                                hiddenFloorSprite, hiddenColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+                        }
+                        else
+                        {
+                            if (ewall != Entity.Null)
+                            {
+                                Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
+                                Color c = Color.Purple;
+
+                                GraphicSimple graphicComp;
+                                if (ewall.TryGet<GraphicSimple>(out graphicComp))
+                                {
+                                    sprite = graphicComp.Sprite;
+                                    c = Color.White;
+                                }
+
+                                HasMaterial hMaterial;
+                                if (ewall.TryGet(out hMaterial))
+                                    c = hMaterial.Material.Color;
+
+                                if (hMaterial.Material.ID != "AIR")
+                                    _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                        VertexBufferType.Static,
+                                        VertexBufferLayer.Back,
+                                        sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                            }
+                            if (efloor != Entity.Null)
+                            {
+                                Sprite sprite = Sprite.SpriteSet["SolidSelectionFloor"];
+                                Color c = Color.Purple;
+
+                                GraphicSimple graphicComp;
+                                if (efloor.TryGet<GraphicSimple>(out graphicComp))
+                                {
+                                    sprite = graphicComp.Sprite;
+                                    c = Color.White;
+                                }
+
+                                HasMaterial hMaterial;
+                                if (efloor.TryGet(out hMaterial))
+                                    c = hMaterial.Material.Color;
+
+                                if (hMaterial.Material.ID != "AIR")
+                                    _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
+                                    VertexBufferType.Static,
+                                    VertexBufferLayer.Front,
+                                    sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
+                            }
+                        }
+                        /*SiteCell tile = Site.Blocks[(ushort)tileCoordX, (ushort)tileCoordY, (ushort)chunkCoord.Z];
 
                         if (tile == null)
                         {
@@ -318,7 +411,7 @@ namespace Origin.Source
                                 VertexBufferLayer.Back,
                                 sprite, new Color(0, 0, 250, 50), new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, i * 2));
                             }
-                        }
+                        }*/
                     }
                 }
         }
@@ -377,15 +470,20 @@ namespace Origin.Source
 
         public void Update(GameTime gameTime)
         {
+            _Camera.Update(gameTime);
+            IGameInfoMonitor debug = OriginGame.Instance.Services.GetService<IGameInfoMonitor>();
+            debug.Set("Cam ZOOM", _Camera.Zoom.ToString(), 11);
+            debug.Set("Cam POS", _Camera.Position.ToString(), 12);
+
             // Check if CurrentLevel changed and redraw what need to redraw
-            if (_drawHighest != Site.CurrentLevel)
+            if (_drawHighest != _CurrentLevel)
             {
-                _drawHighest = Site.CurrentLevel;
-                _drawLowest = DiffUtils.GetOrBound(_drawHighest + ONE_MOMENT_DRAW_LEVELS + 1, 0, Site.Size.Z - 1);
+                _drawHighest = _CurrentLevel;
+                _drawLowest = DiffUtils.GetOrBound(_drawHighest + ONE_MOMENT_DRAW_LEVELS + 1, 0, _Site.StructureComponent.Size.Z - 1);
             }
 
             // Collect all ChunksToReload and redraw them
-            foreach (var item in Site.BlocksToReload)
+            foreach (var item in _Site.BlocksToReload)
             {
                 if (item.Z <= _drawLowest && item.Z >= _drawHighest)
                 {
@@ -394,7 +492,7 @@ namespace Origin.Source
                     _reloadChunkList.Add(new Point3(chunkX, chunkY, item.Z));
                 }
             }
-            Site.BlocksToReload.Clear();
+            _Site.BlocksToReload.Clear();
         }
 
         public void Draw(GameTime gameTime)
@@ -439,7 +537,6 @@ namespace Origin.Source
 
                 _reloadChunkList.Remove(toReload);
             }
-
             // TODO: Implement Sprite animation
             /*if (gameTime.TotalGameTime.Ticks % 1 == 0)
             {
@@ -480,15 +577,15 @@ namespace Origin.Source
 
             // Test drawing mouse selection on selectedBlock
             {
-                Point3 tile = Site.SelectedBlock;
+                Point3 tile = _Site.SelectedBlock;
                 if (tile != new Point3(-1, -1, -1))
                 {
-                    Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
+                    /*Sprite sprite = Sprite.SpriteSet["SolidSelectionWall"];
                     _renderChunkArray[tile.X / ChunkSize.X, tile.Y / ChunkSize.Y, tile.Z].AddSprite(
                         VertexBufferType.Dynamic,
                         VertexBufferLayer.Back,
                         sprite, new Color(30, 0, 0, 100), tile, new Point(0, 0)
-                        );
+                        );*/
                     /*sprite = Sprite.SpriteSet["SolidSelectionFloor"];
                     _renderChunkArray[tile.Position.Z][tile.Position.X / BASE_CHUNK_SIZE.X, tile.Position.Y / BASE_CHUNK_SIZE.Y].AddSprite(
                         VertexBufferType.Dynamic, sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, -Sprite.FLOOR_YOFFSET)
@@ -497,13 +594,13 @@ namespace Origin.Source
             }
 
             // Draw Entities
-            var query = new QueryDescription().WithAll<DrawComponent, SitePositionComponent>();
-            Site.World.ECSworld.Query(in query, (in Entity entity) =>
+            /*var query = new QueryDescription().WithAll<DrawComponent, SitePositionComponent>();
+            _Site.OriginWorld.ECSworld.Query(in query, (in Entity entity) =>
             {
                 var position = entity.Get<SitePositionComponent>();
                 var draw = entity.Get<DrawComponent>();
                 if (position.Position.Z <= _drawHighest && position.Position.Z > _drawLowest &&
-                    position.Site == Site)
+                    position.Site == _Site)
                 {
                     Sprite sprite;
                     if (position.DirectionOfView != IsometricDirection.NONE)
@@ -524,16 +621,16 @@ namespace Origin.Source
                         drawSize: Sprite.SPRITE_SIZE
                         );
                 }
-            });
+            });*/
         }
 
         private void DrawVertices(GameTime gameTime)
         {
-            Matrix WVP = Matrix.Multiply(Matrix.Multiply(Site.Camera.WorldMatrix, Site.Camera.Transformation),
-                Site.Camera.Projection);
+            Matrix WVP = Matrix.Multiply(Matrix.Multiply(_Camera.WorldMatrix, _Camera.Transformation),
+                _Camera.Projection);
 
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
-            _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+            _customEffect.Parameters["DayTime"].SetValue(_Site.SiteTime);
             _customEffect.Parameters["LowHighLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;

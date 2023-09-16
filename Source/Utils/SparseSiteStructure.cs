@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Arch.Core;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,67 +8,76 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.Utils
 {
-    internal interface ISiteLayer
-    {
-        public SiteCell this[UInt16 x, UInt16 y] { get; set; }
-    }
+    public class SparseSiteMap<T> where T : class
 
-    internal class SparseLightLayer : ISiteLayer
     {
-        public Dictionary<UInt32, SiteCell> Blocks = new Dictionary<UInt32, SiteCell>();
+        private interface ISiteLayer
 
-        public SiteCell this[UInt16 x, UInt16 y]
         {
-            get
+            public T this[UInt16 x, UInt16 y] { get; set; }
+        }
+
+        private class SparseLightLayer : ISiteLayer
+        {
+            public Dictionary<UInt32, T> Blocks = new Dictionary<UInt32, T>();
+
+            public T this[UInt16 x, UInt16 y]
             {
-                if (Blocks.ContainsKey(((UInt32)x << 16) | y))
+                get
                 {
-                    return Blocks[((UInt32)x << 16) | y];
+                    if (Blocks.ContainsKey(((UInt32)x << 16) | y))
+                    {
+                        return Blocks[((UInt32)x << 16) | y];
+                    }
+                    return null;
                 }
-                return null;
+                set => Blocks[((UInt32)x << 16) | y] = value;
             }
-            set => Blocks[((UInt32)x << 16) | y] = value;
         }
-    }
 
-    internal class SparseHeavyLayer : ISiteLayer
-    {
-        public SiteCell[,] Blocks;
-
-        public SparseHeavyLayer(UInt16 sizeX, UInt16 sizeY)
+        private class SparseHeavyLayer : ISiteLayer
         {
-            Blocks = new SiteCell[sizeX, sizeY];
+            public T[,] Blocks;
+
+            public SparseHeavyLayer(UInt16 sizeX, UInt16 sizeY)
+            {
+                Blocks = new T[sizeX, sizeY];
+                for (int i = 0; i < sizeX; i++)
+                {
+                    for (int j = 0; j < sizeY; j++)
+                    {
+                        Blocks[i, j] = null;
+                    }
+                }
+            }
+
+            public T this[UInt16 x, UInt16 y]
+            {
+                get => Blocks[x, y];
+
+                set => Blocks[x, y] = value;
+            }
         }
 
-        public SiteCell this[UInt16 x, UInt16 y]
+        private class SparseSiteChunk
         {
-            get => Blocks[x, y];
+            public static readonly int CHUNK_HEIGHT = 8;
+            public ISiteLayer[] Layers = new ISiteLayer[CHUNK_HEIGHT];
 
-            set => Blocks[x, y] = value;
+            public ISiteLayer this[UInt16 subz]
+            {
+                get => Layers[subz % CHUNK_HEIGHT];
+            }
+
+            public void SetLayer(int sublevel, UInt16 heavyLayerX = 0, UInt16 heavyLayerY = 0, bool makeHeavyLayer = false)
+            {
+                if (!makeHeavyLayer)
+                    Layers[sublevel] = new SparseLightLayer();
+                else
+                    Layers[sublevel] = new SparseHeavyLayer(heavyLayerX, heavyLayerY);
+            }
         }
-    }
 
-    internal class SparseSiteChunk
-    {
-        public static readonly int CHUNK_HEIGHT = 8;
-        public ISiteLayer[] Layers = new ISiteLayer[CHUNK_HEIGHT];
-
-        public ISiteLayer this[UInt16 subz]
-        {
-            get => Layers[subz % CHUNK_HEIGHT];
-        }
-
-        public void SetLayer(int sublevel, UInt16 heavyLayerX = 0, UInt16 heavyLayerY = 0, bool makeHeavyLayer = false)
-        {
-            if (!makeHeavyLayer)
-                Layers[sublevel] = new SparseLightLayer();
-            else
-                Layers[sublevel] = new SparseHeavyLayer(heavyLayerX, heavyLayerY);
-        }
-    }
-
-    public class SparseSiteMap
-    {
         public int ChunksCount { get; private set; } = 0;
         public Point3 Size { get; private set; }
         private List<SparseSiteChunk> _mapChunks = new List<SparseSiteChunk>();
@@ -87,7 +98,7 @@ namespace Origin.Source.Utils
             throw new Exception("Wrong chunk number");
         }
 
-        public SiteCell this[Point3 p]
+        public T this[Point3 p]
         {
             get
             {
@@ -97,12 +108,13 @@ namespace Origin.Source.Utils
             }
         }
 
-        public SiteCell this[UInt16 x, UInt16 y, UInt16 z]
+        public T this[UInt16 x, UInt16 y, UInt16 z]
         {
             // get chunk -> get layer from chunk -> get cell
             get
             {
-                if (_mapChunks[z / SparseSiteChunk.CHUNK_HEIGHT][z] != null)
+                if (_mapChunks.Count > z / SparseSiteChunk.CHUNK_HEIGHT &&
+                    _mapChunks[z / SparseSiteChunk.CHUNK_HEIGHT][z] != null)
                 {
                     return _mapChunks[z / SparseSiteChunk.CHUNK_HEIGHT][z][x, y];
                 }
@@ -111,7 +123,8 @@ namespace Origin.Source.Utils
             }
             set
             {
-                if (z / SparseSiteChunk.CHUNK_HEIGHT == ChunksCount) AddChunk(ChunksCount);
+                if (z / SparseSiteChunk.CHUNK_HEIGHT == ChunksCount)
+                    AddChunk(ChunksCount);
                 // TODO: Might be comment in release
                 else if (z / SparseSiteChunk.CHUNK_HEIGHT > ChunksCount) throw new Exception("Trying to set too far chunk");
 

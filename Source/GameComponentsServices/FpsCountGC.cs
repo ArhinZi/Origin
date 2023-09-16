@@ -4,7 +4,7 @@ using MonoGame.Extended;
 
 using System;
 
-namespace Origin.Source.GCs
+namespace Origin.Source.GameComponentsServices
 {
     public class FpsCountGC : SimpleDrawableGameComponent
     {

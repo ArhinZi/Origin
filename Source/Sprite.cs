@@ -1,8 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Origin.Source.Utils;
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace Origin.Source
 {
@@ -77,6 +81,41 @@ namespace Origin.Source
             Effect = effs;
 
             SpriteSet.Add(ID, this);
+        }
+
+        public static void LoadSpritesFromXML(string xmlPath)
+        {
+            var xml = XDocument.Load(xmlPath);
+            string textureName = xml.Root.Attribute("TextureName").Value;
+            Texture2D texture = Source.Texture.GetTextureByName(textureName);
+            if (texture == null)
+            {
+                Debug.WriteLine(string.Format("ERROR: No texture with name {}", textureName));
+                return;
+            }
+
+            var spriteElements = xml.Root.Elements("Sprite");
+            foreach (var spriteElement in spriteElements)
+            {
+                var id = spriteElement.Element("SpriteID").Value;
+                var sourceRect = XMLoaders.ParseRectangle(spriteElement.Element("SourceRect").Value);
+                var dir = spriteElement.Element("SpriteDir") != null ?
+                    (IsometricDirection)Enum.Parse(typeof(IsometricDirection), spriteElement.Element("SpriteDir").Value) :
+                    IsometricDirection.NONE;
+
+                var effect = MySpriteEffect.None;
+                if (spriteElement.Element("SpriteEffect") != null)
+                {
+                    string s = spriteElement.Element("SpriteEffect").Value;
+                    var ss = s.Split('|');
+                    foreach (var item in ss)
+                    {
+                        effect |= (MySpriteEffect)Enum.Parse(typeof(MySpriteEffect), item);
+                    }
+                }
+
+                new Sprite(id, texture, sourceRect, dir, effect);
+            }
         }
     }
 }

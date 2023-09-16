@@ -21,6 +21,18 @@ namespace Origin.Source
         public float zoom_step = 0.02f;
         private KeyboardState keyboardState;
 
+        public delegate void LevelChangeActivateHandler(short value);
+
+        public delegate void ZoomChangeActivateHandler(short step);
+
+        public delegate void CameraMoveActivateHandler(Vector2 value);
+
+        public event LevelChangeActivateHandler LevelChangeActivated;
+
+        public event ZoomChangeActivateHandler ZoomChangeActivated;
+
+        public event CameraMoveActivateHandler CameraMoveActivated;
+
         public void Update(GameTime gameTime)
         {
             if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
@@ -31,33 +43,33 @@ namespace Origin.Source
             if (InputManager.JustPressed("game.fpswitch"))
                 OriginGame.Instance.Services.GetService<IGameInfoMonitor>().Switch();
 
-            if (InputManager.IsPressed("Camera.left"))
-                StateMainGame.ActiveCamera.Move(new Vector2(-1 * movemod, 0));
-            if (InputManager.IsPressed("Camera.right"))
-                StateMainGame.ActiveCamera.Move(new Vector2(1 * movemod, 0));
-            if (InputManager.IsPressed("Camera.up"))
-                StateMainGame.ActiveCamera.Move(new Vector2(0, -1 * movemod));
-            if (InputManager.IsPressed("Camera.down"))
-                StateMainGame.ActiveCamera.Move(new Vector2(0, 1 * movemod));
+            /* if (InputManager.IsPressed("Camera.left"))
+                 CameraMoveActivated(new Vector2(-1 * movemod, 0));
+             if (InputManager.IsPressed("Camera.right"))
+                 CameraMoveActivated(new Vector2(1 * movemod, 0));
+             if (InputManager.IsPressed("Camera.up"))
+                 CameraMoveActivated(new Vector2(0, -1 * movemod));
+             if (InputManager.IsPressed("Camera.down"))
+                 CameraMoveActivated(new Vector2(0, 1 * movemod));
 
-            if (InputManager.JustPressedAndHoldDelayed("world.level.minus"))
-                GameWorld.Instance.ActiveSite.CurrentLevel += 1;
-            if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
-                GameWorld.Instance.ActiveSite.CurrentLevel -= 1;
+             if (InputManager.JustPressedAndHoldDelayed("world.level.minus"))
+                 LevelChangeActivated(+1);
+             if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
+                 LevelChangeActivated(-1);
 
-            if (InputManager.IsPressed("Camera.zoom.plus"))
-                StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom;
-            if (InputManager.IsPressed("Camera.zoom.minus"))
-                StateMainGame.ActiveCamera.Zoom -= zoom_step * StateMainGame.ActiveCamera.Zoom;
+             if (InputManager.IsPressed("Camera.zoom.plus"))
+                 ZoomChangeActivated(+1);
+             if (InputManager.IsPressed("Camera.zoom.minus"))
+                 ZoomChangeActivated(-1);*/
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (GameWorld.Instance.ActiveSite.SelectedBlock != new Point3(-1, -1, -1))
+                /*if (GlobalWorld.Instance.ActiveSite.SelectedBlock != new Point3(-1, -1, -1))
                 {
-                    SiteCell sc = GameWorld.Instance.ActiveSite.CellGetOrCreate(GameWorld.Instance.ActiveSite.SelectedBlock);
+                    SiteCell sc = GlobalWorld.Instance.ActiveSite.CellGetOrCreate(GlobalWorld.Instance.ActiveSite.SelectedBlock);
                     if (sc.RemoveWall())
-                        GameWorld.Instance.ActiveSite.BlocksToReload.Add(sc.Position);
-                }
+                        GlobalWorld.Instance.ActiveSite.BlocksToReload.Add(sc.Position);
+                }*/
             }
         }
     }

@@ -1,5 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
+using Origin.Source.GameStates;
+using Origin.Source.IO;
 
 using System;
 
@@ -12,6 +16,10 @@ namespace Origin.Source
         private float _maxZoom = 4f;
         private Matrix _projection;
         private Matrix _transformation;
+
+        public int base_mult = 5;
+        public int shift_mult = 30;
+        public float zoom_step = 0.02f;
 
         #region Set Get
 
@@ -77,6 +85,25 @@ namespace Origin.Source
             Position = Vector2.Zero;
 
             WorldMatrix = Matrix.CreateWorld(new Vector3(0, 0, 0), new Vector3(0, 0, -1), Vector3.Up);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            KeyboardState keyboardState = Keyboard.GetState();
+            int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult;
+            if (InputManager.IsPressed("Camera.left"))
+                Move(new Vector2(-1 * movemod, 0));
+            if (InputManager.IsPressed("Camera.right"))
+                Move(new Vector2(1 * movemod, 0));
+            if (InputManager.IsPressed("Camera.up"))
+                Move(new Vector2(0, -1 * movemod));
+            if (InputManager.IsPressed("Camera.down"))
+                Move(new Vector2(0, 1 * movemod));
+
+            if (InputManager.IsPressed("Camera.zoom.plus"))
+                Zoom += zoom_step * Zoom;
+            if (InputManager.IsPressed("Camera.zoom.minus"))
+                Zoom -= zoom_step * Zoom;
         }
 
         // Auxiliary function to move the camera

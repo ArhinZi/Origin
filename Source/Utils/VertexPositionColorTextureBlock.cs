@@ -15,8 +15,6 @@ namespace Origin.Source.Utils
     {
         public Vector3 Position;
 
-        public Color Color;
-
         public Vector2 TextureCoordinate;
 
         public Vector3 BlockPosition;

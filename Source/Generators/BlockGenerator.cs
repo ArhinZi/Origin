@@ -1,4 +1,7 @@
-﻿using Origin.Source.Utils;
+﻿using Arch.Core;
+
+using Origin.Source.ECS;
+using Origin.Source.Utils;
 
 using SharpDX.Direct2D1.Effects;
 using SharpDX.Direct3D9;
@@ -15,7 +18,7 @@ namespace Origin.Source.Generators
     {
         public Dictionary<string, float> Parameters { get; set; } = new Dictionary<string, float>();
 
-        public SiteCell Generate(Site site, Point3 blockPosition)
+        public (Entity, Entity) Generate(Point3 blockPosition, World eCSW)
         {
             FastNoiseLite fnl = new FastNoiseLite((int)Parameters["Seed"]);
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
@@ -35,17 +38,18 @@ namespace Origin.Source.Generators
 
             if (z >= height)
             {
-                if (z - height <= localDirtDepth)
+                /*if (z - height <= localDirtDepth)
                 {
                     wall = floor = "Dirt";
                     if (z == height)
                     {
                         embFloor = "Grass";
                     }
-                }
-                else
+                }*/
+                //else
                 {
-                    wall = floor = "Granite";
+                    wall = "GRANITE_WALL";
+                    floor = "GRANITE_FLOOR";
                 }
             }
             /*else if (z < 30)
@@ -55,12 +59,31 @@ namespace Origin.Source.Generators
             }*/
             else
             {
-                wall = floor = TerrainMaterial.AIR_NULL_MAT_ID;
+                wall = floor = null;
             }
 
-            return new SiteCell(site, blockPosition,
+            Entity ewall = Entity.Null, efloor = Entity.Null;
+            if (wall != null)
+            {
+                ewall = EntityFactory.CreateEntityByID(eCSW, wall);
+            }
+            else
+            {
+                ewall = EntityFactory.CreateEntityByID(eCSW, "AIR_WALL");
+            }
+            if (floor != null)
+            {
+                efloor = EntityFactory.CreateEntityByID(eCSW, floor);
+            }
+            else
+            {
+                efloor = EntityFactory.CreateEntityByID(eCSW, "AIR_FLOOR");
+            }
+            return (ewall, efloor);
+
+            /*return new Entity(site, blockPosition,
                 wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor,
-                waterLevel: waterLevel);
+                waterLevel: waterLevel);*/
         }
     }
 }

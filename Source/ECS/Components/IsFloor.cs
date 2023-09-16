@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Origin.Source.ECS
+namespace Origin.Source.ECS.Components
 {
-    internal struct DrawComponent
+    public struct IsFloor
     {
-        public Sprite[] Sprites { get; set; }
     }
 }

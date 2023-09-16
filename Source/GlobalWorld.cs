@@ -4,7 +4,7 @@ using Arch.Core.Utils;
 
 using Microsoft.Xna.Framework;
 
-using Origin.Source.ECS;
+using Origin.Source.ECS.Components;
 using Origin.Source.GameStates;
 using Origin.Source.Generators;
 using Origin.Source.IO;
@@ -14,9 +14,9 @@ using System.Collections.Generic;
 
 namespace Origin.Source
 {
-    public class GameWorld : IDisposable
+    public class GlobalWorld : IDisposable
     {
-        public static GameWorld Instance { get; private set; }
+        public static GlobalWorld Instance { get; private set; }
 
         public List<Site> Sites { get; private set; }
         public Site ActiveSite { get; private set; }
@@ -26,16 +26,14 @@ namespace Origin.Source
         public Arch.Core.World ECSworld { get; private set; } = Arch.Core.World.Create();
 
         public ComponentType[] archetypePawn = new ComponentType[] {
-                typeof(UserControlPawnComponent),
-                typeof(SitePositionComponent),
-                typeof(DrawComponent)};
+                typeof(UserControlPawn) };
 
-        public GameWorld()
+        public GlobalWorld()
         {
             Instance = this;
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Utils.Point3(128, 128, 128));
+            ActiveSite = new Site(this, new Utils.Point3(128, 128, 0));
             /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, Seed);*/
             ActiveSite.CurrentLevel = 20;
@@ -62,7 +60,7 @@ namespace Origin.Source
 
             if (gameTime.TotalGameTime.Ticks % 10 == 0)
             {
-                var query = new QueryDescription().WithAll<UserControlPawnComponent, SitePositionComponent>();
+                /*var query = new QueryDescription().WithAll<UserControlPawnComponent, SitePositionComponent>();
                 ECSworld.Query(in query, (in Entity entity) =>
                 {
                     var position = entity.Get<SitePositionComponent>();
@@ -90,7 +88,7 @@ namespace Origin.Source
                     }
                     if (sc != null)
                         entity.Set(new SitePositionComponent() { Cell = sc, DirectionOfView = dir });
-                });
+                });*/
             }
         }
 

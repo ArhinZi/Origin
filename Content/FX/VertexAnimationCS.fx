@@ -13,7 +13,6 @@ struct animationIndex
 
 StructuredBuffer<animationElement> Elements;
 StructuredBuffer<animationIndex> ElementIndexes;
-RWByteAddressBuffer Vertices;
 uint AnimationsCount;
 
 [numthreads(64, 1, 1)]
