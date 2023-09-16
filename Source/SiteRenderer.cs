@@ -200,7 +200,7 @@ namespace Origin.Source
 
         private Sprite lborderSprite = Sprite.SpriteSet["LeftBorder"];
         private Sprite rborderSprite = Sprite.SpriteSet["RightBorder"];
-        private Color borderColor = new Color(0, 0, 0, 100);
+        private Color borderColor = new Color(0, 0, 0, 150);
 
         /// <summary>
         /// Fill chunk vertices in already created _renderChunkArray
@@ -211,7 +211,9 @@ namespace Origin.Source
             if (chunkCoord.X >= 0 && chunkCoord.X < _chunksCount.X &&
                 chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y &&
                 chunkCoord.Z >= 0 && chunkCoord.Z < _chunksCount.Z)
+            {
                 // Loop through each tile block in the chunk
+                _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].IsFullyHidded = true;
                 for (int tileInChunkCoordX = 0; tileInChunkCoordX < ChunkSize.X; tileInChunkCoordX++)
                 {
                     for (int tileInChunkCoordY = 0; tileInChunkCoordY < ChunkSize.Y; tileInChunkCoordY++)
@@ -259,6 +261,7 @@ namespace Origin.Source
                                 (int)VertexBufferLayer.Back,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
                             }
+                            _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].IsFullyHidded = false;
                         }
                         else if (tile.WallID != TerrainMaterial.AIR_NULL_MAT_ID &&
                             !tile.WallVisual.HasFlag(CellVisual.Discovered))
@@ -316,9 +319,11 @@ namespace Origin.Source
                                     (int)VertexBufferLayer.Front,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                             }
+                            _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].IsFullyHidded = false;
                         }
                         else if (tile.FloorID != TerrainMaterial.AIR_NULL_MAT_ID &&
-                            !tile.FloorVisual.HasFlag(CellVisual.Discovered))
+                            !tile.FloorVisual.HasFlag(CellVisual.Discovered) &&
+                            (tileCoordX == Site.Size.X - 1 || tileCoordY == Site.Size.Y - 1))
                         {
                             TerrainMaterial tm = TerrainMaterial.TerraMats[TerrainMaterial.HIDDEN_MAT_ID];
                             Sprite sprite;
@@ -338,6 +343,7 @@ namespace Origin.Source
                         }
                     }
                 }
+            }
         }
 
         /// <summary>
@@ -476,6 +482,9 @@ namespace Origin.Source
                                 (int)VertexBufferLayer.Back,
                                 sprite2, new Color(30, 0, 0, 200), subtile.Position, new Point(0, 0)
                                 );
+                            _renderChunkArray[subtile.Position.X / ChunkSize.X,
+                                            subtile.Position.Y / ChunkSize.Y,
+                                            subtile.Position.Z].IsFullyHidded = false;
                         }
                         else break;
                     }
@@ -485,10 +494,7 @@ namespace Origin.Source
                         (int)VertexBufferLayer.Back,
                         sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, 0)
                         );
-                    /*sprite = Sprite.SpriteSet["SolidSelectionFloor"];
-                    _renderChunkArray[tile.Position.Z][tile.Position.X / BASE_CHUNK_SIZE.X, tile.Position.Y / BASE_CHUNK_SIZE.Y].AddSprite(
-                        VertexBufferType.Dynamic, sprite, new Color(30, 0, 0, 100), tile.Position, new Point(0, -Sprite.FLOOR_YOFFSET)
-                        );*/
+                    _renderChunkArray[tile.Position.X / ChunkSize.X, tile.Position.Y / ChunkSize.Y, tile.Position.Z].IsFullyHidded = false;
                 }
             }
 
@@ -519,6 +525,7 @@ namespace Origin.Source
                         //offsetZ: -SiteRenderer.Z_DIAGONAL_OFFSET / 2,
                         drawSize: Sprite.SPRITE_SIZE
                         );
+                    _renderChunkArray[position.Position.X / ChunkSize.X, position.Position.Y / ChunkSize.Y, position.Position.Z].IsFullyHidded = false;
                 }
             });
         }
@@ -548,6 +555,8 @@ namespace Origin.Source
                             _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
                         else
+                            if (!_renderChunkArray[x, y, z].IsFullyHidded ||
+                            (_renderChunkArray[x, y, z].IsFullyHidded && (x == _chunksCount.X - 1 || y == _chunksCount.Y - 1)))
                             _renderChunkArray[x, y, z].Draw(_customEffect,
                                 new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
 

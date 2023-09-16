@@ -27,6 +27,7 @@ namespace Origin.Source.UI
 
         private FPSViewer fpsViewer;
         private DebugInfoViewer debugInfoViewer;
+        private CompassControl compassControl;
 
         public UIManager()
         {
@@ -38,10 +39,18 @@ namespace Origin.Source.UI
 
             debugInfoViewer = new DebugInfoViewer(desktop, 0, 0, 0, 0);
             desktop.Windows.Add(debugInfoViewer);
+
+            compassControl = new CompassControl(desktop, 0, 0, 64, 64);
+            desktop.Windows.Add(compassControl);
         }
 
         public void Update()
         {
+            debugInfoViewer.Update();
+            fpsViewer.Update(new ElementUpdateArgs());
+            compassControl.Update(new ElementUpdateArgs());
+            desktop.Update();
+
             if (prevBounds != desktop.ValidScreenBounds)
                 EventBus.Send(new ScreenBoundsChanged(desktop.ValidScreenBounds));
             prevBounds = desktop.ValidScreenBounds;
@@ -52,9 +61,6 @@ namespace Origin.Source.UI
             {
                 ["MousePosition"] = currentMouseState.Position.ToString()
             }));
-
-            debugInfoViewer.Update();
-            desktop.Update();
         }
 
         public void Draw()

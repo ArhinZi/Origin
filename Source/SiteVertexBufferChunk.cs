@@ -44,6 +44,8 @@ namespace Origin.Source
         /// </summary>
         public bool IsSet { get; private set; }
 
+        public bool IsFullyHidded { get; set; } = false;
+
         private GraphicsDevice _graphicDevice;
 
         /// <summary>
