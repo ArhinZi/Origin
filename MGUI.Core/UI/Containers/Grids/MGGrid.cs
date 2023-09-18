@@ -23,15 +23,19 @@ namespace MGUI.Core.UI.Containers.Grids
 
         /// <summary>Indicates that horizontal gridlines should be rendered. Does not include horizontal gridlines at the top or bottom edge of the grid's border</summary>
         InnerHorizontal = 0b_0000_0001,
+
         /// <summary>Indicates that a horizontal gridline should be rendered at the top edge of the grid's border</summary>
         TopEdge = 0b_0000_0010,
+
         /// <summary>Indicates that a horizontal gridline should be rendered at the bottom edge of the grid's border</summary>
         BottomEdge = 0b_0000_0100,
 
         /// <summary>Indicates that vertical gridlines should be rendered. Does not include vertical gridlines at the left or right edge of the grid's border</summary>
         InnerVertical = 0b_0000_1000,
+
         /// <summary>Indicates that a vertical gridline should be rendered at the left edge of the grid's border</summary>
         LeftEdge = 0b_0001_0000,
+
         /// <summary>Indicates that a vertical gridline should be rendered at the right edge of the grid's border</summary>
         RightEdge = 0b_0010_0000,
 
@@ -51,9 +55,11 @@ namespace MGUI.Core.UI.Containers.Grids
         /// <summary>Indicates that the intersections of the horizontal and vertical gridlines should only be filled with the vertical gridline brush</summary>
         VerticalOnly,
 #endif
+
         /// <summary>Indicates that horizontal gridlines should be rendered first, then vertical gridlines.<br/>
         /// This will result in the vertical gridline brush being drawn overtop of the horizontal gridline brush at their intersection points.</summary>
         HorizontalThenVertical,
+
         /// <summary>Indicates that vertical gridlines should be rendered first, then horizontal gridlines.<br/>
         /// This will result in the horizontal gridline brush being drawn overtop of the vertical gridline brush at their intersection points.</summary>
         VerticalThenHorizontal
@@ -63,10 +69,13 @@ namespace MGUI.Core.UI.Containers.Grids
     {
         /// <summary>Indicates that nothing in an <see cref="MGGrid"/> can be selected via left-clicking.</summary>
         None,
+
         /// <summary>Indicates that an entire row of content in an <see cref="MGGrid"/> can be selected by left-clicking on any cell in the <see cref="RowDefinition"/></summary>
         Row,
+
         /// <summary>Indicates that an entire column of content in an <see cref="MGGrid"/> can be selected by left-clicking on any cell in the <see cref="ColumnDefinition"/></summary>
         Column,
+
         /// <summary>Indicates that a cell in an <see cref="MGGrid"/> can be selected by left-clicking on it</summary>
         Cell
     }
@@ -128,17 +137,23 @@ namespace MGUI.Core.UI.Containers.Grids
     public class MGGrid : MGMultiContentHost
     {
         #region Rows / Columns
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private ObservableCollection<ColumnDefinition> _Columns { get; }
+
         public IReadOnlyList<ColumnDefinition> Columns => _Columns;
+
         public int GetColumnIndex(ColumnDefinition Column) => _Columns.IndexOf(Column);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private ObservableCollection<RowDefinition> _Rows { get; }
+
         public IReadOnlyList<RowDefinition> Rows => _Rows;
+
         public int GetRowIndex(RowDefinition Row) => _Rows.IndexOf(Row);
 
         private bool SuppressDimensionChanged = false;
+
         /// <summary>Converts all weighted row/column lengths to integral values that are clamped between the Min/Max size of the row/column.<para/>
         /// For example, if the columns are:<para/>
         /// <code>
@@ -146,7 +161,7 @@ namespace MGUI.Core.UI.Containers.Grids
         /// 0           <b>1*</b>          20              50              50
         /// 1           25px        null            null            25
         /// 2           <b>1.2*</b>        30              100             80
-        /// 
+        ///
         /// Grid total width: 155
         /// </code>
         /// Normalizing the weights would convert the columns to:<para/>
@@ -155,7 +170,7 @@ namespace MGUI.Core.UI.Containers.Grids
         /// 0           <b>50*</b>         20              50              50
         /// 1           25px        null            null            25
         /// 2           <b>80*</b>         30              100             80
-        /// 
+        ///
         /// Grid total width: 155
         /// </code><para/>
         /// This method is typically only used when simplifying the row/column definitions before applying resizing logic, such as in <see cref="MGGridSplitter"/>.</summary>
@@ -198,12 +213,12 @@ namespace MGUI.Core.UI.Containers.Grids
         public List<ColumnDefinition> AddColumns(IEnumerable<ConstrainedGridLength> Lengths) => Lengths.Select(x => AddColumn(x)).ToList();
 
         /// <summary>See also: <see cref="AddColumns(IEnumerable{GridLength})"/>, <see cref="GridLength.ParseMultiple(string)"/></summary>
-        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/> 
+        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/>
         /// when the column is inside of an <see cref="MGScrollViewer"/> with a horizontal scrollbar</param>
         public ColumnDefinition AddColumn(GridLength Length) => AddColumn(new ConstrainedGridLength(Length, null, null));
 
         /// <summary>See also: <see cref="AddColumns(IEnumerable{ConstrainedGridLength})"/>, <see cref="ConstrainedGridLength.ParseMultiple(string)"/></summary>
-        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/> 
+        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/>
         /// when the column is inside of an <see cref="MGScrollViewer"/> with a horizontal scrollbar</param>
         public ColumnDefinition AddColumn(ConstrainedGridLength Length)
         {
@@ -213,6 +228,7 @@ namespace MGUI.Core.UI.Containers.Grids
         }
 
         public ColumnDefinition InsertColumn(int Index, GridLength Length) => InsertColumn(Index, new ConstrainedGridLength(Length, null, null));
+
         public ColumnDefinition InsertColumn(int Index, ConstrainedGridLength Length)
         {
             ColumnDefinition Column = new(this, Length.Length, Length.MinSize, Length.MaxSize);
@@ -240,12 +256,12 @@ namespace MGUI.Core.UI.Containers.Grids
         public List<RowDefinition> AddRows(IEnumerable<ConstrainedGridLength> Lengths) => Lengths.Select(x => AddRow(x)).ToList();
 
         /// <summary>See also: <see cref="AddRows(IEnumerable{GridLength})"/>, <see cref="GridLength.ParseMultiple(string)"/></summary>
-        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/> 
+        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/>
         /// when the row is inside of an <see cref="MGScrollViewer"/> with a vertical scrollbar</param>
         public RowDefinition AddRow(GridLength Length) => AddRow(new ConstrainedGridLength(Length, null, null));
 
         /// <summary>See also: <see cref="AddRows(IEnumerable{ConstrainedGridLength})"/>, <see cref="ConstrainedGridLength.ParseMultiple(string)"/></summary>
-        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/> 
+        /// <param name="Length">Warning - <see cref="GridUnitType.Weighted"/> is treated as <see cref="GridUnitType.Auto"/>
         /// when the row is inside of an <see cref="MGScrollViewer"/> with a vertical scrollbar</param>
         public RowDefinition AddRow(ConstrainedGridLength Length)
         {
@@ -271,6 +287,7 @@ namespace MGUI.Core.UI.Containers.Grids
         }
 
         private Dictionary<GridCell, Rectangle> _CellBounds = new();
+
         /// <summary>Warning - the <see cref="Rectangle"/>s in this dictionary do not account for <see cref="MGElement.Origin"/>.<para/>
         /// See also: <see cref="MGElement.ConvertCoordinateSpace(CoordinateSpace, CoordinateSpace, Point)"/></summary>
         public IReadOnlyDictionary<GridCell, Rectangle> CellBounds => _CellBounds;
@@ -292,13 +309,17 @@ namespace MGUI.Core.UI.Containers.Grids
 
             return CellBounds;
         }
+
         #endregion Rows / Columns
 
         #region Elements
+
         /// <summary>All content in this <see cref="MGGrid"/>, indexed first by the <see cref="RowDefinition"/> it resides in, then by the <see cref="ColumnDefinition"/> it resides in.</summary>
         private readonly Dictionary<RowDefinition, Dictionary<ColumnDefinition, List<MGElement>>> ChildrenByRC = new();
+
         /// <summary>A lookup table that returns the <see cref="RowDefinition"/> and <see cref="ColumnDefinition"/> that a given <see cref="MGElement"/> resides in.</summary>
         private readonly Dictionary<MGElement, GridCell> ChildCellLookup = new();
+
         /// <summary>A lookup table that returns the <see cref="GridSpan"/> settings associated with a given <see cref="MGElement"/></summary>
         private readonly Dictionary<MGElement, GridSpan> ChildSpanLookup = new();
 
@@ -327,6 +348,7 @@ namespace MGUI.Core.UI.Containers.Grids
         }
 
         public IReadOnlyList<MGElement> GetCellContent(RowDefinition Row, ColumnDefinition Column) => GetCellContent(new GridCell(Row, Column));
+
         public IReadOnlyList<MGElement> GetCellContent(GridCell Cell)
         {
             IReadOnlyDictionary<ColumnDefinition, IReadOnlyList<MGElement>> RowContent = GetRowContent(Cell.Row);
@@ -337,9 +359,11 @@ namespace MGUI.Core.UI.Containers.Grids
         }
 
         private IReadOnlyList<MGElement> GetMeasurableCellContent(RowDefinition Row, ColumnDefinition Column) => GetMeasurableCellContent(new GridCell(Row, Column));
+
         private IReadOnlyList<MGElement> GetMeasurableCellContent(GridCell Cell) => GetCellContent(Cell).Where(x => ChildSpanLookup[x].AffectsMeasure).ToList();
 
         public bool TryAddChild(int RowIndex, int ColumnIndex, MGElement Item) => TryAddChild(RowIndex, ColumnIndex, GridSpan.Default, Item);
+
         public bool TryAddChild(int RowIndex, int ColumnIndex, GridSpan Span, MGElement Item)
         {
             if (RowIndex >= 0 && RowIndex < _Rows.Count && ColumnIndex >= 0 && ColumnIndex < _Columns.Count)
@@ -353,7 +377,9 @@ namespace MGUI.Core.UI.Containers.Grids
         }
 
         public bool TryAddChild(RowDefinition Row, ColumnDefinition Column, MGElement Item) => TryAddChild(Row, Column, GridSpan.Default, Item);
+
         public bool TryAddChild(RowDefinition Row, ColumnDefinition Column, GridSpan Span, MGElement Item) => TryAddChild(new GridCell(Row, Column), Span, Item);
+
         public bool TryAddChild(GridCell Cell, MGElement Item) => TryAddChild(Cell, GridSpan.Default, Item);
 
         /// <returns>True if the given <paramref name="Item"/> was successfully added.<br/>
@@ -459,11 +485,9 @@ namespace MGUI.Core.UI.Containers.Grids
                     ChildrenByRC[Row].Remove(Column);
                 else
                 {
-#if DEBUG
                     throw new Exception($"{nameof(MGGrid)}.{nameof(ClearCellContent)}: failed to remove all elements in {Row},{Column}");
-#else
-                    ChildrenByRow[Row][Column].RemoveAll(x => Removed.Contains(x));
-#endif
+
+                    //ChildrenByRow[Row][Column].RemoveAll(x => Removed.Contains(x));
                 }
             }
 
@@ -564,13 +588,16 @@ namespace MGUI.Core.UI.Containers.Grids
 
             return Removed;
         }
+
         #endregion Elements
 
         #region Selection
+
         private MouseHandler SelectionMouseHandler { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private GridSelectionMode _SelectionMode;
+
         public GridSelectionMode SelectionMode
         {
             get => _SelectionMode;
@@ -587,6 +614,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private bool _CanDeselectByClickingSelectedCell = true;
+
         public bool CanDeselectByClickingSelectedCell
         {
             get => _CanDeselectByClickingSelectedCell;
@@ -604,6 +632,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private GridSelection? _CurrentSelection;
+
         public GridSelection? CurrentSelection
         {
             get => _CurrentSelection;
@@ -620,6 +649,7 @@ namespace MGUI.Core.UI.Containers.Grids
         }
 
         public event EventHandler<GridSelection?> SelectionChanged;
+
         public bool HasSelection => CurrentSelection.HasValue;
 
         /// <param name="MousePosition">The current mouse position in <see cref="CoordinateSpace.Layout"/><para/>
@@ -674,6 +704,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private IFillBrush _SelectionBackground = MGSolidFillBrush.Yellow * 0.5f;
+
         public IFillBrush SelectionBackground
         {
             get => _SelectionBackground;
@@ -689,6 +720,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private IFillBrush _SelectionOverlay = new MGSolidFillBrush(Color.Yellow * 0.25f);
+
         public IFillBrush SelectionOverlay
         {
             get => _SelectionOverlay;
@@ -701,11 +733,14 @@ namespace MGUI.Core.UI.Containers.Grids
                 }
             }
         }
+
         #endregion Selection
 
         #region GridLines
+
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private GridLineIntersection _GridLineIntersectionHandling;
+
         /// <summary>Default value: <see cref="GridLineIntersection.HorizontalThenVertical"/></summary>
         public GridLineIntersection GridLineIntersectionHandling
         {
@@ -722,6 +757,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private GridLinesVisibility _GridLinesVisibility;
+
         /// <summary>Default value: <see cref="GridLinesVisibility.None"/></summary>
         public GridLinesVisibility GridLinesVisibility
         {
@@ -739,8 +775,9 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _GridLineMargin;
+
         /// <summary>The amount of empty space around each gridline.<br/>
-        /// For example: If horizontal gridlines are visible, and <see cref="RowSpacing"/> = 6, and <see cref="GridLineMargin"/> = 1, 
+        /// For example: If horizontal gridlines are visible, and <see cref="RowSpacing"/> = 6, and <see cref="GridLineMargin"/> = 1,
         /// then the horizontal gridline brush would fill the center 4 pixels of the 6 pixels between each row.<para/>
         /// This value should be less than half the value of <see cref="RowSpacing"/>/<see cref="ColumnSpacing"/> or else the corresponding gridline brush won't have any space to fill.</summary>
         public int GridLineMargin
@@ -759,6 +796,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private IFillBrush _HorizontalGridLineBrush;
+
         public IFillBrush HorizontalGridLineBrush
         {
             get => _HorizontalGridLineBrush;
@@ -774,6 +812,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private IFillBrush _VerticalGridLineBrush;
+
         public IFillBrush VerticalGridLineBrush
         {
             get => _VerticalGridLineBrush;
@@ -786,6 +825,7 @@ namespace MGUI.Core.UI.Containers.Grids
                 }
             }
         }
+
         #endregion GridLines
 
         private void CheckIfOuterPaddingChanged()
@@ -804,6 +844,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _RowSpacing;
+
         /// <summary>The amount of padding, in pixels, between each consecutive row.<para/>
         /// Default value: 0<para/>
         /// If horizontal gridlines are visible, this value should be at least more than twice as large as <see cref="GridLineMargin"/></summary>
@@ -823,6 +864,7 @@ namespace MGUI.Core.UI.Containers.Grids
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private int _ColumnSpacing;
+
         /// <summary>The amount of padding, in pixels, between each consecutive column.<para/>
         /// Default value: 0<para/>
         /// If vertical gridlines are visible, this value should be at least more than twice as large as <see cref="GridLineMargin"/></summary>

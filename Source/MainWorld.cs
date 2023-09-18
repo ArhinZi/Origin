@@ -24,8 +24,8 @@ namespace Origin.Source
 
         public ComponentType[] archetypePawn = new ComponentType[] {
                 typeof(UserControlPawnComponent),
-                typeof(SitePositionComponent),
-                typeof(DrawComponent)};
+                typeof(DrawComponent),
+                typeof(OnSitePosition) };
 
         public MainWorld()
         {
@@ -41,22 +41,22 @@ namespace Origin.Source
             Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
 
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
-            sd[(int)IsometricDirection.NONE] = Sprite.SpriteSet["tempPawn"];
+            sd[(int)IsometricDirection.NONE] = GlobalResources.Sprites["tempPawn"];
             var entity = ECSworld.Create(new UserControlPawnComponent(),
-                new SitePositionComponent() { Cell = ActiveSite.Blocks[0, 0, 95] },
-                new DrawComponent() { Sprites = sd });
+                new DrawComponent() { Sprites = sd },
+                new OnSitePosition() { site = ActiveSite, position = new Utils.Point3(0, 0, 100) });
         }
 
         public void Update(GameTime gameTime)
         {
             ActiveSite.Update(gameTime);
 
-            if (gameTime.TotalGameTime.Ticks % 10 == 0)
+            /*if (gameTime.TotalGameTime.Ticks % 10 == 0)
             {
-                var query = new QueryDescription().WithAll<UserControlPawnComponent, SitePositionComponent>();
+                var query = new QueryDescription().WithAll<UserControlPawnComponent, OnSitePosition>();
                 ECSworld.Query(in query, (in Entity entity) =>
                 {
-                    var position = entity.Get<SitePositionComponent>();
+                    var position = entity.Get<OnSitePosition>();
                     SiteCell sc = null;
                     IsometricDirection dir = IsometricDirection.NONE;
                     if (InputManager.JustPressedAndHoldDelayed("manual.tl"))
@@ -80,9 +80,9 @@ namespace Origin.Source
                         dir = IsometricDirection.BR;
                     }
                     if (sc != null)
-                        entity.Set(new SitePositionComponent() { Cell = sc, DirectionOfView = dir });
+                        entity.Set(new OnSitePosition() { Cell = sc, DirectionOfView = dir });
                 });
-            }
+            }*/
 
             Renderer.Update(gameTime);
         }

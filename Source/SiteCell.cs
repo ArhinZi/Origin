@@ -37,7 +37,7 @@ namespace Origin.Source
             EmbeddedFloorID = embFloorMatID;
         }
 
-        public bool PassAbility()
+        /*public bool PassAbility()
         {
             if (WallID == TerrainMaterial.AIR_NULL_MAT_ID)
             {
@@ -98,6 +98,6 @@ namespace Origin.Source
                 }
             }
             return this;
-        }
+        }*/
     }
 }

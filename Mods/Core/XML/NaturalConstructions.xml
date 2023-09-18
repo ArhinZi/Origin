@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Entities>
+	<Prefab>
+		<ID>AIR</ID>
+		<Component name="IsAirTile"></Component>
+	</Prefab>
+	<Prefab>
+		<ID>GRANITE_WALL</ID>
+		<Component name="TileWallPart"></Component>
+		<Component name="HasMaterial">
+			<Material method="ByID">GRANITE</Material>
+		</Component>
+		<Component name="DrawTileBase">
+			<Sprites>
+				<item>
+					<key>DrawSpriteTypes.DefOrRand</key>
+					<value>
+						<Sprite method="ByID">RoughStoneFloor</Sprite>
+					</value>
+				</item>
+			</Sprites>
+		</Component>
+	</Prefab>
+	<Prefab>
+		<ID>GRANITE_FLOOR</ID>
+		<Component name="IsFloor"></Component>
+		<Component name="HasMaterial">
+			<Material method="ByID">GRANITE</Material>
+		</Component>
+		<Component name="GraphicSimple">
+			<Sprite method="ByID">RoughStoneFloor</Sprite>
+		</Component>
+	</Prefab>
+</Entities>

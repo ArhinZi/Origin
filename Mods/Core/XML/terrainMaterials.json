@@ -1,0 +1,31 @@
+{
+  "TerrainMaterials": {
+    "HIDDEN": {
+      "MaterialID": "HIDDEN",
+      "Sprites": {
+        "Wall": "SolidSelectionWall",
+        "Floor": "SolidSelectionFloor"
+      }
+    },
+    "GRANITE": {
+      "MaterialID": "GRANITE",
+      "Sprites": {
+        "Wall": [ "RoughStoneWall" ],
+        "Floor": [ "RoughStoneFloor" ]
+      }
+    },
+    "DIRT": {
+      "MaterialID": "DIRT",
+      "Sprites": {
+        "Wall": [ "DirtWall" ],
+        "Floor": [ "DirtFloor" ]
+      }
+    },
+    "GRASS": {
+      "MaterialID": "GRASS",
+      "Sprites": {
+        "EmbeddedFloor": [ "EmbeddedGrassFloor1", "EmbeddedGrassFloor2" ]
+      }
+    }
+  }
+}

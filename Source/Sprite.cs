@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 
 namespace Origin.Source
 {
@@ -58,7 +60,7 @@ namespace Origin.Source
         public static readonly Point SPRITE_SIZE = new Point(32, 32);
         public static readonly int FLOOR_YOFFSET = 4;
 
-        public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
+        //public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
 
         public readonly string ID;
         public readonly Texture2D Texture;
@@ -76,7 +78,10 @@ namespace Origin.Source
             Direction = dir;
             Effect = effs;
 
-            SpriteSet.Add(ID, this);
+            /*if (!SpriteSet.ContainsKey(ID))
+            {
+                SpriteSet.Add(ID, this);
+            }*/
         }
     }
 }

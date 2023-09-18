@@ -1,10 +1,15 @@
 ﻿using Arch.Bus;
+using Arch.Core;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.Utils;
+
+using SharpDX.Direct2D1.Effects;
 
 using System;
 using System.Collections.Generic;
@@ -13,12 +18,13 @@ namespace Origin.Source
 {
     public class Site : IDisposable
     {
-        public SiteCell[,,] Blocks { get; set; }
+        public World ECSWorld { get; private set; }
+        public Entity[,,] Blocks { get; set; }
         public Point3 Size { get; private set; }
         public Camera2D Camera { get; private set; }
 
         public MainWorld World { get; private set; }
-        public SiteCell SelectedBlock { get; private set; }
+        public Entity SelectedBlock { get; private set; }
 
         private int _currentLevel;
 
@@ -28,9 +34,10 @@ namespace Origin.Source
 
         public Site(MainWorld world, Point3 size)
         {
+            ECSWorld = Arch.Core.World.Create();
             World = world;
             Size = size;
-            Blocks = new SiteCell[Size.X, Size.Y, Size.Z];
+            Blocks = new Entity[Size.X, Size.Y, Size.Z];
         }
 
         public void Init()
@@ -58,17 +65,17 @@ namespace Origin.Source
         public void SetSelected(Point3 pos)
         {
             if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
-                SelectedBlock = null;
+                SelectedBlock = Entity.Null;
             else
                 SelectedBlock = Blocks[pos.X, pos.Y, pos.Z];
         }
 
-        public SiteCell GetOrNull(Point3 pos)
+        public Entity GetOrNull(Point3 pos)
         {
             if (pos.X >= 0 && pos.Y >= 0 && pos.Z >= 0 &&
                 pos.X < Size.X && pos.Y < Size.Y && pos.Z < Size.Z)
                 return Blocks[pos.X, pos.Y, pos.Z];
-            return null;
+            return Entity.Null;
         }
 
         public void Update(GameTime gameTime)
@@ -79,9 +86,48 @@ namespace Origin.Source
             EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
             {
                 ["SelectedBlock"] = sel.ToString(),
+                ["Layer"] = CurrentLevel.ToString(),
                 ["DayTime"] = (SiteTime).ToString("#.##")
             }));
             //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
+        }
+
+        public bool RemoveWall(Entity ent)
+        {
+            var onSite = ent.Get<OnSitePosition>();
+            Point3 pos = onSite.position;
+            if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
+            {
+                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
+                structure.WallMaterial = null;
+                structure.WallEmbeddedMaterial = null;
+                if (structure == TileStructure.Null)
+                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveFloor(Entity ent)
+        {
+            var onSite = ent.Get<OnSitePosition>();
+            Point3 pos = onSite.position;
+            if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
+            {
+                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
+                structure.FloorMaterial = null;
+                structure.FloorEmbeddedMaterial = null;
+                if (structure == TileStructure.Null)
+                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
+                return true;
+            }
+            return false;
+        }
+
+        public void RemoveBlock(Entity ent)
+        {
+            RemoveBlock(ent);
+            RemoveFloor(ent);
         }
 
         public void Dispose()

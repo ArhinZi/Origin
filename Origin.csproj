@@ -51,7 +51,11 @@
 	  <None Remove="Mods\Core\XML\animals.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SiteGeneratorParameters.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SitePasses.xml" />
-	  <None Remove="Mods\Core\XML\pawnSprite.xml" />
+	  <None Remove="Mods\Core\XML\material.xml" />
+	  <None Remove="Mods\Core\XML\NaturalConstructions.xml" />
+	  <None Remove="mods\core\xml\pawnSprites.json" />
+	  <None Remove="mods\core\xml\sprites0.json" />
+	  <None Remove="mods\core\xml\terrainMaterials.json" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Content\FX\" />

@@ -1,0 +1,10 @@
+{
+"Sprites": {
+	"tempPawn": {
+		"TextureName": "pawn",
+		"ID": "SelectionWall",
+		"SourceRect": "0 0 256 256"
+		
+	}
+}
+}

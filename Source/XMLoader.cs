@@ -16,7 +16,7 @@ namespace Origin.Source
         {
             var xml = XDocument.Load(xmlPath);
             string textureName = xml.Root.Attribute("TextureName").Value;
-            Texture2D texture = Texture.GetTextureByName(textureName);
+            Texture2D texture = GlobalResources.Textures.ContainsKey(textureName) ? GlobalResources.Textures[textureName] : null;
             if (texture == null)
             {
                 Debug.WriteLine(String.Format("ERROR: No texture with name {}", textureName));
@@ -85,14 +85,14 @@ namespace Origin.Source
                         {
                             foreach (var item in entryElem.Element("Value").Element("List").Elements("Item"))
                             {
-                                Sprite sprite = Sprite.SpriteSet[item.Value];
+                                Sprite sprite = GlobalResources.Sprites[item.Value];
                                 list.Add(sprite);
                             }
                         }
                         else
                         {
                             string value = entryElem.Element("Value").Value;
-                            Sprite sprite = Sprite.SpriteSet[value];
+                            Sprite sprite = GlobalResources.Sprites[value];
                             list.Add(sprite);
                         }
 
@@ -104,7 +104,7 @@ namespace Origin.Source
             }
         }
 
-        private static Color ParseColor(string s)
+        public static Color ParseColor(string s)
         {
             string[] components = s.Split(' ');
             try
@@ -121,7 +121,7 @@ namespace Origin.Source
             }
         }
 
-        private static Rectangle ParseRectangle(string s)
+        public static Rectangle ParseRectangle(string s)
         {
             var values = s.Split(' ');
             var x = int.Parse(values[0]);

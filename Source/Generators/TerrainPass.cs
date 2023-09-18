@@ -1,14 +1,12 @@
-﻿using Origin.Source.Utils;
+﻿using Arch.CommandBuffer;
+using Arch.Core;
+using Arch.Core.Extensions;
+using Arch.Core.Utils;
 
-using SimplexNoise;
+using Origin.Source.ECS;
+using Origin.Source.Utils;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Origin.Source.Generators
 {
@@ -27,12 +25,14 @@ namespace Origin.Source.Generators
             SiteGeneratorParameters parameters)
         {
             if (site.Blocks == null)
-                site.Blocks = new SiteCell[site.Size.X, site.Size.Y, site.Size.Z];
+                site.Blocks = new Arch.Core.Entity[site.Size.X, site.Size.Y, site.Size.Z];
 
             var dirtDepth = parameters.Get<int>("Int", "DirtDepth").Value;
             var baseHeight = (int)(site.Size.Z * 0.7f);
             var scale = 5;
 
+            var archetype = new ComponentType[0];
+            //site.ECSWorld.Reserve(archetype, site.Size.X * site.Size.Y * site.Size.Z);
             // Loop through each voxel in the world array
             for (int x = 0; x < site.Size.X; x++)
             {
@@ -42,28 +42,39 @@ namespace Origin.Source.Generators
                     int height = (int)(heightMap[x, y] * scale + baseHeight);
                     for (int z = 0; z < site.Size.Z; z++)
                     {
+                        Entity ent = site.ECSWorld.Create(new OnSitePosition(site, new Point3(x, y, z)),
+                            new TileVisibility());
                         // Set the voxel value based on the height and the current z position
-                        string wall, floor, embWall, embFloor;
-                        wall = floor = embWall = embFloor = null;
+
                         if (z <= height - dirtDepth)
                         {
-                            wall = floor = "Granite";
+                            site.ECSWorld.Add(ent,
+                                new TileStructure()
+                                {
+                                    WallMaterial = TerrainMaterial.TerraMats["Granite"],
+                                    FloorMaterial = TerrainMaterial.TerraMats["Granite"],
+                                });
                         }
                         else if (z > height - dirtDepth && z <= height)
                         {
-                            wall = floor = "Dirt";
+                            site.ECSWorld.Add(ent,
+                                new TileStructure()
+                                {
+                                    WallMaterial = TerrainMaterial.TerraMats["Dirt"],
+                                    FloorMaterial = TerrainMaterial.TerraMats["Dirt"],
+                                });
+
                             if (z == height)
                             {
-                                embFloor = "Grass";
+                                ref var structure = ref ent.Get<TileStructure>();
+                                structure.FloorEmbeddedMaterial = TerrainMaterial.TerraMats["Grass"];
                             }
                         }
                         else
                         {
-                            wall = floor = TerrainMaterial.AIR_NULL_MAT_ID;
+                            //site.ECSWorld.Add(ent, new IsAirTile());
                         }
-
-                        site.Blocks[x, y, z] = new SiteCell(site, new Point3(x, y, z),
-                            wallMatID: wall, floorMatID: floor, embWallMatID: embWall, embFloorMatID: embFloor);
+                        site.Blocks[x, y, z] = ent;
                     }
                 }
             }

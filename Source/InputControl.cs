@@ -1,11 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Core.Extensions;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 
+using Origin.Source.ECS;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
 using Origin.Source.Utils;
+
+using Point3 = Origin.Source.Utils.Point3;
 
 namespace Origin.Source
 {
@@ -47,10 +52,14 @@ namespace Origin.Source
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (MainWorld.Instance.ActiveSite.SelectedBlock != null)
+                if (MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
                 {
-                    if (MainWorld.Instance.ActiveSite.SelectedBlock.RemoveWall())
-                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.SelectedBlock.Position);
+                    if (MainWorld.Instance.ActiveSite.RemoveWall(MainWorld.Instance.ActiveSite.SelectedBlock))
+                    {
+                        var onSite = MainWorld.Instance.ActiveSite.SelectedBlock.Get<OnSitePosition>();
+                        Point3 pos = onSite.position;
+                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(pos);
+                    }
                 }
             }
         }
