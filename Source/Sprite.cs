@@ -62,11 +62,11 @@ namespace Origin.Source
 
         //public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
 
-        public readonly string ID;
-        public readonly Texture2D Texture;
-        public readonly Rectangle RectPos;
-        public IsometricDirection Direction;
-        public MySpriteEffect Effect;
+        public string ID { get; }
+        public Texture2D Texture { get; }
+        public Rectangle RectPos { get; }
+        public IsometricDirection Direction { get; }
+        public MySpriteEffect Effect { get; }
 
         public Sprite(string id, Texture2D texture, Rectangle pos,
             IsometricDirection dir = IsometricDirection.NONE,

@@ -36,6 +36,7 @@ namespace Origin.Source
                 }
             }
             GlobalResources.Read(jobj);
+
             foreach (var modeFolder in Directory.GetDirectories(Path.Combine(path, "Mods\\")))
             {
                 foreach (var file in GetAllFiles(modeFolder))
@@ -43,20 +44,8 @@ namespace Origin.Source
                     if (file.Split(".").Last() == "xml")
                     {
                         var xml = XDocument.Load(file);
-                        /*
-                        if (xml.Root.Name == "Sprites")
-                            XMLoader.LoadSprites(file);
-                        else
-                        if (xml.Root.Name == "TerraMats")
-                            XMLoader.LoadTerraMats(file);
-                        else if (xml.Root.Name == "SitePasses")
-                            SiteBlocksMaker.ReadPasses(xml.Root);
-                        */
-                        if (xml.Root.Name == "Materials")
-                            Material.LoadMaterialsFromXML(xml.Root);
-                        else if (xml.Root.Name == "TerraMats")
-                            XMLoader.LoadTerraMats(file);
-                        else if (xml.Root.Name == "SiteGenParameters")
+
+                        if (xml.Root.Name == "SiteGenParameters")
                             SiteBlocksMaker.ReadParameters(xml.Root);
                     }
                 }

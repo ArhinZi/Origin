@@ -41,7 +41,7 @@ namespace Origin.Source
             Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
 
             var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
-            sd[(int)IsometricDirection.NONE] = GlobalResources.Sprites["tempPawn"];
+            sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");
             var entity = ECSworld.Create(new UserControlPawnComponent(),
                 new DrawComponent() { Sprites = sd },
                 new OnSitePosition() { site = ActiveSite, position = new Utils.Point3(0, 0, 100) });

@@ -213,8 +213,8 @@ namespace Origin.Source
             }
         }
 
-        private Sprite lborderSprite = GlobalResources.Sprites["LeftBorder"];
-        private Sprite rborderSprite = GlobalResources.Sprites["RightBorder"];
+        private Sprite lborderSprite = GlobalResources.GetSpriteByID("LeftBorder");
+        private Sprite rborderSprite = GlobalResources.GetSpriteByID("RightBorder");
         private Color borderColor = new Color(0, 0, 0, 150);
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Origin.Source
                         {
                             TerrainMaterial wall = structure.WallMaterial;
                             Sprite sprite = wall.Sprites["Wall"][Seeder.Random.Next() % wall.Sprites["Wall"].Count];
-                            Color c = structure.WallMaterial.TerraColor;
+                            Color c = structure.WallMaterial.Color;
 
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
@@ -289,12 +289,12 @@ namespace Origin.Source
                         }
                         else if (hasStructure && !visibility.WallDiscovered)
                         {
-                            TerrainMaterial tm = TerrainMaterial.TerraMats[TerrainMaterial.HIDDEN_MAT_ID];
+                            TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                             Sprite sprite;
                             Color c = Color.Wheat;
                             sprite = tm.Sprites["Wall"][0];
                             //sprite = tm.Sprites["Wall"][0];
-                            c = tm.TerraColor;
+                            c = tm.Color;
                             if (visibility.WallVisible)
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
@@ -311,7 +311,7 @@ namespace Origin.Source
                         {
                             TerrainMaterial floor = structure.FloorMaterial;
                             Sprite sprite = floor.Sprites["Floor"][Seeder.Random.Next() % floor.Sprites["Floor"].Count];
-                            Color c = structure.FloorMaterial.TerraColor;
+                            Color c = structure.FloorMaterial.Color;
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.Front,
@@ -331,8 +331,8 @@ namespace Origin.Source
                             if (structure.FloorEmbeddedMaterial != null && visibility.FloorVisible)
                             {
                                 TerrainMaterial embfloor = structure.FloorEmbeddedMaterial;
-                                sprite = embfloor.Sprites["Floor"][Seeder.Random.Next() % embfloor.Sprites["Floor"].Count];
-                                c = structure.FloorEmbeddedMaterial.TerraColor;
+                                sprite = embfloor.Sprites["EmbeddedFloor"][Seeder.Random.Next() % embfloor.Sprites["EmbeddedFloor"].Count];
+                                c = structure.FloorEmbeddedMaterial.Color;
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
@@ -343,11 +343,11 @@ namespace Origin.Source
                         else if (hasStructure && structure.FloorMaterial != null && !visibility.FloorDiscovered &&
                             (tileCoordX == Site.Size.X - 1 || tileCoordY == Site.Size.Y - 1))
                         {
-                            TerrainMaterial tm = TerrainMaterial.TerraMats[TerrainMaterial.HIDDEN_MAT_ID];
+                            TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                             Sprite sprite;
                             Color c = Color.Wheat;
                             sprite = tm.Sprites["Floor"][0];
-                            c = tm.TerraColor;
+                            c = tm.Color;
                             if (visibility.FloorVisible)
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
@@ -494,7 +494,7 @@ namespace Origin.Source
                         if (!Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
                         {
                             Point3 pos = new Point3(onTile.position.X, onTile.position.Y, onTile.position.Z - i);
-                            Sprite sprite2 = GlobalResources.Sprites["SelectionWall"];
+                            Sprite sprite2 = GlobalResources.GetSpriteByID("SelectionWall");
                             _renderChunkArray[pos.X / ChunkSize.X,
                                             pos.Y / ChunkSize.Y,
                                             pos.Z].AddSprite(
@@ -508,7 +508,7 @@ namespace Origin.Source
                         }
                         else break;
                     }
-                    Sprite sprite = GlobalResources.Sprites["SolidSelectionWall"];
+                    Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
                     _renderChunkArray[onTile.position.X / ChunkSize.X, onTile.position.Y / ChunkSize.Y, onTile.position.Z].AddSprite(
                         VertexBufferType.Dynamic,
                         (int)VertexBufferLayer.Back,

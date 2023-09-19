@@ -49,7 +49,8 @@ namespace Origin.Source.IO
                 MySpriteEffect effect = MySpriteEffect.None; // You can set a default value.
                 if (jsonObject["SpriteEffect"] != null)
                 {
-                    effect = (MySpriteEffect)Enum.Parse(typeof(MySpriteEffect), jsonObject["SpriteEffect"].Value<string>());
+                    string[] flagNames = jsonObject["SpriteEffect"].Value<string>().Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                    effect = flagNames.Select(flagName => Enum.Parse<MySpriteEffect>(flagName.Trim())).Aggregate((e1, e2) => e1 | e2);
                 }
 
                 // Create and return a new Sprite object

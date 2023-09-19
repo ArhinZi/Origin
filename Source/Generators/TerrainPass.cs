@@ -51,8 +51,8 @@ namespace Origin.Source.Generators
                             site.ECSWorld.Add(ent,
                                 new TileStructure()
                                 {
-                                    WallMaterial = TerrainMaterial.TerraMats["Granite"],
-                                    FloorMaterial = TerrainMaterial.TerraMats["Granite"],
+                                    WallMaterial = GlobalResources.GetTerrainMaterialByID("GRANITE"),
+                                    FloorMaterial = GlobalResources.GetTerrainMaterialByID("GRANITE"),
                                 });
                         }
                         else if (z > height - dirtDepth && z <= height)
@@ -60,14 +60,14 @@ namespace Origin.Source.Generators
                             site.ECSWorld.Add(ent,
                                 new TileStructure()
                                 {
-                                    WallMaterial = TerrainMaterial.TerraMats["Dirt"],
-                                    FloorMaterial = TerrainMaterial.TerraMats["Dirt"],
+                                    WallMaterial = GlobalResources.GetTerrainMaterialByID("DIRT"),
+                                    FloorMaterial = GlobalResources.GetTerrainMaterialByID("DIRT"),
                                 });
 
                             if (z == height)
                             {
                                 ref var structure = ref ent.Get<TileStructure>();
-                                structure.FloorEmbeddedMaterial = TerrainMaterial.TerraMats["Grass"];
+                                structure.FloorEmbeddedMaterial = GlobalResources.GetTerrainMaterialByID("GRASS");
                             }
                         }
                         else

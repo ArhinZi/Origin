@@ -1,0 +1,32 @@
+{
+  "Sprites": [
+    {
+      "TextureName": "animals2",
+      "ID": "CarpBL",
+      "SourceRect": "0 384 128 128",
+      "SpriteDir": "BL",
+      "SpriteEffect": "None"
+    },
+    {
+      "TextureName": "animals2",
+      "ID": "CarpBR",
+      "SourceRect": "0 384 128 128",
+      "SpriteDir": "BR",
+      "SpriteEffect": "FlipHorizontally"
+    },
+    {
+      "TextureName": "animals2",
+      "ID": "CarpTR",
+      "SourceRect": "0 384 128 128",
+      "SpriteDir": "TR",
+      "SpriteEffect": "FlipBLTR"
+    },
+    {
+      "TextureName": "animals2",
+      "ID": "CarpTL",
+      "SourceRect": "0 384 128 128",
+      "SpriteDir": "TL",
+      "SpriteEffect": "FlipHorizontally|FlipTLBR"
+    }
+  ]
+}
