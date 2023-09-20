@@ -24,8 +24,10 @@
 		<None Remove="MGUI.Shared\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Arch" Version="1.2.6" />
+		<PackageReference Include="Arch" Version="1.2.6.8-alpha" />
 		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
+		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
+		<PackageReference Include="Arch.System" Version="1.0.2" />
 		<PackageReference Include="GameTimer" Version="4.0.0" />
 		<PackageReference Include="Metalama.Framework" Version="2023.2.5" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
