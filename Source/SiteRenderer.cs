@@ -241,16 +241,6 @@ namespace Origin.Source
                         bool hasStructure = tile.TryGet<TileStructure>(out structure);
                         ref var visibility = ref tile.Get<TileVisibility>();
 
-                        bool LeftBorder = false;
-                        bool RightBorder = false;
-                        if (!Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() ||
-                            Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() &&
-                            Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Get<TileStructure>().WallMaterial == null)
-                            LeftBorder = true;
-                        if (!Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() ||
-                            Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() &&
-                            Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Get<TileStructure>().WallMaterial == null)
-                            RightBorder = true;
 
                         if (hasStructure && structure.WallMaterial != null && visibility.WallVisible && visibility.WallDiscovered)
                         {
@@ -263,13 +253,17 @@ namespace Origin.Source
                                 (int)VertexBufferLayer.Back,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
 
-                            if (LeftBorder)
+                            if (!Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() ||
+                                Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() &&
+                                Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Get<TileStructure>().WallMaterial == null)
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
                                     lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
 
-                            if (RightBorder)
+                            if (!Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() ||
+                                Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() &&
+                                Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Get<TileStructure>().WallMaterial == null)
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
@@ -317,12 +311,16 @@ namespace Origin.Source
                                 (int)VertexBufferLayer.Front,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
 
-                            if (LeftBorder)
+                            if (!Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() ||
+                                Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() &&
+                                Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Get<TileStructure>().FloorMaterial == null)
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
                                     lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET - 1));
-                            if (RightBorder)
+                            if (!Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() ||
+                                Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() &&
+                                Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Get<TileStructure>().FloorMaterial == null)
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
