@@ -44,7 +44,7 @@ namespace Origin.Source
             sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");
             var entity = ECSworld.Create(new UserControlPawnComponent(),
                 new DrawComponent() { Sprites = sd },
-                new OnSitePosition() { site = ActiveSite, position = new Utils.Point3(0, 0, 100) });
+                new OnSitePosition() { position = new Utils.Point3(0, 0, 100) });
         }
 
         public void Update(GameTime gameTime)

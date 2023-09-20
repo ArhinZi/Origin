@@ -42,7 +42,7 @@ namespace Origin.Source.Generators
                     int height = (int)(heightMap[x, y] * scale + baseHeight);
                     for (int z = 0; z < site.Size.Z; z++)
                     {
-                        Entity ent = site.ECSWorld.Create(new OnSitePosition(site, new Point3(x, y, z)),
+                        Entity ent = site.ECSWorld.Create(new OnSitePosition(new Point3(x, y, z)),
                             new TileVisibility());
                         // Set the voxel value based on the height and the current z position
 
