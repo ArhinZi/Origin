@@ -1,4 +1,5 @@
-﻿using Arch.Core.Extensions;
+﻿using Arch.Bus;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 using Origin.Source.ECS;
+using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
 using Origin.Source.Utils;
@@ -29,7 +31,9 @@ namespace Origin.Source
             int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult;
 
             if (InputManager.JustPressed("game.fpswitch"))
-                OriginGame.Instance.debug.Visible = !OriginGame.Instance.debug.Visible;
+            {
+                EventBus.Send(new HalfWallModeChanged());
+            }
 
             if (InputManager.IsPressed("Camera.left"))
                 StateMainGame.ActiveCamera.Move(new Vector2(-1 * movemod, 0));

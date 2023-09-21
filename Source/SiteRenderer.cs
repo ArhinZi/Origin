@@ -1,4 +1,5 @@
-﻿using Arch.Core;
+﻿using Arch.Bus;
+using Arch.Core;
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
+using Origin.Source.Events;
 using Origin.Source.Utils;
 
 using System;
@@ -17,6 +19,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
@@ -44,7 +47,7 @@ namespace Origin.Source
         Front
     }
 
-    public class SiteRenderer : IDisposable
+    public partial class SiteRenderer : IDisposable
     {
         public Site Site;
 
@@ -65,6 +68,12 @@ namespace Origin.Source
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
+
+        public bool HalfWallMode { get; private set; } = false;
+
+        private Sprite lborderSprite = GlobalResources.GetSpriteByID("LeftBorder");
+        private Sprite rborderSprite = GlobalResources.GetSpriteByID("RightBorder");
+        private Color borderColor = new Color(0, 0, 0, 150);
 
         /// <summary>
         /// Z offset for every Left2Right diagonal block lines.
@@ -103,15 +112,29 @@ namespace Origin.Source
             _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
 
             CalcVisibility();
-            Parallel.For(0, _chunksCount.Z, z =>
-            //for (int z = 0; z < _chunksCount.Z; z++)
+            FillAll();
+
+            Hook();
+        }
+
+        [Event]
+        public void OnHalfWallModeChanged(HalfWallModeChanged modeChanged)
+        {
+            HalfWallMode = !HalfWallMode;
+            /*for (int l = 0; l < _chunksCount.Z; l++)
             {
-                FillLevel(z);
-            });
-            /*for (int z = 0; z < _chunksCount.Z; z++)
-            {
-                SetLevel(z);
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+                        _renderChunkArray[x, y, l].Clear(VertexBufferType.Static);
+                    }
+                }
             }*/
+            //FillAll();
+            if(HalfWallMode)
+                FillLevel(Site.CurrentLevel, true);
+            else FillLevel(Site.CurrentLevel, false);
         }
 
         private void CalcChunkCellsVisibility(Point3 chunkCoord)
@@ -213,15 +236,12 @@ namespace Origin.Source
             }
         }
 
-        private Sprite lborderSprite = GlobalResources.GetSpriteByID("LeftBorder");
-        private Sprite rborderSprite = GlobalResources.GetSpriteByID("RightBorder");
-        private Color borderColor = new Color(0, 0, 0, 150);
 
         /// <summary>
         /// Fill chunk vertices in already created _renderChunkArray
         /// </summary>
         private void FillChunkVertices(
-            Point3 chunkCoord)
+            Point3 chunkCoord, bool HalfWall = false)
         {
             if (chunkCoord.X >= 0 && chunkCoord.X < _chunksCount.X &&
                 chunkCoord.Y >= 0 && chunkCoord.Y < _chunksCount.Y &&
@@ -245,13 +265,22 @@ namespace Origin.Source
                         if (hasStructure && structure.WallMaterial != null && visibility.WallVisible && visibility.WallDiscovered)
                         {
                             TerrainMaterial wall = structure.WallMaterial;
-                            Sprite sprite = wall.Sprites["Wall"][Seeder.Random.Next() % wall.Sprites["Wall"].Count];
+                            string spriteType = "Wall";
+                            Point spriteShift = new Point(0, 0);
+                            if ((HalfWall || HalfWallMode && chunkCoord.Z == Site.CurrentLevel) && wall.Sprites.ContainsKey("Floor"))
+                            {
+                                spriteType = "Floor";
+                                spriteShift = new Point(0, (Sprite.TILE_SIZE.Y - Sprite.FLOOR_YOFFSET));
+
+                            }
+                            Sprite sprite = wall.Sprites[spriteType][Seeder.Random.Next() % wall.Sprites[spriteType].Count];
                             Color c = structure.WallMaterial.Color;
 
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.Back,
-                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                                sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z),
+                                new Point(0, 0) + spriteShift);
 
                             if (!Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() ||
                                 Site.Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, chunkCoord.Z].Has<TileStructure>() &&
@@ -259,7 +288,8 @@ namespace Origin.Source
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
-                                    lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
+                                    lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z),
+                                    new Point(0, 0) + spriteShift);
 
                             if (!Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() ||
                                 Site.Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), chunkCoord.Z].Has<TileStructure>() &&
@@ -267,18 +297,19 @@ namespace Origin.Source
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
-                                    rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(Sprite.TILE_SIZE.X / 2, 0));
+                                    rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, chunkCoord.Z),
+                                    new Point(Sprite.TILE_SIZE.X / 2, 0) + spriteShift);
 
-                            /*if (tile.Has<HasWallMaterial>() && !tile.Has<IsUnDiscoveredTile>())
+                            if ((structure.WallEmbeddedMaterial != null && visibility.WallVisible))
                             {
-                                tm = TerrainMaterial.TerraMats[tile.EmbeddedWallID];
-                                sprite = tm.Sprites["Wall"][tile.seed % tm.Sprites["Wall"].Count];
-                                c = tm.TerraColor;
+                                TerrainMaterial embfloor = structure.WallEmbeddedMaterial;
+                                sprite = embfloor.Sprites["EmbeddedWall"][Seeder.Random.Next() % embfloor.Sprites["EmbeddedWall"].Count];
+                                c = structure.WallEmbeddedMaterial.Color;
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.Back,
                                     sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, 0));
-                            }*/
+                            }
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].IsFullyHidded = false;
                         }
                         else if (hasStructure && !visibility.WallDiscovered)
@@ -366,22 +397,32 @@ namespace Origin.Source
         /// Fill whole level again
         /// </summary>
         /// <param name="level"></param>
-        /// <param name="fillWalls"></param>
-        /// <param name="fillFloors"></param>
-        private void FillLevel(int level)
+        private void FillLevel(int level, bool HalfWall = false)
         {
-            for (int x = 0; x < _chunksCount.X; x++)
-            //Parallel.For(0, _chunksCount.X, x =>
+            //for (int x = 0; x < _chunksCount.X; x++)
+            Parallel.For(0, _chunksCount.X, x =>
             {
                 for (int y = 0; y < _chunksCount.Y; y++)
                 {
                     if (_renderChunkArray[x, y, level] == null)
                         _renderChunkArray[x, y, level] = new SiteVertexBufferChunk(this, new Point3(x, y, level));
-                    _renderChunkArray[x, y, level].Clear(VertexBufferType.Static);
+                    if (!_renderChunkArray[x, y, level].IsFullyHidded)
+                    {
+                        _renderChunkArray[x, y, level].Clear(VertexBufferType.Static);
 
-                    FillChunkVertices(new Point3(x, y, level));
+                        FillChunkVertices(new Point3(x, y, level), HalfWall);
+                    }
                 }
-            };
+            });
+        }
+
+        private void FillAll()
+        {
+            Parallel.For(0, _chunksCount.Z, z =>
+            {
+                FillLevel(z);
+            });
+
         }
 
         private void SetLevel(int level)
@@ -419,8 +460,14 @@ namespace Origin.Source
             // Check if CurrentLevel changed and redraw what need to redraw
             if (_drawHighest != Site.CurrentLevel)
             {
+                if (HalfWallMode)
+                {
+                    FillLevel(Site.PreviousLevel, false);
+                    FillLevel(Site.CurrentLevel, true);
+                }
                 _drawHighest = Site.CurrentLevel;
                 _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+                
             }
 
             // Collect all ChunksToReload and redraw them
@@ -450,31 +497,30 @@ namespace Origin.Source
             {
                 Point3 toReload = _reloadChunkList.ToList()[0];
 
-                List<Point3> neighbours1 = new List<Point3>()
-                        {
-                            new Point3(0, 0, -1),
-                            new Point3(-1, 0, -1),new Point3(0, -1, -1),
-                            new Point3(1, 0, -1),new Point3(0, 1, -1)
-                        };
-                foreach (var neighbor in neighbours1)
+                List<Point3> neighbours = new List<Point3>()
                 {
-                    CalcChunkCellsVisibility(toReload + neighbor);
-                    FillChunk(toReload + neighbor);
-                    SetChunk(toReload + neighbor);
-                }
-
-                List<Point3> neighbours2 = new List<Point3>()
-                        {
-                            new Point3(0, 0, 0),
-                            new Point3(-1, 0, 0),new Point3(0, -1, 0),
-                            new Point3(1, 0, 0),new Point3(0, 1, 0)
-                        };
-                foreach (var neighbor in neighbours2)
+                    new Point3(0, 0, 0),
+                    new Point3(-1, 0, 0),new Point3(0, -1, 0),
+                    new Point3(1, 0, 0),new Point3(0, 1, 0)
+                };
+                Parallel.ForEach(neighbours, neighbour =>
                 {
-                    CalcChunkCellsVisibility(toReload + neighbor);
-                    FillChunk(toReload + neighbor);
+                    Point3 p = toReload + neighbour;
+                    CalcChunkCellsVisibility(p);
+                    FillChunk(p);
+                });
+                Parallel.ForEach(neighbours, neighbour =>
+                {
+                    Point3 p = toReload + neighbour + new Point3(0, 0, -1);
+                    CalcChunkCellsVisibility(p);
+                    FillChunk(p);
+                });
+                foreach (var neighbor in neighbours)
                     SetChunk(toReload + neighbor);
-                }
+                
+                foreach (var neighbor in neighbours)
+                    SetChunk(toReload + neighbor + new Point3(0, 0, -1));
+                
 
                 _reloadChunkList.Remove(toReload);
             }

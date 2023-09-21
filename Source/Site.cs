@@ -27,6 +27,7 @@ namespace Origin.Source
         public Entity SelectedBlock { get; private set; }
 
         private int _currentLevel;
+        public int PreviousLevel {  get; private set; }
 
         public float SiteTime = 0.5f;
 
@@ -56,9 +57,13 @@ namespace Origin.Source
             get => _currentLevel;
             set
             {
-                if (value < 0) _currentLevel = 0;
-                else if (value > Size.Z - 1) _currentLevel = Size.Z - 1;
-                else _currentLevel = value;
+                if (_currentLevel != value)
+                {
+                    PreviousLevel = _currentLevel;
+                    if (value < 0) _currentLevel = 0;
+                    else if (value > Size.Z - 1) _currentLevel = Size.Z - 1;
+                    else _currentLevel = value;
+                }
             }
         }
 
