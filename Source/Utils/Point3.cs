@@ -29,6 +29,8 @@ namespace Origin.Source.Utils
             Z = (int)v3.Z;
         }
 
+        public static Point3 Zero = new Point3(0, 0, 0);
+
         public Point ToPoint()
         {
             return new Point(X, Y);
@@ -67,6 +69,42 @@ namespace Origin.Source.Utils
         public static bool operator !=(Point3 first, Point3 second)
         {
             return !(first == second);
+        }
+
+        public static bool operator <(Point3 first, Point3 second)
+        {
+            if (first.X < second.X &&
+                first.Y < second.Y &&
+                first.Z < second.Z)
+                return true;
+            return false;
+        }
+
+        public static bool operator <=(Point3 first, Point3 second)
+        {
+            if (first.X <= second.X &&
+                first.Y <= second.Y &&
+                first.Z <= second.Z)
+                return true;
+            return false;
+        }
+
+        public static bool operator >(Point3 first, Point3 second)
+        {
+            if (first.X > second.X &&
+                first.Y > second.Y &&
+                first.Z > second.Z)
+                return true;
+            return false;
+        }
+
+        public static bool operator >=(Point3 first, Point3 second)
+        {
+            if (first.X >= second.X &&
+                first.Y >= second.Y &&
+                first.Z >= second.Z)
+                return true;
+            return false;
         }
 
         public static Point3 operator +(Point3 first, Point3 second)

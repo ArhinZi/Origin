@@ -40,7 +40,8 @@ namespace Origin.Source.Utils
             Vector3 cellPos = new Vector3()
             {
                 X = (float)Math.Round((cellPosX + cellPosY)),
-                Y = (float)Math.Round((cellPosY - cellPosX))
+                Y = (float)Math.Round((cellPosY - cellPosX)),
+                Z = level
             };
             return new Point3(cellPos);
         }

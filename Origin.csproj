@@ -24,15 +24,19 @@
 		<None Remove="MGUI.Shared\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Arch" Version="1.2.6" />
+		<PackageReference Include="Arch" Version="1.2.6.8-alpha" />
 		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
+		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
+		<PackageReference Include="Arch.System" Version="1.0.2" />
 		<PackageReference Include="GameTimer" Version="4.0.0" />
+		<PackageReference Include="Metalama.Framework" Version="2023.2.5" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
 		<PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
+		<PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Icon.bmp">
@@ -51,7 +55,11 @@
 	  <None Remove="Mods\Core\XML\animals.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SiteGeneratorParameters.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SitePasses.xml" />
-	  <None Remove="Mods\Core\XML\pawnSprite.xml" />
+	  <None Remove="mods\core\xml\Materials.json" />
+	  <None Remove="mods\core\xml\pawnSprites.json" />
+	  <None Remove="mods\core\xml\sprites0.json" />
+	  <None Remove="mods\core\xml\spritesAnimals.json" />
+	  <None Remove="mods\core\xml\terrainMaterials.json" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Content\FX\" />

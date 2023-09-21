@@ -79,9 +79,9 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target0
     
     // level shading
     float4 fogColor = float4(0.8, 0.8, 0.8, 1.0); // color of fog
-    float hyperKS = 0.1;
+    float hyperKS = 0.2;
     float shadeFactor = hyperKS / (hyperKS + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
-    float hyperKF = 0.3;
+    float hyperKF = 0.6;
     float fogFactor = hyperKF / (hyperKF + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
     //color.rgb *= hyperK / (hyperK + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
     color.rgb = lerp(color.rgb, fogColor.rgb, 1 - fogFactor) * shadeFactor;

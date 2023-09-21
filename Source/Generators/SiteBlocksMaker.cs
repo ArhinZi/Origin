@@ -25,6 +25,7 @@ namespace Origin.Source.Generators
             SiteGeneratorParameters parameters,
             int seed)
         {
+            PassList.Add(0, new TerrainPass());
             foreach (var item in PassList.Values)
             {
                 item.Run(site, site.Size, parameters, seed);

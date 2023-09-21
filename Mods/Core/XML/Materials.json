@@ -1,0 +1,32 @@
+{
+  "Materials": [
+    {
+      "ID": "NONE",
+      "Name": "nothing",
+      "Color": "255 255 255 255",
+      "Type": "air",
+      "Value": 0
+    },
+    {
+      "ID": "HIDDEN",
+      "Name": "hidden",
+      "Color": "70 70 70 255",
+      "Type": "air",
+      "Value": 0
+    },
+    {
+      "ID": "GRANITE",
+      "Name": "granite",
+      "Color": "128 128 128 255",
+      "Type": "stone",
+      "Value": 1
+    },
+    {
+      "ID": "DIRT",
+      "Name": "dirt",
+      "Color": "171 125 35 255",
+      "Type": "soil",
+      "Value": 1
+    }
+  ]
+}

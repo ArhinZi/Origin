@@ -158,6 +158,7 @@ namespace Origin.Source
             ref var indarr = ref _staticVertexIndexes;
             if (type == VertexBufferType.Static)
             {
+                IsSet = false;
                 vertexBatches = ref _staticVertices;
                 indarr = ref _staticVertexIndexes;
             }

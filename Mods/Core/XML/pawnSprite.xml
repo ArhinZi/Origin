@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Sprites TextureName="pawn">
-	<Sprite>
-		<SpriteID>tempPawn</SpriteID>
-		<SourceRect>0 0 256 256</SourceRect>
-	</Sprite>
-</Sprites>

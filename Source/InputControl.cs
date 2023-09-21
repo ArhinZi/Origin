@@ -1,11 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+using Arch.Core.Extensions;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 
+using Origin.Source.ECS;
+using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
 using Origin.Source.Utils;
+
+using Point3 = Origin.Source.Utils.Point3;
 
 namespace Origin.Source
 {
@@ -24,7 +31,9 @@ namespace Origin.Source
             int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult;
 
             if (InputManager.JustPressed("game.fpswitch"))
-                OriginGame.Instance.debug.Visible = !OriginGame.Instance.debug.Visible;
+            {
+                EventBus.Send(new HalfWallModeChanged());
+            }
 
             if (InputManager.IsPressed("Camera.left"))
                 StateMainGame.ActiveCamera.Move(new Vector2(-1 * movemod, 0));
@@ -47,10 +56,14 @@ namespace Origin.Source
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (MainWorld.Instance.ActiveSite.SelectedBlock != null)
+                if (MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
                 {
-                    if (MainWorld.Instance.ActiveSite.SelectedBlock.RemoveWall())
-                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(MainWorld.Instance.ActiveSite.SelectedBlock.Position);
+                    if (MainWorld.Instance.ActiveSite.RemoveWall(MainWorld.Instance.ActiveSite.SelectedBlock))
+                    {
+                        var onSite = MainWorld.Instance.ActiveSite.SelectedBlock.Get<OnSitePosition>();
+                        Point3 pos = onSite.position;
+                        MainWorld.Instance.ActiveSite.BlocksToReload.Add(pos);
+                    }
                 }
             }
         }
