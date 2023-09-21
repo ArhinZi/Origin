@@ -59,6 +59,8 @@ namespace Origin.Source
         private int _drawLowest;
         private int _drawHighest;
 
+        private int seed = 234223534;
+
         private SiteVertexBufferChunk[,,] _renderChunkArray;
 
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
@@ -132,7 +134,7 @@ namespace Origin.Source
                 }
             }*/
             //FillAll();
-            if(HalfWallMode)
+            if (HalfWallMode)
                 FillLevel(Site.CurrentLevel, true);
             else FillLevel(Site.CurrentLevel, false);
         }
@@ -236,7 +238,6 @@ namespace Origin.Source
             }
         }
 
-
         /// <summary>
         /// Fill chunk vertices in already created _renderChunkArray
         /// </summary>
@@ -257,10 +258,13 @@ namespace Origin.Source
                         int tileCoordY = chunkCoord.Y * ChunkSize.Y + tileInChunkCoordY;
                         Entity tile = Site.Blocks[tileCoordX, tileCoordY, chunkCoord.Z];
 
+                        int rand = seed + tileCoordX + tileCoordY + chunkCoord.Z;
+                        Random random = new Random(rand);
+                        rand = random.Next();
+
                         TileStructure structure;
                         bool hasStructure = tile.TryGet<TileStructure>(out structure);
                         ref var visibility = ref tile.Get<TileVisibility>();
-
 
                         if (hasStructure && structure.WallMaterial != null && visibility.WallVisible && visibility.WallDiscovered)
                         {
@@ -271,9 +275,8 @@ namespace Origin.Source
                             {
                                 spriteType = "Floor";
                                 spriteShift = new Point(0, (Sprite.TILE_SIZE.Y - Sprite.FLOOR_YOFFSET));
-
                             }
-                            Sprite sprite = wall.Sprites[spriteType][Seeder.Random.Next() % wall.Sprites[spriteType].Count];
+                            Sprite sprite = wall.Sprites[spriteType][rand % wall.Sprites[spriteType].Count];
                             Color c = structure.WallMaterial.Color;
 
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
@@ -303,7 +306,7 @@ namespace Origin.Source
                             if ((structure.WallEmbeddedMaterial != null && visibility.WallVisible))
                             {
                                 TerrainMaterial embfloor = structure.WallEmbeddedMaterial;
-                                sprite = embfloor.Sprites["EmbeddedWall"][Seeder.Random.Next() % embfloor.Sprites["EmbeddedWall"].Count];
+                                sprite = embfloor.Sprites["EmbeddedWall"][rand % embfloor.Sprites["EmbeddedWall"].Count];
                                 c = structure.WallEmbeddedMaterial.Color;
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
@@ -335,7 +338,7 @@ namespace Origin.Source
                         if (hasStructure && structure.FloorMaterial != null && visibility.FloorVisible && visibility.FloorDiscovered)
                         {
                             TerrainMaterial floor = structure.FloorMaterial;
-                            Sprite sprite = floor.Sprites["Floor"][Seeder.Random.Next() % floor.Sprites["Floor"].Count];
+                            Sprite sprite = floor.Sprites["Floor"][rand % floor.Sprites["Floor"].Count];
                             Color c = structure.FloorMaterial.Color;
                             _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                 VertexBufferType.Static,
@@ -360,7 +363,7 @@ namespace Origin.Source
                             if (structure.FloorEmbeddedMaterial != null && visibility.FloorVisible)
                             {
                                 TerrainMaterial embfloor = structure.FloorEmbeddedMaterial;
-                                sprite = embfloor.Sprites["EmbeddedFloor"][Seeder.Random.Next() % embfloor.Sprites["EmbeddedFloor"].Count];
+                                sprite = embfloor.Sprites["EmbeddedFloor"][rand % embfloor.Sprites["EmbeddedFloor"].Count];
                                 c = structure.FloorEmbeddedMaterial.Color;
                                 _renderChunkArray[chunkCoord.X, chunkCoord.Y, chunkCoord.Z].AddSprite(
                                     VertexBufferType.Static,
@@ -422,7 +425,6 @@ namespace Origin.Source
             {
                 FillLevel(z);
             });
-
         }
 
         private void SetLevel(int level)
@@ -467,7 +469,6 @@ namespace Origin.Source
                 }
                 _drawHighest = Site.CurrentLevel;
                 _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
-                
             }
 
             // Collect all ChunksToReload and redraw them
@@ -517,10 +518,9 @@ namespace Origin.Source
                 });
                 foreach (var neighbor in neighbours)
                     SetChunk(toReload + neighbor);
-                
+
                 foreach (var neighbor in neighbours)
                     SetChunk(toReload + neighbor + new Point3(0, 0, -1));
-                
 
                 _reloadChunkList.Remove(toReload);
             }
