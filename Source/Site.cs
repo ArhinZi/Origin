@@ -19,7 +19,7 @@ namespace Origin.Source
     public class Site : IDisposable
     {
         public World ECSWorld { get; private set; }
-        public Entity[,,] Blocks { get; set; }
+        public SiteTileContainer Blocks { get; set; }
         public Point3 Size { get; private set; }
         public Camera2D Camera { get; private set; }
 
@@ -27,7 +27,7 @@ namespace Origin.Source
         public Entity SelectedBlock { get; private set; }
 
         private int _currentLevel;
-        public int PreviousLevel {  get; private set; }
+        public int PreviousLevel { get; private set; }
 
         public float SiteTime = 0.5f;
 
@@ -38,11 +38,10 @@ namespace Origin.Source
             ECSWorld = Arch.Core.World.Create();
             World = world;
             Size = size;
-            Blocks = new Entity[Size.X, Size.Y, Size.Z];
-        }
+            Blocks = new SiteTileContainer(Size);
 
-        public void Init()
-        {
+            CurrentLevel = (int)(Size.Z * 0.8f);
+
             Camera = new Camera2D();
             Camera.Move(new Vector2(0,
                 -(CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
