@@ -25,6 +25,7 @@ namespace Origin.Source
 
         public MainWorld World { get; private set; }
         public Entity SelectedBlock { get; private set; }
+        public Point3 SelectedPosition { get; private set; }
 
         private int _currentLevel;
         public int PreviousLevel { get; private set; }
@@ -69,9 +70,15 @@ namespace Origin.Source
         public void SetSelected(Point3 pos)
         {
             if (pos.X < 0 || pos.X >= Size.X || pos.Y < 0 || pos.Y >= Size.Y)
+            {
                 SelectedBlock = Entity.Null;
+                SelectedPosition = Point3.Zero;
+            }
             else
+            {
                 SelectedBlock = Blocks[pos.X, pos.Y, pos.Z];
+                SelectedPosition = pos;
+            }
         }
 
         public Entity GetOrNull(Point3 pos)
@@ -87,12 +94,12 @@ namespace Origin.Source
             Point m = Mouse.GetState().Position;
             Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
             SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
-            EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
+            /*EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
             {
                 ["SelectedBlock"] = sel.ToString(),
                 ["Layer"] = CurrentLevel.ToString(),
                 ["DayTime"] = (SiteTime).ToString("#.##")
-            }));
+            }));*/
             //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
         }
 

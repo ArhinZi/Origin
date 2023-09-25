@@ -1,14 +1,16 @@
 ﻿using Arch.Bus;
 
-using MGUI.Core.UI;
-using MGUI.Core.UI.Brushes.Fill_Brushes;
-using MGUI.Shared.Rendering;
-
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
+
+using Myra;
+using Myra.Assets;
+using Myra.Graphics2D;
+using Myra.Graphics2D.UI;
+using Myra.Utility;
 
 using Origin.Source;
 using Origin.Source.Events;
@@ -22,6 +24,7 @@ using SharpDX.Direct2D1;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 
@@ -30,10 +33,9 @@ namespace Origin
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class OriginGame : Game, IObservableUpdate
+    public class OriginGame : Game
     {
         public static OriginGame Instance { get; private set; }
-        public MainRenderer MGUIRenderer { get; private set; }
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -41,15 +43,9 @@ namespace Origin
 
         private ScreenManager _screenManager;
 
+        private Rectangle _prevBounds;
+
         public FpsCountGC fpsCounter;
-        public InfoDrawerGC debug;
-
-        public event EventHandler<TimeSpan> PreviewUpdate;
-
-        public event EventHandler<EventArgs> EndUpdate;
-
-        public static int ScreenWidth { get; private set; }
-        public static int ScreenHeight { get; private set; }
 
         public UIManager UiManager;
 
@@ -62,7 +58,6 @@ namespace Origin
 
             _screenManager = new ScreenManager();
             fpsCounter = new FpsCountGC();
-            debug = new InfoDrawerGC(new Point(10, 10), Color.Aqua);
             // Sleep time when Window not in focus
             InactiveSleepTime = TimeSpan.FromMilliseconds(100);
 
@@ -79,8 +74,8 @@ namespace Origin
         /// </summary>
         protected override void Initialize()
         {
-            ScreenHeight = graphics.PreferredBackBufferHeight = 1024;
-            ScreenWidth = graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 1024;
+            graphics.PreferredBackBufferWidth = 1024;
             //graphics.IsFullScreen = true;
             IsFixedTimeStep = true;
             graphics.SynchronizeWithVerticalRetrace = false;
@@ -88,14 +83,10 @@ namespace Origin
             Window.Title = "Dwarf`s Origin";
 
             IsMouseVisible = true;
+            MyraEnvironment.Game = this;
+            MyraEnvironment.DisableClipping = true;
+            UiManager = new UIManager(this);
 
-            MGUIRenderer = new(new GameRenderHost<OriginGame>(this));
-            UiManager = new UIManager();
-
-            EventBus.Send(new DebugValueChanged(0, new Dictionary<string, string>()
-            {
-                ["Info"] = "-/+ to zoom; [/] to change level; arrows to move; esc to exit"
-            }));
 
             InputManager.Initialise(this);
             base.Initialize();
@@ -114,8 +105,6 @@ namespace Origin
             // Load Resources
             ResourceLoader.LoadResources();
 
-            debug.spriteBatch = spriteBatch;
-            debug.font = spriteFont;
             //LoadMenuMainScreen();
             LoadGameScreen();
         }
@@ -137,17 +126,18 @@ namespace Origin
         protected override void Update(GameTime gameTime)
         {
             InputManager.Update();
-            PreviewUpdate?.Invoke(this, gameTime.TotalGameTime);
 
-            ScreenHeight = graphics.PreferredBackBufferHeight;
-            ScreenWidth = graphics.PreferredBackBufferWidth;
-
-            debug.Clear();
+            if (_prevBounds != Window.ClientBounds)
+            {
+                EventBus.Send(new ScreenBoundsChanged(new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height)));
+                _prevBounds = Window.ClientBounds;
+                GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height);
+                graphics.ApplyChanges();
+            }
 
             UiManager.Update();
             base.Update(gameTime);
             InputManager.FinalUpdate();
-            EndUpdate?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -159,12 +149,15 @@ namespace Origin
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             base.Draw(gameTime);
+
+            UiManager.Draw();
+
             long drawcalls = GraphicsDevice.Metrics.DrawCount;
             EventBus.Send(new DebugValueChanged(3, new Dictionary<string, string>()
             {
-                ["DrawCalls"] = drawcalls.ToString()
-            }));
-            UiManager.Draw();
+                ["DebugDrawCalls"] = drawcalls.ToString(),
+                ["DebugElapsedTime"] = gameTime.ElapsedGameTime.ToString()
+            })) ;
         }
 
         private void LoadMenuMainScreen()

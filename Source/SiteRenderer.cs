@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
