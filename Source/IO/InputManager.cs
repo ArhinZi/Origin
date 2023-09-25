@@ -121,18 +121,18 @@ namespace Origin.Source.IO
             BindKey("camera.zoom.minus", new Keybind(Keys.OemMinus));
 
             //World
-            BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets, 30, 5));
-            BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 30, 5));
+            BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets, 300, 50));
+            BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 300, 50));
 
             //Game
             BindKey("game.fpswitch", new Keybind(Keys.L));
             BindKey("game.exit", new Keybind(Keys.Escape));
 
             // Manual control
-            BindKey("manual.tr", new Keybind(Keys.W, 30, 10));
-            BindKey("manual.tl", new Keybind(Keys.A, 30, 10));
-            BindKey("manual.br", new Keybind(Keys.D, 30, 10));
-            BindKey("manual.bl", new Keybind(Keys.S, 30, 10));
+            BindKey("manual.tr", new Keybind(Keys.W, 300, 100));
+            BindKey("manual.tl", new Keybind(Keys.A, 300, 100));
+            BindKey("manual.br", new Keybind(Keys.D, 300, 100));
+            BindKey("manual.bl", new Keybind(Keys.S, 300, 100));
         }
 
         private static void BindKey(string name, Keybind fallback)
@@ -407,7 +407,7 @@ namespace Origin.Source.IO
                     keybinds[name.ToLower()].SetInitialDelay();
                     return true;
                 }
-                bool isPressed = IsKeybindPressedCurrent(keybinds[name.ToLower()]) && keybinds[name.ToLower()].delayTimer == 0;
+                bool isPressed = IsKeybindPressedCurrent(keybinds[name.ToLower()]) && keybinds[name.ToLower()].delayTimer <= 0;
                 if (isPressed)
                 {
                     keybinds[name.ToLower()].SetRepeatDelay();
@@ -483,7 +483,7 @@ namespace Origin.Source.IO
 
         #region Update
 
-        public static void Update()
+        public static void Update(GameTime gameTime)
         {
             //Set the current state
             CurrentKeys = Keyboard.GetState();
@@ -491,7 +491,7 @@ namespace Origin.Source.IO
 
             foreach (var kbkey in keybinds.Keys)
             {
-                keybinds[kbkey].TickTimer();
+                keybinds[kbkey].TickTimer(gameTime);
             }
         }
 
@@ -587,9 +587,9 @@ namespace Origin.Source.IO
         public MouseButton mouseBinding;
         public Buttons gamepadBinding;
 
-        public ushort initialDelay = 0;
-        public ushort repeatDelay = 0;
-        public ushort delayTimer = 0;
+        public int initialDelay = 0;
+        public int repeatDelay = 0;
+        public int delayTimer = 0;
 
         /// <summary>
         /// Whether to use keyboard or mouse on this keybind
@@ -670,9 +670,9 @@ namespace Origin.Source.IO
 
         #region Methods
 
-        public void TickTimer()
+        public void TickTimer(GameTime gameTime)
         {
-            if (delayTimer > 0) delayTimer--;
+            if (delayTimer > 0) delayTimer -= gameTime.ElapsedGameTime.Milliseconds;
         }
 
         public void SetInitialDelay()

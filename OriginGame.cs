@@ -77,7 +77,7 @@ namespace Origin
             graphics.PreferredBackBufferHeight = 1024;
             graphics.PreferredBackBufferWidth = 1024;
             //graphics.IsFullScreen = true;
-            IsFixedTimeStep = true;
+            IsFixedTimeStep = false;
             graphics.SynchronizeWithVerticalRetrace = false;
             graphics.ApplyChanges();
             Window.Title = "Dwarf`s Origin";
@@ -125,7 +125,7 @@ namespace Origin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            InputManager.Update();
+            InputManager.Update(gameTime);
 
             if (_prevBounds != Window.ClientBounds)
             {

@@ -62,7 +62,7 @@ namespace Origin.Source
                 if (value != _position)
                     EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
                     {
-                        ["DebugCameraPosition"] = value.ToString()
+                        ["DebugCameraPosition"] = value.ToPoint().ToString()
                     }));
                 _position = value;
             }

@@ -18,9 +18,9 @@ namespace Origin.Source
 {
     public class InputControl : IUpdate
     {
-        public int base_mult = 5;
-        public int shift_mult = 30;
-        public float zoom_step = 0.02f;
+        public int base_mult = 400;
+        public int shift_mult = 800;
+        public float zoom_step = 1f;
         private KeyboardState keyboardState;
 
         public void Update(GameTime gameTime)
@@ -28,7 +28,7 @@ namespace Origin.Source
             if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
 
             keyboardState = Keyboard.GetState();
-            int movemod = keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult;
+            float movemod = (keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult) * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (InputManager.JustPressed("game.fpswitch"))
             {
@@ -50,9 +50,9 @@ namespace Origin.Source
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
             if (InputManager.IsPressed("Camera.zoom.plus"))
-                StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom;
+                StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (InputManager.IsPressed("Camera.zoom.minus"))
-                StateMainGame.ActiveCamera.Zoom -= zoom_step * StateMainGame.ActiveCamera.Zoom;
+                StateMainGame.ActiveCamera.Zoom -= zoom_step * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
