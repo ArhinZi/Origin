@@ -2,6 +2,8 @@
 
 using Microsoft.Xna.Framework;
 
+using Myra.Graphics2D.UI;
+
 using Origin.Source.Events;
 
 using System;
@@ -20,18 +22,20 @@ namespace Origin.Source
 
         #region Set Get
 
+        private Rectangle ClientBounds => OriginGame.Instance.Window.ClientBounds;
+
         public float Zoom
         {
             get { return _zoom; }
             set
             {
-                EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
-                {
-                    ["CameraZoom"] = value.ToString("##.##")
-                }));
                 _zoom = value;
                 if (_zoom < _minZoom) _zoom = _minZoom;
                 if (_zoom > _maxZoom) _zoom = _maxZoom;
+                EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
+                {
+                    ["DebugCameraZoom"] = value.ToString("##.##")
+                }));
             } // Negative zoom will flip image
         }
 
@@ -41,11 +45,11 @@ namespace Origin.Source
         public float MaxZoom
         { set { _maxZoom = value; } }
 
-        public float AspectPatio
+        public float AspectRatio
         {
             get
             {
-                return (float)OriginGame.Instance.GraphicsDevice.Viewport.Width / OriginGame.Instance.GraphicsDevice.Viewport.Height;
+                return OriginGame.Instance.GraphicsDevice.Viewport.AspectRatio;
             }
         }
 
@@ -60,7 +64,7 @@ namespace Origin.Source
                 if (value != _position)
                     EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
                     {
-                        ["CameraPosition"] = value.ToString()
+                        ["DebugCameraPosition"] = value.ToPoint().ToString()
                     }));
                 _position = value;
             }
@@ -72,7 +76,7 @@ namespace Origin.Source
         {
             get
             {
-                _projection = Matrix.CreateOrthographicOffCenter(0, OriginGame.ScreenWidth, OriginGame.ScreenHeight, 0, -100, 100) * Matrix.CreateScale(1, AspectPatio, 1);
+                _projection = Matrix.CreateOrthographicOffCenter(0, ClientBounds.Width, ClientBounds.Height, 0, -100, 100) * Matrix.CreateScale(AspectRatio, AspectRatio, 1);
                 return _projection;
             }
         }
@@ -84,7 +88,7 @@ namespace Origin.Source
                 _transformation =
                     Matrix.CreateTranslation(-Position.X, -Position.Y, 1) *
                     Matrix.CreateScale(Zoom, Zoom, 1) *
-                    Matrix.CreateTranslation(new Vector3(OriginGame.ScreenWidth * 0.5f, OriginGame.ScreenHeight * 0.5f, 0));
+                    Matrix.CreateTranslation(new Vector3(ClientBounds.Width * 0.5f, ClientBounds.Height * 0.5f, 0));
                 return _transformation;
             }
             private set

@@ -24,9 +24,6 @@ namespace Origin.Source.Generators
             float[,] heightMap,
             SiteGeneratorParameters parameters)
         {
-            if (site.Blocks == null)
-                site.Blocks = new Arch.Core.Entity[site.Size.X, site.Size.Y, site.Size.Z];
-
             var dirtDepth = parameters.Get<int>("Int", "DirtDepth").Value;
             var baseHeight = (int)(site.Size.Z * 0.7f);
             var scale = 5;
@@ -45,7 +42,7 @@ namespace Origin.Source.Generators
                         Entity ent = site.ECSWorld.Create(new OnSitePosition(new Point3(x, y, z)),
                             new TileVisibility());
                         // Set the voxel value based on the height and the current z position
-
+                        bool walkable = true;
                         if (z <= height - dirtDepth)
                         {
                             site.ECSWorld.Add(ent,
@@ -54,6 +51,7 @@ namespace Origin.Source.Generators
                                     WallMaterial = GlobalResources.GetTerrainMaterialByID("GRANITE"),
                                     FloorMaterial = GlobalResources.GetTerrainMaterialByID("GRANITE"),
                                 });
+                            walkable = false;
                         }
                         else if (z > height - dirtDepth && z <= height)
                         {
@@ -69,11 +67,17 @@ namespace Origin.Source.Generators
                                 ref var structure = ref ent.Get<TileStructure>();
                                 structure.FloorEmbeddedMaterial = GlobalResources.GetTerrainMaterialByID("GRASS");
                             }
+                            walkable = false;
                         }
                         else
                         {
                             //site.ECSWorld.Add(ent, new IsAirTile());
                         }
+
+                        if (z != 0 && walkable && site.Blocks[x, y, z - 1].Has<TileStructure>() &&
+                            site.Blocks[x, y, z - 1].Get<TileStructure>().WallMaterial != null)
+                            ent.Add(new TileHasPathNode(new Roy_T.AStar.Primitives.Position(x, y, z)));
+
                         site.Blocks[x, y, z] = ent;
                     }
                 }

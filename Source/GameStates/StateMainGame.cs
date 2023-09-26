@@ -1,7 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Bus;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended.Screens;
+using Origin.Source.Events;
+using System.Collections.Generic;
+
+using System;
 
 namespace Origin.Source.GameStates
 {
@@ -32,6 +38,13 @@ namespace Origin.Source.GameStates
         {
             _inputControl.Update(gameTime);
             World.Update(gameTime);
+
+            EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
+            {
+                ["DebugSelectedBlock"] = World.ActiveSite.SelectedPosition.ToString(),
+                ["DebugLayer"] = World.ActiveSite.CurrentLevel.ToString(),
+                ["DayTime"] = World.ActiveSite.SiteTime.ToString("#.##")
+            }));
         }
 
         public override void Draw(GameTime gameTime)

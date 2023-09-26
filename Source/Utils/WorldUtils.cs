@@ -1,9 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Core.Extensions;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended;
 
+using Origin.Source.ECS;
 using Origin.Source.Generators;
+
+using Roy_T.AStar.Primitives;
 
 using SimplexNoise;
 
@@ -37,13 +42,46 @@ namespace Origin.Source.Utils
             var cellPosX = (worldPos.X / Sprite.TILE_SIZE.X) - 0.5;
             var cellPosY = (worldPos.Y / Sprite.TILE_SIZE.Y) - 0.5;
 
-            Vector3 cellPos = new Vector3()
+            Point3 cellPos = new Point3()
             {
-                X = (float)Math.Round((cellPosX + cellPosY)),
-                Y = (float)Math.Round((cellPosY - cellPosX)),
+                X = (int)Math.Round((cellPosX + cellPosY)),
+                Y = (int)Math.Round((cellPosY - cellPosX)),
                 Z = level
             };
-            return new Point3(cellPos);
+            return cellPos;
+        }
+
+        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site)
+        {
+            for (int i = 0; i < SiteRenderer.ONE_MOMENT_DRAW_LEVELS; i++)
+            {
+                Point3 pos = MouseScreenToMap(cam, mousePos, level);
+                if (pos.LessOr(Point3.Zero))
+                    return pos;
+                if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 && !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
+                {
+                    level--;
+                    continue;
+                }
+                else return pos;
+            }
+            return new Point3(-1, -1, -1);
+        }
+
+        public static Point3 ProjectToSurface(Point3 position, Site site)
+        {
+            Point3 pos = position;
+            if (position.LessOr(Point3.Zero) || position.GraterEqualOr(site.Size))
+            {
+                return pos;
+            }
+            while (pos.Z - 1 >= 0 && !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
+            {
+                pos = pos - new Point3(1, 1, 1);
+                if (pos.X < 0 || pos.X >= site.Size.X || pos.Y < 0 || pos.Y >= site.Size.Y)
+                    return pos;
+            }
+            return pos;
         }
 
         public static Point GetSpritePositionByCellPosition(Point3 cellPos)

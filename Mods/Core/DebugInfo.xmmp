@@ -1,0 +1,30 @@
+<Project>
+		<Grid HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="300" BorderThickness="2" Padding="2, 0, 0, 2" DragDirection="Both" Background="#00170828" Border="#8C8C8CFF" >
+			<Grid.DefaultRowProportion Type="Auto" />
+			<Grid.DefaultColumnProportion Type="Auto" />
+			<Label Text="Info: " />
+			<Label Text="Value" GridColumn="1" Id="DebugInfo" />
+
+			<Label Text="MousePosition: " GridRow="1" />
+			<Label Text="Value" Id="DebugMousePosition" GridRow="1" GridColumn="1" />
+
+			<Label Text="CameraZoom: " GridRow="2" />
+			<Label Text="Value" Id="DebugCameraZoom" GridRow="2" GridColumn="1" />
+
+			<Label Text="CameraPosition: " GridRow="3" />
+			<Label Text="Value" Id="DebugCameraPosition" GridRow="3" GridColumn="1" />
+
+			<Label Text="SelectedBlock: " GridRow="5" />
+			<Label Text="Value" Id="DebugSelectedBlock" GridRow="5" GridColumn="1" />
+
+			<Label Text="Layer: " GridRow="6" />
+			<Label Text="Value" Id="DebugLayer" GridRow="6" GridColumn="1" />
+
+			<Label Text="DrawCalls: " GridRow="8" />
+			<Label Text="Value" Id="DebugDrawCalls" GridRow="8" GridColumn="1" />
+
+			<Label Text="ElapsedTime: " GridRow="9" />
+			<Label Text="Value" Id="DebugElapsedTime" GridRow="9" GridColumn="1" />
+		</Grid>  
+
+</Project>

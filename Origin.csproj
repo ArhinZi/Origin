@@ -16,12 +16,15 @@
 		<Compile Remove="Content\bin\**" />
 		<Compile Remove="MGUI.Core\**" />
 		<Compile Remove="MGUI.Shared\**" />
+		<Compile Remove="Roy-T.AStar\**" />
 		<EmbeddedResource Remove="Content\bin\**" />
 		<EmbeddedResource Remove="MGUI.Core\**" />
 		<EmbeddedResource Remove="MGUI.Shared\**" />
+		<EmbeddedResource Remove="Roy-T.AStar\**" />
 		<None Remove="Content\bin\**" />
 		<None Remove="MGUI.Core\**" />
 		<None Remove="MGUI.Shared\**" />
+		<None Remove="Roy-T.AStar\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Arch" Version="1.2.6.8-alpha" />
@@ -29,11 +32,11 @@
 		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
 		<PackageReference Include="Arch.System" Version="1.0.2" />
 		<PackageReference Include="GameTimer" Version="4.0.0" />
-		<PackageReference Include="Metalama.Framework" Version="2023.2.5" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+		<PackageReference Include="Myra" Version="1.4.5" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
 		<PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
 		<PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
@@ -63,10 +66,10 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Content\FX\" />
+	  <Folder Include="Source\Tools\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="MGUI.Core\MGUI.Core.csproj" />
-	  <ProjectReference Include="MGUI.Shared\MGUI.Shared.csproj" />
+	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Settings.Designer.cs">

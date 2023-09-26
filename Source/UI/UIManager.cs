@@ -1,71 +1,121 @@
 ﻿using Arch.Bus;
 
-using MGUI.Core.UI;
-
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
+
+using Myra.Assets;
+using Myra.Graphics2D.TextureAtlases;
+using Myra.Graphics2D.UI;
+using Myra.Utility;
 
 using Origin.Source.Events;
+using Origin.Source.IO;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-
-using Mouse = Microsoft.Xna.Framework.Input.Mouse;
+using System.IO;
 
 namespace Origin.Source.UI
 {
-    public class UIManager
+    public partial class UIManager
     {
-        private MGDesktop desktop;
+        private Desktop _desktop;
+        private Game _game;
 
-        private Rectangle prevBounds;
+        private List<Widget> _overingWidgets;
 
-        private FPSViewer fpsViewer;
-        private DebugInfoViewer debugInfoViewer;
-        private CompassControl compassControl;
+        private Widget _debugInfo;
+        private Widget _fps;
+        private Widget _compass;
 
-        public UIManager()
+        private Texture2D compassTexture;
+        private Rectangle currentBounds;
+
+        public UIManager(Game game)
         {
-            desktop = new MGDesktop(OriginGame.Instance.MGUIRenderer);
-            prevBounds = new Rectangle();
+            _desktop = new Desktop();
+            _game = game;
 
-            fpsViewer = new FPSViewer(desktop, 0, 0, 0, 0);
-            desktop.Windows.Add(fpsViewer);
+            FileAssetResolver assetResolver = new FileAssetResolver(Path.Combine(PathUtils.ExecutingAssemblyDirectory, "Content\\Assets"));
+            AssetManager assetManager = new AssetManager(assetResolver);
 
-            debugInfoViewer = new DebugInfoViewer(desktop, 0, 0, 0, 0);
-            desktop.Windows.Add(debugInfoViewer);
+            // Debug Info
+            string data = File.ReadAllText("Mods\\Core\\DebugInfo.xmmp");
+            _debugInfo = Project.LoadFromXml(data, assetManager).Root;
 
-            compassControl = new CompassControl(desktop, 0, 0, 64, 64);
-            desktop.Windows.Add(compassControl);
+            // FPS
+            _fps = new Label();
+            _fps.Width = 100;
+
+            // Compass
+            _compass = new Image();
+            _compass.Width = 100;
+            string path = "Mods\\Core\\Compass.png";
+            using (FileStream stream = new FileStream(path, FileMode.Open))
+                compassTexture = Texture2D.FromStream(OriginGame.Instance.GraphicsDevice, stream);
+            _compass.Background = new TextureRegion(compassTexture, new Rectangle(0, 0, 32, 32));
+            _compass.Enabled = true;
+            _compass.Width = _compass.Height = 64;
+
+            _desktop.Widgets.Add(_debugInfo);
+            _desktop.Widgets.Add(_fps);
+            _desktop.Widgets.Add(_compass);
+
+            (_desktop.GetWidgetByID("DebugInfo") as Label).Text = "/c[red]-/+ or ScrollWheel /cd to zoom; \n/c[red][/] or ctrl+ScrollWheel /cd to change level; " +
+                "\n/c[red]ARROWS or WASD /cd to move; \n/c[red]ESC /cd to exit; \n/c[red]L /cd to HalfWall Mode";
+
+            Hook();
         }
 
         public void Update()
         {
-            debugInfoViewer.Update();
-            fpsViewer.Update(new ElementUpdateArgs());
-            compassControl.Update(new ElementUpdateArgs());
-            desktop.Update();
-
-            if (prevBounds != desktop.ValidScreenBounds)
-                EventBus.Send(new ScreenBoundsChanged(desktop.ValidScreenBounds));
-            prevBounds = desktop.ValidScreenBounds;
-
-            MouseState currentMouseState = Mouse.GetState();
+            Point mousePos = new Point(InputManager.MouseX, InputManager.MouseY);
 
             EventBus.Send(new DebugValueChanged(1, new Dictionary<string, string>()
             {
-                ["MousePosition"] = currentMouseState.Position.ToString()
+                ["DebugMousePosition"] = mousePos.ToString()
             }));
         }
 
         public void Draw()
         {
-            desktop.Draw();
+            _desktop.Render();
+        }
+
+        [Event]
+        public void OnChangeEnableFps(DebugWindowEnableChanged debugWindowEnableChanged)
+        {
+            _fps.Enabled = debugWindowEnableChanged.IsEnabled;
+        }
+
+        [Event]
+        public void OnDebugValueChanged(DebugValueChanged valueChanged)
+        {
+            if (_debugInfo.Enabled)
+                foreach (var key in valueChanged.values.Keys)
+                {
+                    Label lab;
+                    if ((lab = _desktop.GetWidgetByID(key) as Label) != null)
+                    {
+                        lab.Text = valueChanged.values[key];
+                    }
+                }
+        }
+
+        [Event]
+        public void OnScreenBoundsChanged(ScreenBoundsChanged bounds)
+        {
+            _fps.Left = (int)(bounds.screenBounds.Width - _fps.Width / 2);
+            _fps.Top = 10;
+
+            _compass.Left = (int)(bounds.screenBounds.Width - _compass.Width * 2);
+
+            currentBounds = bounds.screenBounds;
+        }
+
+        [Event]
+        public void OnUpdateFps(UpdateFps updateFps)
+        {
+            (_fps as Label).Text = ((int)updateFps.fps).ToString();
         }
     }
 }
