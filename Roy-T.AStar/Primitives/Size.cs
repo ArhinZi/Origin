@@ -4,14 +4,16 @@ namespace Roy_T.AStar.Primitives
 {
     public struct Size : IEquatable<Size>
     {
-        public Size(Distance width, Distance height)
+        public Size(Distance width, Distance height, Distance depth)
         {
             this.Width = width;
             this.Height = height;
+            this.Depth = depth;
         }
 
         public Distance Width { get; }
         public Distance Height { get; }
+        public Distance Depth { get; }
 
         public static bool operator ==(Size a, Size b)
             => a.Equals(b);

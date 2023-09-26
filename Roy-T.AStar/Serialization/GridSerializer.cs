@@ -1,6 +1,7 @@
 ﻿using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Grids;
 using Roy_T.AStar.Primitives;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -135,7 +136,7 @@ namespace Roy_T.AStar.Serialization
 
         private static Position FromDto(this PositionDto position)
         {
-            return new Position(position.X, position.Y);
+            return new Position((int)position.X, (int)position.Y, (int)position.Z);
         }
 
         private static GridPositionDto ToDto(this GridPosition position)

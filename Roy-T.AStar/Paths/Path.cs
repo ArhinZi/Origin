@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+
 using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Primitives;
 
@@ -24,5 +27,10 @@ namespace Roy_T.AStar.Paths
 
         public IReadOnlyList<IEdge> Edges { get; }
         public Distance Distance { get; }
+
+        public override string ToString()
+        {
+            return $"type: {this.Type}, distance: {this.Distance}, duration {this.Duration}";
+        }
     }
 }

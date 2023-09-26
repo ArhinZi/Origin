@@ -21,19 +21,21 @@ namespace Origin.Source
         private Matrix _transformation;
 
         #region Set Get
+
         private Rectangle ClientBounds => OriginGame.Instance.Window.ClientBounds;
+
         public float Zoom
         {
             get { return _zoom; }
             set
             {
+                _zoom = value;
+                if (_zoom < _minZoom) _zoom = _minZoom;
+                if (_zoom > _maxZoom) _zoom = _maxZoom;
                 EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
                 {
                     ["DebugCameraZoom"] = value.ToString("##.##")
                 }));
-                _zoom = value;
-                if (_zoom < _minZoom) _zoom = _minZoom;
-                if (_zoom > _maxZoom) _zoom = _maxZoom;
             } // Negative zoom will flip image
         }
 

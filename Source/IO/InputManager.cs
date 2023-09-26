@@ -113,10 +113,10 @@ namespace Origin.Source.IO
         public static void Initialise(Game game)
         {
             //Camera
-            BindKey("camera.up", new Keybind(Keys.Up));
-            BindKey("camera.down", new Keybind(Keys.Down));
-            BindKey("camera.left", new Keybind(Keys.Left));
-            BindKey("camera.right", new Keybind(Keys.Right));
+            BindKey("camera.up", new Keybind(Keys.W));
+            BindKey("camera.down", new Keybind(Keys.S));
+            BindKey("camera.left", new Keybind(Keys.A));
+            BindKey("camera.right", new Keybind(Keys.D));
             BindKey("camera.zoom.plus", new Keybind(Keys.OemPlus));
             BindKey("camera.zoom.minus", new Keybind(Keys.OemMinus));
 
@@ -133,6 +133,13 @@ namespace Origin.Source.IO
             BindKey("manual.tl", new Keybind(Keys.A, 300, 100));
             BindKey("manual.br", new Keybind(Keys.D, 300, 100));
             BindKey("manual.bl", new Keybind(Keys.S, 300, 100));
+
+            BindKey("ctrl", new Keybind(Keys.LeftControl));
+            BindKey("shift", new Keybind(Keys.LeftShift));
+
+            BindKey("mouse.left", new Keybind(MouseButton.Button0, Buttons.None));
+            BindKey("mouse.right", new Keybind(MouseButton.Button1, Buttons.None));
+            BindKey("mouse.middle", new Keybind(MouseButton.Button2, Buttons.None));
         }
 
         private static void BindKey(string name, Keybind fallback)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Primitives;
 
@@ -67,7 +68,6 @@ namespace Roy_T.AStar.Grids
         {
             CheckGridSize(gridSize);
 
-
             if (cellSize.Width <= Distance.Zero)
             {
                 throw new ArgumentOutOfRangeException(
@@ -89,7 +89,7 @@ namespace Roy_T.AStar.Grids
 
         private Grid(Node[,] nodes)
         {
-            this.GridSize = new GridSize(nodes.GetLength(0), nodes.GetLength(1));
+            this.GridSize = new GridSize(nodes.GetLength(0), nodes.GetLength(1), nodes.GetLength(2));
             CheckGridSize(this.GridSize);
             this.Nodes = nodes;
         }
@@ -108,7 +108,10 @@ namespace Roy_T.AStar.Grids
             {
                 for (var y = 0; y < this.Rows; y++)
                 {
-                    this.Nodes[x, y] = new Node(Position.FromOffset(cellSize.Width * x, cellSize.Height * y));
+                    for (var z = 0; z < this.Rows; y++)
+                    {
+                        this.Nodes[x, y] = new Node(Position.FromOffset(cellSize.Width * x, cellSize.Height * y, cellSize.Depth * z));
+                    }
                 }
             }
         }
@@ -168,6 +171,8 @@ namespace Roy_T.AStar.Grids
         public int Columns => this.GridSize.Columns;
 
         public int Rows => this.GridSize.Rows;
+
+        public int Deeps => this.GridSize.Deeps;
 
         public INode GetNode(GridPosition position) => this.Nodes[position.X, position.Y];
 

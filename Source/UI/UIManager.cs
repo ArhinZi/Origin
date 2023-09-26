@@ -60,8 +60,8 @@ namespace Origin.Source.UI
             _desktop.Widgets.Add(_fps);
             _desktop.Widgets.Add(_compass);
 
-            (_desktop.GetWidgetByID("DebugInfo") as Label).Text = "/c[red]-/+ /cd to zoom; \n/c[red][/] /cd to change level; " +
-                "\n/c[red]ARROWS /cd to move; \n/c[red]ESC /cd to exit; \n/c[red]L /cd to HalfWall Mode";
+            (_desktop.GetWidgetByID("DebugInfo") as Label).Text = "/c[red]-/+ or ScrollWheel /cd to zoom; \n/c[red][/] or ctrl+ScrollWheel /cd to change level; " +
+                "\n/c[red]ARROWS or WASD /cd to move; \n/c[red]ESC /cd to exit; \n/c[red]L /cd to HalfWall Mode";
 
             Hook();
         }

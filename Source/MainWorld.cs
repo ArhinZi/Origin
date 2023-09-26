@@ -35,6 +35,7 @@ namespace Origin.Source
             ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
             SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, Seed);
+            ActiveSite.InitPathFinder();
 
             Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
 

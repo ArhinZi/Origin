@@ -66,6 +66,30 @@ namespace Origin.Source.Utils
             return false;
         }
 
+        public bool GraterOr(Point3 other)
+        {
+            if (X > other.X || Y > other.Y || Z > other.Z) return true;
+            return false;
+        }
+
+        public bool LessOr(Point3 other)
+        {
+            if (X < other.X || Y < other.Y || Z < other.Z) return true;
+            return false;
+        }
+
+        public bool GraterEqualOr(Point3 other)
+        {
+            if (X >= other.X || Y >= other.Y || Z >= other.Z) return true;
+            return false;
+        }
+
+        public bool LessEqualOr(Point3 other)
+        {
+            if (X <= other.X || Y <= other.Y || Z <= other.Z) return true;
+            return false;
+        }
+
         public static bool operator !=(Point3 first, Point3 second)
         {
             return !(first == second);

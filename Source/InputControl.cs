@@ -18,8 +18,8 @@ namespace Origin.Source
 {
     public class InputControl : IUpdate
     {
-        public int base_mult = 400;
-        public int shift_mult = 800;
+        public int base_mult = 1000;
+        public int shift_mult = 5000;
         public float zoom_step = 1f;
         private KeyboardState keyboardState;
 
@@ -44,28 +44,52 @@ namespace Origin.Source
             if (InputManager.IsPressed("Camera.down"))
                 StateMainGame.ActiveCamera.Move(new Vector2(0, 1 * movemod));
 
-            if (InputManager.JustPressedAndHoldDelayed("world.level.minus"))
+            if (InputManager.JustPressedAndHoldDelayed("world.level.minus") || InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY < 0)
                 MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
-            if (InputManager.JustPressedAndHoldDelayed("world.level.plus"))
+            if (InputManager.JustPressedAndHoldDelayed("world.level.plus") || InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY > 0)
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
             if (InputManager.IsPressed("Camera.zoom.plus"))
                 StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (!InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY > 0)
+                StateMainGame.ActiveCamera.Zoom += 10f * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (InputManager.IsPressed("Camera.zoom.minus"))
                 StateMainGame.ActiveCamera.Zoom -= zoom_step * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (!InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY < 0)
+                StateMainGame.ActiveCamera.Zoom -= 10f * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            if (InputManager.JustPressed("mouse.right") &&
+                    MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
+            {
+                if (MainWorld.Instance.ActiveSite.SelectedBlock.Has<TileHasPathNode>())
+                {
+                    MainWorld.Instance.ActiveSite.startPathNode = MainWorld.Instance.ActiveSite.SelectedBlock.Get<TileHasPathNode>().node;
+                }
+            }
+            if (InputManager.JustPressed("mouse.left") &&
+                MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
+            {
+                if (MainWorld.Instance.ActiveSite.SelectedBlock.Has<TileHasPathNode>())
+                {
+                    MainWorld.Instance.ActiveSite.endPathNode = MainWorld.Instance.ActiveSite.SelectedBlock.Get<TileHasPathNode>().node;
+                    if (MainWorld.Instance.ActiveSite.startPathNode != null)
+                        MainWorld.Instance.ActiveSite.FindPath();
+                }
+            }
+
+            /*if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 if (MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
                 {
-                    if (MainWorld.Instance.ActiveSite.RemoveWall(MainWorld.Instance.ActiveSite.SelectedBlock))
+                    *//*if (MainWorld.Instance.ActiveSite.RemoveWall(MainWorld.Instance.ActiveSite.SelectedBlock))
                     {
                         var onSite = MainWorld.Instance.ActiveSite.SelectedBlock.Get<OnSitePosition>();
                         Point3 pos = onSite.position;
                         MainWorld.Instance.ActiveSite.BlocksToReload.Add(pos);
-                    }
+                    }*//*
                 }
-            }
+            }*/
         }
     }
 }

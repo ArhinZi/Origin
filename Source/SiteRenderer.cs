@@ -261,6 +261,8 @@ namespace Origin.Source
                         Random random = new Random(rand);
                         rand = random.Next();
 
+                        #region TileDrawing
+
                         TileStructure structure;
                         bool hasStructure = tile.TryGet<TileStructure>(out structure);
                         ref var visibility = ref tile.Get<TileVisibility>();
@@ -390,6 +392,8 @@ namespace Origin.Source
                                 (int)VertexBufferLayer.HiddenFront,
                                 sprite, c, new Point3(tileCoordX, tileCoordY, chunkCoord.Z), new Point(0, -Sprite.FLOOR_YOFFSET));
                         }
+
+                        #endregion TileDrawing
                     }
                 }
             }
@@ -536,28 +540,54 @@ namespace Origin.Source
                     {
                         if (!Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
                         {
-                            Point3 pos = new Point3(onTile.position.X, onTile.position.Y, onTile.position.Z - i);
+                            Point3 chunkPosAbove = WorldUtils.GetChunkByCell(new Point3(onTile.position.X, onTile.position.Y, onTile.position.Z - i),
+                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
                             Sprite sprite2 = GlobalResources.GetSpriteByID("SelectionWall");
-                            _renderChunkArray[pos.X / ChunkSize.X,
-                                            pos.Y / ChunkSize.Y,
-                                            pos.Z].AddSprite(
+                            _renderChunkArray[chunkPosAbove.X,
+                                            chunkPosAbove.Y,
+                                            chunkPosAbove.Z].AddSprite(
                                 VertexBufferType.Dynamic,
                                 (int)VertexBufferLayer.Back,
-                                sprite2, new Color(30, 0, 0, 200), pos, new Point(0, 0)
+                                sprite2, new Color(30, 0, 0, 200), onTile.position + new Point3(0, 0, -i), new Point(0, 0)
                                 );
-                            _renderChunkArray[pos.X / ChunkSize.X,
-                                            pos.Y / ChunkSize.Y,
-                                            pos.Z].IsFullyHidded = false;
+                            _renderChunkArray[chunkPosAbove.X,
+                                            chunkPosAbove.Y,
+                                            chunkPosAbove.Z].IsFullyHidded = false;
                         }
                         else break;
                     }
                     Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
-                    _renderChunkArray[onTile.position.X / ChunkSize.X, onTile.position.Y / ChunkSize.Y, onTile.position.Z].AddSprite(
+                    Point3 chunkPos = WorldUtils.GetChunkByCell(onTile.position,
+                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
+                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
                         VertexBufferType.Dynamic,
                         (int)VertexBufferLayer.Back,
                         sprite, new Color(30, 0, 0, 100), onTile.position, new Point(0, 0)
                         );
-                    _renderChunkArray[onTile.position.X / ChunkSize.X, onTile.position.Y / ChunkSize.Y, onTile.position.Z].IsFullyHidded = false;
+                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
+                }
+            }
+            // Drawing Path
+            {
+                if (Site.currPath != null)
+                {
+                    foreach (var edge in Site.currPath.Edges)
+                    {
+                        Point3 pos = new Point3((int)edge.Start.Position.X, (int)edge.Start.Position.Y, (int)edge.Start.Position.Z);
+
+                        if (pos.Z <= _drawHighest && pos.Z >= _drawLowest)
+                        {
+                            Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
+                            Point3 chunkPos = WorldUtils.GetChunkByCell(pos,
+                                        new Point3(ChunkSize.X, ChunkSize.Y, 1));
+                            _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
+                                VertexBufferType.Dynamic,
+                                (int)VertexBufferLayer.Back,
+                                sprite, new Color(0, 0, 50, 255), pos, new Point(0, 0)
+                                );
+                            _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
+                        }
+                    }
                 }
             }
 

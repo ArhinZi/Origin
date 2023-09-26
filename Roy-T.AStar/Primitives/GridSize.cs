@@ -4,14 +4,16 @@ namespace Roy_T.AStar.Primitives
 {
     public struct GridSize : IEquatable<GridSize>
     {
-        public GridSize(int columns, int rows)
+        public GridSize(int columns, int rows, int deeps)
         {
             this.Columns = columns;
             this.Rows = rows;
+            this.Deeps = deeps;
         }
 
         public int Columns { get; }
         public int Rows { get; }
+        public int Deeps { get; }
 
         public static bool operator ==(GridSize a, GridSize b)
             => a.Equals(b);

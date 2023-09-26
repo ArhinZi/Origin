@@ -9,10 +9,15 @@ using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.Utils;
 
+using Roy_T.AStar.Graphs;
+using Roy_T.AStar.Paths;
+using Roy_T.AStar.Primitives;
+
 using SharpDX.Direct2D1.Effects;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Origin.Source
 {
@@ -26,6 +31,12 @@ namespace Origin.Source
         public MainWorld World { get; private set; }
         public Entity SelectedBlock { get; private set; }
         public Point3 SelectedPosition { get; private set; }
+
+        private PathFinder _pathfinder;
+
+        public Node startPathNode;
+        public Node endPathNode;
+        public Path currPath;
 
         private int _currentLevel;
         public int PreviousLevel { get; private set; }
@@ -93,7 +104,8 @@ namespace Origin.Source
         {
             Point m = Mouse.GetState().Position;
             Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
-            SetSelected(new Point3(sel.X, sel.Y, CurrentLevel));
+            sel = WorldUtils.MouseScreenToMapSurface(Camera, m, CurrentLevel, this);
+            SetSelected(sel);
             /*EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
             {
                 ["SelectedBlock"] = sel.ToString(),
@@ -101,6 +113,47 @@ namespace Origin.Source
                 ["DayTime"] = (SiteTime).ToString("#.##")
             }));*/
             //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
+        }
+
+        public void InitPathFinder()
+        {
+            _pathfinder = new PathFinder();
+
+            var query = new QueryDescription().WithAll<TileHasPathNode>();
+            ECSWorld.Query(in query, (ref TileHasPathNode pn) =>
+            {
+                var node = pn.node;
+                for (int x = (int)node.Position.X - 1; x <= node.Position.X + 1; x++)
+                {
+                    for (int y = (int)node.Position.Y - 1; y <= node.Position.Y + 1; y++)
+                    {
+                        for (int z = (int)node.Position.Z - 1; z <= node.Position.Z + 1; z++)
+                        {
+                            if (x >= 0 && y >= 0 && z >= 0 &&
+                                x < Size.X && y < Size.Y && z < Size.Z &&
+                                (x != node.Position.X || y != node.Position.Y || z != node.Position.Z))
+                            {
+                                Velocity v = Velocity.FromMetersPerSecond(1);
+                                if (x != node.Position.X && y != node.Position.Y) v = Velocity.FromMetersPerSecond(0.70710678118f);
+                                if (z != node.Position.Z) v = Velocity.FromMetersPerSecond(0.333f);
+
+                                if (Blocks[x, y, z].Has<TileHasPathNode>())
+                                {
+                                    Node otherNode = (Blocks[x, y, z].Get<TileHasPathNode>()).node;
+                                    node.Connect(otherNode, v);
+                                    //otherNode.Connect(node, Velocity.FromMetersPerSecond(1));
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        public void FindPath()
+        {
+            currPath = _pathfinder.FindPath(startPathNode, endPathNode, Velocity.FromMetersPerSecond(2));
+            Debug.WriteLine(currPath);
         }
 
         public bool RemoveWall(Entity ent)
