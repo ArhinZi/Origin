@@ -20,6 +20,10 @@ namespace Origin.Source.GCs
         public double msgFrequency = 1.0f;
         public string msg = "";
 
+        private int fps = 0;
+        private int min = 0;
+        private int max = 0;
+
         /// <summary>
         /// The msgFrequency here is the reporting time to update the message.
         /// </summary>
@@ -28,13 +32,18 @@ namespace Origin.Source.GCs
             now = gameTime.TotalGameTime.TotalSeconds;
             elapsed = now - last;
             avgTickTime = (avgTickTime + now - last2) / 2;
+
+            min = min < fps ? min : fps;
+            max = max > fps ? max : fps;
+
             if (elapsed > msgFrequency)
             {
-                EventBus.Send(new UpdateFps((float)(frames / elapsed)));
+                EventBus.Send(new UpdateFps(fps, min, max));
                 elapsed = 0;
                 frames = 0;
                 updates = 0;
                 last = now;
+                min = max = fps;
             }
             last2 = now;
             updates++;
@@ -42,6 +51,7 @@ namespace Origin.Source.GCs
 
         public override void Draw(GameTime gameTime)
         {
+            fps = (int)(1f / (float)gameTime.ElapsedGameTime.TotalSeconds);
             frames++;
         }
     }

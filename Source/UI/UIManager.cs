@@ -115,7 +115,7 @@ namespace Origin.Source.UI
         [Event]
         public void OnUpdateFps(UpdateFps updateFps)
         {
-            (_fps as Label).Text = ((int)updateFps.fps).ToString();
+            (_fps as Label).Text = ((int)updateFps.min).ToString() + "\n" + ((int)updateFps.fps).ToString() + "\n" + ((int)updateFps.max).ToString();
         }
     }
 }
