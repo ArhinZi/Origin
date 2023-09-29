@@ -51,7 +51,7 @@ namespace Origin.Source.GCs
 
         public override void Draw(GameTime gameTime)
         {
-            fps = (int)(1f / (float)gameTime.ElapsedGameTime.TotalSeconds);
+            fps = (int)(1f / gameTime.ElapsedGameTime.TotalSeconds);
             frames++;
         }
     }

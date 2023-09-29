@@ -3,8 +3,8 @@
 	#define VS_SHADERMODEL vs_3_0
 	#define PS_SHADERMODEL ps_3_0
 #else
-	#define VS_SHADERMODEL vs_4_0_level_9_1
-	#define PS_SHADERMODEL ps_4_0_level_9_1
+	#define VS_SHADERMODEL vs_5_0
+	#define PS_SHADERMODEL ps_5_0
 #endif
 
 float4x4 WorldViewProjection;
@@ -90,7 +90,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target0
       //  color.rgb = float3(0, 0, 0);
     //color.rgb *= 1;
     //color.rgb = input.BlockPosition.rgb;
-        return color;
+    return color;
 }
 
 technique MainTech

@@ -20,8 +20,6 @@ using Origin.Source.IO;
 using Origin.Source.UI;
 using Origin.Source.Utils;
 
-using SharpDX.Direct2D1;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -76,9 +74,10 @@ namespace Origin
         {
             graphics.PreferredBackBufferHeight = 1024;
             graphics.PreferredBackBufferWidth = 1024;
-            //graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
+            graphics.SynchronizeWithVerticalRetrace = false; //Vsync
             IsFixedTimeStep = false;
-            graphics.SynchronizeWithVerticalRetrace = false;
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / 60);
             graphics.ApplyChanges();
             Window.Title = "Dwarf`s Origin";
 
@@ -86,7 +85,6 @@ namespace Origin
             MyraEnvironment.Game = this;
             MyraEnvironment.DisableClipping = true;
             UiManager = new UIManager(this);
-
 
             InputManager.Initialise(this);
             base.Initialize();
@@ -157,7 +155,7 @@ namespace Origin
             {
                 ["DebugDrawCalls"] = drawcalls.ToString(),
                 ["DebugElapsedTime"] = gameTime.ElapsedGameTime.ToString()
-            })) ;
+            }));
         }
 
         private void LoadMenuMainScreen()

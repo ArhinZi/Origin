@@ -304,6 +304,10 @@ namespace Origin.Source
 
         public void Update(GameTime gameTime)
         {
+        }
+
+        public void Draw(GameTime gameTime)
+        {
             // Check if CurrentLevel changed and redraw what need to redraw
             if (_drawHighest != Site.CurrentLevel)
             {
@@ -327,10 +331,7 @@ namespace Origin.Source
                 }
             }
             Site.BlocksToReload.Clear();
-        }
 
-        public void Draw(GameTime gameTime)
-        {
             PrepareVertices(gameTime);
 
             DrawVertices(gameTime);
@@ -377,7 +378,7 @@ namespace Origin.Source
                 if (tile != Entity.Null)
                 {
                     ref var onTile = ref tile.Get<OnSitePosition>();
-                    int blocksUnder = 0;
+                    /*int blocksUnder = 0;
                     for (int i = 1; i < ONE_MOMENT_DRAW_LEVELS; i++)
                     {
                         if (onTile.position.Z - i >= 0 && !Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
@@ -397,7 +398,7 @@ namespace Origin.Source
                                             chunkPosAbove.Z].IsFullyHidded = false;
                         }
                         else break;
-                    }
+                    }*/
                     Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
                     Point3 chunkPos = WorldUtils.GetChunkByCell(onTile.position,
                                 new Point3(ChunkSize.X, ChunkSize.Y, 1));
