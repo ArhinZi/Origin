@@ -237,7 +237,8 @@ namespace Origin.Source
                             sprite = tm.Sprites["Wall"][0];
                             //sprite = tm.Sprites["Wall"][0];
                             c = tm.Color;
-                            if (visibility.WallVisible)
+                            if (visibility.WallVisible ||
+                                (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY))
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
@@ -302,7 +303,8 @@ namespace Origin.Source
                             Color c = Color.Wheat;
                             sprite = tm.Sprites["Floor"][0];
                             c = tm.Color;
-                            if (visibility.FloorVisible)
+                            if (visibility.FloorVisible ||
+                                (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY))
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
@@ -369,8 +371,11 @@ namespace Origin.Source
             ref int rindex = ref indarr[sprite.Texture][vblayer];
             int VertexPack = rindex / MaxVertexCount;
             int index = rindex % MaxVertexCount;
-            if (vertexBatches[sprite.Texture][vblayer].Count == 0 ||
-                index == 0 && VertexPack >= vertexBatches[sprite.Texture][vblayer].Count)
+            if (vertexBatches[sprite.Texture][vblayer].Count == 0)
+            {
+                vertexBatches[sprite.Texture][vblayer].Add(new VertexPositionColorTextureBlock[MaxVertexCount]);
+            }
+            else if (index == 0 && VertexPack >= vertexBatches[sprite.Texture][vblayer].Count)
             {
                 vertexBatches[sprite.Texture][vblayer].Add(new VertexPositionColorTextureBlock[MaxVertexCount]);
             }

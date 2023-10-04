@@ -30,7 +30,7 @@ namespace Origin.Source
         {
             get
             {
-                if (Blocks[z] != null)
+                if (z>=0 && Blocks[z] != null)
                     return Blocks[z][x, y];
                 else return Entity.Null;
             }

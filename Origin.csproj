@@ -32,9 +32,9 @@
 		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
 		<PackageReference Include="Arch.System" Version="1.0.2" />
 		<PackageReference Include="GameTimer" Version="4.0.0" />
+		<PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+		<PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 		<PackageReference Include="Myra" Version="1.4.5" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
@@ -65,7 +65,6 @@
 	  <None Remove="mods\core\xml\terrainMaterials.json" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Content\FX\" />
 	  <Folder Include="Source\Tools\" />
 	</ItemGroup>
 	<ItemGroup>

@@ -1,5 +1,6 @@
-#define VS_SHADERMODEL vs_5_0
-#define PS_SHADERMODEL ps_5_0
+
+	#define VS_SHADERMODEL vs_5_0
+	#define PS_SHADERMODEL ps_5_0
 
 
 float4x4 WorldViewProjection;
@@ -10,10 +11,6 @@ Texture2D Texture;
 sampler TextureSampler = sampler_state
 {
     Texture = <Texture>;
-    Filter = Point;
-    AddressU = CLAMP; // Clamp addressing mode for U coordinate
-    AddressV = CLAMP; // Clamp addressing mode for V coordinate
-    AddressW = CLAMP; // Clamp addressing mode for W coordinate (for 3D textures)
 };
 
 // Daytime. 
@@ -30,43 +27,50 @@ float4 AmbientColor = float4(1, 1, 1, 1);
 
 struct VertexShaderInput
 {
-    float4 Position : POSITION0;
-    float4 Color : COLOR0;
-    float2 TextureCoordinates : TEXCOORD0;
-    float3 BlockPosition : TEXCOORD1;
+    float4 Position : COLOR0;
 };
 
 struct VertexShaderOutput
 {
-    float4 Position : SV_Position;
-    float2 TextureCoordinates : TEXCOORD0;
+    float4 Position : SV_POSITION;
     float4 Diffuse : COLOR0;
+    float2 TextureCoordinates : TEXCOORD0;
     float3 BlockPosition : TEXCOORD1;
 };
 
-VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
+VertexShaderOutput VertexShaderFunction(VertexShaderInput input, 
+        uint vid:SV_VertexID,
+        float4 instanceTransform : POSITION1,
+        float4 instanceColor: COLOR1,
+        float4 instanceTexture: TEXCOORD2,
+        float3 blockPos: TEXCOORD3)
 {
     VertexShaderOutput output;
     
-    output.Position = mul(input.Position, WorldViewProjection);
-    //if ((output.Position.x > 1024 || output.Position.y > 1024))
-       //output.Position.w = 0;
-    output.TextureCoordinates = input.TextureCoordinates;
-    output.Diffuse = input.Color;
-    output.BlockPosition = input.BlockPosition;
+    output.Position = mul(input.Position * float4(32,32,1,1) + instanceTransform, WorldViewProjection);
+    
+    float2 textureCoordinates[4];
+    textureCoordinates[0] = float2(instanceTexture.x / 128, instanceTexture.y / 96);
+    textureCoordinates[1] = float2(instanceTexture.z / 128, instanceTexture.y / 96);
+    textureCoordinates[2] = float2(instanceTexture.x / 128, instanceTexture.w / 96);
+    textureCoordinates[3] = float2(instanceTexture.z / 128, instanceTexture.w / 96);
+    
+    output.TextureCoordinates = textureCoordinates[vid%4];
+    output.Diffuse = instanceColor;
+    output.BlockPosition = blockPos;
 
     return output;
 }
 
 
 
-float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
+float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target0
 {
-    //clip((input.Position.x > 1024 || input.Position.y > 1024) ? -1 : 1);
     // get pixel color
-    float4 color = Texture.Sample(TextureSampler, input.TextureCoordinates) * input.Diffuse;
+    float4 color = Texture.Sample(TextureSampler, input.TextureCoordinates.xy) * input.Diffuse;
+    //color = float4(0, 0, 0, 1);
     // clip pixel if too opakue
-    clip((color.a == 0) ? -1 : 1);
+    /*clip((color.a < 0.1) ? -1 : 1);
     
     // calc and apply light
     float1 light = 1 - abs(DayTime * 2 - 1);
@@ -91,9 +95,11 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
     //if (input.BlockPosition.z == 0)
       //  color.rgb = float3(0, 0, 0);
     //color.rgb *= 1;
-    //color.rgb = input.BlockPosition.rgb;
+    //color.rgb = input.BlockPosition.rgb;*/
     return color;
 }
+
+
 
 technique MainTech
 {

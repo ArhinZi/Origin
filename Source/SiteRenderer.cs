@@ -233,8 +233,8 @@ namespace Origin.Source
                     visibility.FloorVisible = visibility.FloorDiscovered = true;
                 }
 
-                if (!visibility.FloorDiscovered && tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
-                    visibility.FloorVisible = true;
+                /*if (!visibility.FloorDiscovered && tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
+                    visibility.FloorVisible = true;*/
             }
         }
 
@@ -468,6 +468,11 @@ namespace Origin.Source
             });*/
         }
 
+        private bool IsChunkVisible(Point3 pos)
+        {
+            return true;
+        }
+
         private void DrawVertices(GameTime gameTime)
         {
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(Site.Camera.WorldMatrix, Site.Camera.Transformation),
@@ -491,19 +496,22 @@ namespace Origin.Source
                     {
                         for (int y = 0; y < _chunksCount.Y; y++)
                         {
-                            if (!_renderChunkArray[x, y, z].IsSet)
-                                _renderChunkArray[x, y, z].SetStaticBuffer();
+                            if (IsChunkVisible(new Point3(x, y, z)))
+                            {
+                                if (!_renderChunkArray[x, y, z].IsSet)
+                                    _renderChunkArray[x, y, z].SetStaticBuffer();
 
-                            if (z == _drawHighest)
-                                _renderChunkArray[x, y, z].Draw(key,
-                                    new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
-                            else
-                                if (!_renderChunkArray[x, y, z].IsFullyHidded ||
-                                (_renderChunkArray[x, y, z].IsFullyHidded && (x == _chunksCount.X - 1 || y == _chunksCount.Y - 1)))
-                                _renderChunkArray[x, y, z].Draw(key,
-                                    new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
+                                if (z == _drawHighest)
+                                    _renderChunkArray[x, y, z].Draw(key,
+                                        new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
+                                else
+                                    if (!_renderChunkArray[x, y, z].IsFullyHidded ||
+                                    (_renderChunkArray[x, y, z].IsFullyHidded && (x == _chunksCount.X - 1 || y == _chunksCount.Y - 1)))
+                                    _renderChunkArray[x, y, z].Draw(key,
+                                        new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
 
-                            _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
+                                _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
+                            }
                         }
                     }
                 }
