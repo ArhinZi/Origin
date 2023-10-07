@@ -137,7 +137,7 @@ namespace Origin.Source
                                 if (x != node.Position.X && y != node.Position.Y) v = Velocity.FromMetersPerSecond(0.70710678118f);
                                 if (z != node.Position.Z) v = Velocity.FromMetersPerSecond(0.333f);
 
-                                if (Blocks[x, y, z].Has<TileHasPathNode>())
+                                if (Blocks[x, y, z] != Entity.Null && Blocks[x, y, z].Has<TileHasPathNode>())
                                 {
                                     Node otherNode = (Blocks[x, y, z].Get<TileHasPathNode>()).node;
                                     node.Connect(otherNode, v);

@@ -30,14 +30,23 @@ namespace Origin.Source
         {
             get
             {
-                if (z>=0 && Blocks[z] != null)
+                if (z >= 0 && Blocks[z] != null)
                     return Blocks[z][x, y];
                 else return Entity.Null;
             }
             set
             {
                 if (Blocks[z] == null)
+                {
                     Blocks[z] = new Entity[Size.X, Size.Y];
+                    for (int i = 0; i < Blocks[z].GetLength(0); i++)
+                    {
+                        for (int j = 0; j < Blocks[z].GetLength(1); j++)
+                        {
+                            Blocks[z][i, j] = Entity.Null;
+                        }
+                    }
+                }
                 Blocks[z][x, y] = value;
             }
         }

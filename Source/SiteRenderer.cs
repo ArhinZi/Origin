@@ -169,72 +169,79 @@ namespace Origin.Source
             Entity tile = Site.Blocks[tileCoordX, tileCoordY, tileCoordZ];
             Point3 pos = new Point3(tileCoordX, tileCoordY, tileCoordZ);
 
-            TileStructure structure;
-            bool hasStructure = tile.TryGet<TileStructure>(out structure);
-            ref var visibility = ref tile.Get<TileVisibility>();
-
-            if (hasStructure && structure.FloorMaterial != null)
+            if (tile != Entity.Null)
             {
-                // Check if tile have neighbors in TL & TR & BL & BR borders
-                TileStructure Nstructure;
-                if (
-                    // Check BR
-                    tileCoordX + 1 <= Site.Size.X &&
-                        (tileCoordX + 1 == Site.Size.X ||
-                        Site.Blocks[tileCoordX + 1, tileCoordY, tileCoordZ].TryGet(out Nstructure) &&
-                        Nstructure.WallMaterial != null)
-                        &&
-                    // Check BL
-                    tileCoordY + 1 <= Site.Size.Y &&
-                        (tileCoordY + 1 == Site.Size.Y ||
-                        Site.Blocks[tileCoordX, tileCoordY + 1, tileCoordZ].TryGet(out Nstructure) &&
-                        Nstructure.WallMaterial != null)
-                        &&
-                    // Check TL
-                    tileCoordX >= 0 &&
-                        (tileCoordX == 0 ||
-                        Site.Blocks[tileCoordX - 1, tileCoordY, tileCoordZ].TryGet(out Nstructure) &&
-                        Nstructure.WallMaterial != null)
-                        &&
-                    // Check TR
-                    tileCoordY >= 0 &&
-                        (tileCoordY == 0 ||
-                        Site.Blocks[tileCoordX, tileCoordY - 1, tileCoordZ].TryGet(out Nstructure) &&
-                        Nstructure.WallMaterial != null)
-                        )
+                TileStructure structure;
+                bool hasStructure = tile.TryGet<TileStructure>(out structure);
+                ref var visibility = ref tile.Get<TileVisibility>();
+
+                if (hasStructure && structure.FloorMaterial != null)
                 {
-                    // Then at least wall is invisible
-                    visibility.WallVisible = visibility.WallDiscovered = false;
-
-                    if (tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
+                    // Check if tile have neighbors in TL & TR & BL & BR borders
+                    TileStructure Nstructure;
+                    if (
+                        // Check BR
+                        tileCoordX + 1 <= Site.Size.X &&
+                            (tileCoordX + 1 == Site.Size.X ||
+                            Site.Blocks[tileCoordX + 1, tileCoordY, tileCoordZ] == Entity.Null ||
+                            Site.Blocks[tileCoordX + 1, tileCoordY, tileCoordZ].TryGet(out Nstructure) &&
+                            Nstructure.WallMaterial != null)
+                            &&
+                        // Check BL
+                        tileCoordY + 1 <= Site.Size.Y &&
+                            (tileCoordY + 1 == Site.Size.Y ||
+                            Site.Blocks[tileCoordX, tileCoordY + 1, tileCoordZ] == Entity.Null ||
+                            Site.Blocks[tileCoordX, tileCoordY + 1, tileCoordZ].TryGet(out Nstructure) &&
+                            Nstructure.WallMaterial != null)
+                            &&
+                        // Check TL
+                        tileCoordX >= 0 &&
+                            (tileCoordX == 0 ||
+                            Site.Blocks[tileCoordX - 1, tileCoordY, tileCoordZ] == Entity.Null ||
+                            Site.Blocks[tileCoordX - 1, tileCoordY, tileCoordZ].TryGet(out Nstructure) &&
+                            Nstructure.WallMaterial != null)
+                            &&
+                        // Check TR
+                        tileCoordY >= 0 &&
+                            (tileCoordY == 0 ||
+                            Site.Blocks[tileCoordX, tileCoordY - 1, tileCoordZ] == Entity.Null ||
+                            Site.Blocks[tileCoordX, tileCoordY - 1, tileCoordZ].TryGet(out Nstructure) &&
+                            Nstructure.WallMaterial != null)
+                            )
                     {
-                        visibility.WallVisible = visibility.FloorVisible = true;
-                        visibility.WallDiscovered = visibility.FloorDiscovered = false;
-                    }
+                        // Then at least wall is invisible
+                        visibility.WallVisible = visibility.WallDiscovered = false;
 
-                    // Check if tile have neighbor above
-                    if (tileCoordZ + 1 < Site.Size.Z &&
-                        Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Has<TileStructure>() &&
-                        Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Get<TileStructure>().WallMaterial != null)
-                    {
-                        // Then floor is invisible
-                        visibility.FloorDiscovered = visibility.FloorVisible = false;
+                        if (tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
+                        {
+                            visibility.WallVisible = visibility.FloorVisible = true;
+                            visibility.WallDiscovered = visibility.FloorDiscovered = false;
+                        }
+
+                        // Check if tile have neighbor above
+                        if (tileCoordZ + 1 < Site.Size.Z &&
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Has<TileStructure>() &&
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Get<TileStructure>().WallMaterial != null)
+                        {
+                            // Then floor is invisible
+                            visibility.FloorDiscovered = visibility.FloorVisible = false;
+                        }
+                        else
+                        {
+                            // Else floor is visible
+                            visibility.FloorVisible = visibility.FloorDiscovered = true;
+                        }
                     }
                     else
                     {
-                        // Else floor is visible
+                        // Else both visible
+                        visibility.WallVisible = visibility.WallDiscovered = true;
                         visibility.FloorVisible = visibility.FloorDiscovered = true;
                     }
-                }
-                else
-                {
-                    // Else both visible
-                    visibility.WallVisible = visibility.WallDiscovered = true;
-                    visibility.FloorVisible = visibility.FloorDiscovered = true;
-                }
 
-                /*if (!visibility.FloorDiscovered && tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
-                    visibility.FloorVisible = true;*/
+                    /*if (!visibility.FloorDiscovered && tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
+                        visibility.FloorVisible = true;*/
+                }
             }
         }
 

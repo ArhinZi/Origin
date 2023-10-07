@@ -3,6 +3,7 @@ using Arch.Core.Extensions;
 using Arch.Core.Utils;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.ECS;
 using Origin.Source.Generators;
@@ -27,15 +28,26 @@ namespace Origin.Source
                 typeof(DrawComponent),
                 typeof(OnSitePosition) };
 
+        private SiteGenerator generator;
+        private SpriteBatch spriteBatch;
+        private Texture2D hmt;
+
         public MainWorld()
         {
             Instance = this;
+            spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
-            SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
-            SiteBlocksMaker.GenerateSite(ActiveSite, parameters, Seed);
+            generator = new SiteGenerator(OriginGame.Instance.GraphicsDevice, ActiveSite, ActiveSite.Size);
+            generator.Init();
+            generator.Observe(new Utils.Point3(0, 0, 127));
+            hmt = generator.HeightMapToTexture2D(10);
             ActiveSite.InitPathFinder();
+
+            /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
+            SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);
+            ActiveSite.InitPathFinder();*/
 
             Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
 
@@ -89,6 +101,9 @@ namespace Origin.Source
         public void Draw(GameTime gameTime)
         {
             Renderer.Draw(gameTime);
+            spriteBatch.Begin(SpriteSortMode.Deferred);
+            spriteBatch.Draw(hmt, new Vector2(0, 0), new Rectangle(0, 0, hmt.Width, hmt.Height), Color.White);
+            spriteBatch.End();
         }
 
         public void Dispose()

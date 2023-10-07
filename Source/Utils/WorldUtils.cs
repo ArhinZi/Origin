@@ -1,4 +1,5 @@
-﻿using Arch.Core.Extensions;
+﻿using Arch.Core;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -58,7 +59,9 @@ namespace Origin.Source.Utils
                 Point3 pos = MouseScreenToMap(cam, mousePos, level);
                 if (pos.LessOr(Point3.Zero))
                     return pos;
-                if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 && !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
+                if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 &&
+                    site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
+                    !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
                 {
                     level--;
                     continue;
