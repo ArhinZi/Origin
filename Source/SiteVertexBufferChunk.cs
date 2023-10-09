@@ -502,7 +502,7 @@ namespace Origin.Source
             IsSet = true;
         }
 
-        public void Draw(Effect effect, List<int> typesToDraw = null)
+        public void Draw(Effect effect, List<int> typesToDraw = null, bool drawstatic = true, bool drawdynamic = true)
         {
             //if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
             typesToDraw ??= Enumerable.Range(0, CountOfLayers).ToList<int>();
@@ -515,33 +515,30 @@ namespace Origin.Source
             }
         }
 
-        public void Draw(Texture2D key, List<int> typesToDraw = null)
+        public void Draw(Texture2D key, List<int> typesToDraw = null, bool drawstatic = true, bool drawdynamic = true)
         {
             foreach (var layer in typesToDraw)
             {
-                if (_staticVertexBuffers.ContainsKey(key) || _dynamicVertices.ContainsKey(key))
+                if (_staticVertexBuffers.ContainsKey(key) && drawstatic)
                 {
-                    if (_staticVertexBuffers.ContainsKey(key))
+                    foreach (var item in _staticVertexBuffers[key][(int)layer])
                     {
-                        foreach (var item in _staticVertexBuffers[key][(int)layer])
+                        if (item.VertexCount > 0)
                         {
-                            if (item.VertexCount > 0)
-                            {
-                                _graphicDevice.SetVertexBuffer(item);
-                                _graphicDevice.DrawPrimitives(
-                                       PrimitiveType.TriangleList, 0, item.VertexCount / 3);
-                            }
+                            _graphicDevice.SetVertexBuffer(item);
+                            _graphicDevice.DrawPrimitives(
+                                   PrimitiveType.TriangleList, 0, item.VertexCount / 3);
                         }
                     }
-                    if (_dynamicVertices.ContainsKey(key))
+                }
+                if (_dynamicVertices.ContainsKey(key) && drawdynamic)
+                {
+                    ref List<VertexPositionColorTextureBlock[]> listVP = ref _dynamicVertices[key][(int)layer];
+                    for (int i = 0; i < listVP.Count; i++)
                     {
-                        ref List<VertexPositionColorTextureBlock[]> listVP = ref _dynamicVertices[key][(int)layer];
-                        for (int i = 0; i < listVP.Count; i++)
-                        {
-                            int index = _dynamicVertexIndexes[key][layer];
-                            int count = i + 1 == listVP.Count ? index : MaxVertexCount;
-                            if (count > 0) _graphicDevice.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, count / 3);
-                        }
+                        int index = _dynamicVertexIndexes[key][layer];
+                        int count = i + 1 == listVP.Count ? index : MaxVertexCount;
+                        if (count > 0) _graphicDevice.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, count / 3);
                     }
                 }
             }

@@ -380,42 +380,16 @@ namespace Origin.Source
 
             // Test drawing mouse selection on selectedBlock
             {
-                Entity tile = Site.SelectedBlock;
-
-                if (tile != Entity.Null)
-                {
-                    ref var onTile = ref tile.Get<OnSitePosition>();
-                    /*int blocksUnder = 0;
-                    for (int i = 1; i < ONE_MOMENT_DRAW_LEVELS; i++)
-                    {
-                        if (onTile.position.Z - i >= 0 && !Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
-                        {
-                            Point3 chunkPosAbove = WorldUtils.GetChunkByCell(new Point3(onTile.position.X, onTile.position.Y, onTile.position.Z - i),
-                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
-                            Sprite sprite2 = GlobalResources.GetSpriteByID("SelectionWall");
-                            _renderChunkArray[chunkPosAbove.X,
-                                            chunkPosAbove.Y,
-                                            chunkPosAbove.Z].AddSprite(
-                                VertexBufferType.Dynamic,
-                                (int)VertexBufferLayer.Back,
-                                sprite2, new Color(30, 0, 0, 200), onTile.position + new Point3(0, 0, -i), new Point(0, 0)
-                                );
-                            _renderChunkArray[chunkPosAbove.X,
-                                            chunkPosAbove.Y,
-                                            chunkPosAbove.Z].IsFullyHidded = false;
-                        }
-                        else break;
-                    }*/
-                    Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
-                    Point3 chunkPos = WorldUtils.GetChunkByCell(onTile.position,
-                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
-                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
-                        VertexBufferType.Dynamic,
-                        (int)VertexBufferLayer.Back,
-                        sprite, new Color(30, 0, 0, 100), onTile.position, new Point(0, 0)
-                        );
-                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
-                }
+                var onTile = Site.SelectedPosition;
+                Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
+                Point3 chunkPos = WorldUtils.GetChunkByCell(onTile,
+                            new Point3(ChunkSize.X, ChunkSize.Y, 1));
+                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
+                    VertexBufferType.Dynamic,
+                    (int)VertexBufferLayer.Back,
+                    sprite, new Color(30, 0, 0, 100), onTile, new Point(0, 0)
+                    );
+                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
             }
             // Drawing Path
             {
@@ -428,13 +402,17 @@ namespace Origin.Source
                         if (pos.Z <= _drawHighest && pos.Z >= _drawLowest)
                         {
                             Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
+
                             Point3 chunkPos = WorldUtils.GetChunkByCell(pos,
                                         new Point3(ChunkSize.X, ChunkSize.Y, 1));
+
                             _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
                                 VertexBufferType.Dynamic,
                                 (int)VertexBufferLayer.Back,
+
                                 sprite, new Color(0, 0, 50, 255), pos, new Point(0, 0)
-                                );
+
+                                                    );
                             _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
                         }
                     }
