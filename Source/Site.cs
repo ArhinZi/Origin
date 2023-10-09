@@ -13,8 +13,6 @@ using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Paths;
 using Roy_T.AStar.Primitives;
 
-using SharpDX.Direct2D1.Effects;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

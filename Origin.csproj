@@ -27,11 +27,13 @@
 		<None Remove="Roy-T.AStar\**" />
 	</ItemGroup>
 	<ItemGroup>
+		<MonoGameContentReference Include="Content\Content.mgcb" />
+	</ItemGroup>
+	<ItemGroup>
 		<PackageReference Include="Arch" Version="1.2.6.8-alpha" />
 		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
 		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
 		<PackageReference Include="Arch.System" Version="1.0.2" />
-		<PackageReference Include="GameTimer" Version="4.0.0" />
 		<PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2" />

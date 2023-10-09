@@ -7,8 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Origin.Source.ECS;
 using Origin.Source.Utils;
 
-using SharpDX.MediaFoundation;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;

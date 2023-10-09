@@ -114,6 +114,8 @@ namespace Origin.Source
             FillAll();
 
             Hook();
+
+            SiteVertexBufferChunk.InitHiddenGeometry(ChunkSize, graphicDevice, _customEffect);
         }
 
         #region Events
@@ -488,6 +490,19 @@ namespace Origin.Source
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
+            _customEffect.CurrentTechnique = _customEffect.Techniques[0];
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+
+            SiteVertexBufferChunk.ClearInstances();
+            SiteVertexBufferChunk.AddInstance(new Vector3(0, 0, 0), 0);
+
+            SiteVertexBufferChunk.SetInstances();
+            SiteVertexBufferChunk.DrawInstancedHidden();
+
+            /*_customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
+            _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+            _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
 
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
@@ -503,7 +518,7 @@ namespace Origin.Source
                     {
                         for (int y = 0; y < _chunksCount.Y; y++)
                         {
-                            if (IsChunkVisible(new Point3(x, y, z)))
+                            if (IsChunkVisible(new Point3(x, y, z)) && !_renderChunkArray[x, y, z].UseHiddenInstancing)
                             {
                                 if (!_renderChunkArray[x, y, z].IsSet)
                                     _renderChunkArray[x, y, z].SetStaticBuffer();
@@ -522,7 +537,7 @@ namespace Origin.Source
                         }
                     }
                 }
-            }
+            }*/
         }
 
         public void Dispose()
