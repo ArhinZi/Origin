@@ -704,12 +704,15 @@ namespace Origin.Source
 
         public static void SetInstances()
         {
-            InstanceBuffer = new VertexBuffer(InstancedDevice, typeof(InstancePotitionColorTextureLayer), InstanceIndex, BufferUsage.WriteOnly);
-            InstanceBuffer.SetData(Instances, 0, InstanceIndex);
+            if (InstanceIndex > 0)
+            {
+                InstanceBuffer = new VertexBuffer(InstancedDevice, typeof(InstancePotitionColorTextureLayer), InstanceIndex, BufferUsage.WriteOnly);
+                InstanceBuffer.SetData(Instances, 0, InstanceIndex);
 
-            Bindings = new VertexBufferBinding[2];
-            Bindings[0] = new VertexBufferBinding(HiddenChankWallGeometry);
-            Bindings[1] = new VertexBufferBinding(InstanceBuffer, 0, 1);
+                Bindings = new VertexBufferBinding[2];
+                Bindings[0] = new VertexBufferBinding(HiddenChankWallGeometry);
+                Bindings[1] = new VertexBufferBinding(InstanceBuffer, 0, 1);
+            }
         }
 
         public static void DrawInstancedHidden()
@@ -717,13 +720,14 @@ namespace Origin.Source
             if (InstanceIndex > 0)
             {
                 InstanceEffect.Parameters["Texture"].SetValue(HiddenTexture);
-                InstanceEffect.CurrentTechnique = InstanceEffect.Techniques[1];
-
+                InstanceEffect.Parameters["TextureSize"].SetValue(new Vector2(HiddenTexture.Width, HiddenTexture.Height));
                 InstancedDevice.Indices = HiddenChankWallIndexes;
+
                 InstanceEffect.CurrentTechnique.Passes[0].Apply();
 
                 InstancedDevice.SetVertexBuffers(Bindings);
-                InstancedDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, HiddenChankWallIndexes.IndexCount / 3, Instances.Length);
+                //InstancedDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, Instances.Length);
+                InstancedDevice.DrawInstancedPrimitives(PrimitiveType.TriangleList, 0, 0, HiddenChankWallIndexes.IndexCount / 3, InstanceIndex);
             }
         }
     }

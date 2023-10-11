@@ -116,6 +116,7 @@ namespace Origin.Source
             Hook();
 
             SiteVertexBufferChunk.InitHiddenGeometry(ChunkSize, graphicDevice, _customEffect);
+            RecalcHiddenInstances();
         }
 
         #region Events
@@ -327,6 +328,8 @@ namespace Origin.Source
                 }
                 _drawHighest = Site.CurrentLevel;
                 _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+
+                RecalcHiddenInstances();
             }
 
             // Collect all ChunksToReload and redraw them
@@ -344,6 +347,27 @@ namespace Origin.Source
             PrepareVertices(gameTime);
 
             DrawVertices(gameTime);
+        }
+
+        private void RecalcHiddenInstances()
+        {
+            SiteVertexBufferChunk.ClearInstances();
+            for (int z = _drawLowest; z <= _drawHighest; z++)
+            {
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+                        if (_renderChunkArray[x, y, z].UseHiddenInstancing)
+                        {
+                            Point spritePos = WorldUtils.GetSpritePositionByCellPosition(new Point3(x * ChunkSize.X, y * ChunkSize.Y, z));
+                            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(new Point3(x * ChunkSize.X, y * ChunkSize.Y, z));
+                            SiteVertexBufferChunk.AddInstance(new Vector3(spritePos.X, spritePos.Y, vertexZ), z);
+                        }
+                    }
+                }
+            }
+            SiteVertexBufferChunk.SetInstances();
         }
 
         private void PrepareVertices(GameTime gameTime)
@@ -490,23 +514,13 @@ namespace Origin.Source
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
-            _customEffect.CurrentTechnique = _customEffect.Techniques[0];
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            SiteVertexBufferChunk.ClearInstances();
-            SiteVertexBufferChunk.AddInstance(new Vector3(0, 0, 0), 0);
-
-            SiteVertexBufferChunk.SetInstances();
+            _customEffect.CurrentTechnique = _customEffect.Techniques["Instance"];
             SiteVertexBufferChunk.DrawInstancedHidden();
 
-            /*_customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
-            _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
-            _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
-
-            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
-
+            _customEffect.CurrentTechnique = _customEffect.Techniques["MainTech"];
             foreach (var key in SiteVertexBufferChunk.Texture2Ds)
             {
                 _customEffect.Parameters["Texture"].SetValue(key);
@@ -537,7 +551,7 @@ namespace Origin.Source
                         }
                     }
                 }
-            }*/
+            }
         }
 
         public void Dispose()

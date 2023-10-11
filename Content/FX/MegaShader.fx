@@ -1,6 +1,7 @@
 #define VS_SHADERMODEL vs_5_0
 #define PS_SHADERMODEL ps_5_0
 
+#pragma enable_d3d11_debug_symbols
 
 float4x4 WorldViewProjection;
 
@@ -63,6 +64,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     return output;
 }
 
+float2 TextureSize;
 VertexShaderOutput VertexInstanceShaderFunction(InstanceShaderInput input,
 
         uint vid : SV_VertexID,
@@ -73,14 +75,14 @@ VertexShaderOutput VertexInstanceShaderFunction(InstanceShaderInput input,
 {
     VertexShaderOutput output;
     
-    output.Position = mul(input.Position + float4(position, 1), WorldViewProjection);
+    output.Position = mul(input.Position + float4(position, 0), WorldViewProjection);
     //output.Position = input.Position + float4(position, 1);
     
     float2 textureCoordinates[4];
-    textureCoordinates[0] = float2(texRect.x / 128, texRect.y / 96);
-    textureCoordinates[1] = float2(texRect.z / 128, texRect.y / 96);
-    textureCoordinates[2] = float2(texRect.z / 128, texRect.w / 96);
-    textureCoordinates[3] = float2(texRect.x / 128, texRect.w / 96);
+    textureCoordinates[0] = float2(texRect.x / TextureSize.x, texRect.y / TextureSize.y);
+    textureCoordinates[1] = float2((texRect.x + texRect.z) / TextureSize.x, texRect.y / TextureSize.y);
+    textureCoordinates[2] = float2((texRect.x + texRect.z) / TextureSize.x, (texRect.y + texRect.w) / TextureSize.y);
+    textureCoordinates[3] = float2(texRect.x / TextureSize.x, (texRect.y + texRect.w) / TextureSize.y);
     
     output.TextureCoordinates = textureCoordinates[vid % 4];
     output.Diffuse = color;
@@ -122,6 +124,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
       //  color.rgb = float3(0, 0, 0);
     //color.rgb *= 1;
     //color.rgb = input.BlockPosition.rgb;
+    color = Texture.Sample(TextureSampler, input.TextureCoordinates) * input.Diffuse;
     return color;
 }
 
