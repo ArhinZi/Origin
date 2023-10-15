@@ -76,7 +76,7 @@ namespace Origin
             graphics.PreferredBackBufferWidth = 1024;
             graphics.IsFullScreen = false;
             graphics.SynchronizeWithVerticalRetrace = false; //Vsync
-            IsFixedTimeStep = false;
+            IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / 60);
             graphics.ApplyChanges();
             Window.Title = "Dwarf`s Origin";

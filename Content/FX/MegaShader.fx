@@ -1,6 +1,7 @@
 #define VS_SHADERMODEL vs_5_0
 #define PS_SHADERMODEL ps_5_0
 
+#pragma enable_d3d11_debug_symbols
 
 float4x4 WorldViewProjection;
 
@@ -36,6 +37,12 @@ struct VertexShaderInput
     float3 BlockPosition : TEXCOORD1;
 };
 
+struct InstanceShaderInput
+{
+    float4 Position : POSITION0;
+    float2 TextureCoordinate : TEXCOORD0;
+};
+
 struct VertexShaderOutput
 {
     float4 Position : SV_Position;
@@ -58,6 +65,26 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     return output;
 }
 
+float2 TextureSize;
+VertexShaderOutput VertexInstanceShaderFunction(InstanceShaderInput input,
+
+        uint vid : SV_VertexID,
+        float3 position : POSITION1,
+        float4 color : COLOR0,
+        float4 texRect : TEXCOORD2,
+        float layer : TEXCOORD3)
+{
+    VertexShaderOutput output;
+    
+    output.Position = mul(input.Position + float4(position, 0), WorldViewProjection);
+    //output.Position = input.Position + float4(position, 1);
+    
+    output.TextureCoordinates = input.TextureCoordinate;
+    output.Diffuse = color;
+    output.BlockPosition.z = layer;
+
+    return output;
+}
 
 
 float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
@@ -92,6 +119,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
       //  color.rgb = float3(0, 0, 0);
     //color.rgb *= 1;
     //color.rgb = input.BlockPosition.rgb;
+    color = Texture.Sample(TextureSampler, input.TextureCoordinates) * input.Diffuse;
     return color;
 }
 
@@ -100,6 +128,14 @@ technique MainTech
     pass MainPass
     {
         VertexShader = compile VS_SHADERMODEL VertexShaderFunction();
+        PixelShader = compile PS_SHADERMODEL PixelShaderFunction();
+    }
+}
+technique Instance
+{
+    pass InstancePass
+    {
+        VertexShader = compile VS_SHADERMODEL VertexInstanceShaderFunction();
         PixelShader = compile PS_SHADERMODEL PixelShaderFunction();
     }
 }

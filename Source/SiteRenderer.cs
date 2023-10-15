@@ -59,6 +59,7 @@ namespace Origin.Source
         private int _drawHighest;
 
         private SiteVertexBufferChunk[,,] _renderChunkArray;
+        private RenderInstancer _renderInstancer;
 
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
 
@@ -114,6 +115,8 @@ namespace Origin.Source
             FillAll();
 
             Hook();
+
+            _renderInstancer = new RenderInstancer(ChunkSize, _graphicsDevice, _customEffect);
         }
 
         #region Events
@@ -325,6 +328,8 @@ namespace Origin.Source
                 }
                 _drawHighest = Site.CurrentLevel;
                 _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+
+                RecalcHiddenInstances();
             }
 
             // Collect all ChunksToReload and redraw them
@@ -342,6 +347,41 @@ namespace Origin.Source
             PrepareVertices(gameTime);
 
             DrawVertices(gameTime);
+        }
+
+        private void RecalcHiddenInstances()
+        {
+            _renderInstancer.ClearInstances();
+            for (int z = _drawLowest; z <= _drawHighest; z++)
+            {
+                for (int x = 0; x < _chunksCount.X; x++)
+                {
+                    for (int y = 0; y < _chunksCount.Y; y++)
+                    {
+                        if (_renderChunkArray[x, y, z].UseHiddenInstancing)
+                        {
+                            Point spritePos = WorldUtils.GetSpritePositionByCellPosition(new Point3(x * ChunkSize.X, y * ChunkSize.Y, z));
+                            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(new Point3(x * ChunkSize.X, y * ChunkSize.Y, z));
+                            if (z == _drawHighest)
+                            {
+                                _renderInstancer.AddInstance(RenderInstancer.InstanceDefs.HiddenWallFlatChank, new Vector3(spritePos.X, spritePos.Y, vertexZ), z);
+                            }
+                            else
+                            {
+                                if (x == _chunksCount.X - 1)
+                                {
+                                    _renderInstancer.AddInstance(RenderInstancer.InstanceDefs.HiddenRBorder, new Vector3(spritePos.X, spritePos.Y, vertexZ), z);
+                                }
+                                if (y == _chunksCount.Y - 1)
+                                {
+                                    _renderInstancer.AddInstance(RenderInstancer.InstanceDefs.HiddenLBorder, new Vector3(spritePos.X, spritePos.Y, vertexZ), z);
+                                }
+                            }
+                        }
+                    }
+                }
+                _renderInstancer.SetInstances();
+            }
         }
 
         private void PrepareVertices(GameTime gameTime)
@@ -380,16 +420,41 @@ namespace Origin.Source
 
             // Test drawing mouse selection on selectedBlock
             {
+                Entity tile = Site.SelectedBlock;
                 var onTile = Site.SelectedPosition;
-                Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
-                Point3 chunkPos = WorldUtils.GetChunkByCell(onTile,
-                            new Point3(ChunkSize.X, ChunkSize.Y, 1));
-                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
-                    VertexBufferType.Dynamic,
-                    (int)VertexBufferLayer.Back,
-                    sprite, new Color(30, 0, 0, 100), onTile, new Point(0, 0)
-                    );
-                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
+                if (tile != Entity.Null || (tile == Entity.Null && onTile.Z == Site.CurrentLevel))
+                {
+                    /*int blocksUnder = 0;
+                    for (int i = 1; i < ONE_MOMENT_DRAW_LEVELS; i++)
+                    {
+                        if (onTile.position.Z - i >= 0 && !Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
+                        {
+                            Point3 chunkPosAbove = WorldUtils.GetChunkByCell(new Point3(onTile.position.X, onTile.position.Y, onTile.position.Z - i),
+                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
+                            Sprite sprite2 = GlobalResources.GetSpriteByID("SelectionWall");
+                            _renderChunkArray[chunkPosAbove.X,
+                                            chunkPosAbove.Y,
+                                            chunkPosAbove.Z].AddSprite(
+                                VertexBufferType.Dynamic,
+                                (int)VertexBufferLayer.Back,
+                                sprite2, new Color(30, 0, 0, 200), onTile.position + new Point3(0, 0, -i), new Point(0, 0)
+                                );
+                            _renderChunkArray[chunkPosAbove.X,
+                                            chunkPosAbove.Y,
+                                            chunkPosAbove.Z].IsFullyHidded = false;
+                        }
+                        else break;
+                    }*/
+                    Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
+                    Point3 chunkPos = WorldUtils.GetChunkByCell(onTile,
+                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
+                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
+                        VertexBufferType.Dynamic,
+                        (int)VertexBufferLayer.Back,
+                        sprite, new Color(30, 0, 0, 100), onTile, new Point(0, 0)
+                        );
+                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
+                }
             }
             // Drawing Path
             {
@@ -402,17 +467,13 @@ namespace Origin.Source
                         if (pos.Z <= _drawHighest && pos.Z >= _drawLowest)
                         {
                             Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
-
                             Point3 chunkPos = WorldUtils.GetChunkByCell(pos,
                                         new Point3(ChunkSize.X, ChunkSize.Y, 1));
-
                             _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
                                 VertexBufferType.Dynamic,
                                 (int)VertexBufferLayer.Back,
-
                                 sprite, new Color(0, 0, 50, 255), pos, new Point(0, 0)
-
-                                                    );
+                                );
                             _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
                         }
                     }
@@ -466,10 +527,14 @@ namespace Origin.Source
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
-
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            _graphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            //_graphicsDevice.BlendState = BlendState.AlphaBlend;
+            //_graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
 
+            _customEffect.CurrentTechnique = _customEffect.Techniques["Instance"];
+            _renderInstancer.DrawInstancedHidden();
+
+            _customEffect.CurrentTechnique = _customEffect.Techniques["MainTech"];
             foreach (var key in SiteVertexBufferChunk.Texture2Ds)
             {
                 _customEffect.Parameters["Texture"].SetValue(key);

@@ -13,9 +13,6 @@ using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Paths;
 using Roy_T.AStar.Primitives;
 
-using SharpDX.Direct2D1.Effects;
-using SharpDX.Direct3D9;
-
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
