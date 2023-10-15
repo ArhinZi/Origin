@@ -58,6 +58,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Mods\Core\XML\animals.xml" />
+	  <None Remove="mods\core\xml\Buildings.json" />
 	  <None Remove="Mods\Core\XML\Generators\SiteGeneratorParameters.xml" />
 	  <None Remove="Mods\Core\XML\Generators\SitePasses.xml" />
 	  <None Remove="mods\core\xml\Materials.json" />

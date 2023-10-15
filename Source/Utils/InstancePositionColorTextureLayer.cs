@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Origin.Source.Utils
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InstancePotitionColorTextureLayer : IVertexType
+    public struct InstancePositionColorTextureLayer : IVertexType
     {
         public Vector3 Position;
 
@@ -29,7 +29,7 @@ namespace Origin.Source.Utils
 
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
-        public InstancePotitionColorTextureLayer(Vector3 position, Color color, Vector4 textureCoordinate, int layer)
+        public InstancePositionColorTextureLayer(Vector3 position, Color color, Vector4 textureCoordinate, int layer)
         {
             Position = position;
             Color = color;
@@ -57,7 +57,7 @@ namespace Origin.Source.Utils
             return string.Concat(obj);
         }
 
-        public static bool operator ==(InstancePotitionColorTextureLayer left, InstancePotitionColorTextureLayer right)
+        public static bool operator ==(InstancePositionColorTextureLayer left, InstancePositionColorTextureLayer right)
         {
             if (left.Position == right.Position && left.Color == right.Color)
             {
@@ -67,7 +67,7 @@ namespace Origin.Source.Utils
             return false;
         }
 
-        public static bool operator !=(InstancePotitionColorTextureLayer left, InstancePotitionColorTextureLayer right)
+        public static bool operator !=(InstancePositionColorTextureLayer left, InstancePositionColorTextureLayer right)
         {
             return !(left == right);
         }
@@ -84,7 +84,7 @@ namespace Origin.Source.Utils
                 return false;
             }
 
-            return this == (InstancePotitionColorTextureLayer)obj;
+            return this == (InstancePositionColorTextureLayer)obj;
         }
 
         /// <summary>

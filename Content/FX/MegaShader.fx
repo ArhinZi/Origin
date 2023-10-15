@@ -40,6 +40,7 @@ struct VertexShaderInput
 struct InstanceShaderInput
 {
     float4 Position : POSITION0;
+    float2 TextureCoordinate : TEXCOORD0;
 };
 
 struct VertexShaderOutput
@@ -78,13 +79,7 @@ VertexShaderOutput VertexInstanceShaderFunction(InstanceShaderInput input,
     output.Position = mul(input.Position + float4(position, 0), WorldViewProjection);
     //output.Position = input.Position + float4(position, 1);
     
-    float2 textureCoordinates[4];
-    textureCoordinates[0] = float2(texRect.x / TextureSize.x, texRect.y / TextureSize.y);
-    textureCoordinates[1] = float2((texRect.x + texRect.z) / TextureSize.x, texRect.y / TextureSize.y);
-    textureCoordinates[2] = float2((texRect.x + texRect.z) / TextureSize.x, (texRect.y + texRect.w) / TextureSize.y);
-    textureCoordinates[3] = float2(texRect.x / TextureSize.x, (texRect.y + texRect.w) / TextureSize.y);
-    
-    output.TextureCoordinates = textureCoordinates[vid % 4];
+    output.TextureCoordinates = input.TextureCoordinate;
     output.Diffuse = color;
     output.BlockPosition.z = layer;
 
