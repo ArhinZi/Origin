@@ -355,7 +355,6 @@ namespace Origin.Source.Utils
         public void DrawInstancedHidden()
         {
             _effect.Parameters["Texture"].SetValue(HiddenTexture);
-            _effect.Parameters["TextureSize"].SetValue(new Vector2(HiddenTexture.Width, HiddenTexture.Height));
             foreach (var key in _definitions.Keys)
             {
                 var InstanceIndex = _definitions[key].InstanceIndex;

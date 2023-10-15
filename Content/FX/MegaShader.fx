@@ -65,14 +65,14 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     return output;
 }
 
-float2 TextureSize;
+
 VertexShaderOutput VertexInstanceShaderFunction(InstanceShaderInput input,
 
         uint vid : SV_VertexID,
         float3 position : POSITION1,
         float4 color : COLOR0,
         float4 texRect : TEXCOORD2,
-        float layer : TEXCOORD3)
+        int layer : TEXCOORD3)
 {
     VertexShaderOutput output;
     
@@ -115,11 +115,13 @@ float4 PixelShaderFunction(VertexShaderOutput input) : SV_Target
     //color.rgb *= hyperK / (hyperK + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
     color.rgb = lerp(color.rgb, fogColor.rgb, 1 - fogFactor) * shadeFactor;
 
+    if (input.BlockPosition.z == 1)
+        color = float4(1, 0, 0, 1);
     //if (input.BlockPosition.z == 0)
       //  color.rgb = float3(0, 0, 0);
     //color.rgb *= 1;
     //color.rgb = input.BlockPosition.rgb;
-    color = Texture.Sample(TextureSampler, input.TextureCoordinates) * input.Diffuse;
+    //color = Texture.Sample(TextureSampler, input.TextureCoordinates) * input.Diffuse;
     return color;
 }
 
