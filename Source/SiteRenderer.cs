@@ -117,6 +117,7 @@ namespace Origin.Source
             Hook();
 
             _renderInstancer = new RenderInstancer(ChunkSize, _graphicsDevice, _customEffect);
+            RecalcHiddenInstances();
         }
 
         #region Events
