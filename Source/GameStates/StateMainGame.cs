@@ -1,13 +1,12 @@
 ﻿using Arch.Bus;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended.Screens;
-using Origin.Source.Events;
-using System.Collections.Generic;
 
-using System;
+using Origin.Source.Events;
+
+using System.Collections.Generic;
 
 namespace Origin.Source.GameStates
 {

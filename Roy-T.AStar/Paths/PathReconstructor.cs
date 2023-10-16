@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Roy_T.AStar.Graphs;
+﻿using Roy_T.AStar.Graphs;
+
+using System.Collections.Generic;
 
 namespace Roy_T.AStar.Paths
 {

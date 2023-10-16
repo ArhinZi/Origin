@@ -3,10 +3,8 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
-using Origin.Source.unused;
 using Origin.Source.Utils;
 
 using System;

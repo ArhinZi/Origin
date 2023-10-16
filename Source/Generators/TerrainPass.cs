@@ -1,12 +1,9 @@
-﻿using Arch.CommandBuffer;
-using Arch.Core;
+﻿using Arch.Core;
 using Arch.Core.Extensions;
 using Arch.Core.Utils;
 
 using Origin.Source.ECS;
 using Origin.Source.Utils;
-
-using System.Collections.Generic;
 
 namespace Origin.Source.Generators
 {

@@ -1,13 +1,10 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
-using Arch.Core.Utils;
+﻿using Arch.Core.Utils;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.ECS;
 using Origin.Source.Generators;
-using Origin.Source.IO;
 
 using System;
 

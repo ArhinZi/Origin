@@ -1,27 +1,18 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
 
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended;
 
 using Origin.Source.ECS;
-using Origin.Source.Utils;
 
 using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Paths;
 using Roy_T.AStar.Primitives;
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-
-using static Origin.Source.Generators.SiteGenerator;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;

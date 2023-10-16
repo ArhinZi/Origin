@@ -10,9 +10,6 @@ using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
-using Origin.Source.Utils;
-
-using Point3 = Origin.Source.Utils.Point3;
 
 namespace Origin.Source
 {

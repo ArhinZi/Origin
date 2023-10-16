@@ -4,7 +4,6 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
 using Origin.Source.Events;
@@ -12,12 +11,7 @@ using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;

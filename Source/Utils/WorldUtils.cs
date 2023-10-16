@@ -2,16 +2,8 @@
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-
-using MonoGame.Extended;
 
 using Origin.Source.ECS;
-using Origin.Source.Generators;
-
-using Roy_T.AStar.Primitives;
-
-using SimplexNoise;
 
 using System;
 

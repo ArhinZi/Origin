@@ -1,7 +1,4 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
-
-using Origin.Source.Utils;
+﻿using Origin.Source.Utils;
 
 namespace Origin.Source.ECS
 {

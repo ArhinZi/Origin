@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Roy_T.AStar.Collections;
+﻿using Roy_T.AStar.Collections;
 using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Grids;
 using Roy_T.AStar.Primitives;
+
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Roy_T.AStar.Paths
 {

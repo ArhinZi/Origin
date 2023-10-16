@@ -1,12 +1,10 @@
-﻿using Arch.Bus;
-using Arch.Core;
+﻿using Arch.Core;
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
-using Origin.Source.Events;
 using Origin.Source.Utils;
 
 using Roy_T.AStar.Graphs;
@@ -25,13 +23,12 @@ namespace Origin.Source
         public SiteTileContainer Blocks { get; set; }
         public Point3 Size { get; private set; }
         public Camera2D Camera { get; private set; }
-
         public MainWorld World { get; private set; }
+
         public Entity SelectedBlock { get; private set; }
         public Point3 SelectedPosition { get; private set; }
 
         private PathFinder _pathfinder;
-
         public Node startPathNode;
         public Node endPathNode;
         public Path currPath;

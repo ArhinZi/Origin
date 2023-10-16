@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Roy_T.AStar.Graphs;
+﻿using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Primitives;
+
+using System;
+using System.Collections.Generic;
 
 namespace Roy_T.AStar.Grids
 {

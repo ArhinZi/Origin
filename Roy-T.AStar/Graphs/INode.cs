@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Roy_T.AStar.Primitives;
+﻿using Roy_T.AStar.Primitives;
+
+using System.Collections.Generic;
 
 namespace Roy_T.AStar.Graphs
 {

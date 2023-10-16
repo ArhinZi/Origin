@@ -7,10 +7,6 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
 using Myra;
-using Myra.Assets;
-using Myra.Graphics2D;
-using Myra.Graphics2D.UI;
-using Myra.Utility;
 
 using Origin.Source;
 using Origin.Source.Events;
@@ -18,11 +14,9 @@ using Origin.Source.GameStates;
 using Origin.Source.GCs;
 using Origin.Source.IO;
 using Origin.Source.UI;
-using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 

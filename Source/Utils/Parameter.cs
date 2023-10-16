@@ -1,11 +1,4 @@
-﻿using CommunityToolkit.HighPerformance;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Origin.Source.Utils
 {
@@ -48,7 +41,7 @@ namespace Origin.Source.Utils
             Min = min;
             Max = max;
             Value = value;
-            
+
             Name = name;
         }
 
