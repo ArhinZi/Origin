@@ -31,12 +31,15 @@ namespace Origin.Source.Tools
         protected SiteToolController Controller;
         protected Camera2D Camera => Controller.Site.Camera;
 
+        public VertexBufferLayer RenderLayer;
+
         public List<SpritePositionColor> sprites;
         public Point3 Position = Point3.Zero;
 
         public Tool(SiteToolController controller)
         {
             Controller = controller;
+            RenderLayer = VertexBufferLayer.FrontInteractives;
         }
 
         public abstract void Update(GameTime gameTime);

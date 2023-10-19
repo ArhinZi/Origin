@@ -36,6 +36,7 @@ namespace Origin.Source.Tools
         {
             Name = "ToolDig";
             sprites = new List<SpritePositionColor> { };
+            RenderLayer = VertexBufferLayer.FrontInteractives;
         }
 
         public override void Reset()
@@ -110,12 +111,12 @@ namespace Origin.Source.Tools
             {
                 sprites.Add(template);
                 sprites[^1].position = Position;
-                for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i < Controller.Site.CurrentLevel; i++)
+                for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)
                 {
                     sprites.Add(new SpritePositionColor()
                     {
                         sprite = GlobalResources.GetSpriteByID("SelectionWall"),
-                        color = new Color(25, 25, 25, 1),
+                        color = new Color(25, 25, 25, 200),
                         position = new Point3(Position.X, Position.Y, i)
                     });
                 }
@@ -154,11 +155,11 @@ namespace Origin.Source.Tools
                     site.Blocks[pos.X, pos.Y, pos.Z] == Entity.Null ||
 
                     site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                    !site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() /*||
+                    !site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() ||
 
                     site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
                     site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() &&
-                    tlevel == site.CurrentLevel*/)
+                    tlevel == site.CurrentLevel)
                 {
                     tlevel--;
                     continue;

@@ -38,8 +38,10 @@ namespace Origin.Source
     {
         HiddenBack,
         Back,
+        BackInteractives,
         HiddenFront,
-        Front
+        Front,
+        FrontInteractives,
     }
 
     public partial class SiteRenderer : IDisposable
@@ -469,7 +471,7 @@ namespace Origin.Source
                                 new Point3(ChunkSize.X, ChunkSize.Y, 1));
                 _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
                             VertexBufferType.Dynamic,
-                            (int)VertexBufferLayer.Front,
+                            (int)Site.Tools.CurrentTool.RenderLayer,
                             sprite.sprite, sprite.color, sprite.position, sprite.offset,
                             offsetZ: sprite.Zoffset
                             );
@@ -573,12 +575,14 @@ namespace Origin.Source
 
                                 if (z == _drawHighest)
                                     _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
+                                        new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back,
+                                        (int)VertexBufferLayer.BackInteractives, (int)VertexBufferLayer.FrontInteractives});
                                 else
                                     if (!_renderChunkArray[x, y, z].IsFullyHidded ||
                                     (_renderChunkArray[x, y, z].IsFullyHidded && (x == _chunksCount.X - 1 || y == _chunksCount.Y - 1)))
                                     _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
+                                        new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front,
+                                        (int)VertexBufferLayer.BackInteractives, (int)VertexBufferLayer.FrontInteractives });
 
                                 _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
                             }
