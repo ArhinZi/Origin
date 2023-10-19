@@ -64,7 +64,7 @@ namespace Origin.Source.Tools
             }
             else if (Active)
             {
-                Position = MouseScreenToMap(Camera, m, startPos.Z, Controller.Site, true);
+                Position = MouseScreenToMap(Camera, m, startPos.Z, Controller.Site, onFloor: true, clip: true);
                 if (Position != Point3.Null)
                 {
                     if (prevPos != Position)
@@ -124,7 +124,9 @@ namespace Origin.Source.Tools
             }
         }
 
-        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site, bool onFloor = false)
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
+            bool onFloor = false,
+            bool clip = false)
         {
             Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
             worldPos += new Vector3(0, level * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET) +
@@ -140,7 +142,7 @@ namespace Origin.Source.Tools
                 Y = (int)Math.Round((cellPosY - cellPosX)),
                 Z = level
             };
-            if (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size))
+            if (clip && (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size)))
                 return Point3.Null;
             return cellPos;
         }
@@ -155,20 +157,23 @@ namespace Origin.Source.Tools
                 if (pos.LessOr(Point3.Zero))
                     return Point3.Null;
                 if (pos.GraterEqualOr(site.Size) ||
-                    site.Blocks[pos.X, pos.Y, pos.Z] == Entity.Null ||
-
-                    site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                    !site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() ||
-
-                    site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                    site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() &&
-                    tlevel == site.CurrentLevel)
+                //ignore null
+                site.Blocks[pos.X, pos.Y, pos.Z] == Entity.Null ||
+                //ignore air
+                site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
+                !site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() ||
+                //ignore blocks on current level
+                site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
+                site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() &&
+                tlevel == site.CurrentLevel
+                )
                 {
                     tlevel--;
                     continue;
                 }
                 else return pos;
             }
+
             return Point3.Null;
         }
     }

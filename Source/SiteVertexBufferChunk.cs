@@ -51,7 +51,7 @@ namespace Origin.Source
         public bool DynamicBackBufferDirty = false;
         public bool DynamicFrontBufferDirty = false;
 
-        public bool IsFullyHidded { get; set; } = false;
+        public bool IsFullyHidded { get; private set; } = false;
 
         public bool UseHiddenInstancing = true;
 
@@ -493,6 +493,8 @@ namespace Origin.Source
             vertices[index++] = new VertexPositionColorTextureBlock(bottomLeft, col, textureBottomLeft, cellPos.ToVector3());
 
             rindex += 6;
+
+            IsFullyHidded = false;
         }
 
         /// <summary>

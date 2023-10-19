@@ -344,10 +344,16 @@ namespace Origin.Source
                         };
                         foreach (var n in neighbours)
                         {
-                            Point3 chank = WorldUtils.GetChunkByCell(item + n, new Point3(ChunkSize, 1));
-                            _reloadChunkList.Add(chank);
-                            chank = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, -1), new Point3(ChunkSize, 1));
-                            _reloadChunkList.Add(chank);
+                            if (!(item + n).LessOr(Point3.Zero) && !(item + n).GraterEqualOr(Site.Size))
+                            {
+                                Point3 chank = WorldUtils.GetChunkByCell(item + n, new Point3(ChunkSize, 1));
+                                _reloadChunkList.Add(chank);
+                            }
+                            if (!(item + n + new Point3(0, 0, -1)).LessOr(Point3.Zero) && !(item + n + new Point3(0, 0, -1)).GraterEqualOr(Site.Size))
+                            {
+                                Point3 chank = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, -1), new Point3(ChunkSize, 1));
+                                _reloadChunkList.Add(chank);
+                            }
                         }
                         Site.BlocksToReload.Remove(item);
                     }
@@ -423,7 +429,7 @@ namespace Origin.Source
                 });
                 foreach (var rel in _reloadChunkList)
                     SetChunk(rel);
-
+                RecalcHiddenInstances();
                 _reloadChunkList.Clear();
             }
 
@@ -475,7 +481,6 @@ namespace Origin.Source
                             sprite.sprite, sprite.color, sprite.position, sprite.offset,
                             offsetZ: sprite.Zoffset
                             );
-                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
             }
 
             // Drawing Path
@@ -496,7 +501,6 @@ namespace Origin.Source
                                 (int)VertexBufferLayer.Back,
                                 sprite, new Color(0, 0, 50, 255), pos, new Point(0, 0)
                                 );
-                            _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
                         }
                     }
                 }
@@ -575,15 +579,15 @@ namespace Origin.Source
 
                                 if (z == _drawHighest)
                                     _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back,
-                                        (int)VertexBufferLayer.BackInteractives, (int)VertexBufferLayer.FrontInteractives});
+                                        new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
                                 else
                                     if (!_renderChunkArray[x, y, z].IsFullyHidded ||
                                     (_renderChunkArray[x, y, z].IsFullyHidded && (x == _chunksCount.X - 1 || y == _chunksCount.Y - 1)))
                                     _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front,
-                                        (int)VertexBufferLayer.BackInteractives, (int)VertexBufferLayer.FrontInteractives });
+                                        new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
 
+                                _renderChunkArray[x, y, z].Draw(key,
+                                        new List<int> { (int)VertexBufferLayer.BackInteractives, (int)VertexBufferLayer.FrontInteractives });
                                 _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
                             }
                         }
