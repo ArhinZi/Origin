@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Origin.Source.IO;
+using System.Security.Policy;
 
 namespace Origin.Source.Tools
 {
@@ -63,7 +64,7 @@ namespace Origin.Source.Tools
             }
             else if (Active)
             {
-                Position = MouseScreenToMap(Camera, m, startPos.Z, true);
+                Position = MouseScreenToMap(Camera, m, startPos.Z, Controller.Site, true);
                 if (Position != Point3.Null)
                 {
                     if (prevPos != Position)
@@ -123,7 +124,7 @@ namespace Origin.Source.Tools
             }
         }
 
-        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, bool onFloor = false)
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site, bool onFloor = false)
         {
             Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
             worldPos += new Vector3(0, level * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET) +
@@ -139,6 +140,8 @@ namespace Origin.Source.Tools
                 Y = (int)Math.Round((cellPosY - cellPosX)),
                 Z = level
             };
+            if (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size))
+                return Point3.Null;
             return cellPos;
         }
 
@@ -148,7 +151,7 @@ namespace Origin.Source.Tools
             int tlevel = level;
             for (int i = 0; i < SiteRenderer.ONE_MOMENT_DRAW_LEVELS; i++)
             {
-                Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, onFloor);
+                Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, site, onFloor);
                 if (pos.LessOr(Point3.Zero))
                     return Point3.Null;
                 if (pos.GraterEqualOr(site.Size) ||
