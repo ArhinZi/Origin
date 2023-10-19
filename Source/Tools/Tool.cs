@@ -17,6 +17,8 @@ namespace Origin.Source.Tools
             public Sprite sprite;
             public Point3 position;
             public Point offset;
+
+            public float Zoffset;
             public Color color;
 
             public object Clone()

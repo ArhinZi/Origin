@@ -470,7 +470,8 @@ namespace Origin.Source
                 _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
                             VertexBufferType.Dynamic,
                             (int)VertexBufferLayer.Front,
-                            sprite.sprite, sprite.color, sprite.position, sprite.offset
+                            sprite.sprite, sprite.color, sprite.position, sprite.offset,
+                            offsetZ: sprite.Zoffset
                             );
                 _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
             }
@@ -547,7 +548,7 @@ namespace Origin.Source
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
-            //_graphicsDevice.BlendState = BlendState.AlphaBlend;
+            _graphicsDevice.BlendState = BlendState.AlphaBlend;
             //_graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
 
             _customEffect.CurrentTechnique = _customEffect.Techniques["Instance"];

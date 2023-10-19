@@ -30,6 +30,7 @@ namespace Origin.Source.Utils
         }
 
         public static Point3 Zero = new Point3(0, 0, 0);
+        public static Point3 Null = new Point3(-1, -1, -1);
 
         public Point ToPoint()
         {
