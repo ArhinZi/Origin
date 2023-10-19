@@ -2,9 +2,12 @@
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
+using Origin.Source.Generators;
+using Origin.Source.Tools;
 using Origin.Source.Utils;
 
 using Roy_T.AStar.Graphs;
@@ -14,6 +17,7 @@ using Roy_T.AStar.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection.Emit;
 
 namespace Origin.Source
 {
@@ -24,6 +28,9 @@ namespace Origin.Source
         public Point3 Size { get; private set; }
         public Camera2D Camera { get; private set; }
         public MainWorld World { get; private set; }
+
+        public SiteToolController Tools { get; private set; }
+        public SiteGenController Generator { get; private set; }
 
         public Entity SelectedBlock { get; private set; }
         public Point3 SelectedPosition { get; private set; }
@@ -38,7 +45,9 @@ namespace Origin.Source
 
         public float SiteTime = 0.5f;
 
-        public List<Point3> BlocksToReload { get; private set; }
+        public HashSet<Point3> BlocksToReload { get; private set; }
+
+        public Texture2D hmt;
 
         public Site(MainWorld world, Point3 size)
         {
@@ -50,12 +59,20 @@ namespace Origin.Source
             CurrentLevel = (int)(Size.Z * 0.8f);
 
             Camera = new Camera2D();
-            Camera.Move(new Vector2(0,
+            Camera.Position += (new Vector2(0,
                 -(CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
                     - Sprite.TILE_SIZE.Y * (Size.X / 2)
                  )));
 
-            BlocksToReload = new List<Point3>();
+            Tools = new(this);
+
+            BlocksToReload = new HashSet<Point3>();
+
+            Generator = new SiteGenController(OriginGame.Instance.GraphicsDevice, this, Size);
+            Generator.Init();
+            Generator.Visit(new Utils.Point3(0, 0, 127));
+
+            hmt = Generator.HeightMapToTexture2D(10);
         }
 
         public int CurrentLevel
@@ -97,6 +114,7 @@ namespace Origin.Source
 
         public void Update(GameTime gameTime)
         {
+            Tools.Update(gameTime);
             Point m = Mouse.GetState().Position;
             Point3 sel = WorldUtils.MouseScreenToMap(Camera, m, CurrentLevel);
             sel = WorldUtils.MouseScreenToMapSurface(Camera, m, CurrentLevel, this);
@@ -153,39 +171,53 @@ namespace Origin.Source
 
         public bool RemoveWall(Entity ent)
         {
-            var onSite = ent.Get<OnSitePosition>();
-            Point3 pos = onSite.position;
-            if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
+            OnSitePosition onSite;
+            if (ent != Entity.Null && ent.TryGet(out onSite))
             {
-                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
-                structure.WallMaterial = null;
-                structure.WallEmbeddedMaterial = null;
-                if (structure == TileStructure.Null)
-                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
-                return true;
+                Point3 pos = onSite.position;
+                if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
+                {
+                    ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
+                    structure.WallMaterial = null;
+                    structure.WallEmbeddedMaterial = null;
+                    if (structure == TileStructure.Null)
+                        Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
+
+                    Generator.Visit(pos, false);
+                    BlocksToReload.Add(pos);
+
+                    return true;
+                }
             }
             return false;
         }
 
         public bool RemoveFloor(Entity ent)
         {
-            var onSite = ent.Get<OnSitePosition>();
-            Point3 pos = onSite.position;
-            if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
+            OnSitePosition onSite;
+            if (ent != Entity.Null && ent.TryGet(out onSite))
             {
-                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
-                structure.FloorMaterial = null;
-                structure.FloorEmbeddedMaterial = null;
-                if (structure == TileStructure.Null)
-                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
-                return true;
+                Point3 pos = onSite.position;
+                if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
+                {
+                    ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
+                    structure.FloorMaterial = null;
+                    structure.FloorEmbeddedMaterial = null;
+                    if (structure == TileStructure.Null)
+                        Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
+
+                    Generator.Visit(pos, false);
+                    BlocksToReload.Add(pos);
+
+                    return true;
+                }
             }
             return false;
         }
 
         public void RemoveBlock(Entity ent)
         {
-            RemoveBlock(ent);
+            RemoveWall(ent);
             RemoveFloor(ent);
         }
 

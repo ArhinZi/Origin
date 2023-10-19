@@ -560,11 +560,19 @@ namespace Origin.Source
                 if (_dynamicVertices.ContainsKey(key) && drawdynamic)
                 {
                     ref List<VertexPositionColorTextureBlock[]> listVP = ref _dynamicVertices[key][(int)layer];
-                    for (int i = 0; i < listVP.Count; i++)
+                    int index = _dynamicVertexIndexes[key][layer];
+                    int count = index;
+
+                    int i = 0;
+                    while (count > 0)
                     {
-                        int index = _dynamicVertexIndexes[key][layer];
-                        int count = i + 1 == listVP.Count ? index : MaxVertexCount;
-                        if (count > 0) _graphicDevice.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, count / 3);
+                        int verticesToDraw = Math.Min(MaxVertexCount, count);
+
+                        // Draw a batch of vertices
+                        _graphicDevice.DrawUserPrimitives(PrimitiveType.TriangleList, listVP[i], 0, verticesToDraw / 3);
+
+                        count -= verticesToDraw;
+                        i++;
                     }
                 }
             }

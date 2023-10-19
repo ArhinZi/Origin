@@ -58,6 +58,12 @@ namespace Origin
             //Components.Add(debug);
         }
 
+        public bool InFocus()
+        {
+            if (IsActive) return true;
+            return false;
+        }
+
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -117,7 +123,7 @@ namespace Origin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            InputManager.Update(gameTime);
+            if (IsActive) InputManager.Update(gameTime);
 
             if (_prevBounds != Window.ClientBounds)
             {
@@ -129,7 +135,7 @@ namespace Origin
 
             UiManager.Update();
             base.Update(gameTime);
-            InputManager.FinalUpdate();
+            if (IsActive) InputManager.FinalUpdate();
         }
 
         /// <summary>

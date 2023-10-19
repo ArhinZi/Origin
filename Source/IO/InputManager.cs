@@ -124,7 +124,7 @@ namespace Origin.Source.IO
             BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 300, 50));
 
             //Game
-            BindKey("game.fpswitch", new Keybind(Keys.L));
+            BindKey("game.halfwallswitch", new Keybind(Keys.F));
             BindKey("game.exit", new Keybind(Keys.Escape));
 
             // Manual control

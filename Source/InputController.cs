@@ -13,50 +13,51 @@ using Origin.Source.IO;
 
 namespace Origin.Source
 {
-    public class InputControl : IUpdate
+    public class InputController : IUpdate
     {
-        public int base_mult = 1000;
-        public int shift_mult = 5000;
-        public float zoom_step = 1f;
-        private KeyboardState keyboardState;
+        private bool LShift;
+        private bool LCtrl;
 
         public void Update(GameTime gameTime)
         {
             if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
 
-            keyboardState = Keyboard.GetState();
-            float movemod = (keyboardState.IsKeyDown(Keys.LeftShift) ? shift_mult : base_mult) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            KeyboardState keystate = Keyboard.GetState();
+            LShift = keystate.IsKeyDown(Keys.LeftShift);
+            LCtrl = keystate.IsKeyDown(Keys.LeftControl);
 
-            if (InputManager.JustPressed("game.fpswitch"))
+            if (InputManager.JustPressed("game.halfwallswitch"))
             {
                 EventBus.Send(new HalfWallModeChanged());
             }
 
+            Camera2D activeCamera = StateMainGame.ActiveCamera;
+            float camMoveMode = (float)((LShift ? Global.CAM_SHIFT_SPEED_MULT : 1) * Global.CAM_SPEED * gameTime.ElapsedGameTime.TotalSeconds);
             if (InputManager.IsPressed("Camera.left"))
-                StateMainGame.ActiveCamera.Move(new Vector2(-1 * movemod, 0));
+                activeCamera.Position += new Vector2(-1, 0) * camMoveMode / activeCamera.Zoom;
             if (InputManager.IsPressed("Camera.right"))
-                StateMainGame.ActiveCamera.Move(new Vector2(1 * movemod, 0));
+                activeCamera.Position += new Vector2(1, 0) * camMoveMode / activeCamera.Zoom;
             if (InputManager.IsPressed("Camera.up"))
-                StateMainGame.ActiveCamera.Move(new Vector2(0, -1 * movemod));
+                activeCamera.Position += new Vector2(0, -1) * camMoveMode / activeCamera.Zoom;
             if (InputManager.IsPressed("Camera.down"))
-                StateMainGame.ActiveCamera.Move(new Vector2(0, 1 * movemod));
-
-            if (InputManager.JustPressedAndHoldDelayed("world.level.minus") || InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY < 0)
-                MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
-            if (InputManager.JustPressedAndHoldDelayed("world.level.plus") || InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY > 0)
-                MainWorld.Instance.ActiveSite.CurrentLevel += 1;
+                activeCamera.Position += new Vector2(0, 1) * camMoveMode / activeCamera.Zoom;
 
             if (InputManager.IsPressed("Camera.zoom.plus"))
-                StateMainGame.ActiveCamera.Zoom += zoom_step * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (!InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY > 0)
-                StateMainGame.ActiveCamera.Zoom += 10f * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                activeCamera.Zoom += Global.CAM_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (!LCtrl && InputManager.MouseScrollNotchesY > 0)
+                activeCamera.Zoom += Global.CAM_MOUSE_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (InputManager.IsPressed("Camera.zoom.minus"))
-                StateMainGame.ActiveCamera.Zoom -= zoom_step * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (!InputManager.IsPressed("ctrl") && InputManager.MouseScrollNotchesY < 0)
-                StateMainGame.ActiveCamera.Zoom -= 10f * StateMainGame.ActiveCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                activeCamera.Zoom -= Global.CAM_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (!LCtrl && InputManager.MouseScrollNotchesY < 0)
+                activeCamera.Zoom -= Global.CAM_MOUSE_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (InputManager.JustPressed("mouse.right") &&
+            if (InputManager.JustPressedAndHoldDelayed("world.level.minus") || LCtrl && InputManager.MouseScrollNotchesY < 0)
+                MainWorld.Instance.ActiveSite.CurrentLevel -= 1;
+            if (InputManager.JustPressedAndHoldDelayed("world.level.plus") || LCtrl && InputManager.MouseScrollNotchesY > 0)
+                MainWorld.Instance.ActiveSite.CurrentLevel += 1;
+
+            /*if (InputManager.JustPressed("mouse.right") &&
                     MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
             {
                 if (MainWorld.Instance.ActiveSite.SelectedBlock.Has<TileHasPathNode>())
@@ -73,7 +74,7 @@ namespace Origin.Source
                     if (MainWorld.Instance.ActiveSite.startPathNode != null)
                         MainWorld.Instance.ActiveSite.FindPath();
                 }
-            }
+            }*/
 
             /*if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {

@@ -5,6 +5,8 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using MonoGame.Extended.Sprites;
+
 using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.Utils;
@@ -165,7 +167,6 @@ namespace Origin.Source
             int tileCoordZ = tilePos.Z;
 
             Entity tile = Site.Blocks[tileCoordX, tileCoordY, tileCoordZ];
-            Point3 pos = new Point3(tileCoordX, tileCoordY, tileCoordZ);
 
             if (tile != Entity.Null)
             {
@@ -327,17 +328,28 @@ namespace Origin.Source
                 RecalcHiddenInstances();
             }
 
-            // Collect all ChunksToReload and redraw them
-            foreach (var item in Site.BlocksToReload)
-            {
-                if (item.Z >= _drawLowest && item.Z <= _drawHighest)
+            if (Site.BlocksToReload.Count > 0)
+                // Collect all ChunksToReload and redraw them
+                foreach (var item in Site.BlocksToReload)
                 {
-                    int chunkX = (int)item.X / ChunkSize.X;
-                    int chunkY = (int)item.Y / ChunkSize.Y;
-                    _reloadChunkList.Add(new Point3(chunkX, chunkY, item.Z));
+                    //if (item.Z >= _drawLowest && item.Z <= _drawHighest)
+                    {
+                        List<Point3> neighbours = new List<Point3>()
+                        {
+                            new Point3(0, 0, 0),
+                            new Point3(-1, 0, 0),new Point3(0, -1, 0),
+                            new Point3(1, 0, 0),new Point3(0, 1, 0)
+                        };
+                        foreach (var n in neighbours)
+                        {
+                            Point3 chank = WorldUtils.GetChunkByCell(item + n, new Point3(ChunkSize, 1));
+                            _reloadChunkList.Add(chank);
+                            chank = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, -1), new Point3(ChunkSize, 1));
+                            _reloadChunkList.Add(chank);
+                        }
+                        Site.BlocksToReload.Remove(item);
+                    }
                 }
-            }
-            Site.BlocksToReload.Clear();
 
             PrepareVertices(gameTime);
 
@@ -384,42 +396,42 @@ namespace Origin.Source
             // Make chunk reload smoother
             if (_reloadChunkList.Count > 0 && gameTime.TotalGameTime.Ticks % 12 == 0)
             {
-                Point3 toReload = _reloadChunkList.ToList()[0];
-
-                List<Point3> neighbours = new List<Point3>()
+                /*List<Point3> neighbours = new List<Point3>()
                 {
                     new Point3(0, 0, 0),
                     new Point3(-1, 0, 0),new Point3(0, -1, 0),
                     new Point3(1, 0, 0),new Point3(0, 1, 0)
                 };
-                Parallel.ForEach(neighbours, neighbour =>
-                {
-                    Point3 p = toReload + neighbour;
-                    CalcChunkCellsVisibility(p);
-                    FillChunk(p);
-                });
-                Parallel.ForEach(neighbours, neighbour =>
-                {
-                    Point3 p = toReload + neighbour + new Point3(0, 0, -1);
-                    CalcChunkCellsVisibility(p);
-                    FillChunk(p);
-                });
-                foreach (var neighbor in neighbours)
-                    SetChunk(toReload + neighbor);
 
-                foreach (var neighbor in neighbours)
-                    SetChunk(toReload + neighbor + new Point3(0, 0, -1));
+                HashSet<Point3> reload = new HashSet<Point3>();
+                foreach (Point3 p in _reloadChunkList)
+                {
+                    foreach (var neighbor in neighbours)
+                    {
+                        reload.Add(p + neighbor);
+                        reload.Add(p + neighbor + new Point3(0, 0, -1));
+                    }
+                }*/
 
-                _reloadChunkList.Remove(toReload);
+                Parallel.ForEach(_reloadChunkList, rel =>
+                {
+                    _renderChunkArray[rel.X, rel.Y, rel.Z].CheckHidden();
+                    CalcChunkCellsVisibility(rel);
+                    FillChunk(rel);
+                });
+                foreach (var rel in _reloadChunkList)
+                    SetChunk(rel);
+
+                _reloadChunkList.Clear();
             }
 
             // Test drawing mouse selection on selectedBlock
-            {
+            /*{
                 Entity tile = Site.SelectedBlock;
                 var onTile = Site.SelectedPosition;
                 if (tile != Entity.Null || (tile == Entity.Null && onTile.Z == Site.CurrentLevel))
                 {
-                    /*int blocksUnder = 0;
+                    *//*int blocksUnder = 0;
                     for (int i = 1; i < ONE_MOMENT_DRAW_LEVELS; i++)
                     {
                         if (onTile.position.Z - i >= 0 && !Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
@@ -439,7 +451,7 @@ namespace Origin.Source
                                             chunkPosAbove.Z].IsFullyHidded = false;
                         }
                         else break;
-                    }*/
+                    }*//*
                     Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
                     Point3 chunkPos = WorldUtils.GetChunkByCell(onTile,
                                 new Point3(ChunkSize.X, ChunkSize.Y, 1));
@@ -450,7 +462,19 @@ namespace Origin.Source
                         );
                     _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
                 }
+            }*/
+            foreach (var sprite in Site.Tools.CurrentTool.sprites)
+            {
+                Point3 chunkPos = WorldUtils.GetChunkByCell(sprite.position,
+                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
+                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
+                            VertexBufferType.Dynamic,
+                            (int)VertexBufferLayer.Front,
+                            sprite.sprite, sprite.color, sprite.position, sprite.offset
+                            );
+                _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
             }
+
             // Drawing Path
             {
                 if (Site.currPath != null)
@@ -561,6 +585,10 @@ namespace Origin.Source
                     }
                 }
             }
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred);
+            _spriteBatch.Draw(Site.hmt, new Vector2(0, 0), new Rectangle(0, 0, Site.hmt.Width, Site.hmt.Height), Color.White);
+            _spriteBatch.End();
         }
 
         public void Dispose()

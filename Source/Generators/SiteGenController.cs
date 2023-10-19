@@ -13,6 +13,7 @@ using Roy_T.AStar.Primitives;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -20,7 +21,7 @@ using Point3 = Origin.Source.Utils.Point3;
 
 namespace Origin.Source.Generators
 {
-    public class SiteGenerator
+    public class SiteGenController
     {
         public struct HeightTile
         {
@@ -66,7 +67,7 @@ namespace Origin.Source.Generators
 
         public Point3 Size { get; private set; }
 
-        public SiteGenerator(GraphicsDevice device, Site site, Point3 size)
+        public SiteGenController(GraphicsDevice device, Site site, Point3 size)
         {
             _device = device;
             _site = site;
@@ -80,28 +81,44 @@ namespace Origin.Source.Generators
             GenerateRiverOnHeightMap();
         }
 
-        public void Observe(Point3 pos)
+        public void Visit(Point3 startPos, bool visitStart = true)
         {
             Dictionary<int, bool[,]> visited = new Dictionary<int, bool[,]>();
-            Visit(pos);
-
-            void Visit(Point3 pos)
+            Stack<Point3> stack = new Stack<Point3>();
+            if (visitStart)
             {
+                stack.Push(startPos);
+            }
+            else
+            {
+                stack.Push(startPos + new Point3(1, 0, 0));
+                stack.Push(startPos + new Point3(0, 1, 0));
+                stack.Push(startPos + new Point3(0, 0, -1));
+                stack.Push(startPos + new Point3(-1, 0, 0));
+                stack.Push(startPos + new Point3(0, -1, 0));
+                stack.Push(startPos + new Point3(0, 0, 1));
+            }
+
+            while (stack.Count > 0)
+            {
+                Point3 pos = stack.Pop();
+
                 if (!visited.ContainsKey(pos.Z)) visited.Add(pos.Z, new bool[Size.X, Size.Y]);
-                if (pos.X < 0 || pos.Y < 0 || pos.Z < 0 || pos.X == Size.X || pos.Y == Size.Y || pos.Z == 1024)
-                    return;
+                if (pos.X < 0 || pos.Y < 0 || pos.Z < 0 || pos.X == Size.X || pos.Y == Size.Y || pos.Z == Size.Z)
+                    continue;
                 if (visited[pos.Z][pos.X, pos.Y])
-                    return;
+                    continue;
+                if (_site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null)
+                    continue;
 
                 var dirtDepth = 5;
                 var baseHeight = (int)(Size.Z * 0.7f);
                 int height = (int)(heightMap[pos.X, pos.Y].Height + baseHeight);
-                Entity ent = _site.ECSWorld.Create(new OnSitePosition(new Point3(pos.X, pos.Y, pos.Z)),
-                            new TileVisibility());
+                Entity ent = _site.ECSWorld.Create(new OnSitePosition(new Point3(pos.X, pos.Y, pos.Z)), new TileVisibility());
 
-                // Set the voxel value based on the height and the current z position
                 bool walkable = true;
                 bool air = false;
+
                 if (pos.Z <= height - dirtDepth)
                 {
                     _site.ECSWorld.Add(ent,
@@ -132,16 +149,21 @@ namespace Origin.Source.Generators
 
                 if (air)
                 {
-                    Visit(pos + new Point3(1, 0, 0));
-                    Visit(pos + new Point3(0, 1, 0));
-                    Visit(pos + new Point3(0, 0, -1));
+                    stack.Push(pos + new Point3(1, 0, 0));
+                    stack.Push(pos + new Point3(0, 1, 0));
+                    stack.Push(pos + new Point3(0, 0, -1));
+                    /*stack.Push(pos + new Point3(-1, 0, 0));
+                    stack.Push(pos + new Point3(0, -1, 0));
+                    stack.Push(pos + new Point3(0, 0, 1));*/
                 }
 
                 if (pos.Z != 0 && walkable &&
                     _site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
                     _site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>() &&
                     _site.Blocks[pos.X, pos.Y, pos.Z - 1].Get<TileStructure>().WallMaterial != null)
+                {
                     ent.Add(new TileHasPathNode(new Position(pos.X, pos.Y, pos.Z)));
+                }
 
                 visited[pos.Z][pos.X, pos.Y] = true;
                 _site.Blocks[pos.X, pos.Y, pos.Z] = ent;

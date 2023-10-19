@@ -25,9 +25,7 @@ namespace Origin.Source
                 typeof(DrawComponent),
                 typeof(OnSitePosition) };
 
-        private SiteGenerator generator;
         private SpriteBatch spriteBatch;
-        private Texture2D hmt;
 
         public MainWorld()
         {
@@ -36,10 +34,7 @@ namespace Origin.Source
 
             // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
-            generator = new SiteGenerator(OriginGame.Instance.GraphicsDevice, ActiveSite, ActiveSite.Size);
-            generator.Init();
-            generator.Observe(new Utils.Point3(0, 0, 127));
-            hmt = generator.HeightMapToTexture2D(10);
+
             ActiveSite.InitPathFinder();
 
             /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
@@ -98,9 +93,6 @@ namespace Origin.Source
         public void Draw(GameTime gameTime)
         {
             Renderer.Draw(gameTime);
-            spriteBatch.Begin(SpriteSortMode.Deferred);
-            spriteBatch.Draw(hmt, new Vector2(0, 0), new Rectangle(0, 0, hmt.Width, hmt.Height), Color.White);
-            spriteBatch.End();
         }
 
         public void Dispose()

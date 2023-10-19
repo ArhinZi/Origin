@@ -68,9 +68,6 @@
 	  <None Remove="mods\core\xml\terrainMaterials.json" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Source\Tools\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
 	</ItemGroup>
 	<ItemGroup>

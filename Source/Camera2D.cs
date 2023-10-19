@@ -13,10 +13,10 @@ namespace Origin.Source
     {
         private float _zoom = 1f;
         private Vector2 _position;
-        private float _minZoom = 0.05f;
-        private float _maxZoom = 4f;
         private Matrix _projection;
         private Matrix _transformation;
+        private float _localMinZoom;
+        private float _localMaxZoom;
 
         #region Set Get
 
@@ -28,20 +28,14 @@ namespace Origin.Source
             set
             {
                 _zoom = value;
-                if (_zoom < _minZoom) _zoom = _minZoom;
-                if (_zoom > _maxZoom) _zoom = _maxZoom;
+                if (_zoom < _localMinZoom) _zoom = _localMinZoom;
+                if (_zoom > _localMaxZoom) _zoom = _localMaxZoom;
                 EventBus.Send(new DebugValueChanged(2, new Dictionary<string, string>()
                 {
                     ["DebugCameraZoom"] = value.ToString("##.##")
                 }));
             } // Negative zoom will flip image
         }
-
-        public float MinZoom
-        { set { _minZoom = value; } }
-
-        public float MaxZoom
-        { set { _maxZoom = value; } }
 
         public float AspectRatio
         {
@@ -99,6 +93,9 @@ namespace Origin.Source
 
         public Camera2D()
         {
+            _localMinZoom = Global.SITE_CAM_MIN_ZOOM;
+            _localMaxZoom = Global.SITE_CAM_MAX_ZOOM;
+
             Zoom = 1.0f;
             Position = Vector2.Zero;
 
