@@ -169,56 +169,62 @@ namespace Origin.Source
             Debug.WriteLine(currPath);
         }
 
-        public bool RemoveWall(Entity ent)
+        public bool RemoveWall(Point3 pos)
         {
-            OnSitePosition onSite;
-            if (ent != Entity.Null && ent.TryGet(out onSite))
+            Entity ent = Blocks[pos.X, pos.Y, pos.Z];
+            if (ent == Entity.Null)
             {
-                Point3 pos = onSite.position;
-                if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
-                {
-                    ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
-                    structure.WallMaterial = null;
-                    structure.WallEmbeddedMaterial = null;
-                    if (structure == TileStructure.Null)
-                        Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
-
-                    Generator.Visit(pos, false);
-                    BlocksToReload.Add(pos);
-
-                    return true;
-                }
+                Generator.Visit(pos, true);
+                ent = Blocks[pos.X, pos.Y, pos.Z];
             }
+
+            if (ent.Has<TileStructure>())
+            {
+                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
+                structure.WallMaterial = null;
+                structure.WallEmbeddedMaterial = null;
+                if (structure == TileStructure.Null)
+                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
+
+                Generator.Visit(pos, false);
+                BlocksToReload.Add(pos);
+
+                return true;
+            }
+
             return false;
         }
 
-        public bool RemoveFloor(Entity ent)
+        public bool RemoveFloor(Point3 pos)
         {
-            OnSitePosition onSite;
-            if (ent != Entity.Null && ent.TryGet(out onSite))
+            Entity ent = Blocks[pos.X, pos.Y, pos.Z];
+            if (ent == Entity.Null)
             {
-                Point3 pos = onSite.position;
-                if (Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>())
-                {
-                    ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
-                    structure.FloorMaterial = null;
-                    structure.FloorEmbeddedMaterial = null;
-                    if (structure == TileStructure.Null)
-                        Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
-
-                    Generator.Visit(pos, false);
-                    BlocksToReload.Add(pos);
-
-                    return true;
-                }
+                Generator.Visit(pos, true);
+                ent = Blocks[pos.X, pos.Y, pos.Z];
             }
+
+            if (ent.Has<TileStructure>())
+            {
+                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
+                structure.FloorMaterial = null;
+                structure.FloorEmbeddedMaterial = null;
+                if (structure == TileStructure.Null)
+                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
+
+                Generator.Visit(pos, false);
+                BlocksToReload.Add(pos);
+
+                return true;
+            }
+
             return false;
         }
 
-        public void RemoveBlock(Entity ent)
+        public void RemoveBlock(Point3 pos)
         {
-            RemoveWall(ent);
-            RemoveFloor(ent);
+            RemoveWall(pos);
+            RemoveFloor(pos);
         }
 
         public void Dispose()

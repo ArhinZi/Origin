@@ -94,7 +94,7 @@ namespace Origin.Source.Tools
                         {
                             for (int j = start.Y; j <= end.Y; j++)
                             {
-                                Controller.Site.RemoveBlock(Controller.Site.Blocks[i, j, start.Z]);
+                                Controller.Site.RemoveBlock(new Point3(i, j, start.Z));
                             }
                         }
 

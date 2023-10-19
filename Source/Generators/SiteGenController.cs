@@ -89,7 +89,7 @@ namespace Origin.Source.Generators
             {
                 stack.Push(startPos);
             }
-            else
+
             {
                 stack.Push(startPos + new Point3(1, 0, 0));
                 stack.Push(startPos + new Point3(0, 1, 0));
@@ -152,9 +152,9 @@ namespace Origin.Source.Generators
                     stack.Push(pos + new Point3(1, 0, 0));
                     stack.Push(pos + new Point3(0, 1, 0));
                     stack.Push(pos + new Point3(0, 0, -1));
-                    /*stack.Push(pos + new Point3(-1, 0, 0));
+                    stack.Push(pos + new Point3(-1, 0, 0));
                     stack.Push(pos + new Point3(0, -1, 0));
-                    stack.Push(pos + new Point3(0, 0, 1));*/
+                    stack.Push(pos + new Point3(0, 0, 1));
                 }
 
                 if (pos.Z != 0 && walkable &&
