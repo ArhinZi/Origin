@@ -62,12 +62,13 @@ namespace Origin.Source
         private HashSet<Point3> _reloadChunkList = new HashSet<Point3>();
 
         private Effect _customEffect;
-        private AlphaTestEffect _alphaTestEffect;
 
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
 
         public bool HalfWallMode { get; private set; } = false;
+
+        private Task RenderReloadTask = null;
 
         /// <summary>
         /// Z offset.
@@ -90,6 +91,7 @@ namespace Origin.Source
             //_visBuffer = new byte[_site.Size.X, _site.Size.Y, _site.Size.Z];
 
             ChunkSize = BASE_CHUNK_SIZE;
+            _graphicsDevice = graphicDevice;
             //if (ChunkSize.X < Site.Size.X) ChunkSize.X = Site.Size.X;
             //if (ChunkSize.Y < Site.Size.Y) ChunkSize.Y = Site.Size.Y;
             if (Site.Size.X % ChunkSize.X != 0 || Site.Size.Y % ChunkSize.Y != 0) throw new Exception("Site size is invalid!");
@@ -103,11 +105,9 @@ namespace Origin.Source
 
             _reloadChunkList = new HashSet<Point3>();
 
-            _graphicsDevice = graphicDevice;
             _spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             _customEffect = OriginGame.Instance.Content.Load<Effect>("FX/MegaShader");
-            _alphaTestEffect = new AlphaTestEffect(_graphicsDevice);
 
             CalcVisibility();
             FillAll();
@@ -255,6 +255,36 @@ namespace Origin.Source
 
         #endregion Visibility
 
+        private async Task StartAsyncChankReload()
+        {
+            await Task.Run(() =>
+            {
+                foreach (var rel in _reloadChunkList)
+                {
+                    _renderChunkArray[rel.X, rel.Y, rel.Z].CheckHidden();
+                    CalcChunkCellsVisibility(rel);
+                    FillChunk(rel);
+                }
+            });
+        }
+
+        private async Task StartAsyncLevelHalfWallReload()
+        {
+            await Task.Run(() =>
+            {
+                FillLevel(Site.PreviousLevel, false);
+                FillLevel(Site.CurrentLevel, true);
+            });
+        }
+
+        private void FillAll()
+        {
+            Parallel.For(0, _chunksCount.Z, z =>
+            {
+                FillLevel(z);
+            });
+        }
+
         /// <summary>
         /// Fill whole level again
         /// </summary>
@@ -276,25 +306,6 @@ namespace Origin.Source
                     }
                 }
             });
-        }
-
-        private void FillAll()
-        {
-            Parallel.For(0, _chunksCount.Z, z =>
-            {
-                FillLevel(z);
-            });
-        }
-
-        private void SetLevel(int level)
-        {
-            for (int x = 0; x < _chunksCount.X; x++)
-            {
-                for (int y = 0; y < _chunksCount.Y; y++)
-                {
-                    _renderChunkArray[x, y, level].SetStaticBuffer();
-                }
-            }
         }
 
         private void FillChunk(Point3 chunkPos)
@@ -323,21 +334,37 @@ namespace Origin.Source
 
         public void Draw(GameTime gameTime)
         {
+            CheckCurrentLevelChanged();
+
+            ControlChankReloading();
+
+            PrepareVertices(gameTime);
+
+            DrawVertices(gameTime);
+        }
+
+        private void CheckCurrentLevelChanged()
+        {
             // Check if CurrentLevel changed and redraw what need to redraw
             if (_drawHighest != Site.CurrentLevel)
             {
                 if (HalfWallMode)
                 {
-                    FillLevel(Site.PreviousLevel, false);
-                    FillLevel(Site.CurrentLevel, true);
+                    if (RenderReloadTask == null)
+                    {
+                        RenderReloadTask = StartAsyncLevelHalfWallReload();
+                    }
                 }
                 _drawHighest = Site.CurrentLevel;
                 _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
 
                 RecalcHiddenInstances();
             }
+        }
 
-            if (Site.BlocksToReload.Count > 0)
+        private void ControlChankReloading()
+        {
+            if (Site.BlocksToReload.Count > 0 && RenderReloadTask == null)
             {
                 // Collect all ChunksToReload and redraw them
                 foreach (var item in Site.BlocksToReload)
@@ -371,12 +398,13 @@ namespace Origin.Source
                         Site.BlocksToReload.Remove(item);
                     }
                 }
-                ChankReloadTask = StartAsyncChankReload();
+                RenderReloadTask = StartAsyncChankReload();
             }
 
-            PrepareVertices(gameTime);
-
-            DrawVertices(gameTime);
+            if (_reloadChunkList.Count > 0 && RenderReloadTask != null && RenderReloadTask.Status == TaskStatus.RanToCompletion)
+            {
+                _reloadChunkList.Clear();
+            }
         }
 
         private void RecalcHiddenInstances()
@@ -414,71 +442,8 @@ namespace Origin.Source
             }
         }
 
-        private Task ChankReloadTask = null;
-
-        private async Task StartAsyncChankReload()
-        {
-            await Task.Run(() =>
-            {
-                foreach (var rel in _reloadChunkList)
-                {
-                    _renderChunkArray[rel.X, rel.Y, rel.Z].CheckHidden();
-                    CalcChunkCellsVisibility(rel);
-                    FillChunk(rel);
-                }
-            });
-        }
-
         private void PrepareVertices(GameTime gameTime)
         {
-            // Make chunk reload smoother
-            if (_reloadChunkList.Count > 0 && ChankReloadTask != null && ChankReloadTask.Status == TaskStatus.RanToCompletion)
-            {
-                ChankReloadTask = null;
-                foreach (var rel in _reloadChunkList)
-                    SetChunk(rel);
-                RecalcHiddenInstances();
-                _reloadChunkList.Clear();
-            }
-
-            // Test drawing mouse selection on selectedBlock
-            /*{
-                Entity tile = Site.SelectedBlock;
-                var onTile = Site.SelectedPosition;
-                if (tile != Entity.Null || (tile == Entity.Null && onTile.Z == Site.CurrentLevel))
-                {
-                    *//*int blocksUnder = 0;
-                    for (int i = 1; i < ONE_MOMENT_DRAW_LEVELS; i++)
-                    {
-                        if (onTile.position.Z - i >= 0 && !Site.Blocks[onTile.position.X, onTile.position.Y, onTile.position.Z - i].Has<TileStructure>())
-                        {
-                            Point3 chunkPosAbove = WorldUtils.GetChunkByCell(new Point3(onTile.position.X, onTile.position.Y, onTile.position.Z - i),
-                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
-                            Sprite sprite2 = GlobalResources.GetSpriteByID("SelectionWall");
-                            _renderChunkArray[chunkPosAbove.X,
-                                            chunkPosAbove.Y,
-                                            chunkPosAbove.Z].AddSprite(
-                                VertexBufferType.Dynamic,
-                                (int)VertexBufferLayer.Back,
-                                sprite2, new Color(30, 0, 0, 200), onTile.position + new Point3(0, 0, -i), new Point(0, 0)
-                                );
-                            _renderChunkArray[chunkPosAbove.X,
-                                            chunkPosAbove.Y,
-                                            chunkPosAbove.Z].IsFullyHidded = false;
-                        }
-                        else break;
-                    }*//*
-                    Sprite sprite = GlobalResources.GetSpriteByID("SolidSelectionWall");
-                    Point3 chunkPos = WorldUtils.GetChunkByCell(onTile,
-                                new Point3(ChunkSize.X, ChunkSize.Y, 1));
-                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].AddSprite(
-                        VertexBufferType.Dynamic,
-                        (int)VertexBufferLayer.Back,
-                        sprite, new Color(30, 0, 0, 100), onTile, new Point(0, 0)
-                        );
-                    _renderChunkArray[chunkPos.X, chunkPos.Y, chunkPos.Z].IsFullyHidded = false;
-                }
-            }*/
             foreach (var sprite in Site.Tools.CurrentTool.sprites)
             {
                 Point3 chunkPos = WorldUtils.GetChunkByCell(sprite.position,
@@ -513,39 +478,6 @@ namespace Origin.Source
                     }
                 }
             }
-
-            // Draw Entities
-
-            /*var query = new QueryDescription().WithAll<DrawComponent, OnSitePosition>();
-
-            Site.World.ECSworld.Query(in query, (in Entity entity) =>
-            {
-                var position = entity.Get<OnSitePosition>();
-                var draw = entity.Get<DrawComponent>();
-                if (position.Position.Z <= _drawHighest && position.Position.Z > _drawLowest &&
-                    position.Site == Site)
-                {
-                    Sprite sprite;
-                    if (position.DirectionOfView != IsometricDirection.NONE)
-                    {
-                        sprite = draw.Sprites[(int)position.DirectionOfView] != null ?
-                        draw.Sprites[(int)position.DirectionOfView] :
-                        draw.Sprites[draw.Sprites[0] != null ? 0 : 1];
-                    }
-                    else
-                    {
-                        sprite = draw.Sprites[draw.Sprites[0] != null ? 0 : 1];
-                    }
-                    _renderChunkArray[position.Position.X / ChunkSize.X, position.Position.Y / ChunkSize.Y, position.Position.Z].AddSprite(
-                        VertexBufferType.Dynamic,
-                        (int)VertexBufferLayer.Back,
-                        sprite, Color.White, position.Position, new Point(0, 0),
-                        //offsetZ: -SiteRenderer.Z_DIAGONAL_OFFSET / 2,
-                        drawSize: Sprite.SPRITE_SIZE
-                        );
-                    _renderChunkArray[position.Position.X / ChunkSize.X, position.Position.Y / ChunkSize.Y, position.Position.Z].IsFullyHidded = false;
-                }
-            });*/
         }
 
         private bool IsChunkVisible(Point3 pos)
@@ -555,6 +487,14 @@ namespace Origin.Source
 
         private void DrawVertices(GameTime gameTime)
         {
+            if (RenderReloadTask != null && RenderReloadTask.Status == TaskStatus.RanToCompletion)
+            {
+                RenderReloadTask = null;
+                /*foreach (var rel in _reloadChunkList)
+                    SetChunk(rel);*/
+                RecalcHiddenInstances();
+            }
+
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(Site.Camera.WorldMatrix, Site.Camera.Transformation),
                 Site.Camera.Projection);
 
@@ -582,7 +522,7 @@ namespace Origin.Source
                         {
                             if (IsChunkVisible(new Point3(x, y, z)))
                             {
-                                if (!_renderChunkArray[x, y, z].IsSet && ChankReloadTask == null)
+                                if (!_renderChunkArray[x, y, z].IsSet && RenderReloadTask == null)
                                     _renderChunkArray[x, y, z].SetStaticBuffer();
 
                                 if (z == _drawHighest)
