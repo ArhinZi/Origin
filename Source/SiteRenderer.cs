@@ -220,17 +220,24 @@ namespace Origin.Source
                         }
 
                         // Check if tile have neighbor above
-                        if (tileCoordZ + 1 < Site.Size.Z &&
+                        /*if ((tileCoordZ + 1 < Site.Size.Z &&
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1] != Entity.Null &&
                             Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Has<TileStructure>() &&
-                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Get<TileStructure>().WallMaterial != null)
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Get<TileStructure>().WallMaterial != null) ||
+                            (tileCoordZ - 1 >= 0 &&
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ - 1] != Entity.Null &&
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ - 1].Has<TileStructure>() &&
+                            Site.Blocks[tileCoordX, tileCoordY, tileCoordZ - 1].Get<TileStructure>().WallMaterial != null)
+                            )
                         {
                             // Then floor is invisible
                             visibility.FloorDiscovered = visibility.FloorVisible = false;
                         }
-                        else
+                        else*/
                         {
                             // Else floor is visible
                             visibility.FloorVisible = visibility.FloorDiscovered = true;
+                            visibility.WallVisible = visibility.WallDiscovered = true;
                         }
                     }
                     else
@@ -352,6 +359,11 @@ namespace Origin.Source
                             if (!(item + n + new Point3(0, 0, -1)).LessOr(Point3.Zero) && !(item + n + new Point3(0, 0, -1)).GraterEqualOr(Site.Size))
                             {
                                 Point3 chank = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, -1), new Point3(ChunkSize, 1));
+                                _reloadChunkList.Add(chank);
+                            }
+                            if (!(item + n + new Point3(0, 0, 1)).LessOr(Point3.Zero) && !(item + n + new Point3(0, 0, 1)).GraterEqualOr(Site.Size))
+                            {
+                                Point3 chank = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, 1), new Point3(ChunkSize, 1));
                                 _reloadChunkList.Add(chank);
                             }
                         }

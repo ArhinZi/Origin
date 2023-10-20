@@ -174,8 +174,12 @@ namespace Origin.Source
             Entity ent = Blocks[pos.X, pos.Y, pos.Z];
             if (ent == Entity.Null)
             {
-                Generator.Visit(pos, true);
+                Generator.Visit(pos);
                 ent = Blocks[pos.X, pos.Y, pos.Z];
+            }
+            else
+            {
+                Generator.Visit(pos, false);
             }
 
             if (ent.Has<TileStructure>())
@@ -186,7 +190,7 @@ namespace Origin.Source
                 if (structure == TileStructure.Null)
                     Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
 
-                Generator.Visit(pos, false);
+                //Generator.Visit(pos, false);
                 BlocksToReload.Add(pos);
 
                 return true;
@@ -200,8 +204,12 @@ namespace Origin.Source
             Entity ent = Blocks[pos.X, pos.Y, pos.Z];
             if (ent == Entity.Null)
             {
-                Generator.Visit(pos, true);
+                Generator.Visit(pos);
                 ent = Blocks[pos.X, pos.Y, pos.Z];
+            }
+            else
+            {
+                Generator.Visit(pos, false);
             }
 
             if (ent.Has<TileStructure>())
@@ -212,7 +220,7 @@ namespace Origin.Source
                 if (structure == TileStructure.Null)
                     Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
 
-                Generator.Visit(pos, false);
+                //Generator.Visit(pos, false);
                 BlocksToReload.Add(pos);
 
                 return true;

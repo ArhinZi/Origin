@@ -89,7 +89,7 @@ namespace Origin.Source.Generators
             {
                 stack.Push(startPos);
             }
-
+            else
             {
                 stack.Push(startPos + new Point3(1, 0, 0));
                 stack.Push(startPos + new Point3(0, 1, 0));
