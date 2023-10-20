@@ -338,6 +338,7 @@ namespace Origin.Source
             }
 
             if (Site.BlocksToReload.Count > 0)
+            {
                 // Collect all ChunksToReload and redraw them
                 foreach (var item in Site.BlocksToReload)
                 {
@@ -370,6 +371,8 @@ namespace Origin.Source
                         Site.BlocksToReload.Remove(item);
                     }
                 }
+                ChankReloadTask = StartAsyncChankReload();
+            }
 
             PrepareVertices(gameTime);
 
@@ -411,34 +414,27 @@ namespace Origin.Source
             }
         }
 
-        private void PrepareVertices(GameTime gameTime)
+        private Task ChankReloadTask = null;
+
+        private async Task StartAsyncChankReload()
         {
-            // Make chunk reload smoother
-            if (_reloadChunkList.Count > 0 && gameTime.TotalGameTime.Ticks % 12 == 0)
+            await Task.Run(() =>
             {
-                /*List<Point3> neighbours = new List<Point3>()
-                {
-                    new Point3(0, 0, 0),
-                    new Point3(-1, 0, 0),new Point3(0, -1, 0),
-                    new Point3(1, 0, 0),new Point3(0, 1, 0)
-                };
-
-                HashSet<Point3> reload = new HashSet<Point3>();
-                foreach (Point3 p in _reloadChunkList)
-                {
-                    foreach (var neighbor in neighbours)
-                    {
-                        reload.Add(p + neighbor);
-                        reload.Add(p + neighbor + new Point3(0, 0, -1));
-                    }
-                }*/
-
-                Parallel.ForEach(_reloadChunkList, rel =>
+                foreach (var rel in _reloadChunkList)
                 {
                     _renderChunkArray[rel.X, rel.Y, rel.Z].CheckHidden();
                     CalcChunkCellsVisibility(rel);
                     FillChunk(rel);
-                });
+                }
+            });
+        }
+
+        private void PrepareVertices(GameTime gameTime)
+        {
+            // Make chunk reload smoother
+            if (_reloadChunkList.Count > 0 && ChankReloadTask != null && ChankReloadTask.Status == TaskStatus.RanToCompletion)
+            {
+                ChankReloadTask = null;
                 foreach (var rel in _reloadChunkList)
                     SetChunk(rel);
                 RecalcHiddenInstances();
@@ -586,7 +582,7 @@ namespace Origin.Source
                         {
                             if (IsChunkVisible(new Point3(x, y, z)))
                             {
-                                if (!_renderChunkArray[x, y, z].IsSet)
+                                if (!_renderChunkArray[x, y, z].IsSet && ChankReloadTask == null)
                                     _renderChunkArray[x, y, z].SetStaticBuffer();
 
                                 if (z == _drawHighest)

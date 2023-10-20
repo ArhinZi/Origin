@@ -46,11 +46,6 @@ namespace Origin.Source
         /// </summary>
         public bool IsSet { get; private set; }
 
-        public bool StaticBackBufferDirty = false;
-        public bool StaticFrontBufferDirty = false;
-        public bool DynamicBackBufferDirty = false;
-        public bool DynamicFrontBufferDirty = false;
-
         public bool IsFullyHidded { get; private set; } = false;
 
         public bool UseHiddenInstancing = true;
@@ -154,7 +149,7 @@ namespace Origin.Source
         {
             if (type == VertexBufferType.Static)
             {
-                DisposeStaticBuffer();
+                //DisposeStaticBuffer();
                 foreach (var key in _staticVertexIndexes.Keys)
                 {
                     for (int i = 0; i < _staticVertexIndexes[key].Length; i++)
@@ -276,7 +271,6 @@ namespace Origin.Source
                                             (int)VertexBufferLayer.HiddenBack,
                                             sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
                                 }
-                                StaticBackBufferDirty = false;
                             }
 
                             #endregion BackBuffer
@@ -342,7 +336,6 @@ namespace Origin.Source
                                         (int)VertexBufferLayer.HiddenFront,
                                         sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
                                 }
-                                StaticFrontBufferDirty = false;
                             }
 
                             #endregion FrontBuffer
