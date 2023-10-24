@@ -10,6 +10,9 @@ using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
+using Origin.Source.Utils;
+
+using Point3 = Origin.Source.Utils.Point3;
 
 namespace Origin.Source
 {
@@ -57,24 +60,16 @@ namespace Origin.Source
             if (InputManager.JustPressedAndHoldDelayed("world.level.plus") || LCtrl && InputManager.MouseScrollNotchesY > 0)
                 MainWorld.Instance.ActiveSite.CurrentLevel += 1;
 
-            /*if (InputManager.JustPressed("mouse.right") &&
-                    MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
-            {
-                if (MainWorld.Instance.ActiveSite.SelectedBlock.Has<TileHasPathNode>())
-                {
-                    MainWorld.Instance.ActiveSite.startPathNode = MainWorld.Instance.ActiveSite.SelectedBlock.Get<TileHasPathNode>().node;
-                }
-            }
-            if (InputManager.JustPressed("mouse.left") &&
-                MainWorld.Instance.ActiveSite.SelectedBlock != Arch.Core.Entity.Null)
-            {
-                if (MainWorld.Instance.ActiveSite.SelectedBlock.Has<TileHasPathNode>())
-                {
-                    MainWorld.Instance.ActiveSite.endPathNode = MainWorld.Instance.ActiveSite.SelectedBlock.Get<TileHasPathNode>().node;
-                    if (MainWorld.Instance.ActiveSite.startPathNode != null)
-                        MainWorld.Instance.ActiveSite.FindPath();
-                }
-            }*/
+            if (InputManager.JustPressed("num.1"))
+                MainWorld.Instance.ActiveSite.Tools.SetToolByName("ToolDig");
+            if (InputManager.JustPressed("num.2"))
+                MainWorld.Instance.ActiveSite.Tools.SetToolByName("ToolPlaceDirt");
+            if (InputManager.JustPressed("num.3"))
+                MainWorld.Instance.ActiveSite.Tools.SetToolByName("ToolPathfind");
+            if (InputManager.JustPressed("num.4"))
+                MainWorld.Instance.ActiveSite.Tools.SetToolByName("ToolPlaceDirt");
+            if (InputManager.JustPressed("num.5"))
+                MainWorld.Instance.ActiveSite.Tools.SetToolByName(null);
 
             /*if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {

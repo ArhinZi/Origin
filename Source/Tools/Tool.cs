@@ -34,7 +34,8 @@ namespace Origin.Source.Tools
         public VertexBufferLayer RenderLayer;
 
         public List<SpritePositionColor> sprites;
-        public Point3 Position = Point3.Zero;
+        public Point3 Position = Point3.Null;
+        public Point3 PrevPosition = Point3.Null;
 
         public Tool(SiteToolController controller)
         {

@@ -30,7 +30,7 @@
 		<MonoGameContentReference Include="Content\Content.mgcb" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Arch" Version="1.2.6.8-alpha" />
+		<PackageReference Include="Arch" Version="1.2.7" />
 		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
 		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
 		<PackageReference Include="Arch.System" Version="1.0.2" />

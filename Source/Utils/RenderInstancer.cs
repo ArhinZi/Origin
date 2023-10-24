@@ -10,7 +10,7 @@ namespace Origin.Source.Utils
     {
         public enum InstanceDefs
         {
-            HiddenWallFlatChank,
+            HiddenWallFlatChunk,
             HiddenLBorder,
             HiddenRBorder,
         }
@@ -27,16 +27,16 @@ namespace Origin.Source.Utils
             public VertexBufferBinding[] Binding;
         }
 
-        /*public VertexBuffer HiddenChankWallGeometry;
-        public IndexBuffer HiddenChankWallIndexes;
+        /*public VertexBuffer HiddenChunkWallGeometry;
+        public IndexBuffer HiddenChunkWallIndexes;
 
-        public VertexBuffer HiddenChankFloorGeometry;
-        public IndexBuffer HiddenChankFloorIndexes;
+        public VertexBuffer HiddenChunkFloorGeometry;
+        public IndexBuffer HiddenChunkFloorIndexes;
 
         private
         private */
 
-        private Point ChankSize;
+        private Point ChunkSize;
         private GraphicsDevice _device;
         private Effect _effect;
         public Texture2D HiddenTexture = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID).Sprites["Wall"][0].Texture as Texture2D;
@@ -46,9 +46,9 @@ namespace Origin.Source.Utils
 
         private Dictionary<InstanceDefs, InstanceDeclaration> _definitions;
 
-        public RenderInstancer(Point chankSize, GraphicsDevice _device, Effect effect)
+        public RenderInstancer(Point chunkSize, GraphicsDevice _device, Effect effect)
         {
-            ChankSize = chankSize;
+            ChunkSize = chunkSize;
             this._device = _device;
             _effect = effect;
 
@@ -56,20 +56,20 @@ namespace Origin.Source.Utils
             {
                 { InstanceDefs.HiddenLBorder, new InstanceDeclaration() },
                 { InstanceDefs.HiddenRBorder, new InstanceDeclaration() },
-                { InstanceDefs.HiddenWallFlatChank, new InstanceDeclaration() },
+                { InstanceDefs.HiddenWallFlatChunk, new InstanceDeclaration() },
             };
-            CreateHiddenWallFlatChank();
+            CreateHiddenWallFlatChunk();
             CreateHiddenLBorder();
             CreateHiddenRBorder();
             //CreateHiddenRBorder();
         }
 
-        private void CreateHiddenWallFlatChank()
+        private void CreateHiddenWallFlatChunk()
         {
-            InstanceDefs def = InstanceDefs.HiddenWallFlatChank;
+            InstanceDefs def = InstanceDefs.HiddenWallFlatChunk;
 
-            VertexPositionTexture[] vertices = new VertexPositionTexture[ChankSize.X * ChankSize.Y * 4];
-            ushort[] indices = new ushort[ChankSize.X * ChankSize.Y * 6];
+            VertexPositionTexture[] vertices = new VertexPositionTexture[ChunkSize.X * ChunkSize.Y * 4];
+            ushort[] indices = new ushort[ChunkSize.X * ChunkSize.Y * 6];
 
             TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
             Sprite sprite = tm.Sprites["Wall"][0];
@@ -79,9 +79,9 @@ namespace Origin.Source.Utils
 
             ushort vi = 0;
             ushort ii = 0;
-            for (int x = 0; x < ChankSize.X; x++)
+            for (int x = 0; x < ChunkSize.X; x++)
             {
-                for (int y = 0; y < ChankSize.Y; y++)
+                for (int y = 0; y < ChunkSize.Y; y++)
                 {
                     Point3 cellPos = new Point3(x, y, 0);
                     Point spritePos = WorldUtils.GetSpritePositionByCellPosition(cellPos);
@@ -126,13 +126,13 @@ namespace Origin.Source.Utils
         {
             InstanceDefs def = InstanceDefs.HiddenLBorder;
 
-            VertexPositionTexture[] vertices = new VertexPositionTexture[2 * ChankSize.X * 4];
-            ushort[] indices = new ushort[2 * ChankSize.X * 6];
+            VertexPositionTexture[] vertices = new VertexPositionTexture[2 * ChunkSize.X * 4];
+            ushort[] indices = new ushort[2 * ChunkSize.X * 6];
 
             ushort vi = 0;
             ushort ii = 0;
-            int y = ChankSize.Y - 1;
-            for (int x = 0; x < ChankSize.X; x++)
+            int y = ChunkSize.Y - 1;
+            for (int x = 0; x < ChunkSize.X; x++)
             {
                 TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                 Point3 cellPos = new Point3(x, y, 0);
@@ -211,13 +211,13 @@ namespace Origin.Source.Utils
         {
             InstanceDefs def = InstanceDefs.HiddenRBorder;
 
-            VertexPositionTexture[] vertices = new VertexPositionTexture[2 * ChankSize.X * 4];
-            ushort[] indices = new ushort[2 * ChankSize.X * 6];
+            VertexPositionTexture[] vertices = new VertexPositionTexture[2 * ChunkSize.X * 4];
+            ushort[] indices = new ushort[2 * ChunkSize.X * 6];
 
             ushort vi = 0;
             ushort ii = 0;
-            int x = ChankSize.X - 1;
-            for (int y = 0; y < ChankSize.Y; y++)
+            int x = ChunkSize.X - 1;
+            for (int y = 0; y < ChunkSize.Y; y++)
             {
                 TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                 Point3 cellPos = new Point3(x, y, 0);
@@ -301,7 +301,7 @@ namespace Origin.Source.Utils
                 definition.Instances = new InstancePositionColorTextureLayer[SiteRenderer.ONE_MOMENT_DRAW_LEVELS * 64];
                 definition.InstanceIndex = 0;
             }
-            if (def == InstanceDefs.HiddenWallFlatChank || def == InstanceDefs.HiddenLBorder || def == InstanceDefs.HiddenRBorder)
+            if (def == InstanceDefs.HiddenWallFlatChunk || def == InstanceDefs.HiddenLBorder || def == InstanceDefs.HiddenRBorder)
             {
                 TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                 Sprite sprite = tm.Sprites["Wall"][0];

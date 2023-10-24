@@ -73,7 +73,7 @@ namespace Origin.Source.Generators
 
                         if (z != 0 && walkable && site.Blocks[x, y, z - 1].Has<TileStructure>() &&
                             site.Blocks[x, y, z - 1].Get<TileStructure>().WallMaterial != null)
-                            ent.Add(new TileHasPathNode(new Roy_T.AStar.Primitives.Position(x, y, z)));
+                            ent.Add<TilePathAble>();
 
                         site.Blocks[x, y, z] = ent;
                     }

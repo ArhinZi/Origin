@@ -41,23 +41,26 @@ namespace Origin.Source.GameStates
             _inputControl.Update(gameTime);
             World.Update(gameTime);
 
-            Point3 pos = World.ActiveSite.Tools.CurrentTool.Position;
-            string chank = WorldUtils.GetChunkByCell(pos, new Point3(World.Renderer.ChunkSize, 1)).ToString();
-
-            string blockMat = "NONE";
-            TileStructure ts;
-
-            if (World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null && World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z].TryGet(out ts))
+            if (World.ActiveSite.Tools.CurrentTool != null)
             {
-                blockMat = ts.FloorMaterial.ID;
+                Point3 pos = World.ActiveSite.Tools.CurrentTool.Position;
+                string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.Renderer.ChunkSize, 1)).ToString();
+
+                string blockMat = "NONE";
+                TileStructure ts;
+
+                if (World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null && World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z].TryGet(out ts))
+                {
+                    blockMat = ts.FloorMaterial.ID;
+                }
+
+                EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
+                {
+                    ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position.ToString() + chunk + blockMat,
+                    ["DebugLayer"] = World.ActiveSite.CurrentLevel.ToString(),
+                    ["DayTime"] = World.ActiveSite.SiteTime.ToString("#.##")
+                }));
             }
-
-            EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
-            {
-                ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position.ToString() + chank + blockMat,
-                ["DebugLayer"] = World.ActiveSite.CurrentLevel.ToString(),
-                ["DayTime"] = World.ActiveSite.SiteTime.ToString("#.##")
-            }));
         }
 
         public override void Draw(GameTime gameTime)

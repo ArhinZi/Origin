@@ -46,7 +46,8 @@ namespace Origin.Source
         /// </summary>
         public bool IsSet { get; private set; }
 
-        public bool IsFullyHidded { get; private set; } = false;
+        public bool IsFullyHidden { get; private set; } = false;
+        private bool _isFullyHidden = false;
 
         public bool UseHiddenInstancing = true;
 
@@ -178,7 +179,7 @@ namespace Origin.Source
             if (!UseHiddenInstancing)
             {
                 // Loop through each tile block in the chunk
-                IsFullyHidded = true;
+                _isFullyHidden = true;
                 int tileCoordZ = SelfChunkPos.Z;
                 for (int tileInChunkCoordX = 0; tileInChunkCoordX < SelfChunkSize.X; tileInChunkCoordX++)
                 {
@@ -251,7 +252,7 @@ namespace Origin.Source
                                         (int)VertexBufferLayer.Back,
                                             sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
                                     }
-                                    IsFullyHidded = false;
+                                    _isFullyHidden = false;
                                 }
                                 else if (!visibility.WallDiscovered)
                                 {
@@ -316,7 +317,7 @@ namespace Origin.Source
                                             (int)VertexBufferLayer.Front,
                                             sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
                                     }
-                                    IsFullyHidded = false;
+                                    _isFullyHidden = false;
                                 }
                                 else if (structure.FloorMaterial != null && !visibility.FloorDiscovered &&
                                     (tileCoordX == Renderer.Site.Size.X - 1 || tileCoordY == Renderer.Site.Size.Y - 1))
@@ -373,6 +374,7 @@ namespace Origin.Source
                     }
                 }
             }
+            IsSet = false;
         }
 
         public void AddSprite(VertexBufferType type, int vblayer,
@@ -487,7 +489,7 @@ namespace Origin.Source
 
             rindex += 6;
 
-            IsFullyHidded = false;
+            _isFullyHidden = false;
         }
 
         /// <summary>
@@ -520,6 +522,7 @@ namespace Origin.Source
                 }
                 _staticVertexBuffers.Add(key, lvb);
             }
+            IsFullyHidden = _isFullyHidden;
             IsSet = true;
         }
 

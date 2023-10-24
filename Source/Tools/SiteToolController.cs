@@ -21,19 +21,27 @@ namespace Origin.Source.Tools
             Site = site;
             toolList = new List<Tool>()
             {
-                new ToolDig(this)
+                new ToolDig(this),
+                new ToolPathfind(this),
+                new ToolPlaceDirt(this),
             };
-            SetToolByName("ToolDig");
+            //SetToolByName("ToolDig");
         }
 
         public void SetToolByName(string name)
         {
+            if (name == null)
+            {
+                CurrentTool.Reset();
+                CurrentTool = null;
+            }
             if (CurrentTool != null && CurrentTool.Name != name)
             {
                 CurrentTool.Reset();
             }
             var tool = (from t in toolList where t.Name == name select t);
-            CurrentTool = tool.First();
+            if (tool.Any())
+                CurrentTool = tool.First();
         }
 
         public void Update(GameTime gameTime)

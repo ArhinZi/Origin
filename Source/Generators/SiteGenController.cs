@@ -91,9 +91,9 @@ namespace Origin.Source.Generators
             }
             else
             {
+                stack.Push(startPos + new Point3(0, 0, -1));
                 stack.Push(startPos + new Point3(1, 0, 0));
                 stack.Push(startPos + new Point3(0, 1, 0));
-                stack.Push(startPos + new Point3(0, 0, -1));
                 stack.Push(startPos + new Point3(-1, 0, 0));
                 stack.Push(startPos + new Point3(0, -1, 0));
                 stack.Push(startPos + new Point3(0, 0, 1));
@@ -149,25 +149,37 @@ namespace Origin.Source.Generators
 
                 if (air)
                 {
+                    stack.Push(pos + new Point3(0, 0, -1));
                     stack.Push(pos + new Point3(1, 0, 0));
                     stack.Push(pos + new Point3(0, 1, 0));
-                    stack.Push(pos + new Point3(0, 0, -1));
                     stack.Push(pos + new Point3(-1, 0, 0));
                     stack.Push(pos + new Point3(0, -1, 0));
                     stack.Push(pos + new Point3(0, 0, 1));
                 }
+
+                visited[pos.Z][pos.X, pos.Y] = true;
+                _site.Blocks[pos.X, pos.Y, pos.Z] = ent;
 
                 if (pos.Z != 0 && walkable &&
                     _site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
                     _site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>() &&
                     _site.Blocks[pos.X, pos.Y, pos.Z - 1].Get<TileStructure>().WallMaterial != null)
                 {
-                    ent.Add(new TileHasPathNode(new Position(pos.X, pos.Y, pos.Z)));
+                    ent.Add<TilePathAble>();
                 }
-
-                visited[pos.Z][pos.X, pos.Y] = true;
-                _site.Blocks[pos.X, pos.Y, pos.Z] = ent;
+                if (pos.Z + 1 < _site.Size.Z &&
+                    _site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
+                    _site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() &&
+                    _site.Blocks[pos.X, pos.Y, pos.Z + 1] != Entity.Null &&
+                    !_site.Blocks[pos.X, pos.Y, pos.Z + 1].Has<TileStructure>())
+                {
+                    _site.Blocks[pos.X, pos.Y, pos.Z + 1].Add<TilePathAble>();
+                }
             }
+            /*var query = new QueryDescription().WithAll<TileStructure, OnSitePosition>();
+            _site.ECSWorld.Query(query, (in TileStructure ts, OnSitePosition osp) =>
+            {
+            });*/
         }
 
         public void GenerateHeightMap(float scale, float freq = 0.003f)

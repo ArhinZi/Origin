@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 
+using System;
+
 namespace Origin.Source.Utils
 {
-    public struct Point3
+    public struct Point3 : IComparable
     {
         public int X;
         public int Y;
@@ -160,7 +162,17 @@ namespace Origin.Source.Utils
 
         public override int GetHashCode()
         {
-            return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
+            int hash = 17;
+            hash = hash * 31 + X;
+            hash = hash * 31 + Y;
+            hash = hash * 31 + Z;
+            return hash;
+        }
+
+        public int CompareTo(object obj)
+        {
+            Point3 p2 = (Point3)obj;
+            return (X + Y + Z).CompareTo(p2.X + p2.Y + p2.Z);
         }
     }
 }

@@ -139,6 +139,12 @@ namespace Origin.Source.IO
             BindKey("mouse.left", new Keybind(MouseButton.Button0, Buttons.None));
             BindKey("mouse.right", new Keybind(MouseButton.Button1, Buttons.None));
             BindKey("mouse.middle", new Keybind(MouseButton.Button2, Buttons.None));
+
+            BindKey("num.1", new Keybind(Keys.D1));
+            BindKey("num.2", new Keybind(Keys.D2));
+            BindKey("num.3", new Keybind(Keys.D3));
+            BindKey("num.4", new Keybind(Keys.D4));
+            BindKey("num.5", new Keybind(Keys.D5));
         }
 
         private static void BindKey(string name, Keybind fallback)
