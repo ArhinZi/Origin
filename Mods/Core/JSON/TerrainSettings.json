@@ -1,0 +1,8 @@
+{
+  "TerrainSettings": {
+    "Default": {
+      "SoilDepthMin": 2,
+      "SoilDepthMax": 5
+    }
+  }
+}

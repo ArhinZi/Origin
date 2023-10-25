@@ -1,0 +1,9 @@
+{
+  "Settings": {
+    "DefaultItemSprite": "SelectionWall",
+
+    "HiddenWallSprite": "SolidSelectionWall",
+    "HiddenFloorSprite": "SolidSelectionFloor",
+    "HiddenColor": "70 70 70 255"
+  }
+}

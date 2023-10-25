@@ -1,0 +1,8 @@
+{
+  "ConstructionTypes": [
+    "Block",
+    "Floor",
+    "Ramp",
+    "Stairs"
+  ]
+}

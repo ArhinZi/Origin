@@ -1,0 +1,16 @@
+{
+  "Items": [
+    {
+      "ID": "RawSoil",
+      "Category": "Materials",
+      "AllowedMaterialTypes": [ "soil" ],
+      "AllowedMaterials": []
+    },
+    {
+      "ID": "RawStone",
+      "Category": "Materials",
+      "AllowedMaterialTypes": [ "stone" ],
+      "AllowedMaterials": []
+    }
+  ]
+}

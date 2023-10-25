@@ -1,0 +1,82 @@
+{
+  "Constructions": [
+    {
+      "ID": "SoilWallFloor",
+      "Name": "Soil",
+      "ConstructAble": false,
+      "RotateAble": false,
+      "HasMaterialColor": true,
+      "Type": "WallFloor",
+      "Category": "Soil",
+
+      "Sprites": {
+        "Wall": [ "DirtWall" ],
+        "Floor": [ "DirtFloor" ]
+      },
+      "Components": [
+        {
+          "ItemID": "RawSoil",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "ID": "SoilFloor",
+      "Name": "Soil",
+      "ConstructAble": false,
+      "RotateAble": false,
+      "HasMaterialColor": true,
+      "Type": "Floor",
+      "Category": "Soil",
+
+      "Sprites": {
+        "Floor": [ "DirtFloor" ]
+      },
+      "Components": [
+        {
+          "ItemID": "RawSoil",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ID": "StoneWallFloor",
+      "Name": "Stone",
+      "ConstructAble": false,
+      "RotateAble": false,
+      "HasMaterialColor": true,
+      "Type": "WallFloor",
+      "Category": "Stone",
+
+      "Sprites": {
+        "Wall": [ "RoughStoneWall" ],
+        "Floor": [ "RoughStoneFloor" ]
+      },
+      "Components": [
+        {
+          "ItemID": "RawStone",
+          "Amount": 2
+        }
+      ]
+    },
+    {
+      "ID": "StoneFloor",
+      "Name": "Stone",
+      "ConstructAble": false,
+      "RotateAble": false,
+      "HasMaterialColor": true,
+      "Type": "Floor",
+      "Category": "Stone",
+
+      "Sprites": {
+        "Floor": [ "RoughStoneFloor" ]
+      },
+      "Components": [
+        {
+          "ItemID": "RawStone",
+          "Amount": 1
+        }
+      ]
+    }
+  ]
+}

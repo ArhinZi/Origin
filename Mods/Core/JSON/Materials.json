@@ -4,14 +4,14 @@
       "ID": "NONE",
       "Name": "nothing",
       "Color": "255 255 255 255",
-      "Type": "air",
+      "Type": "system",
       "Value": 0
     },
     {
       "ID": "HIDDEN",
       "Name": "hidden",
       "Color": "70 70 70 255",
-      "Type": "air",
+      "Type": "system",
       "Value": 0
     },
     {
@@ -26,6 +26,20 @@
       "Name": "dirt",
       "Color": "171 125 35 255",
       "Type": "soil",
+      "Value": 1
+    },
+    {
+      "ID": "CLAY",
+      "Name": "clay",
+      "Color": "144 88 78 255",
+      "Type": "soil",
+      "Value": 1.2
+    },
+    {
+      "ID": "WATER",
+      "Name": "water",
+      "Color": "0 0 100 128",
+      "Type": "fluid",
       "Value": 1
     }
   ]

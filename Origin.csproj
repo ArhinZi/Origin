@@ -57,15 +57,19 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-	  <None Remove="Mods\Core\XML\animals.xml" />
-	  <None Remove="mods\core\xml\Buildings.json" />
-	  <None Remove="Mods\Core\XML\Generators\SiteGeneratorParameters.xml" />
-	  <None Remove="Mods\Core\XML\Generators\SitePasses.xml" />
-	  <None Remove="mods\core\xml\Materials.json" />
-	  <None Remove="mods\core\xml\pawnSprites.json" />
-	  <None Remove="mods\core\xml\sprites0.json" />
-	  <None Remove="mods\core\xml\spritesAnimals.json" />
-	  <None Remove="mods\core\xml\terrainMaterials.json" />
+	  <None Remove="Mods\Core\JSON\animals.xml" />
+	  <None Remove="Mods\Core\JSON\BasicSprites.json" />
+	  <None Remove="Mods\Core\JSON\Buildings.json" />
+	  <None Remove="Mods\Core\JSON\ConstructionTypes.json" />
+	  <None Remove="Mods\Core\JSON\Generators\SiteGeneratorParameters.xml" />
+	  <None Remove="Mods\Core\JSON\Generators\SitePasses.xml" />
+	  <None Remove="Mods\Core\JSON\Items.json" />
+	  <None Remove="Mods\Core\JSON\Materials.json" />
+	  <None Remove="Mods\Core\JSON\pawnSprites.json" />
+	  <None Remove="Mods\Core\JSON\Settings.json" />
+	  <None Remove="Mods\Core\JSON\spritesAnimals.json" />
+	  <None Remove="Mods\Core\JSON\terrainMaterials.json" />
+	  <None Remove="Mods\Core\JSON\TerrainSettings.json" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
