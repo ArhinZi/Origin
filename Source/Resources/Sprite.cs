@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using System;
 
-namespace Origin.Source
+namespace Origin.Source.Resources
 {
     public enum IsometricDirection
     {
@@ -31,6 +31,11 @@ namespace Origin.Source
         /// Top Right direction
         /// </summary>
         TR,
+
+        L,
+        R,
+        T,
+        B
     }
 
     [Flags]
@@ -53,12 +58,6 @@ namespace Origin.Source
 
     public class Sprite
     {
-        public static readonly Point TILE_SIZE = new Point(32, 16);
-        public static readonly Point SPRITE_SIZE = new Point(32, 32);
-        public static readonly int FLOOR_YOFFSET = 4;
-
-        //public static Dictionary<string, Sprite> SpriteSet { get; private set; } = new Dictionary<string, Sprite>();
-
         public string ID { get; }
         public Texture2D Texture { get; }
         public Rectangle RectPos { get; }
@@ -74,11 +73,6 @@ namespace Origin.Source
             RectPos = pos;
             Direction = dir;
             Effect = effs;
-
-            /*if (!SpriteSet.ContainsKey(ID))
-            {
-                SpriteSet.Add(ID, this);
-            }*/
         }
     }
 }

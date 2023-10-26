@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
-namespace Origin.Source
+namespace Origin.Source.Resources
 {
     public static class ResourceLoader
     {
@@ -31,14 +31,13 @@ namespace Origin.Source
                         var json = reader.ReadToEnd();
                         JObject f = JObject.Parse(json);
                         jobj.Merge(f);
-                        //GlobalJsonResources.Read(file);
                     }
                 }
             }
-            GlobalResources.Read(jobj);
+            GlobalResources.ReadFromJson(jobj);
         }
 
-        public static IEnumerable<string> GetAllFiles(string rootDirectory)
+        private static IEnumerable<string> GetAllFiles(string rootDirectory)
         {
             Queue<string> pending = new Queue<string>();
             pending.Enqueue(rootDirectory);

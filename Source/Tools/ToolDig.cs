@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Origin.Source.IO;
 using System.Security.Policy;
+using Origin.Source.Resources;
 
 namespace Origin.Source.Tools
 {
@@ -28,7 +29,7 @@ namespace Origin.Source.Tools
         private SpritePositionColor template = new SpritePositionColor()
         {
             sprite = GlobalResources.GetSpriteByID("SelectionFloor"),
-            offset = new Point(0, -Sprite.FLOOR_YOFFSET),
+            offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
             color = Color.Red
         };
 
@@ -129,12 +130,12 @@ namespace Origin.Source.Tools
             bool clip = false)
         {
             Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
-            worldPos += new Vector3(0, level * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET) +
-                (onFloor ? Sprite.FLOOR_YOFFSET : 0)
+            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
+                (onFloor ? GlobalResources.Settings.FloorYoffset : 0)
                 , 0);
 
-            var cellPosX = (worldPos.X / Sprite.TILE_SIZE.X) - 0.5;
-            var cellPosY = (worldPos.Y / Sprite.TILE_SIZE.Y) - 0.5;
+            var cellPosX = (worldPos.X / GlobalResources.Settings.TileSize.X) - 0.5;
+            var cellPosY = (worldPos.Y / GlobalResources.Settings.TileSize.Y) - 0.5;
 
             Point3 cellPos = new Point3()
             {

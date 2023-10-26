@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using Origin.Source.ECS;
 using Origin.Source.Generators;
 using Origin.Source.Pathfind;
+using Origin.Source.Resources;
 using Origin.Source.Tools;
 using Origin.Source.Utils;
 
@@ -64,8 +65,8 @@ namespace Origin.Source
 
             Camera = new Camera2D();
             Camera.Position += (new Vector2(0,
-                -(CurrentLevel * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET)
-                    - Sprite.TILE_SIZE.Y * (Size.X / 2)
+                -(CurrentLevel * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset)
+                    - GlobalResources.Settings.TileSize.Y * (Size.X / 2)
                  )));
 
             Tools = new(this);

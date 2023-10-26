@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
@@ -12,9 +13,9 @@ using System.Linq;
 
 using Parser = Origin.Source.Utils.Parser;
 
-namespace Origin.Source.IO
+namespace Origin.Source.Resources.Converters
 {
-    public class SpriteJsonConverter : JsonConverter<Sprite>
+    public class SpriteConverter : JsonConverter<Sprite>
     {
         public override bool CanRead => true;
         public override bool CanWrite => false;
@@ -32,7 +33,7 @@ namespace Origin.Source.IO
                 Texture2D texture = GlobalResources.Textures.ContainsKey(textureName) ? GlobalResources.Textures[textureName] : null;
                 if (texture == null)
                 {
-                    Debug.WriteLine(String.Format("ERROR: No texture with name {}", textureName));
+                    Debug.WriteLine(string.Format("ERROR: No texture with name {}", textureName));
                     return null;
                 }
 

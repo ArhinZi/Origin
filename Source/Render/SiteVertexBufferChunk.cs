@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.ECS;
+using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
@@ -211,7 +212,7 @@ namespace Origin.Source.Render
                                     if (HalfWall && wall.Sprites.ContainsKey("Floor"))
                                     {
                                         spriteType = "Floor";
-                                        spriteShift = new Point(0, Sprite.TILE_SIZE.Y - Sprite.FLOOR_YOFFSET);
+                                        spriteShift = new Point(0, GlobalResources.Settings.TileSize.Y - GlobalResources.Settings.FloorYoffset);
                                     }
                                     Sprite sprite = wall.Sprites[spriteType][rand % wall.Sprites[spriteType].Count];
                                     Color c = structure.WallMaterial.Color;
@@ -240,7 +241,7 @@ namespace Origin.Source.Render
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Back,
                                             rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ),
-                                            new Point(Sprite.TILE_SIZE.X / 2, 0) + spriteShift);
+                                            new Point(GlobalResources.Settings.TileSize.X / 2, 0) + spriteShift);
 
                                     if (structure.WallEmbeddedMaterial != null && visibility.WallVisible)
                                     {
@@ -288,7 +289,7 @@ namespace Origin.Source.Render
                                     AddSprite(
                                         VertexBufferType.Static,
                                         (int)VertexBufferLayer.Front,
-                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
 
                                     if (Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ] != Entity.Null && (
                                         !Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Has<TileStructure>() ||
@@ -297,7 +298,7 @@ namespace Origin.Source.Render
                                         AddSprite(
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Front,
-                                            lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET - 1));
+                                            lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset - 1));
                                     if (Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ] != Entity.Null && (
                                         !Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Has<TileStructure>() ||
                                         Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Has<TileStructure>() &&
@@ -305,7 +306,7 @@ namespace Origin.Source.Render
                                         AddSprite(
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Front,
-                                            rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(Sprite.TILE_SIZE.X / 2, -Sprite.FLOOR_YOFFSET - 1));
+                                            rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1));
 
                                     if (structure.FloorEmbeddedMaterial != null && visibility.FloorVisible)
                                     {
@@ -315,7 +316,7 @@ namespace Origin.Source.Render
                                         AddSprite(
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Front,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
                                     }
                                     _isFullyHidden = false;
                                 }
@@ -330,12 +331,12 @@ namespace Origin.Source.Render
                                         AddSprite(
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Front,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
                                     else
                                         AddSprite(
                                         VertexBufferType.Static,
                                         (int)VertexBufferLayer.HiddenFront,
-                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
                                 }
                             }
 
@@ -364,12 +365,12 @@ namespace Origin.Source.Render
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                    sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
                             else
                                 AddSprite(
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.HiddenFront,
-                                sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -Sprite.FLOOR_YOFFSET));
+                                sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
                         }
                     }
                 }

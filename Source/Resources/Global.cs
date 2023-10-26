@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Origin.Source
+namespace Origin.Source.Resources
 {
     public static class Global
     {

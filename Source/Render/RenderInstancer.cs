@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
@@ -163,7 +164,7 @@ namespace Origin.Source.Render
 
                 sprite = tm.Sprites["Floor"][0];
                 textureRect = sprite.RectPos;
-                spritePos += new Point(0, -Sprite.FLOOR_YOFFSET);
+                spritePos += new Point(0, -GlobalResources.Settings.FloorYoffset);
                 // Calc the sprite corners positions
                 topLeft = new Vector3(spritePos.X, spritePos.Y, vertexZ);
                 topRight = new Vector3(spritePos.X + drawSize.X, spritePos.Y, vertexZ);
@@ -248,7 +249,7 @@ namespace Origin.Source.Render
 
                 sprite = tm.Sprites["Floor"][0];
                 textureRect = sprite.RectPos;
-                spritePos += new Point(0, -Sprite.FLOOR_YOFFSET);
+                spritePos += new Point(0, -GlobalResources.Settings.FloorYoffset);
                 // Calc the sprite corners positions
                 topLeft = new Vector3(spritePos.X, spritePos.Y, vertexZ);
                 topRight = new Vector3(spritePos.X + drawSize.X, spritePos.Y, vertexZ);

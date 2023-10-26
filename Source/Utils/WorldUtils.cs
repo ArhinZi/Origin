@@ -4,6 +4,7 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS;
+using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
@@ -28,13 +29,13 @@ namespace Origin.Source.Utils
         public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level)
         {
             Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
-            worldPos += new Vector3(0, level * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET), 0);
+            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset), 0);
             // Also works
-            //int tileX = (int)Math.Round((worldPos.X / Sprite.TILE_SIZE.X + worldPos.Y / Sprite.TILE_SIZE.Y - 1));
-            //int tileY = (int)Math.Round((worldPos.Y / Sprite.TILE_SIZE.Y - worldPos.X / Sprite.TILE_SIZE.X));
+            //int tileX = (int)Math.Round((worldPos.X / GlobalResources.Settings.TileSize.X + worldPos.Y / GlobalResources.Settings.TileSize.Y - 1));
+            //int tileY = (int)Math.Round((worldPos.Y / GlobalResources.Settings.TileSize.Y - worldPos.X / GlobalResources.Settings.TileSize.X));
 
-            var cellPosX = (worldPos.X / Sprite.TILE_SIZE.X) - 0.5;
-            var cellPosY = (worldPos.Y / Sprite.TILE_SIZE.Y) - 0.5;
+            var cellPosX = (worldPos.X / GlobalResources.Settings.TileSize.X) - 0.5;
+            var cellPosY = (worldPos.Y / GlobalResources.Settings.TileSize.Y) - 0.5;
 
             Point3 cellPos = new Point3()
             {
@@ -82,9 +83,9 @@ namespace Origin.Source.Utils
 
         public static Point GetSpritePositionByCellPosition(Point3 cellPos)
         {
-            var VertexX = (cellPos.X - cellPos.Y) * Sprite.TILE_SIZE.X / 2;
-            var VertexY = ((cellPos.X + cellPos.Y) * Sprite.TILE_SIZE.Y / 2)
-                    - cellPos.Z * (Sprite.TILE_SIZE.Y + Sprite.FLOOR_YOFFSET);
+            var VertexX = (cellPos.X - cellPos.Y) * GlobalResources.Settings.TileSize.X / 2;
+            var VertexY = ((cellPos.X + cellPos.Y) * GlobalResources.Settings.TileSize.Y / 2)
+                    - cellPos.Z * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset);
             return new Point(VertexX, VertexY);
         }
 

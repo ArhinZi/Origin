@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
 using Origin.Source.ECS;
+using Origin.Source.Resources;
 
 using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Paths;

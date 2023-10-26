@@ -3,14 +3,15 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.IO
+namespace Origin.Source.Resources.Converters
 {
-    public class TerrainMaterialJsonConverter : JsonConverter<TerrainMaterial>
+    public class TerrainMaterialConverter : JsonConverter<TerrainMaterial>
     {
         public override bool CanRead => true;
         public override bool CanWrite => false;

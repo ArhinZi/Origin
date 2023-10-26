@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Origin.Source.IO;
+using Origin.Source.Resources.Converters;
 
 using System;
 using System.Collections.Generic;
@@ -11,41 +12,44 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 
-namespace Origin.Source
+namespace Origin.Source.Resources
 {
     public static class GlobalResources
     {
         private static JsonSerializerSettings settings;
-        private static HashSet<Sprite> _sprites { get; set; } = new();
-        private static HashSet<TerrainMaterial> _terraMats { get; set; } = new();
 
-        public static HashSet<Sprite> Sprites => _sprites;
-
-        public static HashSet<TerrainMaterial> TerrainMaterials => _terraMats;
+        public static List<TerrainMaterial> TerrainMaterials = new();
 
         public static Dictionary<string, Texture2D> Textures { get; private set; } = new();
+
+        public static List<Sprite> Sprites = new();
+        public static List<Material> Materials = new();
+        public static List<Item> Items = new();
+        public static List<Construction> Constructions = new();
+
+        public static Settings Settings = new();
 
         public static void Init()
         {
             //wrapper = new DataWrapper();
             settings = new JsonSerializerSettings();
-            settings.Converters.Add(new SpriteJsonConverter());
-            settings.Converters.Add(new TerrainMaterialJsonConverter());
+            settings.Converters.Add(new PointConverter());
+            settings.Converters.Add(new SpriteConverter());
+            settings.Converters.Add(new TerrainMaterialConverter());
         }
 
-        public static void Read(JObject obj)
+        public static void ReadFromJson(JObject obj)
         {
-            /*using StreamReader reader = new(path);
-            var json = reader.ReadToEnd();*/
-            List<string> sequence = new List<string>()
-            {
-                "Sprites",
-                "TerrainMaterials"
-            };
-
             var tok = obj.ToObject<Dictionary<string, JToken>>();
-            _sprites = JsonConvert.DeserializeObject<HashSet<Sprite>>(tok["Sprites"].ToString(), settings);
-            _terraMats = JsonConvert.DeserializeObject<HashSet<TerrainMaterial>>(tok["TerrainMaterials"].ToString(), settings);
+
+            Sprites = JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings);
+            TerrainMaterials = JsonConvert.DeserializeObject<List<TerrainMaterial>>(tok["TerrainMaterials"].ToString(), settings);
+
+            Materials = JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings);
+            Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);
+            Constructions = JsonConvert.DeserializeObject<List<Construction>>(tok["Constructions"].ToString(), settings);
+
+            Settings = JsonConvert.DeserializeObject<Settings>(tok["Settings"].ToString(), settings);
 
             //spriteDataWrapper = JsonConvert.DeserializeObject<DataWrapper>(obj.ToString(), settings);
 
@@ -62,9 +66,9 @@ namespace Origin.Source
             }
         }
 
-        public static T GetHashSetResourceBy<T>(HashSet<T> src, string propName, string value)
+        public static T GetHashSetResourceBy<T>(List<T> src, string propName, string value)
         {
-            T obj = src.FirstOrDefault(i => (string)(typeof(T).GetProperty(propName).GetValue(i, null)) == value);
+            T obj = src.FirstOrDefault(i => (string)typeof(T).GetProperty(propName).GetValue(i, null) == value);
 
             return obj;
         }

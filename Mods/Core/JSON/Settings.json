@@ -4,6 +4,10 @@
 
     "HiddenWallSprite": "SolidSelectionWall",
     "HiddenFloorSprite": "SolidSelectionFloor",
-    "HiddenColor": "70 70 70 255"
+    "HiddenColor": "70 70 70 255",
+
+    "TileSize": "32 16",
+    "SpriteSize": "32 32",
+    "FloorYoffset": 4
   }
 }

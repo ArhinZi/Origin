@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Origin.Source.IO;
 using System.Security.Policy;
+using Origin.Source.Resources;
 
 namespace Origin.Source.Tools
 {

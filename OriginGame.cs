@@ -7,12 +7,11 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
 using Myra;
-
-using Origin.Source;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.GCs;
 using Origin.Source.IO;
+using Origin.Source.Resources;
 using Origin.Source.UI;
 
 using System;
