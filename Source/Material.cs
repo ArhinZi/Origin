@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
+using Origin.Source.Utils;
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml.Linq;
@@ -28,24 +30,6 @@ namespace Origin.Source
 
             Types.Add(Type);
             Materials.Add(this.ID, this);
-        }
-
-        public static void LoadMaterialsFromXML(XElement root, string elementName = "Item")
-        {
-            foreach (var item in root.Elements(elementName))
-            {
-                try
-                {
-                    new Material(
-                        ID: item.Element("ID").Value,
-                        Name: item.Element("Name").Value,
-                        Color: XMLoader.ParseColor(item.Element("Color").Value),
-                        Type: item.Element("Type").Value,
-                        Value: float.Parse(item.Element("Value").Value)
-                        );
-                }
-                catch { Debug.Print("Error when parsing Material"); }
-            }
         }
     }
 }

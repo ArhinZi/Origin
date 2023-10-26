@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Origin.Source
+namespace Origin.Source.Render
 {
     public enum VertexBufferType
     {
@@ -196,7 +196,7 @@ namespace Origin.Source
                         TileStructure structure;
                         if (tile != Entity.Null)
                         {
-                            bool hasStructure = tile.TryGet<TileStructure>(out structure);
+                            bool hasStructure = tile.TryGet(out structure);
                             ref var visibility = ref tile.Get<TileVisibility>();
 
                             #region BackBuffer
@@ -208,10 +208,10 @@ namespace Origin.Source
                                     TerrainMaterial wall = structure.WallMaterial;
                                     string spriteType = "Wall";
                                     Point spriteShift = new Point(0, 0);
-                                    if ((HalfWall) && wall.Sprites.ContainsKey("Floor"))
+                                    if (HalfWall && wall.Sprites.ContainsKey("Floor"))
                                     {
                                         spriteType = "Floor";
-                                        spriteShift = new Point(0, (Sprite.TILE_SIZE.Y - Sprite.FLOOR_YOFFSET));
+                                        spriteShift = new Point(0, Sprite.TILE_SIZE.Y - Sprite.FLOOR_YOFFSET);
                                     }
                                     Sprite sprite = wall.Sprites[spriteType][rand % wall.Sprites[spriteType].Count];
                                     Color c = structure.WallMaterial.Color;
@@ -242,7 +242,7 @@ namespace Origin.Source
                                             rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ),
                                             new Point(Sprite.TILE_SIZE.X / 2, 0) + spriteShift);
 
-                                    if ((structure.WallEmbeddedMaterial != null && visibility.WallVisible))
+                                    if (structure.WallEmbeddedMaterial != null && visibility.WallVisible)
                                     {
                                         TerrainMaterial embfloor = structure.WallEmbeddedMaterial;
                                         sprite = embfloor.Sprites["EmbeddedWall"][rand % embfloor.Sprites["EmbeddedWall"].Count];
@@ -261,7 +261,7 @@ namespace Origin.Source
                                     Color c = tm.Color;
                                     sprite = tm.Sprites["Wall"][0];
                                     if (visibility.WallVisible ||
-                                        (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY))
+                                        Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                         AddSprite(
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Back,
@@ -326,7 +326,7 @@ namespace Origin.Source
                                     Sprite sprite;
                                     Color c = tm.Color;
                                     sprite = tm.Sprites["Floor"][0];
-                                    if ((Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY))
+                                    if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                         AddSprite(
                                             VertexBufferType.Static,
                                             (int)VertexBufferLayer.Front,
@@ -348,7 +348,7 @@ namespace Origin.Source
                             Color c = Color.Wheat;
                             sprite = tm.Sprites["Wall"][0];
                             c = tm.Color;
-                            if ((Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY))
+                            if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
@@ -360,7 +360,7 @@ namespace Origin.Source
                                     sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
 
                             sprite = tm.Sprites["Floor"][0];
-                            if ((Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY))
+                            if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
@@ -529,7 +529,7 @@ namespace Origin.Source
         public void Draw(Effect effect, List<int> typesToDraw = null, bool drawstatic = true, bool drawdynamic = true)
         {
             //if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
-            typesToDraw ??= Enumerable.Range(0, CountOfLayers).ToList<int>();
+            typesToDraw ??= Enumerable.Range(0, CountOfLayers).ToList();
             foreach (var key in Texture2Ds)
             {
                 effect.Parameters["Texture"].SetValue(key);
@@ -545,7 +545,7 @@ namespace Origin.Source
             {
                 if (_staticVertexBuffers.ContainsKey(key) && drawstatic)
                 {
-                    foreach (var item in _staticVertexBuffers[key][(int)layer])
+                    foreach (var item in _staticVertexBuffers[key][layer])
                     {
                         if (item.VertexCount > 0)
                         {
@@ -557,7 +557,7 @@ namespace Origin.Source
                 }
                 if (_dynamicVertices.ContainsKey(key) && drawdynamic)
                 {
-                    ref List<VertexPositionColorTextureBlock[]> listVP = ref _dynamicVertices[key][(int)layer];
+                    ref List<VertexPositionColorTextureBlock[]> listVP = ref _dynamicVertices[key][layer];
                     int index = _dynamicVertexIndexes[key][layer];
                     int count = index;
 

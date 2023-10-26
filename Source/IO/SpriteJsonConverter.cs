@@ -4,9 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Origin.Source.Utils;
+
 using System;
 using System.Diagnostics;
 using System.Linq;
+
+using Parser = Origin.Source.Utils.Parser;
 
 namespace Origin.Source.IO
 {
@@ -32,7 +36,7 @@ namespace Origin.Source.IO
                     return null;
                 }
 
-                Rectangle rectangle = XMLoader.ParseRectangle(sourceRect);
+                Rectangle rectangle = Parser.RectangleFromString(sourceRect);
 
                 // Create your Texture2D and Rectangle objects here based on textureName and sourceRect.
                 // You'll need to implement this part according to your application's logic.

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Origin.Source.ECS;
 
 using System;
+using System.Collections.Generic;
 
 namespace Origin.Source.Utils
 {
@@ -101,5 +102,148 @@ namespace Origin.Source.Utils
                 cellPos.Z);
             return chunkPos;
         }
+
+        #region Neighbour Patterns
+
+        // Inclusive - includes (0,0,0)
+        // Exclusive - excludes (0,0,0)
+
+        public static Point3[] PLUS_NEIGHBOUR_PATTERN_1L(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+                    new Point3(0,0,0),
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0)
+                };
+            else
+                return new Point3[]
+                {
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0)
+                };
+        }
+
+        public static Point3[] FULL_NEIGHBOUR_PATTERN_1L(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+                    new Point3(0,0,0),
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0),
+                    new Point3(-1,-1,0),
+                    new Point3(-1,1,0),
+                    new Point3(1,-1,0),
+                    new Point3(1,1,0),
+                };
+            else
+                return new Point3[]
+                {
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0),
+                    new Point3(-1,-1,0),
+                    new Point3(-1,1,0),
+                    new Point3(1,-1,0),
+                    new Point3(1,1,0),
+                };
+        }
+
+        public static Point3[] STAR_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+                    new Point3(0,0,0),
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(0,0,1),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0),
+                    new Point3(0,0,-1),
+                };
+            else
+                return new Point3[]
+                {
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(0,0,1),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0),
+                    new Point3(0,0,-1),
+                };
+        }
+
+        public static Point3[] FULL_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+                    new Point3(0,0,0),
+                    new Point3(1,0,     0),
+                    new Point3(0,1,     0),
+                    new Point3(-1,0,    0),
+                    new Point3(0,-1,    0),
+                    new Point3(-1,-1,   0),
+                    new Point3(-1,1,    0),
+                    new Point3(1,-1,    0),
+                    new Point3(1,1,     0),
+                    new Point3(1,0,     -1),
+                    new Point3(0,1,     -1),
+                    new Point3(-1,0,    -1),
+                    new Point3(0,-1,    -1),
+                    new Point3(-1,-1,   -1),
+                    new Point3(-1,1,    -1),
+                    new Point3(1,-1,    -1),
+                    new Point3(1,1,     -1),
+                    new Point3(1,0,     1),
+                    new Point3(0,1,     1),
+                    new Point3(-1,0,    1),
+                    new Point3(0,-1,    1),
+                    new Point3(-1,-1,   1),
+                    new Point3(-1,1,    1),
+                    new Point3(1,-1,    1),
+                    new Point3(1,1,     1),
+                };
+            else
+                return new Point3[]
+                {
+                    new Point3(1,0,     0),
+                    new Point3(0,1,     0),
+                    new Point3(-1,0,    0),
+                    new Point3(0,-1,    0),
+                    new Point3(-1,-1,   0),
+                    new Point3(-1,1,    0),
+                    new Point3(1,-1,    0),
+                    new Point3(1,1,     0),
+                    new Point3(1,0,     -1),
+                    new Point3(0,1,     -1),
+                    new Point3(-1,0,    -1),
+                    new Point3(0,-1,    -1),
+                    new Point3(-1,-1,   -1),
+                    new Point3(-1,1,    -1),
+                    new Point3(1,-1,    -1),
+                    new Point3(1,1,     -1),
+                    new Point3(1,0,     1),
+                    new Point3(0,1,     1),
+                    new Point3(-1,0,    1),
+                    new Point3(0,-1,    1),
+                    new Point3(-1,-1,   1),
+                    new Point3(-1,1,    1),
+                    new Point3(1,-1,    1),
+                    new Point3(1,1,     1),
+                };
+        }
+
+        #endregion Neighbour Patterns
     }
 }

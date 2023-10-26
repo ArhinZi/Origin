@@ -10,6 +10,7 @@ using MonoGame.Extended.Sprites;
 
 using Origin.Source.ECS;
 using Origin.Source.Events;
+using Origin.Source.Render;
 using Origin.Source.Utils;
 
 using System;

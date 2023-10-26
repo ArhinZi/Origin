@@ -36,20 +36,6 @@ namespace Origin.Source
                 }
             }
             GlobalResources.Read(jobj);
-
-            foreach (var modeFolder in Directory.GetDirectories(Path.Combine(path, "Mods\\")))
-            {
-                foreach (var file in GetAllFiles(modeFolder))
-                {
-                    if (file.Split(".").Last() == "xml")
-                    {
-                        var xml = XDocument.Load(file);
-
-                        if (xml.Root.Name == "SiteGenParameters")
-                            SiteBlocksMaker.ReadParameters(xml.Root);
-                    }
-                }
-            }
         }
 
         public static IEnumerable<string> GetAllFiles(string rootDirectory)

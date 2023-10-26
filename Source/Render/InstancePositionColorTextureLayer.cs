@@ -4,39 +4,39 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Runtime.InteropServices;
 
-namespace Origin.Source.Utils
+namespace Origin.Source.Render
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct VertexPositionColorTextureBlock : IVertexType
+    public struct InstancePositionColorTextureLayer : IVertexType
     {
         public Vector3 Position;
 
         public Color Color;
 
-        public Vector2 TextureCoordinate;
+        public Vector4 TextureCoordinate;
 
-        public Vector3 BlockPosition;
+        public int Layer;
 
         public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
-                new VertexElement(VertexElementByteOffset.PositionStartOffset(), VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+                new VertexElement(VertexElementByteOffset.PositionStartOffset(), VertexElementFormat.Vector3, VertexElementUsage.Position, 1),
                 new VertexElement(VertexElementByteOffset.OffsetColor(), VertexElementFormat.Color, VertexElementUsage.Color, 0),
-                new VertexElement(VertexElementByteOffset.OffsetVector2(), VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
-                new VertexElement(VertexElementByteOffset.OffsetVector3(), VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 1));
+                new VertexElement(VertexElementByteOffset.OffsetVector4(), VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 2),
+                new VertexElement(VertexElementByteOffset.OffsetInt(), VertexElementFormat.Single, VertexElementUsage.TextureCoordinate, 3));
 
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
-        public VertexPositionColorTextureBlock(Vector3 position, Color color, Vector2 textureCoordinate, Vector3 blockPosition)
+        public InstancePositionColorTextureLayer(Vector3 position, Color color, Vector4 textureCoordinate, int layer)
         {
             Position = position;
             Color = color;
             TextureCoordinate = textureCoordinate;
-            BlockPosition = blockPosition;
+            Layer = layer;
         }
 
         public override int GetHashCode()
         {
             throw new NotImplementedException();
-            return (((Position.GetHashCode() * 397) ^ Color.GetHashCode()) * 397) ^ TextureCoordinate.GetHashCode();
+            return (Position.GetHashCode() * 397 ^ Color.GetHashCode()) * 397 ^ TextureCoordinate.GetHashCode();
         }
 
         public override string ToString()
@@ -48,13 +48,12 @@ namespace Origin.Source.Utils
             Color color = Color;
             obj[3] = color.ToString();
             obj[4] = " TextureCoordinate:";
-            Vector2 textureCoordinate = TextureCoordinate;
-            obj[5] = textureCoordinate.ToString();
+            obj[5] = Layer.ToString();
             obj[6] = "}}";
             return string.Concat(obj);
         }
 
-        public static bool operator ==(VertexPositionColorTextureBlock left, VertexPositionColorTextureBlock right)
+        public static bool operator ==(InstancePositionColorTextureLayer left, InstancePositionColorTextureLayer right)
         {
             if (left.Position == right.Position && left.Color == right.Color)
             {
@@ -64,7 +63,7 @@ namespace Origin.Source.Utils
             return false;
         }
 
-        public static bool operator !=(VertexPositionColorTextureBlock left, VertexPositionColorTextureBlock right)
+        public static bool operator !=(InstancePositionColorTextureLayer left, InstancePositionColorTextureLayer right)
         {
             return !(left == right);
         }
@@ -81,7 +80,7 @@ namespace Origin.Source.Utils
                 return false;
             }
 
-            return this == (VertexPositionColorTextureBlock)obj;
+            return this == (InstancePositionColorTextureLayer)obj;
         }
 
         /// <summary>

@@ -3,6 +3,8 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using Origin.Source.Utils;
+
 using System;
 using System.Collections.Generic;
 
@@ -22,7 +24,7 @@ namespace Origin.Source.IO
                 string id = jsonObject["ID"].Value<string>();
 
                 string color = jsonObject["Color"].Value<string>();
-                Color col = XMLoader.ParseColor(color);
+                Color col = Parser.ColorFromString(color);
 
                 var spritesJson = jsonObject["Sprites"].ToObject<Dictionary<string, List<string>>>();
 

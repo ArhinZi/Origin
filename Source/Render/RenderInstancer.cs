@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Origin.Source.Utils;
+
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.Utils
+namespace Origin.Source.Render
 {
     public class RenderInstancer
     {
@@ -26,15 +28,6 @@ namespace Origin.Source.Utils
             public VertexBuffer InstanceBuffer;
             public VertexBufferBinding[] Binding;
         }
-
-        /*public VertexBuffer HiddenChunkWallGeometry;
-        public IndexBuffer HiddenChunkWallIndexes;
-
-        public VertexBuffer HiddenChunkFloorGeometry;
-        public IndexBuffer HiddenChunkFloorIndexes;
-
-        private
-        private */
 
         private Point ChunkSize;
         private GraphicsDevice _device;
@@ -61,7 +54,6 @@ namespace Origin.Source.Utils
             CreateHiddenWallFlatChunk();
             CreateHiddenLBorder();
             CreateHiddenRBorder();
-            //CreateHiddenRBorder();
         }
 
         private void CreateHiddenWallFlatChunk()
