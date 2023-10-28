@@ -8,6 +8,7 @@ using Origin.Source.IO;
 using Origin.Source.Resources.Converters;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,9 +71,16 @@ namespace Origin.Source.Resources
             }
         }
 
+        private static ConcurrentDictionary<(Type, string, string), object> ResourceByCache = new();
+
         public static T GetResourceBy<T>(List<T> src, string propName, string value)
         {
+            if (ResourceByCache.ContainsKey((typeof(T), propName, value)))
+                return (T)ResourceByCache[(typeof(T), propName, value)];
+
             T obj = src.FirstOrDefault(i => ((string)typeof(T).GetProperty(propName).GetValue(i, null)).ToUpper() == value.ToUpper());
+
+            ResourceByCache.TryAdd((typeof(T), propName, value), obj);
 
             return obj;
         }
