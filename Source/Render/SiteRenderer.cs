@@ -480,7 +480,7 @@ namespace Origin.Source
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
-            _graphicsDevice.DepthStencilState = DepthStencilState.None;
+            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.BlendState = BlendState.AlphaBlend;
             //_graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
 
@@ -488,13 +488,13 @@ namespace Origin.Source
             _renderInstancer.DrawInstancedHidden();
 
             _customEffect.CurrentTechnique = _customEffect.Techniques["MainTech"];
-            foreach (var key in SiteVertexBufferChunk.Texture2Ds)
+            for (int z = _drawLowest; z <= _drawHighest; z++)
             {
-                _customEffect.Parameters["Texture"].SetValue(key);
-                _customEffect.CurrentTechnique.Passes[0].Apply();
-
-                for (int z = _drawLowest; z <= _drawHighest; z++)
+                foreach (var key in SiteVertexBufferChunk.Texture2Ds)
                 {
+                    _customEffect.Parameters["Texture"].SetValue(key);
+                    _customEffect.CurrentTechnique.Passes[0].Apply();
+
                     for (int x = 0; x < _chunksCount.X; x++)
                     {
                         for (int y = 0; y < _chunksCount.Y; y++)

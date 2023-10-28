@@ -200,8 +200,8 @@ namespace Origin.Source.Pathfind
                             heuristic = Heuristic(nNext.position, pgoal) * 2f
                         };
 
-                        if (!visited.ContainsKey(nNext.position))
-                            interesting.Insert(pFNode);
+                        //if (!visited.ContainsKey(nNext.position))
+                        interesting.Insert(pFNode);
 
                         visited[nNext.position] = pFNode;
                         path[pFNode] = pfCurrent;

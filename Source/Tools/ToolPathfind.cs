@@ -31,9 +31,12 @@ namespace Origin.Source.Tools
         private SpritePositionColor template = new SpritePositionColor()
         {
             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SolidSelectionWall"),
-            offset = new Point(0, 0),
-            color = new Color(0, 0, 50, 100)
+            offset = new Point(0, 0)
         };
+
+        private Color baseColor = new Color(255, 0, 0);
+        private Color pathColor = new Color(0, 0, 255);
+        private Color debugColor = Color.Yellow;
 
         public ToolPathfind(SiteToolController controller) :
             base(controller)
@@ -46,6 +49,7 @@ namespace Origin.Source.Tools
         public override void Reset()
         {
             Active = false;
+            start = Point3.Null;
             sprites.Clear();
         }
 
@@ -84,7 +88,7 @@ namespace Origin.Source.Tools
                 if (LastPath != null)
                 {
                     LastPath.path.Sort();
-                    LastPath.path.Reverse();
+                    //LastPath.path.Reverse();
                     LastPath.visited.Sort();
                 }
             }
@@ -93,7 +97,7 @@ namespace Origin.Source.Tools
             {
                 sprites.Add(template.Clone() as SpritePositionColor);
                 sprites[^1].position = Position;
-                sprites[^1].color = new Color(255, 0, 0, 255);
+                sprites[^1].color = baseColor;
             }
             if (LastPath != null)
             {
@@ -102,13 +106,14 @@ namespace Origin.Source.Tools
                     SpritePositionColor spc = template.Clone() as SpritePositionColor;
                     sprites.Add(spc);
                     sprites[^1].position = Pos;
-                    sprites[^1].color = new Color(0, 50, 50, 50);
+                    sprites[^1].color = debugColor;
                 }
                 foreach (var Pos in LastPath.path)
                 {
                     SpritePositionColor spc = template.Clone() as SpritePositionColor;
                     sprites.Add(spc);
                     sprites[^1].position = Pos;
+                    sprites[^1].color = pathColor;
                 }
             }
 
