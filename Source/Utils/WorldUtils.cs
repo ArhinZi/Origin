@@ -55,7 +55,7 @@ namespace Origin.Source.Utils
                     return pos;
                 if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 &&
                     site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
-                    !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
+                    !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
                 {
                     level--;
                     continue;
@@ -72,7 +72,7 @@ namespace Origin.Source.Utils
             {
                 return pos;
             }
-            while (pos.Z - 1 >= 0 && !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
+            while (pos.Z - 1 >= 0 && !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
             {
                 pos = pos - new Point3(1, 1, 1);
                 if (pos.X < 0 || pos.X >= site.Size.X || pos.Y < 0 || pos.Y >= site.Size.Y)
@@ -243,6 +243,23 @@ namespace Origin.Source.Utils
                     new Point3(1,-1,    1),
                     new Point3(1,1,     1),
                 };
+        }
+
+        public static Point3[] TOP_BOTTOM_NEIGHBOUR_PATTERN(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+                    new Point3(0,0,0),
+                    new Point3(0,0,     1),
+                    new Point3(0,0,     -1)
+                };
+            else
+                return new Point3[]
+                    {
+                    new Point3(0,0,     1),
+                    new Point3(0,0,     -1)
+                    };
         }
 
         #endregion Neighbour Patterns

@@ -7,6 +7,7 @@
       "RotateAble": false,
       "HasMaterialColor": true,
       "Type": "WallFloor",
+      "WallRemovedConstruction": "SoilFloor",
       "Category": "Soil",
 
       "Sprites": {
@@ -46,6 +47,7 @@
       "RotateAble": false,
       "HasMaterialColor": true,
       "Type": "WallFloor",
+      "WallRemovedConstruction": "StoneFloor",
       "Category": "Stone",
 
       "Sprites": {
@@ -69,6 +71,46 @@
       "Category": "Stone",
 
       "Sprites": {
+        "Floor": [ "RoughStoneFloor" ]
+      },
+      "Components": [
+        {
+          "ItemID": "RawStone",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ID": "SoilRamp",
+      "Name": "Soil ramp",
+      "ConstructAble": false,
+      "RotateAble": true,
+      "HasMaterialColor": true,
+      "Type": "Ramp",
+      "Category": "Soil",
+
+      "Sprites": {
+        "Wall": [ "RoughStoneWall" ],
+        "Floor": [ "RoughStoneFloor" ]
+      },
+      "Components": [
+        {
+          "ItemID": "RawSoil",
+          "Amount": 1
+        }
+      ]
+    },
+    {
+      "ID": "StoneRamp",
+      "Name": "Stone ramp",
+      "ConstructAble": false,
+      "RotateAble": true,
+      "HasMaterialColor": true,
+      "Type": "Ramp",
+      "Category": "Stone",
+
+      "Sprites": {
+        "Wall": [ "RoughStoneWall" ],
         "Floor": [ "RoughStoneFloor" ]
       },
       "Components": [

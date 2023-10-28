@@ -31,7 +31,7 @@ namespace Origin.Source.Tools
 
         private SpritePositionColor template = new SpritePositionColor()
         {
-            sprite = GlobalResources.GetSpriteByID("DirtWall"),
+            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
             offset = new Point(0, 0),
             color = Color.Blue
         };
@@ -98,14 +98,14 @@ namespace Origin.Source.Tools
                                     {
                                         sprites.Add(new SpritePositionColor()
                                         {
-                                            sprite = GlobalResources.GetSpriteByID("DirtWall"),
+                                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
                                             color = Color.White * 0.5f,
                                             offset = new Point(0, 0),
                                             position = Pos
                                         });
                                         sprites.Add(new SpritePositionColor()
                                         {
-                                            sprite = GlobalResources.GetSpriteByID("DirtFloor"),
+                                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtFloor"),
                                             color = Color.White * 0.5f,
                                             offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
                                             position = Pos
@@ -125,16 +125,15 @@ namespace Origin.Source.Tools
                                 for (int y = start.Y; y <= end.Y; y++)
                                 {
                                     Point3 pos = new Point3(x, y, z);
-                                    var ent = Controller.Site.Blocks[x, y, z];
+                                    var ent = Controller.Site.Blocks[pos];
                                     Controller.Site.ECSWorld.Destroy(ent);
-                                    ent = Controller.Site.ECSWorld.Create(new OnSitePosition(new Point3(pos.X, pos.Y, pos.Z)), new TileVisibility());
-                                    Controller.Site.ECSWorld.Add(ent,
-                                            new TileStructure()
-                                            {
-                                                WallMaterial = GlobalResources.GetTerrainMaterialByID("DIRT"),
-                                                FloorMaterial = GlobalResources.GetTerrainMaterialByID("DIRT"),
-                                            });
-                                    Controller.Site.ECSWorld.Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>(ent);
+                                    ent = Controller.Site.ECSWorld.Create(new IsTile() { Position = pos });
+                                    ent.Add(new BaseConstruction()
+                                    {
+                                        ConstructionID = "SoilWallFloor",
+                                        MaterialID = "Dirt"
+                                    });
+                                    ent.Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
                                     Controller.Site.Blocks[x, y, z] = ent;
                                 }
                             }
@@ -153,14 +152,14 @@ namespace Origin.Source.Tools
             {
                 sprites.Add(new SpritePositionColor()
                 {
-                    sprite = GlobalResources.GetSpriteByID("DirtWall"),
+                    sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
                     color = Color.White * 0.5f,
                     offset = new Point(0, 0),
                     position = Position
                 });
                 sprites.Add(new SpritePositionColor()
                 {
-                    sprite = GlobalResources.GetSpriteByID("DirtFloor"),
+                    sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtFloor"),
                     color = Color.White * 0.5f,
                     offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
                     position = Position
@@ -169,7 +168,7 @@ namespace Origin.Source.Tools
                 {
                     sprites.Add(new SpritePositionColor()
                     {
-                        sprite = GlobalResources.GetSpriteByID("SelectionWall"),
+                        sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionWall"),
                         color = new Color(25, 25, 25, 200),
                         position = new Point3(Position.X, Position.Y, i)
                     });
@@ -207,16 +206,19 @@ namespace Origin.Source.Tools
             for (int i = 0; i < SiteRenderer.ONE_MOMENT_DRAW_LEVELS; i++)
             {
                 Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, site, onFloor);
-                if (pos.LessOr(Point3.Zero))
+
+                Entity tmp;
+                if (pos.InBounds(Point3.Zero, site.Size) &&
+                    site.Blocks.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>() &&
+                    site.Blocks.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
+                    return pos;
+                else if (site.Blocks.TryGet(pos, out tmp) && tmp == Entity.Null)
                     return Point3.Null;
-                if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 &&
-                     site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
-                     !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>())
+                else
                 {
                     tlevel--;
                     continue;
                 }
-                else return pos;
             }
 
             return Point3.Null;

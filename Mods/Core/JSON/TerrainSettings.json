@@ -2,7 +2,20 @@
   "TerrainSettings": {
     "Default": {
       "SoilDepthMin": 2,
-      "SoilDepthMax": 5
+      "SoilDepthMax": 5,
+
+      "Vegetations": [
+        {
+          "ID": "GRASS",
+          "Config": [
+            {
+              "OnConstructions": [ "SoilWallFloor", "SoilFloor" ],
+              "OnConstructionsCategories": [],
+              "Sprites": [ "EmbeddedGrassFloor1", "EmbeddedGrassFloor2" ]
+            }
+          ]
+        }
+      ]
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using Arch.CommandBuffer;
 using Arch.Core;
 using Arch.Core.Extensions;
+using Arch.Relationships;
 
 using info.lundin.math;
 
@@ -127,56 +128,44 @@ namespace Origin.Source
             if (ECSWorld.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileLogic>()) > 0)
             {
                 // Update pathes
-                var query = new QueryDescription().WithAll<WaitingForUpdateTileLogic, OnSitePosition>();
+                var query = new QueryDescription().WithAll<WaitingForUpdateTileLogic, IsTile>();
                 var commands = new CommandBuffer(ECSWorld);
                 var visited = new HashSet<Point3>();
-                ECSWorld.Query(in query, (Entity entity, ref OnSitePosition osp) =>
+                ECSWorld.Query(in query, (Entity entity, ref IsTile rootComp) =>
                 {
-                    var pos = osp.position;
+                    var p = rootComp.Position;
 
-                    for (int x = pos.X - 1; x <= pos.X + 1; x++)
+                    foreach (var n in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
                     {
-                        for (int y = pos.Y - 1; y <= pos.Y + 1; y++)
+                        Point3 nPos = p + n;
+                        Entity rootN;
+                        if (Blocks.TryGet(nPos, out rootN) && rootN != Entity.Null)
                         {
-                            for (int z = pos.Z - 1; z <= pos.Z + 1; z++)
+                            // Remove path if Construction is on Tile
+                            if (rootN.Has<BaseConstruction>())
                             {
-                                if (x >= 0 && y >= 0 && z >= 0 &&
-                                x < Size.X && y < Size.Y && z < Size.Z &&
-                                (x != pos.X || y != pos.Y || z != pos.Z))
+                                commands.Remove<TilePathAble>(rootN);
+                            }
+                            else
+                            {
+                                // Check a construction under the Tile
+                                Entity tmp;
+                                if (Blocks.TryGet(nPos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null)
                                 {
-                                    Point3 p = new Point3(x, y, z);
-                                    Entity ent = Blocks[p.X, p.Y, p.Z];
-
-                                    if (visited.Contains(p)) continue;
-                                    if (ent != Entity.Null)
+                                    if (tmp.Has<BaseConstruction>())
                                     {
-                                        if (ent.Has<TileStructure>())
-                                        {
-                                            if (ent.Has<TilePathAble>())
-                                                commands.Remove<TilePathAble>(ent);
-                                        }
-                                        else
-                                        {
-                                            if (p.Z != 0 &&
-                                                Blocks[p.X, p.Y, p.Z - 1] != Entity.Null &&
-                                                Blocks[p.X, p.Y, p.Z - 1].Has<TileStructure>() &&
-                                                Blocks[p.X, p.Y, p.Z - 1].Get<TileStructure>().FloorMaterial != null)
-                                            {
-                                                commands.Add<TilePathAble>(ent);
-                                            }
-                                            else
-                                            {
-                                                commands.Remove<TilePathAble>(ent);
-                                            }
-                                        }
-                                        visited.Add(p);
+                                        commands.Add<TilePathAble>(rootN);
+                                    }
+                                    else
+                                    {
+                                        commands.Remove<TilePathAble>(rootN);
                                     }
                                 }
                             }
                         }
+                        visited.Add(nPos);
+                        commands.Remove<WaitingForUpdateTileLogic>(entity);
                     }
-
-                    commands.Remove<WaitingForUpdateTileLogic>(entity);
                 });
                 commands.Playback();
                 foreach (var item in visited)
@@ -196,12 +185,12 @@ namespace Origin.Source
 
         private void InitPathFinder()
         {
-            var query = new QueryDescription().WithAll<TilePathAble, OnSitePosition>();
+            var query = new QueryDescription().WithAll<TilePathAble, IsTile>();
 
             _pathfinderSystem = new PathfinderSystem();
-            ECSWorld.Query(in query, (ref TilePathAble pn, ref OnSitePosition osp) =>
+            ECSWorld.Query(in query, (ref TilePathAble pn, ref IsTile tile) =>
             {
-                Point3 pos = osp.position;
+                Point3 pos = tile.Position;
                 SetPathNode(pos);
             });
         }
@@ -259,7 +248,7 @@ namespace Origin.Source
             SetPathNode(pos);
         }
 
-        public List<Point3> FindPath(Point3 start, Point3 end)
+        public PathInfo FindPath(Point3 start, Point3 end, bool debug = false)
         {
             long a, b;
             System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
@@ -267,79 +256,33 @@ namespace Origin.Source
             //for (int i = 0; i < 10; i++)
 
             var currPath2 = _pathfinderSystem.FindPath(start,
-            end);
+            end, debug);
 
             watch.Stop();
             b = watch.ElapsedMilliseconds;
             if (currPath2 != null)
-                Debug.WriteLine(String.Format("Path Found with Len={0} in {1}ms looked {2} Nodes", currPath2.Count, b.ToString(), _pathfinderSystem.LastVisitedCount));
+                Debug.WriteLine(String.Format("Path Found with Len={0} in {1}ms looked {2} Nodes", currPath2.path.Count, b.ToString(), _pathfinderSystem.LastVisitedCount));
             return currPath2;
-        }
-
-        public bool RemoveWall(Point3 pos)
-        {
-            Entity ent = Blocks[pos.X, pos.Y, pos.Z];
-            if (ent == Entity.Null)
-            {
-                Generator.Visit(pos);
-                ent = Blocks[pos.X, pos.Y, pos.Z];
-            }
-            else
-            {
-                Generator.Visit(pos, false);
-            }
-
-            if (ent.Has<TileStructure>())
-            {
-                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
-                structure.WallMaterial = null;
-                structure.WallEmbeddedMaterial = null;
-                if (structure == TileStructure.Null)
-                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
-
-                //Generator.Visit(pos, false);
-                Blocks[pos.X, pos.Y, pos.Z].Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
-
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool RemoveFloor(Point3 pos)
-        {
-            Entity ent = Blocks[pos.X, pos.Y, pos.Z];
-            if (ent == Entity.Null)
-            {
-                Generator.Visit(pos);
-                ent = Blocks[pos.X, pos.Y, pos.Z];
-            }
-            else
-            {
-                Generator.Visit(pos, false);
-            }
-
-            if (ent.Has<TileStructure>())
-            {
-                ref var structure = ref Blocks[pos.X, pos.Y, pos.Z].Get<TileStructure>();
-                structure.FloorMaterial = null;
-                structure.FloorEmbeddedMaterial = null;
-                if (structure == TileStructure.Null)
-                    Blocks[pos.X, pos.Y, pos.Z].Remove<TileStructure>();
-
-                //Generator.Visit(pos, false);
-                Blocks[pos.X, pos.Y, pos.Z].Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
-
-                return true;
-            }
-
-            return false;
         }
 
         public void RemoveBlock(Point3 pos)
         {
-            RemoveWall(pos);
-            RemoveFloor(pos);
+            Generator.Visit(pos, false);
+
+            Entity ent;
+            if (Blocks.TryGet(pos, out ent) && ent == Entity.Null)
+            {
+                ent = Blocks[pos];
+            }
+
+            if (ent.Has<BaseConstruction>())
+            {
+                ent.Remove<BaseConstruction>();
+                ent.Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
+            }
+
+            /*RemoveWall(pos);
+            RemoveFloor(pos);*/
         }
 
         public void Dispose()

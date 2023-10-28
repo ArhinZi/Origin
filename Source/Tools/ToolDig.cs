@@ -28,7 +28,7 @@ namespace Origin.Source.Tools
 
         private SpritePositionColor template = new SpritePositionColor()
         {
-            sprite = GlobalResources.GetSpriteByID("SelectionFloor"),
+            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionFloor"),
             offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
             color = Color.Red
         };
@@ -117,7 +117,7 @@ namespace Origin.Source.Tools
                 {
                     sprites.Add(new SpritePositionColor()
                     {
-                        sprite = GlobalResources.GetSpriteByID("SelectionWall"),
+                        sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionWall"),
                         color = new Color(25, 25, 25, 200),
                         position = new Point3(Position.X, Position.Y, i)
                     });
@@ -162,10 +162,10 @@ namespace Origin.Source.Tools
                 site.Blocks[pos.X, pos.Y, pos.Z] == Entity.Null ||
                 //ignore air
                 site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                !site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() ||
+                !site.Blocks[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() ||
                 //ignore blocks on current level
                 site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() &&
+                site.Blocks[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() &&
                 tlevel == site.CurrentLevel
                 )
                 {

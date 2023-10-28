@@ -2,10 +2,13 @@
 {
     public struct TileVisibility
     {
-        public bool WallVisible;
-        public bool WallDiscovered;
+        public bool WallVisible = true;
+        public bool WallDiscovered = true;
 
-        public bool FloorVisible;
-        public bool FloorDiscovered;
+        public bool FloorVisible = true;
+        public bool FloorDiscovered = true;
+
+        public TileVisibility()
+        { }
     }
 }

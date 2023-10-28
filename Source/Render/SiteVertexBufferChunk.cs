@@ -38,8 +38,8 @@ namespace Origin.Source.Render
 
         private SiteTileContainer Blocks => Renderer.Site.Blocks;
         private int seed = 234223534;
-        private Sprite lborderSprite = GlobalResources.GetSpriteByID("LeftBorder");
-        private Sprite rborderSprite = GlobalResources.GetSpriteByID("RightBorder");
+        private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
+        private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
         private Color borderColor = new Color(0, 0, 0, 150);
 
         /// <summary>
@@ -188,189 +188,129 @@ namespace Origin.Source.Render
                     {
                         int tileCoordX = SelfChunkPos.X * SelfChunkSize.X + tileInChunkCoordX;
                         int tileCoordY = SelfChunkPos.Y * SelfChunkSize.Y + tileInChunkCoordY;
-                        Entity tile = Blocks[tileCoordX, tileCoordY, tileCoordZ];
+                        Point3 tilePos = new Point3(tileCoordX, tileCoordY, tileCoordZ);
+                        Entity tile = Blocks[tilePos];
 
                         int rand = seed + tileCoordX + tileCoordY + tileCoordZ;
                         Random random = new Random(rand);
                         rand = random.Next();
 
-                        TileStructure structure;
-                        if (tile != Entity.Null)
+                        BaseConstruction bcc;
+                        if (tile != Entity.Null && tile.TryGet(out bcc))
                         {
-                            bool hasStructure = tile.TryGet(out structure);
-                            ref var visibility = ref tile.Get<TileVisibility>();
+                            TileVisibility visibility = new TileVisibility();
+                            Construction constr = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", bcc.ConstructionID);
+                            Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", bcc.MaterialID);
 
-                            #region BackBuffer
-
-                            if (DrawBackBuffer && hasStructure)
+                            if (DrawBackBuffer)
                             {
-                                if (structure.WallMaterial != null && visibility.WallVisible && visibility.WallDiscovered)
+                                if (visibility.WallVisible && visibility.WallDiscovered)
                                 {
-                                    TerrainMaterial wall = structure.WallMaterial;
+                                    // Draw Wall of HalfWall
                                     string spriteType = "Wall";
                                     Point spriteShift = new Point(0, 0);
-                                    if (HalfWall && wall.Sprites.ContainsKey("Floor"))
+                                    if (HalfWall && constr.Sprites.ContainsKey("Floor"))
                                     {
                                         spriteType = "Floor";
                                         spriteShift = new Point(0, GlobalResources.Settings.TileSize.Y - GlobalResources.Settings.FloorYoffset);
                                     }
-                                    Sprite sprite = wall.Sprites[spriteType][rand % wall.Sprites[spriteType].Count];
-                                    Color c = structure.WallMaterial.Color;
-
+                                    Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                                            constr.Sprites[spriteType][rand % constr.Sprites[spriteType].Count]);
+                                    Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                                     AddSprite(
                                         VertexBufferType.Static,
                                         (int)VertexBufferLayer.Back,
-                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ),
+                                        sprite, col, tilePos,
                                         new Point(0, 0) + spriteShift);
 
-                                    if (Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ] != Entity.Null && (
-                                        !Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Has<TileStructure>() ||
-                                        Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Has<TileStructure>() &&
-                                        Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Get<TileStructure>().WallMaterial == null))
+                                    // Draw borders on Wall
+                                    Entity tmp;
+                                    if (Blocks.TryGet(tilePos - new Point3(1, 0, 0), out tmp) && tmp != Entity.Null && (
+                                            !tmp.Has<BaseConstruction>()))
                                         AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Back,
-                                            lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ),
-                                            new Point(0, 0) + spriteShift);
+                                                VertexBufferType.Static,
+                                                (int)VertexBufferLayer.Back,
+                                                lborderSprite, borderColor, tilePos,
+                                                new Point(0, 0) + spriteShift);
+                                    if (Blocks.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null && (
+                                            !tmp.Has<BaseConstruction>()))
+                                        AddSprite(
+                                                VertexBufferType.Static,
+                                                (int)VertexBufferLayer.Back,
+                                                rborderSprite, borderColor, tilePos,
+                                                new Point(GlobalResources.Settings.TileSize.X / 2, 0) + spriteShift);
 
-                                    if (Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ] != Entity.Null && (
-                                        !Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Has<TileStructure>() ||
-                                        Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Has<TileStructure>() &&
-                                        Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Get<TileStructure>().WallMaterial == null))
-                                        AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Back,
-                                            rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ),
-                                            new Point(GlobalResources.Settings.TileSize.X / 2, 0) + spriteShift);
+                                    //TODO Draw Embedded
 
-                                    if (structure.WallEmbeddedMaterial != null && visibility.WallVisible)
-                                    {
-                                        TerrainMaterial embfloor = structure.WallEmbeddedMaterial;
-                                        sprite = embfloor.Sprites["EmbeddedWall"][rand % embfloor.Sprites["EmbeddedWall"].Count];
-                                        c = structure.WallEmbeddedMaterial.Color;
-                                        AddSprite(
-                                        VertexBufferType.Static,
-                                        (int)VertexBufferLayer.Back,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
-                                    }
                                     _isFullyHidden = false;
                                 }
-                                else if (!visibility.WallDiscovered)
-                                {
-                                    TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
-                                    Sprite sprite;
-                                    Color c = tm.Color;
-                                    sprite = tm.Sprites["Wall"][0];
-                                    if (visibility.WallVisible ||
-                                        Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
-                                        AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Back,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
-                                    else
-                                        AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.HiddenBack,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
-                                }
                             }
-
-                            #endregion BackBuffer
-
-                            #region FrontBuffer
-
                             if (DrawFrontBuffer)
                             {
-                                if (hasStructure && structure.FloorMaterial != null && visibility.FloorVisible && visibility.FloorDiscovered)
+                                if (visibility.WallVisible && visibility.WallDiscovered)
                                 {
-                                    TerrainMaterial floor = structure.FloorMaterial;
-                                    Sprite sprite = floor.Sprites["Floor"][rand % floor.Sprites["Floor"].Count];
-                                    Color c = structure.FloorMaterial.Color;
+                                    // Draw Floor
+                                    string spriteType = "Floor";
+                                    Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                                            constr.Sprites[spriteType][rand % constr.Sprites[spriteType].Count]);
+                                    Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                                     AddSprite(
                                         VertexBufferType.Static,
                                         (int)VertexBufferLayer.Front,
-                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
+                                        sprite, col, tilePos,
+                                        new Point(0, -GlobalResources.Settings.FloorYoffset));
 
-                                    if (Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ] != Entity.Null && (
-                                        !Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Has<TileStructure>() ||
-                                        Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Has<TileStructure>() &&
-                                        Blocks[Math.Max(tileCoordX - 1, 0), tileCoordY, tileCoordZ].Get<TileStructure>().FloorMaterial == null))
+                                    // Draw borders of Floor
+                                    Entity tmp;
+                                    if (Blocks.TryGet(tilePos - new Point3(1, 0, 0), out tmp) && tmp != Entity.Null && (
+                                            !tmp.Has<BaseConstruction>()))
                                         AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Front,
-                                            lborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset - 1));
-                                    if (Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ] != Entity.Null && (
-                                        !Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Has<TileStructure>() ||
-                                        Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Has<TileStructure>() &&
-                                        Blocks[tileCoordX, Math.Max(tileCoordY - 1, 0), tileCoordZ].Get<TileStructure>().FloorMaterial == null))
+                                                VertexBufferType.Static,
+                                                (int)VertexBufferLayer.Front,
+                                                lborderSprite, borderColor, tilePos,
+                                                new Point(0, -GlobalResources.Settings.FloorYoffset));
+                                    if (Blocks.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null && (
+                                            !tmp.Has<BaseConstruction>()))
                                         AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Front,
-                                            rborderSprite, borderColor, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1));
+                                                VertexBufferType.Static,
+                                                (int)VertexBufferLayer.Front,
+                                                rborderSprite, borderColor, tilePos,
+                                                new Point(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1));
 
-                                    if (structure.FloorEmbeddedMaterial != null && visibility.FloorVisible)
-                                    {
-                                        TerrainMaterial embfloor = structure.FloorEmbeddedMaterial;
-                                        sprite = embfloor.Sprites["EmbeddedFloor"][rand % embfloor.Sprites["EmbeddedFloor"].Count];
-                                        c = structure.FloorEmbeddedMaterial.Color;
-                                        AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Front,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
-                                    }
+                                    //TODO Draw Vegetation
+
                                     _isFullyHidden = false;
                                 }
-                                else if (structure.FloorMaterial != null && !visibility.FloorDiscovered &&
-                                    (tileCoordX == Renderer.Site.Size.X - 1 || tileCoordY == Renderer.Site.Size.Y - 1))
-                                {
-                                    TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
-                                    Sprite sprite;
-                                    Color c = tm.Color;
-                                    sprite = tm.Sprites["Floor"][0];
-                                    if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
-                                        AddSprite(
-                                            VertexBufferType.Static,
-                                            (int)VertexBufferLayer.Front,
-                                            sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
-                                    else
-                                        AddSprite(
-                                        VertexBufferType.Static,
-                                        (int)VertexBufferLayer.HiddenFront,
-                                        sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
-                                }
                             }
-
-                            #endregion FrontBuffer
                         }
-                        else
+                        else if (tile == Entity.Null)
                         {
-                            TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
-                            Sprite sprite;
-                            Color c = Color.Wheat;
-                            sprite = tm.Sprites["Wall"][0];
-                            c = tm.Color;
+                            // Draw hidden
+                            Color c = GlobalResources.HIDDEN_COLOR;
+
+                            Sprite sprite = GlobalResources.HIDDEN_WALL_SPRITE;
                             if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Back,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
+                                    sprite, c, tilePos, new Point(0, 0));
                             else
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.HiddenBack,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, 0));
+                                    sprite, c, tilePos, new Point(0, 0));
 
-                            sprite = tm.Sprites["Floor"][0];
+                            sprite = GlobalResources.HIDDEN_FLOOR_SPRITE;
                             if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                 AddSprite(
                                     VertexBufferType.Static,
                                     (int)VertexBufferLayer.Front,
-                                    sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
+                                    sprite, c, tilePos, new Point(0, -GlobalResources.Settings.FloorYoffset));
                             else
                                 AddSprite(
                                 VertexBufferType.Static,
                                 (int)VertexBufferLayer.HiddenFront,
-                                sprite, c, new Point3(tileCoordX, tileCoordY, tileCoordZ), new Point(0, -GlobalResources.Settings.FloorYoffset));
+                                sprite, c, tilePos, new Point(0, -GlobalResources.Settings.FloorYoffset));
                         }
                     }
                 }

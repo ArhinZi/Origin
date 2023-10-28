@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Origin.Source.Utils
 {
@@ -37,6 +38,28 @@ namespace Origin.Source.Utils
         public Point ToPoint()
         {
             return new Point(X, Y);
+        }
+
+        public bool InBounds(Point3 lower, Point3 higher, bool includeLower = true, bool includeHigher = false)
+        {
+            bool res = true;
+            if (includeLower)
+            {
+                if (X < lower.X || Y < lower.Y || Z < lower.Z) res = res && false;
+            }
+            else
+            {
+                if (X <= lower.X || Y <= lower.Y || Z <= lower.Z) res = res && false;
+            }
+            if (includeHigher)
+            {
+                if (X > higher.X || Y > higher.Y || Z > higher.Z) res = res && false;
+            }
+            else
+            {
+                if (X >= higher.X || Y >= higher.Y || Z >= higher.Z) res = res && false;
+            }
+            return res;
         }
 
         public static bool operator ==(Point3 first, Point3 second)

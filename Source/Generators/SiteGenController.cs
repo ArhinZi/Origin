@@ -1,5 +1,6 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
+using Arch.Relationships;
 
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,6 +8,7 @@ using MonoGame.Extended;
 
 using Origin.Source.ECS;
 using Origin.Source.Resources;
+using Origin.Source.Utils;
 
 using Roy_T.AStar.Graphs;
 using Roy_T.AStar.Paths;
@@ -80,6 +82,7 @@ namespace Origin.Source.Generators
         {
             GenerateHeightMap(10);
             GenerateRiverOnHeightMap();
+            SmoothHeightMap();
         }
 
         public void Visit(Point3 startPos, bool visitStart = true)
@@ -92,12 +95,10 @@ namespace Origin.Source.Generators
             }
             else
             {
-                stack.Push(startPos + new Point3(0, 0, -1));
-                stack.Push(startPos + new Point3(1, 0, 0));
-                stack.Push(startPos + new Point3(0, 1, 0));
-                stack.Push(startPos + new Point3(-1, 0, 0));
-                stack.Push(startPos + new Point3(0, -1, 0));
-                stack.Push(startPos + new Point3(0, 0, 1));
+                foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L())
+                {
+                    stack.Push(startPos + p);
+                }
             }
 
             while (stack.Count > 0)
@@ -105,7 +106,7 @@ namespace Origin.Source.Generators
                 Point3 pos = stack.Pop();
 
                 if (!visited.ContainsKey(pos.Z)) visited.Add(pos.Z, new bool[Size.X, Size.Y]);
-                if (pos.X < 0 || pos.Y < 0 || pos.Z < 0 || pos.X == Size.X || pos.Y == Size.Y || pos.Z == Size.Z)
+                if (!pos.InBounds(Point3.Zero, Size))
                     continue;
                 if (visited[pos.Z][pos.X, pos.Y])
                     continue;
@@ -115,72 +116,64 @@ namespace Origin.Source.Generators
                 var dirtDepth = 5;
                 var baseHeight = (int)(Size.Z * 0.7f);
                 int height = (int)(heightMap[pos.X, pos.Y].Height + baseHeight);
-                Entity ent = _site.ECSWorld.Create(new OnSitePosition(new Point3(pos.X, pos.Y, pos.Z)), new TileVisibility());
 
-                bool walkable = true;
-                bool air = false;
+                // Creating Root Entity
+                Entity tileEnt = _site.ECSWorld.Create(new IsTile() { Position = pos });
+                _site.Blocks[pos] = tileEnt;
 
+                bool walkable = false;
+                bool isAir = false;
+
+                // Filling The Root
                 if (pos.Z <= height - dirtDepth)
                 {
-                    _site.ECSWorld.Add(ent,
-                        new TileStructure()
-                        {
-                            WallMaterial = GlobalResources.GetTerrainMaterialByID("GRANITE"),
-                            FloorMaterial = GlobalResources.GetTerrainMaterialByID("GRANITE"),
-                        });
-                    walkable = false;
+                    tileEnt.Add(new BaseConstruction()
+                    {
+                        ConstructionID = "StoneWallFloor",
+                        MaterialID = "Granite"
+                    });
                 }
                 else if (pos.Z > height - dirtDepth && pos.Z <= height)
                 {
-                    _site.ECSWorld.Add(ent,
-                        new TileStructure()
-                        {
-                            WallMaterial = GlobalResources.GetTerrainMaterialByID("DIRT"),
-                            FloorMaterial = GlobalResources.GetTerrainMaterialByID("DIRT"),
-                        });
+                    tileEnt.Add(new BaseConstruction()
+                    {
+                        ConstructionID = "SoilWallFloor",
+                        MaterialID = "Dirt"
+                    });
 
                     if (pos.Z == height)
                     {
-                        ref var structure = ref ent.Get<TileStructure>();
-                        structure.FloorEmbeddedMaterial = GlobalResources.GetTerrainMaterialByID("GRASS");
+                        tileEnt.Add<HasVegetation>();
                     }
-                    walkable = false;
                 }
-                else air = true;
-
-                if (air)
+                else
                 {
-                    stack.Push(pos + new Point3(0, 0, -1));
-                    stack.Push(pos + new Point3(1, 0, 0));
-                    stack.Push(pos + new Point3(0, 1, 0));
-                    stack.Push(pos + new Point3(-1, 0, 0));
-                    stack.Push(pos + new Point3(0, -1, 0));
-                    stack.Push(pos + new Point3(0, 0, 1));
+                    isAir = true;
+                    walkable = true;
                 }
 
+                //Checking Path Ability
+                Entity tmp;
+                if (walkable && _site.Blocks.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
+                {
+                    tileEnt.Add<TilePathAble>();
+                }
+                if (tileEnt.Has<BaseConstruction>() &&
+                    _site.Blocks.TryGet(pos + new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>())
+                {
+                    tmp.Add<TilePathAble>();
+                }
+
+                // Visit neighbours
                 visited[pos.Z][pos.X, pos.Y] = true;
-                _site.Blocks[pos.X, pos.Y, pos.Z] = ent;
-
-                if (pos.Z != 0 && walkable &&
-                    _site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
-                    _site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<TileStructure>() &&
-                    _site.Blocks[pos.X, pos.Y, pos.Z - 1].Get<TileStructure>().WallMaterial != null)
+                if (isAir)
                 {
-                    ent.Add<TilePathAble>();
-                }
-                if (pos.Z + 1 < _site.Size.Z &&
-                    _site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                    _site.Blocks[pos.X, pos.Y, pos.Z].Has<TileStructure>() &&
-                    _site.Blocks[pos.X, pos.Y, pos.Z + 1] != Entity.Null &&
-                    !_site.Blocks[pos.X, pos.Y, pos.Z + 1].Has<TileStructure>())
-                {
-                    _site.Blocks[pos.X, pos.Y, pos.Z + 1].Add<TilePathAble>();
+                    foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(false))
+                    {
+                        stack.Push(pos + p);
+                    }
                 }
             }
-            /*var query = new QueryDescription().WithAll<TileStructure, OnSitePosition>();
-            _site.ECSWorld.Query(query, (in TileStructure ts, OnSitePosition osp) =>
-            {
-            });*/
         }
 
         public void GenerateHeightMap(float scale, float freq = 0.003f)
@@ -199,6 +192,44 @@ namespace Origin.Source.Generators
                     heightMap[i, j].Height = ((fnl.GetNoise(i, j) + 1) / 2) * scale;
                 }
             }
+        }
+
+        public void SmoothHeightMap()
+        {
+            int width = heightMap.GetLength(0);
+            int height = heightMap.GetLength(1);
+            HeightTile[,] newHeightMap = new HeightTile[width, height];
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    float totalHeight = 0;
+                    int neighborCount = 0;
+
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        for (int dy = -1; dy <= 1; dy++)
+                        {
+                            int nx = x + dx;
+                            int ny = y + dy;
+
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                            {
+                                totalHeight += heightMap[nx, ny].Height;
+                                neighborCount++;
+                            }
+                        }
+                    }
+
+                    // Calculate the average height of the neighbors
+                    newHeightMap[x, y].Height = totalHeight / neighborCount;
+                    newHeightMap[x, y].WaterLevel = heightMap[x, y].WaterLevel;
+                }
+            }
+
+            // Update the original height map with the smoothed values
+            heightMap = newHeightMap;
         }
 
         private void GenerateRiverOnHeightMap()

@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Origin.Source.IO;
 using System.Security.Policy;
 using Origin.Source.Resources;
+using Origin.Source.Pathfind;
 
 namespace Origin.Source.Tools
 {
@@ -25,13 +26,13 @@ namespace Origin.Source.Tools
         public Point3 start = Point3.Null;
         public Point3 end = Point3.Null;
 
-        public List<Point3> LastPath = null;
+        public PathInfo LastPath = null;
 
         private SpritePositionColor template = new SpritePositionColor()
         {
-            sprite = GlobalResources.GetSpriteByID("SolidSelectionWall"),
+            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SolidSelectionWall"),
             offset = new Point(0, 0),
-            color = Color.Blue
+            color = new Color(0, 0, 50, 100)
         };
 
         public ToolPathfind(SiteToolController controller) :
@@ -67,25 +68,6 @@ namespace Origin.Source.Tools
                 else
                     Position = Point3.Null;
             }
-
-            /*if (InputManager.JustPressed("mouse.right") && Position != Point3.Null)
-            {
-                start = Point3.Null;
-                LastPath = null;
-            }
-            if (InputManager.JustPressed("mouse.left") && Position != Point3.Null)
-            {
-                if (start == Point3.Null)
-                {
-                    start = pos;
-                }
-                else
-                {
-                    end = pos;
-                    LastPath = MainWorld.Instance.ActiveSite.FindPath(start, end);
-                    LastPath.Sort();
-                }
-            }*/
             if (InputManager.JustPressed("mouse.right") && Position != Point3.Null)
             {
                 start = Point3.Null;
@@ -98,9 +80,13 @@ namespace Origin.Source.Tools
             if (start != Point3.Null && pos != Point3.Null)
             {
                 end = pos;
-                LastPath = MainWorld.Instance.ActiveSite.FindPath(start, end);
+                LastPath = MainWorld.Instance.ActiveSite.FindPath(start, end, true);
                 if (LastPath != null)
-                    LastPath.Sort();
+                {
+                    LastPath.path.Sort();
+                    LastPath.path.Reverse();
+                    LastPath.visited.Sort();
+                }
             }
 
             if (Position != Point3.Null)
@@ -111,13 +97,19 @@ namespace Origin.Source.Tools
             }
             if (LastPath != null)
             {
-                if (LastPath != null)
-                    foreach (var Pos in LastPath)
-                    {
-                        SpritePositionColor spc = template.Clone() as SpritePositionColor;
-                        sprites.Add(spc);
-                        sprites[^1].position = Pos;
-                    }
+                foreach (var Pos in LastPath.visited)
+                {
+                    SpritePositionColor spc = template.Clone() as SpritePositionColor;
+                    sprites.Add(spc);
+                    sprites[^1].position = Pos;
+                    sprites[^1].color = new Color(0, 50, 50, 50);
+                }
+                foreach (var Pos in LastPath.path)
+                {
+                    SpritePositionColor spc = template.Clone() as SpritePositionColor;
+                    sprites.Add(spc);
+                    sprites[^1].position = Pos;
+                }
             }
 
             PrevPosition = Position;

@@ -68,7 +68,6 @@
 	  <None Remove="Mods\Core\JSON\pawnSprites.json" />
 	  <None Remove="Mods\Core\JSON\Settings.json" />
 	  <None Remove="Mods\Core\JSON\spritesAnimals.json" />
-	  <None Remove="Mods\Core\JSON\terrainMaterials.json" />
 	  <None Remove="Mods\Core\JSON\TerrainSettings.json" />
 	</ItemGroup>
 	<ItemGroup>
@@ -86,6 +85,9 @@
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Source\ECS\Systems\" />
 	</ItemGroup>
 	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
 		<Message Text="Restoring dotnet tools" Importance="High" />

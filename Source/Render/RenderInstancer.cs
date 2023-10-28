@@ -33,10 +33,11 @@ namespace Origin.Source.Render
         private Point ChunkSize;
         private GraphicsDevice _device;
         private Effect _effect;
-        public Texture2D HiddenTexture = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID).Sprites["Wall"][0].Texture as Texture2D;
+        public Texture2D HiddenTexture = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", GlobalResources.Settings.HiddenWallSprite).Texture;
 
-        private Sprite WallSprite = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID).Sprites["Wall"][0];
-        private Sprite FloorSprite = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID).Sprites["Floor"][0];
+        private Sprite WallSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", GlobalResources.Settings.HiddenWallSprite);
+        private Sprite FloorSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", GlobalResources.Settings.HiddenFloorSprite);
+        private Color HiddenColor = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "HIDDEN").Color;
 
         private Dictionary<InstanceDefs, InstanceDeclaration> _definitions;
 
@@ -64,9 +65,7 @@ namespace Origin.Source.Render
             VertexPositionTexture[] vertices = new VertexPositionTexture[ChunkSize.X * ChunkSize.Y * 4];
             ushort[] indices = new ushort[ChunkSize.X * ChunkSize.Y * 6];
 
-            TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
-            Sprite sprite = tm.Sprites["Wall"][0];
-            Color c = tm.Color;
+            Sprite sprite = WallSprite;
             Rectangle textureRect = sprite.RectPos;
             Point drawSize = new Point(textureRect.Width, textureRect.Height);
 
@@ -127,12 +126,11 @@ namespace Origin.Source.Render
             int y = ChunkSize.Y - 1;
             for (int x = 0; x < ChunkSize.X; x++)
             {
-                TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                 Point3 cellPos = new Point3(x, y, 0);
                 Point spritePos = WorldUtils.GetSpritePositionByCellPosition(cellPos);
                 float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(cellPos);
 
-                Sprite sprite = tm.Sprites["Wall"][0];
+                Sprite sprite = WallSprite;
                 Rectangle textureRect = sprite.RectPos;
                 Point drawSize = new Point(textureRect.Width, textureRect.Height);
 
@@ -162,7 +160,7 @@ namespace Origin.Source.Render
 
                 vi += 4;
 
-                sprite = tm.Sprites["Floor"][0];
+                sprite = FloorSprite;
                 textureRect = sprite.RectPos;
                 spritePos += new Point(0, -GlobalResources.Settings.FloorYoffset);
                 // Calc the sprite corners positions
@@ -212,12 +210,11 @@ namespace Origin.Source.Render
             int x = ChunkSize.X - 1;
             for (int y = 0; y < ChunkSize.Y; y++)
             {
-                TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
                 Point3 cellPos = new Point3(x, y, 0);
                 Point spritePos = WorldUtils.GetSpritePositionByCellPosition(cellPos);
                 float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(cellPos);
 
-                Sprite sprite = tm.Sprites["Wall"][0];
+                Sprite sprite = WallSprite;
                 Rectangle textureRect = sprite.RectPos;
                 Point drawSize = new Point(textureRect.Width, textureRect.Height);
 
@@ -247,7 +244,7 @@ namespace Origin.Source.Render
 
                 vi += 4;
 
-                sprite = tm.Sprites["Floor"][0];
+                sprite = FloorSprite;
                 textureRect = sprite.RectPos;
                 spritePos += new Point(0, -GlobalResources.Settings.FloorYoffset);
                 // Calc the sprite corners positions
@@ -296,9 +293,8 @@ namespace Origin.Source.Render
             }
             if (def == InstanceDefs.HiddenWallFlatChunk || def == InstanceDefs.HiddenLBorder || def == InstanceDefs.HiddenRBorder)
             {
-                TerrainMaterial tm = GlobalResources.GetTerrainMaterialByID(TerrainMaterial.HIDDEN_MAT_ID);
-                Sprite sprite = tm.Sprites["Wall"][0];
-                Color c = tm.Color;
+                Sprite sprite = WallSprite;
+                Color c = HiddenColor;
                 Rectangle textureRect = sprite.RectPos;
                 var data = new InstancePositionColorTextureLayer()
                 {

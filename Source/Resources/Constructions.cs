@@ -22,6 +22,7 @@ namespace Origin.Source.Resources
         public bool RotateAble { get; set; }
         public bool HasMaterialColor { get; set; }
         public string Type { get; set; }
+        public string WallRemovedConstruction { get; set; }
         public string Category { get; set; }
         public Dictionary<string, List<string>> Sprites { get; set; }
         public List<Component> Components { get; set; }

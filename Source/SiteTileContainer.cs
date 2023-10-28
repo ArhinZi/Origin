@@ -46,5 +46,28 @@ namespace Origin.Source
                 Blocks[z][x, y] = value;
             }
         }
+
+        public Entity this[Point3 p]
+        {
+            get { return this[p.X, p.Y, p.Z]; }
+            set
+            {
+                this[p.X, p.Y, p.Z] = value;
+            }
+        }
+
+        public bool TryGet(Point3 position, out Entity entity)
+        {
+            if (position.InBounds(Point3.Zero, Size))
+            {
+                entity = this[position];
+                return true;
+            }
+            else
+            {
+                entity = Entity.Null;
+                return false;
+            }
+        }
     }
 }

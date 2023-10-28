@@ -47,11 +47,11 @@ namespace Origin.Source.GameStates
                 string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.Renderer.ChunkSize, 1)).ToString();
 
                 string blockMat = "NONE";
-                TileStructure ts;
+                BaseConstruction bc;
 
-                if (World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null && World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z].TryGet(out ts))
+                if (World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null && World.ActiveSite.Blocks[pos.X, pos.Y, pos.Z].TryGet(out bc))
                 {
-                    blockMat = ts.FloorMaterial.ID;
+                    blockMat = string.Format("{0} of {1}", bc.ConstructionID, bc.MaterialID);
                 }
 
                 EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()

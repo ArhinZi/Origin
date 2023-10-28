@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Origin.Source.Pathfind
+namespace Origin.Source.ECS
 {
-    internal class Path : List<Node>
+    public struct OverConstruction
     {
+        public string ConstructionID;
+        public string MaterialID;
     }
 }

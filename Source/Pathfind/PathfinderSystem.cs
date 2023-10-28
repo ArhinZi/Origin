@@ -58,6 +58,12 @@ namespace Origin.Source.Pathfind
         }
     }
 
+    public class PathInfo
+    {
+        public List<Point3> path;
+        public List<Point3> visited;
+    }
+
     public class PathfinderSystem
     {
         private Dictionary<Point3, Node> nodes;
@@ -135,12 +141,16 @@ namespace Origin.Source.Pathfind
             nodes.Remove(position);
         }
 
-        public List<Point3> FindPath(Point3 pstart, Point3 pgoal)
+        public PathInfo FindPath(Point3 pstart, Point3 pgoal, bool debug = false)
         {
             MinHeap<PFNode> interesting = new MinHeap<PFNode>();
             Dictionary<Point3, PFNode> visited = new Dictionary<Point3, PFNode>();
             Dictionary<PFNode, PFNode> path = new Dictionary<PFNode, PFNode>();
             Node goal;
+
+            PathInfo pathInfo = new PathInfo();
+            if (debug)
+                pathInfo.visited = new();
 
             if (!nodes.TryGetValue(pgoal, out goal) || !nodes.ContainsKey(pstart))
                 return null;
@@ -167,6 +177,9 @@ namespace Origin.Source.Pathfind
                     break;
                 }
 
+                if (debug)
+                    pathInfo.visited.Add(pfCurrent.node.position);
+
                 var nCurrent = pfCurrent.node;
 
                 //current.entity.GetRelationships<RelWalkTo>();
@@ -186,34 +199,37 @@ namespace Origin.Source.Pathfind
                             costSoFar = nextCost,
                             heuristic = Heuristic(nNext.position, pgoal) * 2f
                         };
+
+                        if (!visited.ContainsKey(nNext.position))
+                            interesting.Insert(pFNode);
+
                         visited[nNext.position] = pFNode;
-                        interesting.Insert(pFNode);
                         path[pFNode] = pfCurrent;
                     }
                 }
                 visitedCount++;
             }
 
-            List<Point3> p = new List<Point3>();
+            pathInfo.path = new List<Point3>();
             bool reconstructed = false;
             if (reached != null)
             {
                 var current = reached;
                 Node nCurrent;
                 nCurrent = current.node;
-                p.Insert(0, nCurrent.position);
+                pathInfo.path.Insert(0, nCurrent.position);
                 while (!reconstructed)
                 {
                     if (nCurrent.position == pstart)
                         break;
                     current = path[current];
                     nCurrent = current.node;
-                    p.Insert(0, nCurrent.position);
+                    pathInfo.path.Insert(0, nCurrent.position);
                 }
             }
 
             LastVisitedCount = visitedCount;
-            return p;
+            return pathInfo;
         }
 
         private bool GoalReached(Node goal, PFNode current) => current.node == goal;

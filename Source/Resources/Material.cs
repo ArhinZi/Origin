@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+
+using Newtonsoft.Json;
+
+using Origin.Source.Resources.Converters;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +16,10 @@ namespace Origin.Source.Resources
     {
         public string ID { get; set; }
         public string Name { get; set; }
-        public string Color { get; set; }
+
+        [JsonConverter(typeof(ColorConverter))]
+        public Color Color { get; set; }
+
         public string Type { get; set; }
         public double Value { get; set; }
 

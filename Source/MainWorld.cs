@@ -21,10 +21,10 @@ namespace Origin.Source
 
         public Arch.Core.World ECSworld { get; private set; } = Arch.Core.World.Create();
 
-        public ComponentType[] archetypePawn = new ComponentType[] {
+        /*public ComponentType[] archetypePawn = new ComponentType[] {
                 typeof(UserControlPawnComponent),
                 typeof(DrawComponent),
-                typeof(OnSitePosition) };
+                typeof(OnSitePosition) };*/
 
         private SpriteBatch spriteBatch;
 
@@ -42,11 +42,11 @@ namespace Origin.Source
 
             Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
 
-            var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
+            /*var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");
             var entity = ECSworld.Create(new UserControlPawnComponent(),
                 new DrawComponent() { Sprites = sd },
-                new OnSitePosition() { position = new Utils.Point3(0, 0, 100) });
+                new OnSitePosition() { position = new Utils.Point3(0, 0, 100) });*/
         }
 
         public void Update(GameTime gameTime)

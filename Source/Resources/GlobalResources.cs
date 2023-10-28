@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,8 +19,6 @@ namespace Origin.Source.Resources
     {
         private static JsonSerializerSettings settings;
 
-        public static List<TerrainMaterial> TerrainMaterials = new();
-
         public static Dictionary<string, Texture2D> Textures { get; private set; } = new();
 
         public static List<Sprite> Sprites = new();
@@ -29,13 +28,17 @@ namespace Origin.Source.Resources
 
         public static Settings Settings = new();
 
+        public static Sprite HIDDEN_WALL_SPRITE;
+        public static Sprite HIDDEN_FLOOR_SPRITE;
+        public static Color HIDDEN_COLOR;
+
         public static void Init()
         {
             //wrapper = new DataWrapper();
             settings = new JsonSerializerSettings();
             settings.Converters.Add(new PointConverter());
+            settings.Converters.Add(new ColorConverter());
             settings.Converters.Add(new SpriteConverter());
-            settings.Converters.Add(new TerrainMaterialConverter());
         }
 
         public static void ReadFromJson(JObject obj)
@@ -43,7 +46,6 @@ namespace Origin.Source.Resources
             var tok = obj.ToObject<Dictionary<string, JToken>>();
 
             Sprites = JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings);
-            TerrainMaterials = JsonConvert.DeserializeObject<List<TerrainMaterial>>(tok["TerrainMaterials"].ToString(), settings);
 
             Materials = JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings);
             Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);
@@ -51,7 +53,9 @@ namespace Origin.Source.Resources
 
             Settings = JsonConvert.DeserializeObject<Settings>(tok["Settings"].ToString(), settings);
 
-            //spriteDataWrapper = JsonConvert.DeserializeObject<DataWrapper>(obj.ToString(), settings);
+            HIDDEN_WALL_SPRITE = GetResourceBy(Sprites, "ID", Settings.HiddenWallSprite);
+            HIDDEN_FLOOR_SPRITE = GetResourceBy(Sprites, "ID", Settings.HiddenFloorSprite);
+            HIDDEN_COLOR = GetResourceBy(Materials, "ID", "HIDDEN").Color;
 
             return;
         }
@@ -66,45 +70,11 @@ namespace Origin.Source.Resources
             }
         }
 
-        public static T GetHashSetResourceBy<T>(List<T> src, string propName, string value)
+        public static T GetResourceBy<T>(List<T> src, string propName, string value)
         {
-            T obj = src.FirstOrDefault(i => (string)typeof(T).GetProperty(propName).GetValue(i, null) == value);
+            T obj = src.FirstOrDefault(i => ((string)typeof(T).GetProperty(propName).GetValue(i, null)).ToUpper() == value.ToUpper());
 
             return obj;
-        }
-
-        public static Sprite GetSpriteByID(string ID)
-        {
-            // Do we have the result in the cache?
-            var result = MemoryCache.Default.Get(ID) as Sprite;
-            if (result != null)
-                // Yay, we have it!
-                return result;
-
-            result = GetHashSetResourceBy(Sprites, "ID", ID);
-
-            // Stores the result in the cache so that we yay the next time!
-            MemoryCache.Default.Set(ID, result,
-              DateTimeOffset.Now.Add(new TimeSpan(0, 0, 30, 0)));
-
-            return result;
-        }
-
-        public static TerrainMaterial GetTerrainMaterialByID(string ID)
-        {
-            // Do we have the result in the cache?
-            var result = MemoryCache.Default.Get(ID) as TerrainMaterial;
-            if (result != null)
-                // Yay, we have it!
-                return result;
-
-            result = GetHashSetResourceBy(TerrainMaterials, "ID", ID);
-
-            // Stores the result in the cache so that we yay the next time!
-            MemoryCache.Default.Set(ID, result,
-              DateTimeOffset.Now.Add(new TimeSpan(0, 0, 30, 0)));
-
-            return result;
         }
     }
 }

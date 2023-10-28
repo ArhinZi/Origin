@@ -172,7 +172,7 @@ namespace Origin.Source
 
             Entity tile = Site.Blocks[tileCoordX, tileCoordY, tileCoordZ];
 
-            if (tile != Entity.Null)
+            /*if (tile != Entity.Null)
             {
                 TileStructure structure;
                 bool hasStructure = tile.TryGet<TileStructure>(out structure);
@@ -222,7 +222,7 @@ namespace Origin.Source
                         }
 
                         // Check if tile have neighbor above
-                        /*if ((tileCoordZ + 1 < Site.Size.Z &&
+                        *//*if ((tileCoordZ + 1 < Site.Size.Z &&
                             Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1] != Entity.Null &&
                             Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Has<TileStructure>() &&
                             Site.Blocks[tileCoordX, tileCoordY, tileCoordZ + 1].Get<TileStructure>().WallMaterial != null) ||
@@ -235,7 +235,7 @@ namespace Origin.Source
                             // Then floor is invisible
                             visibility.FloorDiscovered = visibility.FloorVisible = false;
                         }
-                        else*/
+                        else*//*
                         {
                             // Else floor is visible
                             visibility.FloorVisible = visibility.FloorDiscovered = true;
@@ -249,10 +249,10 @@ namespace Origin.Source
                         visibility.FloorVisible = visibility.FloorDiscovered = true;
                     }
 
-                    /*if (!visibility.FloorDiscovered && tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
-                        visibility.FloorVisible = true;*/
+                    *//*if (!visibility.FloorDiscovered && tileCoordX + 1 == Site.Size.X || tileCoordY + 1 == Site.Size.Y)
+                        visibility.FloorVisible = true;*//*
                 }
-            }
+            }*/
         }
 
         #endregion Visibility
@@ -373,11 +373,11 @@ namespace Origin.Source
             if (Site.ECSWorld.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileRender>()) > 0 && RenderReloadTask == null)
             {
                 // Collect all ChunksToReload and redraw them
-                var query = new QueryDescription().WithAll<WaitingForUpdateTileRender, OnSitePosition>();
+                var query = new QueryDescription().WithAll<WaitingForUpdateTileRender, IsTile>();
                 var commands = new CommandBuffer(Site.ECSWorld);
-                Site.ECSWorld.Query(in query, (Entity entity, ref OnSitePosition osp) =>
+                Site.ECSWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
-                    var item = osp.position;
+                    var item = tile.Position;
                     List<Point3> neighbours = new List<Point3>()
                         {
                             new Point3(0, 0, 0),
@@ -480,7 +480,7 @@ namespace Origin.Source
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
-            _graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            _graphicsDevice.DepthStencilState = DepthStencilState.None;
             _graphicsDevice.BlendState = BlendState.AlphaBlend;
             //_graphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
 
