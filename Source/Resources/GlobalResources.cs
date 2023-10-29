@@ -26,6 +26,7 @@ namespace Origin.Source.Resources
         public static List<Material> Materials = new();
         public static List<Item> Items = new();
         public static List<Construction> Constructions = new();
+        public static List<Vegetation> Vegetations = new();
 
         public static Settings Settings = new();
 
@@ -51,6 +52,7 @@ namespace Origin.Source.Resources
             Materials = JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings);
             Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);
             Constructions = JsonConvert.DeserializeObject<List<Construction>>(tok["Constructions"].ToString(), settings);
+            Vegetations = JsonConvert.DeserializeObject<List<Vegetation>>(tok["Vegetations"].ToString(), settings);
 
             Settings = JsonConvert.DeserializeObject<Settings>(tok["Settings"].ToString(), settings);
 
@@ -58,6 +60,7 @@ namespace Origin.Source.Resources
             HIDDEN_FLOOR_SPRITE = GetResourceBy(Sprites, "ID", Settings.HiddenFloorSprite);
             HIDDEN_COLOR = GetResourceBy(Materials, "ID", "HIDDEN").Color;
 
+            Vegetation.InitCache(Vegetations);
             return;
         }
 

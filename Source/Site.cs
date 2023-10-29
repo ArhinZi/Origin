@@ -73,10 +73,9 @@ namespace Origin.Source
             Tools = new(this);
 
             Generator = new SiteGenController(OriginGame.Instance.GraphicsDevice, this, Size);
-            Generator.Init();
             Generator.Visit(new Utils.Point3(0, 0, 127));
 
-            hmt = Generator.HeightMapToTexture2D(10);
+            //hmt = Generator.HeightMapToTexture2D(10);
 
             InitPathFinder();
         }

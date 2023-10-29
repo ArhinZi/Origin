@@ -1,0 +1,14 @@
+{
+  "Vegetations": [
+    {
+      "ID": "GRASS",
+      "Drawing": [
+        {
+          "OnConstructions": [ "SoilWallFloor", "SoilFloor" ],
+          "OnConstructionsCategories": [],
+          "Sprites": [ "EmbeddedGrassFloor1", "EmbeddedGrassFloor2" ]
+        }
+      ]
+    }
+  ]
+}

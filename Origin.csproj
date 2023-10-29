@@ -69,6 +69,7 @@
 	  <None Remove="Mods\Core\JSON\Settings.json" />
 	  <None Remove="Mods\Core\JSON\spritesAnimals.json" />
 	  <None Remove="Mods\Core\JSON\TerrainSettings.json" />
+	  <None Remove="Mods\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />

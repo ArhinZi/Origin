@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Sprite = Origin.Source.Resources.Sprite;
+
 namespace Origin.Source.Render
 {
     public enum VertexBufferType
@@ -177,7 +179,7 @@ namespace Origin.Source.Render
         /// <summary>
         /// Fill chunk vertices in already created _renderChunkArray
         /// </summary>
-        public void FillStaticVertices(bool HalfWall = false, bool DrawBackBuffer = true, bool DrawFrontBuffer = true)
+        public void FillStaticVertices(bool drawHalfWall = false, bool drawBackBuffer = true, bool drawFrontBuffer = true)
         {
             if (!UseHiddenInstancing)
             {
@@ -204,14 +206,14 @@ namespace Origin.Source.Render
                             Construction constr = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", bcc.ConstructionID);
                             Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", bcc.MaterialID);
 
-                            if (DrawBackBuffer)
+                            if (drawBackBuffer)
                             {
                                 if (visibility.WallVisible && visibility.WallDiscovered)
                                 {
-                                    // Draw Wall of HalfWall
+                                    // Draw Wall or HalfWall
                                     string spriteType = "Wall";
                                     Point spriteShift = new Point(0, 0);
-                                    if (HalfWall && constr.Sprites.ContainsKey("Floor"))
+                                    if (drawHalfWall && constr.Sprites.ContainsKey("Floor"))
                                     {
                                         spriteType = "Floor";
                                         spriteShift = new Point(0, GlobalResources.Settings.TileSize.Y - GlobalResources.Settings.FloorYoffset);
@@ -247,7 +249,7 @@ namespace Origin.Source.Render
                                     _isFullyHidden = false;
                                 }
                             }
-                            if (DrawFrontBuffer)
+                            if (drawFrontBuffer)
                             {
                                 if (visibility.WallVisible && visibility.WallDiscovered)
                                 {
@@ -280,6 +282,23 @@ namespace Origin.Source.Render
                                                 new Point(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1));
 
                                     //TODO Draw Vegetation
+                                    HasVegetation hveg;
+                                    if (tile.TryGet(out hveg))
+                                    {
+                                        Vegetation veg = GlobalResources.GetResourceBy(GlobalResources.Vegetations, "ID", hveg.VegetationID);
+                                        List<string> spritesIDs;
+                                        if (Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
+                                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
+                                        else if (Vegetation.VegetationSpritesByConstruction.TryGetValue((veg, constr.ID), out spritesIDs))
+                                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
+
+                                        if (spritesIDs != null)
+                                            AddSprite(
+                                                    VertexBufferType.Static,
+                                                    (int)VertexBufferLayer.Front,
+                                                    sprite, Color.White, tilePos,
+                                                    new Point(0, -GlobalResources.Settings.FloorYoffset));
+                                    }
 
                                     _isFullyHidden = false;
                                 }

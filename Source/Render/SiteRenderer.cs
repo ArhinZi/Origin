@@ -555,9 +555,9 @@ namespace Origin.Source
                 }
             }
 
-            _spriteBatch.Begin(SpriteSortMode.Deferred);
+            /*_spriteBatch.Begin(SpriteSortMode.Deferred);
             _spriteBatch.Draw(Site.hmt, new Vector2(0, 0), new Rectangle(0, 0, Site.hmt.Width, Site.hmt.Height), Color.White);
-            _spriteBatch.End();
+            _spriteBatch.End();*/
         }
 
         public void Dispose()
