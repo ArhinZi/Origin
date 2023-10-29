@@ -73,6 +73,7 @@ namespace Origin.Source.Resources
 
         private static ConcurrentDictionary<(Type, string, string), object> ResourceByCache = new();
 
+        //performance increase(~10 times) confirmed
         public static T GetResourceBy<T>(List<T> src, string propName, string value)
         {
             if (ResourceByCache.ContainsKey((typeof(T), propName, value)))

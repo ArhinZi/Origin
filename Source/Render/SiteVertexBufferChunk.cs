@@ -54,6 +54,8 @@ namespace Origin.Source.Render
 
         private GraphicsDevice _graphicDevice;
 
+        public bool BlockSet = false;
+
         /// <summary>
         /// Set of used textures for all chunks
         /// </summary>

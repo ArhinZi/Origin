@@ -202,8 +202,8 @@ namespace Origin.Source.Render
         {
             InstanceDefs def = InstanceDefs.HiddenRBorder;
 
-            VertexPositionTexture[] vertices = new VertexPositionTexture[2 * ChunkSize.X * 4];
-            ushort[] indices = new ushort[2 * ChunkSize.X * 6];
+            VertexPositionTexture[] vertices = new VertexPositionTexture[2 * ChunkSize.Y * 4];
+            ushort[] indices = new ushort[2 * ChunkSize.Y * 6];
 
             ushort vi = 0;
             ushort ii = 0;
