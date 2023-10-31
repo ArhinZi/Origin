@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Origin.Source.Resources;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +12,8 @@ namespace Origin.Source.ECS
     {
         public string ConstructionID;
         public string MaterialID;
+
+        public Construction Construction => GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", ConstructionID);
+        public Material Material => GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", MaterialID);
     }
 }

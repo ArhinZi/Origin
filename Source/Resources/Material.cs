@@ -21,7 +21,7 @@ namespace Origin.Source.Resources
         public Color Color { get; set; }
 
         public string Type { get; set; }
-        public double Value { get; set; }
+        public float Value { get; set; }
 
         public override string ToString()
         {
