@@ -104,6 +104,29 @@ namespace Origin.Source.Utils
             return chunkPos;
         }
 
+        public static Point3 RotatePosition(Point3 pos, Point3 size, WorldRotation rotation)
+        {
+            Point3 res = new Point3(0, 0, pos.Z);
+            if (rotation == WorldRotation.TR)
+                res = pos;
+            else if (rotation == WorldRotation.TL)
+            {
+                res.X = size.Y - pos.X - 1;
+                res.Y = pos.X;
+            }
+            else if (rotation == WorldRotation.BL)
+            {
+                res.X = size.X - pos.X - 1;
+                res.Y = size.Y - pos.Y - 1;
+            }
+            else if (rotation == WorldRotation.BR)
+            {
+                res.X = pos.Y;
+                res.Y = size.X - pos.X - 1;
+            }
+            return res;
+        }
+
         #region Neighbour Patterns
 
         // Inclusive - includes (0,0,0)
