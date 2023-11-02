@@ -7,7 +7,6 @@ using Origin.Source.ECS;
 using Origin.Source.Resources;
 
 using System;
-using System.Collections.Generic;
 
 namespace Origin.Source.Utils
 {
@@ -54,8 +53,8 @@ namespace Origin.Source.Utils
                 if (pos.LessOr(Point3.Zero))
                     return pos;
                 if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 &&
-                    site.Blocks[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
-                    !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
+                    site.Map[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
+                    !site.Map[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
                 {
                     level--;
                     continue;
@@ -72,7 +71,7 @@ namespace Origin.Source.Utils
             {
                 return pos;
             }
-            while (pos.Z - 1 >= 0 && !site.Blocks[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
+            while (pos.Z - 1 >= 0 && !site.Map[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
             {
                 pos = pos - new Point3(1, 1, 1);
                 if (pos.X < 0 || pos.X >= site.Size.X || pos.Y < 0 || pos.Y >= site.Size.Y)

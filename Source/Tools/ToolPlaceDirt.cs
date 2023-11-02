@@ -1,21 +1,15 @@
-﻿using Arch.Core.Extensions;
-using Arch.Core;
+﻿using Arch.Core;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
-using Origin.Source.Utils;
+using Origin.Source.IO;
+using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Origin.Source.IO;
-using System.Security.Policy;
-using Roy_T.AStar.Primitives;
-using Origin.Source.Resources;
 
 namespace Origin.Source.Tools
 {
@@ -125,16 +119,16 @@ namespace Origin.Source.Tools
                                 for (int y = start.Y; y <= end.Y; y++)
                                 {
                                     Point3 pos = new Point3(x, y, z);
-                                    var ent = Controller.Site.Blocks[pos];
-                                    Controller.Site.ECSWorld.Destroy(ent);
-                                    ent = Controller.Site.ECSWorld.Create(new IsTile() { Position = pos });
+                                    var ent = Controller.Site.Map[pos];
+                                    Controller.Site.ArchWorld.Destroy(ent);
+                                    ent = Controller.Site.ArchWorld.Create(new IsTile() { Position = pos });
                                     ent.Add(new BaseConstruction()
                                     {
-                                        ConstructionID = "SoilWallFloor",
-                                        MaterialID = "Dirt"
+                                        ConstructionMetaID = GlobalResources.GetResourceMetaID<Construction>(GlobalResources.Constructions, "SoilWallFloor"),
+                                        MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
                                     });
                                     ent.Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
-                                    Controller.Site.Blocks[x, y, z] = ent;
+                                    Controller.Site.Map[x, y, z] = ent;
                                 }
                             }
                         }
@@ -209,10 +203,10 @@ namespace Origin.Source.Tools
 
                 Entity tmp;
                 if (pos.InBounds(Point3.Zero, site.Size) &&
-                    site.Blocks.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>() &&
-                    site.Blocks.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
+                    site.Map.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>() &&
+                    site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
                     return pos;
-                else if (site.Blocks.TryGet(pos, out tmp) && tmp == Entity.Null)
+                else if (site.Map.TryGet(pos, out tmp) && tmp == Entity.Null)
                     return Point3.Null;
                 else
                 {

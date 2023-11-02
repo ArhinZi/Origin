@@ -1,25 +1,18 @@
 ﻿using Arch.Core;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
-using Origin.Source.Pathfind;
-using Origin.Source.Utils;
+using Origin.Source.ECS;
+using Origin.Source.Resources;
 
 using Roy_T.AStar.Paths;
-using Node = Roy_T.AStar.Graphs.Node;
+using Roy_T.AStar.Primitives;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using static Origin.Source.Generators.SurfacePass;
-using Roy_T.AStar.Primitives;
-using Origin.Source.ECS;
-using Arch.Core.Extensions;
-using Origin.Source.Resources;
+using Node = Roy_T.AStar.Graphs.Node;
 
 namespace Origin.Source.Generators
 {
@@ -86,16 +79,16 @@ namespace Origin.Source.Generators
             {
                 ent.Add(new BaseConstruction()
                 {
-                    ConstructionID = "StoneWallFloor",
-                    MaterialID = "Granite"
+                    ConstructionMetaID = GlobalResources.GetResourceMetaID<Construction>(GlobalResources.Constructions, "StoneWallFloor"),
+                    MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Granite")
                 });
             }
             else if (pos.Z > height - dirtDepth && pos.Z <= height)
             {
                 ent.Add(new BaseConstruction()
                 {
-                    ConstructionID = "SoilWallFloor",
-                    MaterialID = "Dirt"
+                    ConstructionMetaID = GlobalResources.GetResourceMetaID<Construction>(GlobalResources.Constructions, "SoilWallFloor"),
+                    MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
                 });
 
                 if (pos.Z == height)

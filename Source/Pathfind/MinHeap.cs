@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Source.Pathfind
 {
@@ -118,11 +115,15 @@ namespace Origin.Source.Pathfind
         private static bool ItemAIsSmallerThanItemB(T a, T b) => a.CompareTo(b) < 0;
 
         private static bool HasParent(int index) => index > 0;
+
         private bool HasLeftChild(int index) => GetLeftChildIndex(index) < this.Items.Count;
+
         private bool HasRightChild(int index) => GetRightChildIndex(index) < this.Items.Count;
 
         private static int GetParentIndex(int i) => (i - 1) / 2;
+
         private static int GetLeftChildIndex(int i) => (2 * i) + 1;
+
         private static int GetRightChildIndex(int i) => (2 * i) + 2;
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Origin.Source.Events;
 using Origin.Source.Resources;
 
-using System;
 using System.Collections.Generic;
 
 namespace Origin.Source
@@ -107,11 +106,6 @@ namespace Origin.Source
         public void Move(Vector2 amount)
         {
             Position += amount;
-        }
-
-        public Vector2 ScreenToWorld(Vector2 screenPos, int currentLevel)
-        {
-            throw new NotImplementedException();
         }
     }
 }

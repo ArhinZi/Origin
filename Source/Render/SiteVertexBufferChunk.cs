@@ -38,7 +38,7 @@ namespace Origin.Source.Render
         public Point SelfChunkSize { get; private set; }
         public SiteRenderer Renderer { get; private set; }
 
-        private SiteTileContainer Blocks => Renderer.Site.Blocks;
+        private SiteTileContainer Blocks => Renderer.Site.Map;
         private int seed = 234223534;
         private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
         private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
@@ -203,8 +203,8 @@ namespace Origin.Source.Render
                         if (tile != Entity.Null && tile.TryGet(out bcc))
                         {
                             TileVisibility visibility = new TileVisibility();
-                            Construction constr = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", bcc.ConstructionID);
-                            Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", bcc.MaterialID);
+                            Construction constr = bcc.Construction;
+                            Material mat = bcc.Material;
 
                             if (drawBackBuffer)
                             {

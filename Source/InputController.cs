@@ -1,19 +1,14 @@
 ﻿using Arch.Bus;
-using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 
-using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
 using Origin.Source.Resources;
-using Origin.Source.Utils;
-
-using Point3 = Origin.Source.Utils.Point3;
 
 namespace Origin.Source
 {

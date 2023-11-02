@@ -1,12 +1,9 @@
 ﻿using Arch.Bus;
 using Arch.CommandBuffer;
 using Arch.Core;
-using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-using MonoGame.Extended.Sprites;
 
 using Origin.Source.ECS;
 using Origin.Source.Events;
@@ -184,7 +181,7 @@ namespace Origin.Source
             int tileCoordY = tilePos.Y;
             int tileCoordZ = tilePos.Z;
 
-            Entity tile = Site.Blocks[tileCoordX, tileCoordY, tileCoordZ];
+            Entity tile = Site.Map[tileCoordX, tileCoordY, tileCoordZ];
 
             /*if (tile != Entity.Null)
             {
@@ -402,12 +399,12 @@ namespace Origin.Source
 
         private void ControlChunkReloading()
         {
-            if (Site.ECSWorld.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileRender>()) > 0)
+            if (Site.ArchWorld.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileRender>()) > 0)
             {
                 // Collect all ChunksToReload and redraw them
                 var query = new QueryDescription().WithAll<WaitingForUpdateTileRender, IsTile>();
-                var commands = new CommandBuffer(Site.ECSWorld);
-                Site.ECSWorld.Query(in query, (Entity entity, ref IsTile tile) =>
+                var commands = new CommandBuffer(Site.ArchWorld);
+                Site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
                     var item = tile.Position;
                     List<Point3> neighbours = new List<Point3>()
@@ -511,7 +508,7 @@ namespace Origin.Source
                 Site.Camera.Projection);
 
             _customEffect.Parameters["WorldViewProjection"].SetValue(WVP);
-            _customEffect.Parameters["DayTime"].SetValue(Site.SiteTime);
+            _customEffect.Parameters["DayTime"].SetValue(0.5f);
             _customEffect.Parameters["MinMaxLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
             _graphicsDevice.DepthStencilState = DepthStencilState.Default;
             _graphicsDevice.BlendState = BlendState.AlphaBlend;

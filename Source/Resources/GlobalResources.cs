@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Origin.Source.IO;
 using Origin.Source.Resources.Converters;
 
 using System;
@@ -12,7 +11,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Caching;
 
 namespace Origin.Source.Resources
 {
@@ -29,6 +27,8 @@ namespace Origin.Source.Resources
         public static List<Vegetation> Vegetations = new();
 
         public static Settings Settings = new();
+
+        private static ConcurrentDictionary<string, int> spritesMetaIDs = new();
 
         public static Sprite HIDDEN_WALL_SPRITE;
         public static Sprite HIDDEN_FLOOR_SPRITE;
@@ -87,6 +87,24 @@ namespace Origin.Source.Resources
             ResourceByCache.TryAdd((typeof(T), propName, value), obj);
 
             return obj;
+        }
+
+        public static int GetResourceMetaID<T>(List<T> src, string ID)
+        {
+            object obj;
+            if (ResourceByCache.TryGetValue((typeof(T), "ID", ID), out obj))
+            {
+                return src.IndexOf((T)obj);
+            }
+            else
+            {
+                return src.IndexOf((T)GetResourceBy<T>(src, "ID", ID));
+            }
+        }
+
+        public static T GetByMetaID<T>(List<T> src, int metaID)
+        {
+            return src[metaID];
         }
     }
 }

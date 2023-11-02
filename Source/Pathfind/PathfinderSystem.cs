@@ -1,20 +1,5 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
-using Arch.Relationships;
-
-using Myra.Graphics2D.UI;
-
-using Origin.Source.Utils;
-
-using Roy_T.AStar.Graphs;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Source.Pathfind
 {

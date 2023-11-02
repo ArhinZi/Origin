@@ -4,12 +4,6 @@ using Newtonsoft.Json;
 
 using Origin.Source.Resources.Converters;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Origin.Source.Resources
 {
     public class Settings

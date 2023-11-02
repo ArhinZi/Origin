@@ -1,5 +1,4 @@
 ﻿using Origin.Source.Resources;
-using Origin.Source.Utils;
 
 namespace Origin.Source.ECS
 {

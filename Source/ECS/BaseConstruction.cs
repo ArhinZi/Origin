@@ -1,19 +1,14 @@
 ﻿using Origin.Source.Resources;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Origin.Source.ECS
 {
     public struct BaseConstruction
     {
-        public string ConstructionID;
-        public string MaterialID;
+        public int ConstructionMetaID;
+        public int MaterialMetaID;
 
-        public Construction Construction => GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", ConstructionID);
-        public Material Material => GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", MaterialID);
+        public Construction Construction => GlobalResources.GetByMetaID(GlobalResources.Constructions, ConstructionMetaID);
+
+        public Material Material => GlobalResources.GetByMetaID(GlobalResources.Materials, MaterialMetaID);
     }
 }

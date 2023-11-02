@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Origin.Source.Resources;
-using Origin.Source.Utils;
-
 using System;
 using System.Diagnostics;
 using System.Linq;

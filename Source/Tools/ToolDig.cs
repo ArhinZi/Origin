@@ -1,20 +1,15 @@
-﻿using Arch.Core.Extensions;
-using Arch.Core;
+﻿using Arch.Core;
+using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
-using Origin.Source.Utils;
+using Origin.Source.IO;
+using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Origin.Source.IO;
-using System.Security.Policy;
-using Origin.Source.Resources;
 
 namespace Origin.Source.Tools
 {
@@ -159,13 +154,13 @@ namespace Origin.Source.Tools
                     return Point3.Null;
                 if (pos.GraterEqualOr(site.Size) ||
                 //ignore null
-                site.Blocks[pos.X, pos.Y, pos.Z] == Entity.Null ||
+                site.Map[pos.X, pos.Y, pos.Z] == Entity.Null ||
                 //ignore air
-                site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                !site.Blocks[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() ||
+                site.Map[pos.X, pos.Y, pos.Z] != Entity.Null &&
+                !site.Map[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() ||
                 //ignore blocks on current level
-                site.Blocks[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                site.Blocks[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() &&
+                site.Map[pos.X, pos.Y, pos.Z] != Entity.Null &&
+                site.Map[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() &&
                 tlevel == site.CurrentLevel
                 )
                 {

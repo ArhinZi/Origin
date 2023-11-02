@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Origin.Source.Pathfind
+﻿namespace Origin.Source.Pathfind
 {
-    struct RelClimbTo
+    internal struct RelClimbTo
     {
     }
 }

@@ -1,11 +1,5 @@
-﻿using Arch.Core.Utils;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-using Origin.Source.ECS;
-using Origin.Source.Generators;
-using Origin.Source.Resources;
 
 using System;
 
@@ -18,13 +12,6 @@ namespace Origin.Source
         public Site ActiveSite { get; private set; }
         public SiteRenderer Renderer { get; private set; }
         public int Seed { get; private set; } = 1234;
-
-        public Arch.Core.World ECSworld { get; private set; } = Arch.Core.World.Create();
-
-        /*public ComponentType[] archetypePawn = new ComponentType[] {
-                typeof(UserControlPawnComponent),
-                typeof(DrawComponent),
-                typeof(OnSitePosition) };*/
 
         private SpriteBatch spriteBatch;
 

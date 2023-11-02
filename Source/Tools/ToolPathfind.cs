@@ -1,21 +1,14 @@
 ﻿using Arch.Core.Extensions;
-using Arch.Core;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.ECS;
+using Origin.Source.IO;
+using Origin.Source.Pathfind;
+using Origin.Source.Resources;
 using Origin.Source.Utils;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Origin.Source.IO;
-using System.Security.Policy;
-using Origin.Source.Resources;
-using Origin.Source.Pathfind;
 
 namespace Origin.Source.Tools
 {
@@ -66,7 +59,7 @@ namespace Origin.Source.Tools
             }
             else
             {
-                var SelectedBlock = Controller.Site.Blocks[pos.X, pos.Y, pos.Z];
+                var SelectedBlock = Controller.Site.Map[pos.X, pos.Y, pos.Z];
                 if (SelectedBlock != Arch.Core.Entity.Null && SelectedBlock.Has<TilePathAble>())
                     Position = pos;
                 else
@@ -84,7 +77,7 @@ namespace Origin.Source.Tools
             if (start != Point3.Null && pos != Point3.Null)
             {
                 end = pos;
-                LastPath = MainWorld.Instance.ActiveSite.FindPath(start, end, true);
+                LastPath = MainWorld.Instance.ActiveSite.Pathfinder.FindPath(start, end, true);
                 if (LastPath != null)
                 {
                     LastPath.path.Sort();

@@ -1,15 +1,6 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
-using Arch.Core.Extensions.Dangerous;
-using Arch.Core.Utils;
 using Arch.Relationships;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Source.Utils
 {

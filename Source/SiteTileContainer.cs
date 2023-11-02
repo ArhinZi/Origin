@@ -1,6 +1,5 @@
 ﻿using Arch.Core;
-
-using Origin.Source.Utils;
+using Arch.Core.Extensions;
 
 using System.Collections.Generic;
 
@@ -9,13 +8,13 @@ namespace Origin.Source
     public class SiteTileContainer
     {
         private List<Entity[,]> Blocks;
-        private Point3 Size;
+        private Point3 _size;
 
         public SiteTileContainer(Point3 size)
         {
             Blocks = new List<Entity[,]>();
-            Size = size;
-            Blocks.Capacity = Size.Z;
+            _size = size;
+            Blocks.Capacity = _size.Z;
             for (int i = 0; i < size.Z; i++)
             {
                 Blocks.Add(null);
@@ -34,7 +33,7 @@ namespace Origin.Source
             {
                 if (Blocks[z] == null)
                 {
-                    Blocks[z] = new Entity[Size.X, Size.Y];
+                    Blocks[z] = new Entity[_size.X, _size.Y];
                     for (int i = 0; i < Blocks[z].GetLength(0); i++)
                     {
                         for (int j = 0; j < Blocks[z].GetLength(1); j++)
@@ -58,7 +57,7 @@ namespace Origin.Source
 
         public bool TryGet(Point3 position, out Entity entity)
         {
-            if (position.InBounds(Point3.Zero, Size))
+            if (position.InBounds(Point3.Zero, _size))
             {
                 entity = this[position];
                 return true;

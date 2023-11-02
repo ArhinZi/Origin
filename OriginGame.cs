@@ -1,4 +1,7 @@
-﻿using Arch.Bus;
+﻿global using ArchWorld = Arch.Core.World;
+global using Point3 = Origin.Source.Utils.Point3;
+
+using Arch.Bus;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +10,7 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 
 using Myra;
+
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.GCs;
