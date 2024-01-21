@@ -147,7 +147,7 @@ namespace Origin.Source.Tools
             bool onFloor = false)
         {
             int tlevel = level;
-            for (int i = 0; i < SiteRenderer.ONE_MOMENT_DRAW_LEVELS; i++)
+            for (int i = 0; i < Global.ONE_MOMENT_DRAW_LEVELS; i++)
             {
                 Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, site, onFloor);
                 if (pos.LessOr(Point3.Zero))

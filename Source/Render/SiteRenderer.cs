@@ -8,7 +8,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.Render;
+using Origin.Source.Render.GpuAcceleratedSpriteSystem;
+using Origin.Source.Resources;
 using Origin.Source.Utils;
+
+using Microsoft.Extensions.Caching.Memory;
 
 using System;
 using System.Collections.Generic;
@@ -83,34 +87,19 @@ namespace Origin.Source
 
         private RenderTask CurrentRenderTask = null;
 
-        /// <summary>
-        /// Z offset.
-        /// Blocks in the far diagonal line are appearing behind the ones in the near line.
-        /// </summary>
-        public static readonly float Z_DIAGONAL_OFFSET = 0.01f;
-
-        /// <summary>
-        /// Z offset.
-        /// Blocks will have different Z coordinate depending on level
-        /// </summary>
-        public static readonly float Z_LEVEL_OFFSET = 0.01f;
-
-        public static readonly Point BASE_CHUNK_SIZE = new Point(64, 64);
-        public static readonly int ONE_MOMENT_DRAW_LEVELS = 32;
-
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
             Site = site;
             //_visBuffer = new byte[_site.Size.X, _site.Size.Y, _site.Size.Z];
 
-            ChunkSize = BASE_CHUNK_SIZE;
+            ChunkSize = Global.BASE_CHUNK_SIZE;
             _graphicsDevice = graphicDevice;
             if (ChunkSize.X > Site.Size.X) ChunkSize.X = Site.Size.X;
             if (ChunkSize.Y > Site.Size.Y) ChunkSize.Y = Site.Size.Y;
             if (Site.Size.X % ChunkSize.X != 0 || Site.Size.Y % ChunkSize.Y != 0) throw new Exception("Site size is invalid!");
 
             _drawHighest = Site.CurrentLevel;
-            _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+            _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
 
             _chunksCount = new Point3(Site.Size.X / ChunkSize.X, Site.Size.Y / ChunkSize.Y, Site.Size.Z);
 
@@ -391,7 +380,7 @@ namespace Origin.Source
                     });
                 }
                 _drawHighest = Site.CurrentLevel;
-                _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+                _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
 
                 RecalcHiddenInstances();
             }

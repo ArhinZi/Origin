@@ -26,3 +26,9 @@
 /processorParam:DebugMode=Debug
 /build:FX/MegaShader.fx
 
+#begin FX/InstancedTileDraw.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Debug
+/build:FX/InstancedTileDraw.fx
+

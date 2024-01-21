@@ -47,7 +47,7 @@ namespace Origin.Source.Utils
 
         public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site)
         {
-            for (int i = 0; i < SiteRenderer.ONE_MOMENT_DRAW_LEVELS; i++)
+            for (int i = 0; i < Global.ONE_MOMENT_DRAW_LEVELS; i++)
             {
                 Point3 pos = MouseScreenToMap(cam, mousePos, level);
                 if (pos.LessOr(Point3.Zero))
@@ -90,7 +90,7 @@ namespace Origin.Source.Utils
 
         public static float GetSpriteZOffsetByCellPos(Point3 cellPos)
         {
-            var VertexZ = (cellPos.X + cellPos.Y) * SiteRenderer.Z_DIAGONAL_OFFSET;
+            var VertexZ = (cellPos.X + cellPos.Y) * Global.Z_DIAGONAL_OFFSET;
             return (float)VertexZ;
         }
 

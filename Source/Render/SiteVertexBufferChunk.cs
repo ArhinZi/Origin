@@ -30,7 +30,7 @@ namespace Origin.Source.Render
         /// Count of element in one vertex array
         /// There can be more then one vertex arrays in one chunk
         /// </summary>
-        public static int MaxVertexCount = SiteRenderer.BASE_CHUNK_SIZE.X * SiteRenderer.BASE_CHUNK_SIZE.Y * 6;
+        public static int MaxVertexCount = Global.BASE_CHUNK_SIZE.X * Global.BASE_CHUNK_SIZE.Y * 6;
 
         public static int CountOfLayers => Enum.GetNames(typeof(VertexBufferLayer)).Length;
 

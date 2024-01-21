@@ -288,7 +288,7 @@ namespace Origin.Source.Render
 
             if (definition.Instances == null)
             {
-                definition.Instances = new InstancePositionColorTextureLayer[SiteRenderer.ONE_MOMENT_DRAW_LEVELS * 64];
+                definition.Instances = new InstancePositionColorTextureLayer[Global.ONE_MOMENT_DRAW_LEVELS * 64];
                 definition.InstanceIndex = 0;
             }
             if (def == InstanceDefs.HiddenWallFlatChunk || def == InstanceDefs.HiddenLBorder || def == InstanceDefs.HiddenRBorder)

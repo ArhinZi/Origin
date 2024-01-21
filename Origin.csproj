@@ -34,6 +34,7 @@
 		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
 		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
 		<PackageReference Include="Arch.System" Version="1.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
 		<PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2" />

@@ -10,7 +10,9 @@ namespace Origin.Source
         public static MainWorld Instance { get; private set; }
 
         public Site ActiveSite { get; private set; }
-        public SiteRenderer Renderer { get; private set; }
+        //public SiteRenderer Renderer { get; private set; }
+
+        public Render.GpuAcceleratedSpriteSystem.SiteRenderer Renderer { get; private set; }
         public int Seed { get; private set; } = 1234;
 
         private SpriteBatch spriteBatch;
@@ -21,13 +23,13 @@ namespace Origin.Source
             spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Utils.Point3(128, 128, 128));
+            ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
 
             /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);
             ActiveSite.InitPathFinder();*/
 
-            Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
+            Renderer = new(ActiveSite, OriginGame.Instance.GraphicsDevice);
 
             /*var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");
