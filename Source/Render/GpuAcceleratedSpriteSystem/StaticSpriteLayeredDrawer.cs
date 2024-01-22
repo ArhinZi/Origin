@@ -33,6 +33,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         private Point3 chunksCount;
         private Effect _effect;
 
+        public VertexBuffer geometryBuffer;
+
         public int Seed
         {
             get { return seed; }
@@ -51,6 +53,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             chunksCount = new Point3(site.Size.X / ChunkSize.X, site.Size.Y / ChunkSize.Y, site.Size.Z);
 
             spriteChunks = new SpriteChunk[chunksCount.X, chunksCount.Y, chunksCount.Z];
+            GenerateInstanceGeometry();
         }
 
         public void InitTerrainSprites()
@@ -126,7 +129,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                                 }
                             }
                         }
-                        /*else if (tile == Entity.Null)
+                        else if (tile == Entity.Null)
                         {
                             // Draw hidden
                             Color c = GlobalResources.HIDDEN_COLOR;
@@ -135,18 +138,18 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                             if (site.Size.X - 1 == x || site.Size.Y - 1 == y)
                                 AddTileSprite(1, tilePos, sprite, c,
                                         new Vector3(0, 0, 0));
-                            *//*else
+                            /*else
                                 AddTileSprite(1, tilePos, sprite, c,
-                                        new Vector3(0, 0, 0));*//*
+                                        new Vector3(0, 0, 0));*/
 
                             sprite = GlobalResources.HIDDEN_FLOOR_SPRITE;
                             if (site.Size.X - 1 == x || site.Size.Y - 1 == y)
                                 AddTileSprite(1, tilePos, sprite, c,
                                         new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));
-                            *//*else
+                            /*else
                                 AddTileSprite(1, tilePos, sprite, c,
-                                        new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));*//*
-                        }*/
+                                        new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));*/
+                        }
                     }
 
             for (int z = 0; z < chunksCount.Z; z++)
@@ -182,26 +185,46 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             chunk.AppendDataDirectly(layer, smd, sed);
         }
 
+        private void GenerateInstanceGeometry()
+        {
+            int size = 256 * 256;
+            GeometryData[] _vertices = new GeometryData[6 * size];
+
+            #region filling vertices
+
+            for (int i = 0; i < size; i++)
+            {
+                _vertices[i * 6 + 0].World = new Color((byte)0, (byte)0, (byte)0, (byte)0);
+                _vertices[i * 6 + 1].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
+                _vertices[i * 6 + 2].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
+                _vertices[i * 6 + 3].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
+                _vertices[i * 6 + 4].World = new Color((byte)255, (byte)255, (byte)0, (byte)0);
+                _vertices[i * 6 + 5].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
+            }
+
+            #endregion filling vertices
+
+            geometryBuffer = new VertexBuffer(device, typeof(GeometryData), _vertices.Length, BufferUsage.WriteOnly);
+            geometryBuffer.SetData(_vertices);
+        }
+
         public void Update()
         {
         }
 
         public void Draw(int layer, List<byte> drawableSubLayers = null)
         {
-            void SubDraw(Layer dlayer, Matrix wvp)
+            void SubDraw(Layer dlayer)
             {
                 if (dlayer.dataIndex != 0)
                 {
-                    _effect.CurrentTechnique = _effect.Techniques["Instancing"];
-                    _effect.Parameters["WorldViewProjection"].SetValue(wvp);
                     _effect.Parameters["MainBuffer"].SetValue(dlayer.bufferDataMain);
                     _effect.Parameters["ExtraBuffer"].SetValue(dlayer.bufferDataExtra);
 
                     _effect.CurrentTechnique.Passes[0].Apply();
+
                     device.DepthStencilState = DepthStencilState.Default;
                     device.BlendState = BlendState.AlphaBlend;
-
-                    device.SetVertexBuffer(dlayer.geometryBuffer);
 
                     device.DrawPrimitives(PrimitiveType.TriangleList, 0, dlayer.dataIndex * 2);
                 }
@@ -213,6 +236,11 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             {
                 _effect.Parameters["SpriteTexture"].SetValue(tex);
                 _effect.Parameters["texSize"].SetValue(new Vector2(tex.Width, tex.Height));
+                _effect.Parameters["WorldViewProjection"].SetValue(WVP);
+                _effect.CurrentTechnique = _effect.Techniques["Instancing"];
+
+                device.SetVertexBuffer(geometryBuffer);
+
                 for (int x = 0; x < chunksCount.X; x++)
                     for (int y = 0; y < chunksCount.Y; y++)
                     {
@@ -226,12 +254,12 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                                 {
                                     foreach (var sublayer in drawableSubLayers)
                                         if (layersBatches[tex].TryGetValue(sublayer, out Layer dlayer))
-                                            SubDraw(dlayer, WVP);
+                                            SubDraw(dlayer);
                                 }
                                 else
                                 {
                                     foreach (var pair in layersBatches[tex].OrderBy(x => x.Key))
-                                        SubDraw(pair.Value, WVP);
+                                        SubDraw(pair.Value);
                                 }
                             }
                         }

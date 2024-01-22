@@ -88,8 +88,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             public StructuredBuffer bufferDataMain;
             public StructuredBuffer bufferDataExtra;
 
-            public VertexBuffer geometryBuffer;
-
             public bool dirtyDataMain = false;
             public bool dirtyDataExtra = false;
 
@@ -127,31 +125,10 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     bufferDataMain.Dispose();
                 if (bufferDataExtra != null)
                     bufferDataExtra.Dispose();
-                if (geometryBuffer != null)
-                    geometryBuffer.Dispose();
             }
 
             public void ReGenerateCommonGeometry()
             {
-                int size = structSize * 6;
-                GeometryData[] _vertices = new GeometryData[6 * size];
-
-                #region filling vertices
-
-                for (int i = 0; i < size; i++)
-                {
-                    _vertices[i * 6 + 0].World = new Color((byte)0, (byte)0, (byte)0, (byte)0);
-                    _vertices[i * 6 + 1].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
-                    _vertices[i * 6 + 2].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
-                    _vertices[i * 6 + 3].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
-                    _vertices[i * 6 + 4].World = new Color((byte)255, (byte)255, (byte)0, (byte)0);
-                    _vertices[i * 6 + 5].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
-                }
-
-                #endregion filling vertices
-
-                geometryBuffer = new VertexBuffer(graphicsDevice, typeof(GeometryData), _vertices.Length, BufferUsage.WriteOnly);
-                geometryBuffer.SetData(_vertices);
             }
         }
 
