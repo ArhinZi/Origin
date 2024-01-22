@@ -72,11 +72,11 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     public class SpriteChunk
     {
         public static HashSet<Texture2D> texture2Ds { get; private set; } = new HashSet<Texture2D>();
-        public static GraphicsDevice GraphicsDevice;
-        public static Effect Effect;
 
         public class Layer : IDisposable
         {
+            private GraphicsDevice graphicsDevice = OriginGame.Instance.GraphicsDevice;
+
             public SpriteMainData[] dataMain;
             public SpriteExtraData[] dataExtra;
             public int dataIndex = 0;
@@ -111,14 +111,14 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             {
                 if (bufferDataMain != null)
                     bufferDataMain.Dispose();
-                bufferDataMain = new StructuredBuffer(GraphicsDevice, typeof(SpriteMainData), structSize, BufferUsage.WriteOnly, ShaderAccess.Read);
+                bufferDataMain = new StructuredBuffer(graphicsDevice, typeof(SpriteMainData), structSize, BufferUsage.WriteOnly, ShaderAccess.Read);
             }
 
             public void ReallocExtraBuffer()
             {
                 if (bufferDataExtra != null)
                     bufferDataExtra.Dispose();
-                bufferDataExtra = new StructuredBuffer(GraphicsDevice, typeof(SpriteExtraData), structSize, BufferUsage.WriteOnly, ShaderAccess.Read);
+                bufferDataExtra = new StructuredBuffer(graphicsDevice, typeof(SpriteExtraData), structSize, BufferUsage.WriteOnly, ShaderAccess.Read);
             }
 
             public void Dispose()
@@ -150,23 +150,20 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                 #endregion filling vertices
 
-                geometryBuffer = new VertexBuffer(GraphicsDevice, typeof(GeometryData), _vertices.Length, BufferUsage.WriteOnly);
+                geometryBuffer = new VertexBuffer(graphicsDevice, typeof(GeometryData), _vertices.Length, BufferUsage.WriteOnly);
                 geometryBuffer.SetData(_vertices);
             }
         }
 
         public Dictionary<Texture2D, Dictionary<int, Layer>> layersBatches = new();
-        public Point position;
         private object _lock = new object();
 
-        private Site site;
+        public Point position;
 
-        public SpriteChunk(Point pos, Site site)
+        public SpriteChunk(Point pos)
         {
             position = pos;
             Debug.Assert(!(position.X >= 8 || position.Y >= 8), "Position is invalid " + position.ToString());
-
-            this.site = site;
         }
 
         public Layer GetLayer(Texture2D texture, byte layer)
@@ -271,34 +268,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 {
                     batch.Clear();
                 }
-            }
-        }
-
-        public void Draw()
-        {
-            Matrix WVP = Matrix.Multiply(Matrix.Multiply(site.Camera.WorldMatrix, site.Camera.Transformation),
-                                        site.Camera.Projection);
-            foreach (var tex in layersBatches.Keys)
-            {
-                Effect.Parameters["SpriteTexture"].SetValue(tex);
-                Effect.Parameters["texSize"].SetValue(new Vector2(tex.Width, tex.Height));
-                Effect.CurrentTechnique.Passes[0].Apply();
-                foreach (var pair in layersBatches[tex].OrderBy(x => x.Key))
-                    if (pair.Value.dataIndex != 0)
-                    {
-                        Effect.CurrentTechnique = Effect.Techniques["Instancing"];
-                        Effect.Parameters["WorldViewProjection"].SetValue(WVP);
-                        Effect.Parameters["MainBuffer"].SetValue(pair.Value.bufferDataMain);
-                        Effect.Parameters["ExtraBuffer"].SetValue(pair.Value.bufferDataExtra);
-
-                        Effect.CurrentTechnique.Passes[0].Apply();
-                        GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-                        GraphicsDevice.BlendState = BlendState.AlphaBlend;
-
-                        GraphicsDevice.SetVertexBuffer(pair.Value.geometryBuffer);
-
-                        GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, pair.Value.dataIndex * 2);
-                    }
             }
         }
     }
