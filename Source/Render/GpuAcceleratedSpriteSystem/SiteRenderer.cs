@@ -33,6 +33,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         private Site site;
 
         public StaticSpriteLayeredDrawer StaticDrawer { get; }
+        public StaticHiddenLayeredDrawer HiddenDrawer { get; }
 
         public SiteRenderer(Site site, GraphicsDevice graphicDevice)
         {
@@ -42,6 +43,9 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
             StaticDrawer = new StaticSpriteLayeredDrawer(site);
             StaticDrawer.InitTerrainSprites();
+
+            HiddenDrawer = new StaticHiddenLayeredDrawer(site);
+            HiddenDrawer.InitTerrainHiddence();
         }
 
         private void CheckCurrentLevelChanged()
@@ -72,11 +76,18 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             CheckCurrentLevelChanged();
 
-            for (int z = _drawLowest; z <= _drawHighest; z++)
+            for (int z = _drawLowest; z < _drawHighest; z++)
                 foreach (var key in texture2Ds)
                 {
+                    //HiddenDrawer.Draw(z);
                     StaticDrawer.Draw(z);
                 }
+            // top
+            foreach (var key in texture2Ds)
+            {
+                HiddenDrawer.Draw(_drawHighest);
+                StaticDrawer.Draw(_drawHighest, new List<byte>() { 0 });
+            }
         }
     }
 }

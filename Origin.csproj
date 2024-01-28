@@ -11,6 +11,7 @@
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="Content\bin\**" />

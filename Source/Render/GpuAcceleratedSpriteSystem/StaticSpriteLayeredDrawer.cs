@@ -129,27 +129,27 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                                 }
                             }
                         }
-                        else if (tile == Entity.Null)
-                        {
-                            // Draw hidden
-                            Color c = GlobalResources.HIDDEN_COLOR;
+                        /* else if (tile == Entity.Null)
+                         {
+                             // Draw hidden
+                             Color c = GlobalResources.HIDDEN_COLOR;
 
-                            Sprite sprite = GlobalResources.HIDDEN_WALL_SPRITE;
-                            if (site.Size.X - 1 == x || site.Size.Y - 1 == y)
-                                AddTileSprite(1, tilePos, sprite, c,
-                                        new Vector3(0, 0, 0));
-                            /*else
-                                AddTileSprite(1, tilePos, sprite, c,
-                                        new Vector3(0, 0, 0));*/
+                             Sprite sprite = GlobalResources.HIDDEN_WALL_SPRITE;
+                             if (site.Size.X - 1 == x || site.Size.Y - 1 == y)
+                                 AddTileSprite(1, tilePos, sprite, c,
+                                         new Vector3(0, 0, 0));
+                             *//*else
+                                 AddTileSprite(1, tilePos, sprite, c,
+                                         new Vector3(0, 0, 0));*//*
 
-                            sprite = GlobalResources.HIDDEN_FLOOR_SPRITE;
-                            if (site.Size.X - 1 == x || site.Size.Y - 1 == y)
-                                AddTileSprite(1, tilePos, sprite, c,
-                                        new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));
-                            /*else
-                                AddTileSprite(1, tilePos, sprite, c,
-                                        new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));*/
-                        }
+                             sprite = GlobalResources.HIDDEN_FLOOR_SPRITE;
+                             if (site.Size.X - 1 == x || site.Size.Y - 1 == y)
+                                 AddTileSprite(1, tilePos, sprite, c,
+                                         new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));
+                             *//*else
+                                 AddTileSprite(1, tilePos, sprite, c,
+                                         new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0));*//*
+                         }*/
                     }
 
             for (int z = 0; z < chunksCount.Z; z++)
@@ -237,7 +237,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 _effect.Parameters["SpriteTexture"].SetValue(tex);
                 _effect.Parameters["texSize"].SetValue(new Vector2(tex.Width, tex.Height));
                 _effect.Parameters["WorldViewProjection"].SetValue(WVP);
-                _effect.CurrentTechnique = _effect.Techniques["Instancing"];
+                _effect.CurrentTechnique = _effect.Techniques["SpriteInstancing"];
 
                 device.SetVertexBuffer(geometryBuffer);
 
