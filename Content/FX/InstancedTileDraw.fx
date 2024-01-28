@@ -35,7 +35,23 @@ float GetSpriteZOffsetByCellPos(float3 cellPos)
     float VertexZ = (cellPos.x + cellPos.y) * ZDiagOffset;
     return VertexZ;
 }
-
+float4 ShadeColor(float4 color, uint3 pos)
+{
+    float light = 1;
+    // light desaturation
+    float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
+    float3 grayScale = float3(luminance, luminance, luminance) / 2;
+    color.rgb = lerp(grayScale, color.rgb, float3(light, light, light));
+    
+    // level shading
+    float4 fogColor = float4(0.8, 0.8, 0.8, 1.0); // color of fog
+    float hyperKS = 0.2;
+    float shadeFactor = hyperKS / (hyperKS + (LowHighLevel.y - pos.z) * 0.01);
+    float hyperKF = 0.5;
+    float fogFactor = hyperKF / (hyperKF + (LowHighLevel.y - pos.z) * 0.01);
+    //color.rgb *= hyperK / (hyperK + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
+    return float4(lerp(color.rgb, fogColor.rgb, 1 - fogFactor) * shadeFactor, color.a);
+}
 
 
 
@@ -120,6 +136,7 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
                              (extra.TextureRect.y + vertPos.y) / texSize.y);
     
     output.ColorD = extra.Color;
+    output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
     
     return output;
 }

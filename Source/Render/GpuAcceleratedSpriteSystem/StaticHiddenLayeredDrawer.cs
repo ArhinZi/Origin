@@ -163,7 +163,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             geometryBuffer.SetData(_vertices);
         }
 
-        public void Draw(int layer)
+        public void Draw(int layer, Vector2 LowHigh)
         {
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(_site.Camera.WorldMatrix, _site.Camera.Transformation),
                                 _site.Camera.Projection);
@@ -171,6 +171,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             _effect.Parameters["SpriteTexture"].SetValue(_texture);
             _effect.Parameters["texSize"].SetValue(new Vector2(_texture.Width, _texture.Height));
             _effect.Parameters["worldSize"].SetValue(new Vector2(_site.Size.X, _site.Size.Y));
+            _effect.Parameters["LowHighLevel"].SetValue(LowHigh);
             _effect.Parameters["CurrentLevel"].SetValue(layer);
             _effect.Parameters["RBIT_COUNT"].SetValue(RBIT_COUNT);
             _effect.CurrentTechnique = _effect.Techniques["HiddenInstancing"];

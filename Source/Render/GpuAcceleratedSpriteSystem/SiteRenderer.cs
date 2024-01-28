@@ -80,13 +80,13 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 foreach (var key in texture2Ds)
                 {
                     //HiddenDrawer.Draw(z);
-                    StaticDrawer.Draw(z);
+                    StaticDrawer.Draw(z, new Vector2(_drawLowest, _drawHighest));
                 }
             // top
             foreach (var key in texture2Ds)
             {
-                HiddenDrawer.Draw(_drawHighest);
-                StaticDrawer.Draw(_drawHighest, new List<byte>() { 0 });
+                HiddenDrawer.Draw(_drawHighest, new Vector2(_drawLowest, _drawHighest));
+                StaticDrawer.Draw(_drawHighest, new Vector2(_drawLowest, _drawHighest), new List<byte>() { 0 });
             }
         }
     }

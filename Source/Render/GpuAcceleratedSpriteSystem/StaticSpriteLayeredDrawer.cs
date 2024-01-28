@@ -212,7 +212,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
         }
 
-        public void Draw(int layer, List<byte> drawableSubLayers = null)
+        public void Draw(int layer, Vector2 LowHigh, List<byte> drawableSubLayers = null)
         {
             void SubDraw(Layer dlayer)
             {
@@ -237,6 +237,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 _effect.Parameters["SpriteTexture"].SetValue(tex);
                 _effect.Parameters["texSize"].SetValue(new Vector2(tex.Width, tex.Height));
                 _effect.Parameters["WorldViewProjection"].SetValue(WVP);
+                _effect.Parameters["LowHighLevel"].SetValue(LowHigh);
+                _effect.Parameters["CurrentLevel"].SetValue(layer);
                 _effect.CurrentTechnique = _effect.Techniques["SpriteInstancing"];
 
                 device.SetVertexBuffer(geometryBuffer);
