@@ -235,7 +235,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             foreach (var tex in texture2Ds)
             {
                 _effect.Parameters["SpriteTexture"].SetValue(tex);
-                _effect.Parameters["texSize"].SetValue(new Vector2(tex.Width, tex.Height));
+                _effect.Parameters["TextureSize"].SetValue(new Vector2(tex.Width, tex.Height));
                 _effect.Parameters["WorldViewProjection"].SetValue(WVP);
                 _effect.Parameters["LowHighLevel"].SetValue(LowHigh);
                 _effect.Parameters["CurrentLevel"].SetValue(layer);

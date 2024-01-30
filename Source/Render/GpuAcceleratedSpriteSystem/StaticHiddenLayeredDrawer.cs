@@ -17,10 +17,10 @@ using Origin.Source.ECS;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
-using static System.Net.Mime.MediaTypeNames;
 using static Origin.Source.Render.GpuAcceleratedSpriteSystem.SpriteChunk;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Vector4 = Microsoft.Xna.Framework.Vector4;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
@@ -138,6 +138,11 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 bufferLayers[z].SetData(_lData[z]);
                 bufferSides[z].SetData(_sData[z]);
             }
+            _effect.Parameters["RBIT_COUNT"].SetValue(RBIT_COUNT);
+            _effect.Parameters["SpriteTexture"].SetValue(_texture);
+            _effect.Parameters["TextureSize"].SetValue(new Vector2(_texture.Width, _texture.Height));
+            _effect.Parameters["WorldSize"].SetValue(new Vector2(_site.Size.X, _site.Size.Y));
+            _effect.Parameters["HiddenColor"].SetValue(GlobalResources.HIDDEN_COLOR.ToVector4());
         }
 
         private void GenerateInstanceGeometry()
@@ -163,32 +168,49 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             geometryBuffer.SetData(_vertices);
         }
 
-        public void Draw(int layer, Vector2 LowHigh)
+        private void DrawBasic(int layer, Vector2 LowHigh)
         {
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(_site.Camera.WorldMatrix, _site.Camera.Transformation),
                                 _site.Camera.Projection);
 
-            _effect.Parameters["SpriteTexture"].SetValue(_texture);
-            _effect.Parameters["texSize"].SetValue(new Vector2(_texture.Width, _texture.Height));
-            _effect.Parameters["worldSize"].SetValue(new Vector2(_site.Size.X, _site.Size.Y));
+            _effect.Parameters["WorldViewProjection"].SetValue(WVP);
             _effect.Parameters["LowHighLevel"].SetValue(LowHigh);
             _effect.Parameters["CurrentLevel"].SetValue(layer);
-            _effect.Parameters["RBIT_COUNT"].SetValue(RBIT_COUNT);
-            _effect.CurrentTechnique = _effect.Techniques["HiddenInstancing"];
-
-            _effect.Parameters["WorldViewProjection"].SetValue(WVP);
-
-            _effect.Parameters["HiddenLBuffer"].SetValue(bufferLayers[layer]);
+            _effect.Parameters["PositionOffset"].SetValue(new Vector3(0, 0, 0));
 
             device.SetVertexBuffer(geometryBuffer);
+            device.DepthStencilState = DepthStencilState.Default;
+            device.BlendState = BlendState.AlphaBlend;
+        }
+
+        public void DrawLayer(int layer, Vector2 LowHigh)
+        {
+            DrawBasic(layer, LowHigh);
+
+            _effect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
+            _effect.Parameters["HiddenLBuffer"].SetValue(bufferLayers[layer]);
+            _effect.CurrentTechnique = _effect.Techniques["HiddenLInstancing"];
 
             _effect.CurrentTechnique.Passes[0].Apply();
 
-            device.DepthStencilState = DepthStencilState.Default;
-            device.BlendState = BlendState.AlphaBlend;
-
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, _site.Size.X * _site.Size.Y * 2);
-            //device.DrawPrimitives(PrimitiveType.TriangleList, 0, 32 * 2 * 2);
+        }
+
+        public void DrawSides(int layer, Vector2 LowHigh)
+        {
+            DrawBasic(layer, LowHigh);
+
+            _effect.Parameters["HiddenSBuffer"].SetValue(bufferSides[layer]);
+            _effect.CurrentTechnique = _effect.Techniques["HiddenSInstancing"];
+
+            _effect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
+            _effect.CurrentTechnique.Passes[0].Apply();
+            device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);
+
+            _effect.Parameters["PositionOffset"].SetValue(new Vector3(0, -4, 0));
+            _effect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_FLOOR_SPRITE.RectPos.Location.ToVector2());
+            _effect.CurrentTechnique.Passes[0].Apply();
+            device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);
         }
     }
 }

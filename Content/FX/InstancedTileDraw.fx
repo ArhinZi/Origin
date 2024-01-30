@@ -4,17 +4,21 @@
 	
 #pragma enable_d3d11_debug_symbols
 
-
+// common
 matrix WorldViewProjection;
-float2 texSize;
-float2 worldSize;
+float2 TextureSize;
+float2 WorldSize;
 float CurrentLevel;
 float2 LowHighLevel;
+float3 PositionOffset = float3(0,0,0);
+
 float2 TileSize = float2(32,16);
 float2 SpriteSize = float2(32, 32);
 
-float2 hiddenWallTexPos = float2(64,0);
-float4 hiddenColor = float4(0.3, 0.3, 0.3, 1);
+// hidden
+float2 HiddenSpriteTexturePos;
+float4 HiddenColor;
+
 float FloorYoffset = 4;
 float ZDiagOffset = 0.01;
 
@@ -132,8 +136,8 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     
     output.Position = pos;
 	
-    output.TexCoord = float2((extra.TextureRect.x + vertPos.x) / texSize.x,
-                             (extra.TextureRect.y + vertPos.y) / texSize.y);
+    output.TexCoord = float2((extra.TextureRect.x + vertPos.x) / TextureSize.x,
+                             (extra.TextureRect.y + vertPos.y) / TextureSize.y);
     
     output.ColorD = extra.Color;
     output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
@@ -141,24 +145,22 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     return output;
 }
 
-InstancingVSoutput HiddenInstancingVS(in StaticVSinput input)
+InstancingVSoutput HiddenLInstancingVS(in StaticVSinput input)
 {
     InstancingVSoutput output;
     
     uint spriteID = input.VertexID / 6;
     
-    uint2 pos = uint2( spriteID % worldSize.x,
-                        spriteID / worldSize.x);
+    uint3 pos = uint3(spriteID % WorldSize.x,
+                        spriteID / WorldSize.x,
+                        CurrentLevel);
     
-    float3 spritePos = float3(GetSpritePositionByCellPosition(uint3(pos, CurrentLevel)), GetSpriteZOffsetByCellPos(uint3(pos, CurrentLevel)));
-    float2 localVertexPos = float2(input.Position.x * SpriteSize.x,
-                                    input.Position.y * SpriteSize.y);
-    float4 globalVertexPos = float4(spritePos.xy + localVertexPos, spritePos.z, 1);
+    float3 spritePos = float3(GetSpritePositionByCellPosition(pos), GetSpriteZOffsetByCellPos(pos));
+    float2 localVertexPos = float2(input.Position.x * SpriteSize.x, input.Position.y * SpriteSize.y);
+    float4 globalVertexPos = float4(spritePos.xy + localVertexPos, spritePos.z, 1) + float4(PositionOffset, 0);
     float4 worldVertexPos = mul(globalVertexPos, WorldViewProjection);
     
-    //float xy = (worldSize.x / RBIT_COUNT) * pos.y + pos.x / RBIT_COUNT;
-    float xy = (worldSize.x / RBIT_COUNT) * pos.y + pos.x / RBIT_COUNT;
-    
+    float xy = (WorldSize.x / RBIT_COUNT) * pos.y + pos.x / RBIT_COUNT;
     if (Unpack(HiddenLBuffer[xy][pos.x % RBIT_COUNT / 32], pos.x % RBIT_COUNT))
     {
         worldVertexPos.w = 1;
@@ -168,17 +170,42 @@ InstancingVSoutput HiddenInstancingVS(in StaticVSinput input)
         worldVertexPos.w = 0;
     }
         
-    
     output.Position = worldVertexPos;
-    
-    output.TexCoord = float2((hiddenWallTexPos.x + input.Position.x * SpriteSize.x) / texSize.x,
-                             (hiddenWallTexPos.y + input.Position.y * SpriteSize.y) / texSize.y);
-    
-    output.ColorD.rgba = hiddenColor;
+    output.TexCoord = float2((HiddenSpriteTexturePos.x + input.Position.x * SpriteSize.x) / TextureSize.x,
+                             (HiddenSpriteTexturePos.y + input.Position.y * SpriteSize.y) / TextureSize.y);
+    output.ColorD = ShadeColor(HiddenColor, uint3(uint2(0, 0), CurrentLevel));
     
     return output;
+}
+
+InstancingVSoutput HiddenSInstancingVS(in StaticVSinput input)
+{
+    InstancingVSoutput output;
     
+    uint spriteID = input.VertexID / 6;
     
+    uint3 pos = uint3(spriteID, WorldSize.y - 1, CurrentLevel);
+    if (spriteID >= WorldSize.x)
+        pos.xy = uint2(WorldSize.x-1, WorldSize.x+WorldSize.y-1-spriteID);
+    
+    float3 spritePos = float3(GetSpritePositionByCellPosition(pos), GetSpriteZOffsetByCellPos(pos));
+    float2 localVertexPos = float2(input.Position.x * SpriteSize.x, input.Position.y * SpriteSize.y);
+    float4 globalVertexPos = float4(spritePos.xy + localVertexPos, spritePos.z, 1) + float4(PositionOffset, 0);
+    float4 worldVertexPos = mul(globalVertexPos, WorldViewProjection);
+    
+    float xy = spriteID/RBIT_COUNT;
+    if (Unpack(HiddenSBuffer[xy][spriteID % RBIT_COUNT / 32], spriteID % RBIT_COUNT))
+        worldVertexPos.w = 1;
+    else
+        worldVertexPos.w = 0;
+    
+        
+    output.Position = worldVertexPos;
+    output.TexCoord = float2((HiddenSpriteTexturePos.x + input.Position.x * SpriteSize.x) / TextureSize.x,
+                             (HiddenSpriteTexturePos.y + input.Position.y * SpriteSize.y) / TextureSize.y);
+    output.ColorD.rgba = ShadeColor(HiddenColor, uint3(uint2(0, 0), CurrentLevel));
+    
+    return output;
 }
 
 float4 InstancingPS(InstancingVSoutput input) : SV_TARGET
@@ -205,12 +232,22 @@ technique SpriteInstancing
     }
 };
 
-technique HiddenInstancing
+technique HiddenLInstancing
 {
     pass Main
     {
         //ComputeShader = compile CS_SHADERMODEL InstancingCS();
-        VertexShader = compile VS_SHADERMODEL HiddenInstancingVS();
+        VertexShader = compile VS_SHADERMODEL HiddenLInstancingVS();
+        PixelShader = compile PS_SHADERMODEL InstancingPS();
+    }
+};
+
+technique HiddenSInstancing
+{
+    pass Main
+    {
+        //ComputeShader = compile CS_SHADERMODEL InstancingCS();
+        VertexShader = compile VS_SHADERMODEL HiddenSInstancingVS();
         PixelShader = compile PS_SHADERMODEL InstancingPS();
     }
 };
