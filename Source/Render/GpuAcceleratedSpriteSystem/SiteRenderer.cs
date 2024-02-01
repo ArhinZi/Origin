@@ -28,9 +28,13 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
     public class SiteRenderer
     {
+        public static VertexBuffer GeometryBuffer;
+        public static Effect InstanceMainEffect;
+
         private int _drawLowest;
         private int _drawHighest;
         private Site site;
+        private GraphicsDevice _device = OriginGame.Instance.GraphicsDevice;
 
         public StaticSpriteLayeredDrawer StaticDrawer { get; }
         public StaticHiddenLayeredDrawer HiddenDrawer { get; }
@@ -40,6 +44,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             this.site = site;
             _drawHighest = site.CurrentLevel;
             _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+            InstanceMainEffect = OriginGame.Instance.Content.Load<Effect>("FX/InstancedTileDraw");
+            GenerateInstanceGeometry();
 
             StaticDrawer = new StaticSpriteLayeredDrawer(site);
             StaticDrawer.InitTerrainSprites();
@@ -68,6 +74,29 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
         }
 
+        private void GenerateInstanceGeometry()
+        {
+            int size = site.Size.X * site.Size.Y;
+            GeometryData[] _vertices = new GeometryData[6 * size];
+
+            #region filling vertices
+
+            for (int i = 0; i < size; i++)
+            {
+                _vertices[i * 6 + 0].World = new Color((byte)0, (byte)0, (byte)0, (byte)0);
+                _vertices[i * 6 + 1].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
+                _vertices[i * 6 + 2].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
+                _vertices[i * 6 + 3].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
+                _vertices[i * 6 + 4].World = new Color((byte)255, (byte)255, (byte)0, (byte)0);
+                _vertices[i * 6 + 5].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
+            }
+
+            #endregion filling vertices
+
+            GeometryBuffer = new VertexBuffer(_device, typeof(GeometryData), _vertices.Length, BufferUsage.WriteOnly);
+            GeometryBuffer.SetData(_vertices);
+        }
+
         public void Update(GameTime gameTime)
         {
         }
@@ -76,17 +105,28 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             CheckCurrentLevelChanged();
 
+            Matrix WVP = Matrix.Multiply(Matrix.Multiply(site.Camera.WorldMatrix, site.Camera.Transformation),
+                                site.Camera.Projection);
+            InstanceMainEffect.Parameters["WorldViewProjection"].SetValue(WVP);
+            InstanceMainEffect.Parameters["LowHighLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
+            InstanceMainEffect.Parameters["WorldSize"].SetValue(new Vector2(site.Size.X, site.Size.Y));
+            InstanceMainEffect.Parameters["HiddenColor"].SetValue(GlobalResources.HIDDEN_COLOR.ToVector4());
+
             for (int z = _drawLowest; z < _drawHighest; z++)
+            {
+                InstanceMainEffect.Parameters["CurrentLevel"].SetValue(z);
                 foreach (var key in texture2Ds)
                 {
-                    StaticDrawer.Draw(z, new Vector2(_drawLowest, _drawHighest));
-                    HiddenDrawer.DrawSides(z, new Vector2(_drawLowest, _drawHighest));
+                    StaticDrawer.Draw(z);
+                    HiddenDrawer.DrawSides(z);
                 }
+            }
+            InstanceMainEffect.Parameters["CurrentLevel"].SetValue(_drawHighest);
             // top
             foreach (var key in texture2Ds)
             {
-                HiddenDrawer.DrawLayer(_drawHighest, new Vector2(_drawLowest, _drawHighest));
-                StaticDrawer.Draw(_drawHighest, new Vector2(_drawLowest, _drawHighest), new List<byte>() { 0 });
+                HiddenDrawer.DrawLayer(_drawHighest);
+                StaticDrawer.Draw(_drawHighest, new List<byte>() { 0 });
             }
         }
     }

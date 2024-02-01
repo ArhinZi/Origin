@@ -14,6 +14,7 @@ using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Origin.Source
 {
@@ -69,10 +70,16 @@ namespace Origin.Source
 
             Tools = new SiteToolController(this);
 
+            Trace.WriteLine("Start Site map gen");
+
             MapGenerator = new SiteGeneratorService(this, Size);
             MapGenerator.Visit(new Point3(0, 0, 127));
 
+            Trace.WriteLine("Start Site pathfind gen");
+
             Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
+
+            Trace.WriteLine("End init Site");
         }
 
         public void Update(GameTime gameTime)

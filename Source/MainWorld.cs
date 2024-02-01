@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 using System;
+using System.Diagnostics;
 
 namespace Origin.Source
 {
@@ -29,7 +30,9 @@ namespace Origin.Source
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);
             ActiveSite.InitPathFinder();*/
 
+            Trace.WriteLine("Start creating render");
             Renderer = new(ActiveSite, OriginGame.Instance.GraphicsDevice);
+            Trace.WriteLine("End creating render");
 
             /*var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");

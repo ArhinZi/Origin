@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct Float4
     {
         //128 bits

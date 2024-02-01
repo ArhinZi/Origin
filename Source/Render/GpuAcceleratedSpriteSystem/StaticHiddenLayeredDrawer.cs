@@ -40,15 +40,11 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         private Site _site;
 
-        private Effect _effect;
         private Texture2D _texture;
-
-        public VertexBuffer geometryBuffer;
 
         public StaticHiddenLayeredDrawer(Site site)
         {
             _site = site;
-            _effect = OriginGame.Instance.Content.Load<Effect>("FX/InstancedTileDraw");
             _texture = GlobalResources.HIDDEN_WALL_SPRITE.Texture;
             RBIT_COUNT = Math.Min(_site.Size.X, BIT_COUNT);
             LCHUNK_SIZE = (_site.Size.X / RBIT_COUNT) * _site.Size.Y;
@@ -80,8 +76,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             {
                 bufferSides[i] = new StructuredBuffer(device, typeof(Float4), SCHUNK_SIZE, BufferUsage.None, ShaderAccess.Read);
             }
-
-            GenerateInstanceGeometry();
         }
 
         public void MakeHidden(Point3 pos)
@@ -138,78 +132,47 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 bufferLayers[z].SetData(_lData[z]);
                 bufferSides[z].SetData(_sData[z]);
             }
-            _effect.Parameters["RBIT_COUNT"].SetValue(RBIT_COUNT);
-            _effect.Parameters["SpriteTexture"].SetValue(_texture);
-            _effect.Parameters["TextureSize"].SetValue(new Vector2(_texture.Width, _texture.Height));
-            _effect.Parameters["WorldSize"].SetValue(new Vector2(_site.Size.X, _site.Size.Y));
-            _effect.Parameters["HiddenColor"].SetValue(GlobalResources.HIDDEN_COLOR.ToVector4());
         }
 
-        private void GenerateInstanceGeometry()
+        private void DrawBasic(int layer)
         {
-            int size = _site.Size.X * _site.Size.Y;
-            GeometryData[] _vertices = new GeometryData[6 * size];
+            SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(new Vector3(0, 0, 0));
+            SiteRenderer.InstanceMainEffect.Parameters["RBIT_COUNT"].SetValue(RBIT_COUNT);
+            SiteRenderer.InstanceMainEffect.Parameters["SpriteTexture"].SetValue(_texture);
+            SiteRenderer.InstanceMainEffect.Parameters["TextureSize"].SetValue(new Vector2(_texture.Width, _texture.Height));
 
-            #region filling vertices
-
-            for (int i = 0; i < size; i++)
-            {
-                _vertices[i * 6 + 0].World = new Color((byte)0, (byte)0, (byte)0, (byte)0);
-                _vertices[i * 6 + 1].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
-                _vertices[i * 6 + 2].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
-                _vertices[i * 6 + 3].World = new Color((byte)255, (byte)0, (byte)0, (byte)0);
-                _vertices[i * 6 + 4].World = new Color((byte)255, (byte)255, (byte)0, (byte)0);
-                _vertices[i * 6 + 5].World = new Color((byte)0, (byte)255, (byte)0, (byte)0);
-            }
-
-            #endregion filling vertices
-
-            geometryBuffer = new VertexBuffer(device, typeof(GeometryData), _vertices.Length, BufferUsage.WriteOnly);
-            geometryBuffer.SetData(_vertices);
-        }
-
-        private void DrawBasic(int layer, Vector2 LowHigh)
-        {
-            Matrix WVP = Matrix.Multiply(Matrix.Multiply(_site.Camera.WorldMatrix, _site.Camera.Transformation),
-                                _site.Camera.Projection);
-
-            _effect.Parameters["WorldViewProjection"].SetValue(WVP);
-            _effect.Parameters["LowHighLevel"].SetValue(LowHigh);
-            _effect.Parameters["CurrentLevel"].SetValue(layer);
-            _effect.Parameters["PositionOffset"].SetValue(new Vector3(0, 0, 0));
-
-            device.SetVertexBuffer(geometryBuffer);
+            device.SetVertexBuffer(SiteRenderer.GeometryBuffer);
             device.DepthStencilState = DepthStencilState.Default;
             device.BlendState = BlendState.AlphaBlend;
         }
 
-        public void DrawLayer(int layer, Vector2 LowHigh)
+        public void DrawLayer(int layer)
         {
-            DrawBasic(layer, LowHigh);
+            DrawBasic(layer);
 
-            _effect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
-            _effect.Parameters["HiddenLBuffer"].SetValue(bufferLayers[layer]);
-            _effect.CurrentTechnique = _effect.Techniques["HiddenLInstancing"];
+            SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
+            SiteRenderer.InstanceMainEffect.Parameters["HiddenLBuffer"].SetValue(bufferLayers[layer]);
+            SiteRenderer.InstanceMainEffect.CurrentTechnique = SiteRenderer.InstanceMainEffect.Techniques["HiddenLInstancing"];
 
-            _effect.CurrentTechnique.Passes[0].Apply();
+            SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
 
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, _site.Size.X * _site.Size.Y * 2);
         }
 
-        public void DrawSides(int layer, Vector2 LowHigh)
+        public void DrawSides(int layer)
         {
-            DrawBasic(layer, LowHigh);
+            DrawBasic(layer);
 
-            _effect.Parameters["HiddenSBuffer"].SetValue(bufferSides[layer]);
-            _effect.CurrentTechnique = _effect.Techniques["HiddenSInstancing"];
+            SiteRenderer.InstanceMainEffect.Parameters["HiddenSBuffer"].SetValue(bufferSides[layer]);
+            SiteRenderer.InstanceMainEffect.CurrentTechnique = SiteRenderer.InstanceMainEffect.Techniques["HiddenSInstancing"];
 
-            _effect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
-            _effect.CurrentTechnique.Passes[0].Apply();
+            SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
+            SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);
 
-            _effect.Parameters["PositionOffset"].SetValue(new Vector3(0, -4, 0));
-            _effect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_FLOOR_SPRITE.RectPos.Location.ToVector2());
-            _effect.CurrentTechnique.Passes[0].Apply();
+            SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(new Vector3(0, -4, 0));
+            SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_FLOOR_SPRITE.RectPos.Location.ToVector2());
+            SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);
         }
     }

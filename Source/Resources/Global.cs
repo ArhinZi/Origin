@@ -29,7 +29,7 @@ namespace Origin.Source.Resources
         /// </summary>
         public static readonly float Z_LEVEL_OFFSET = 0.01f;
 
-        public static readonly Point BASE_CHUNK_SIZE = new Point(128, 128);
+        public static readonly Point BASE_CHUNK_SIZE = new Point(512, 512);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 32;
 
         //public static int GPU_LAYER_PACK_COUNT = 65536;
