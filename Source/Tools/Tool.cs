@@ -28,7 +28,7 @@ namespace Origin.Source.Tools
         protected SiteToolController Controller;
         protected Camera2D Camera => Controller.Site.Camera;
 
-        public VertexBufferLayer RenderLayer;
+        public Global.DrawBufferLayer RenderLayer;
 
         public List<SpritePositionColor> sprites;
         public Point3 Position = Point3.Null;
@@ -37,7 +37,7 @@ namespace Origin.Source.Tools
         public Tool(SiteToolController controller)
         {
             Controller = controller;
-            RenderLayer = VertexBufferLayer.FrontInteractives;
+            RenderLayer = Global.DrawBufferLayer.FrontInteractives;
         }
 
         public abstract void Update(GameTime gameTime);

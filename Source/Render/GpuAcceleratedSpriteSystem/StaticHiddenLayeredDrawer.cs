@@ -108,23 +108,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
         }
 
-        public void InitTerrainHiddence()
-        {
-            for (int z = 0; z < _site.Size.Z; z++)
-                for (int x = 0; x < _site.Size.X; x++)
-                    for (int y = 0; y < _site.Size.Y; y++)
-                    {
-                        Point3 tilePos = new Point3(x, y, z);
-                        Entity tile = _site.Map[tilePos];
-
-                        if (tile == Entity.Null)
-                        {
-                            MakeHidden(tilePos);
-                        }
-                    }
-            Set();
-        }
-
         public void Set()
         {
             for (int z = 0; z < _site.Size.Z; z++)

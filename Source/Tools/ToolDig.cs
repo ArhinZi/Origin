@@ -33,7 +33,7 @@ namespace Origin.Source.Tools
         {
             Name = "ToolDig";
             sprites = new List<SpritePositionColor> { };
-            RenderLayer = VertexBufferLayer.FrontInteractives;
+            RenderLayer = Global.DrawBufferLayer.FrontInteractives;
         }
 
         public override void Reset()

@@ -209,7 +209,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
         }
 
-        public void ClearLayer(int l)
+        public void ClearLayer(byte l)
         {
             foreach (var level in layersBatches)
             {

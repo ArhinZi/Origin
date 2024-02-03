@@ -37,16 +37,6 @@ namespace Origin.Source
         EmbeddedFloor
     }*/
 
-    public enum VertexBufferLayer
-    {
-        HiddenBack,
-        Back,
-        BackInteractives,
-        HiddenFront,
-        Front,
-        FrontInteractives,
-    }
-
     public partial class SiteRenderer : IDisposable
     {
         private enum RenderTaskMarks
@@ -525,15 +515,15 @@ namespace Origin.Source
 
                                 if (z == _drawHighest)
                                     _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.HiddenBack, (int)VertexBufferLayer.Back });
+                                        new List<int> { (int)Global.DrawBufferLayer.HiddenBack, (int)Global.DrawBufferLayer.Back });
                                 else
                                     if (!_renderChunkArray[x, y, z].IsFullyHidden ||
                                     (_renderChunkArray[x, y, z].IsFullyHidden && (x == _chunksCount.X - 1 || y == _chunksCount.Y - 1)))
                                     _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.Back, (int)VertexBufferLayer.Front });
+                                        new List<int> { (int)Global.DrawBufferLayer.Back, (int)Global.DrawBufferLayer.Front });
 
                                 _renderChunkArray[x, y, z].Draw(key,
-                                        new List<int> { (int)VertexBufferLayer.BackInteractives, (int)VertexBufferLayer.FrontInteractives });
+                                        new List<int> { (int)Global.DrawBufferLayer.BackInteractives, (int)Global.DrawBufferLayer.FrontInteractives });
                                 _renderChunkArray[x, y, z].Clear(VertexBufferType.Dynamic);
                             }
                         }

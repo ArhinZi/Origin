@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using static Origin.Source.Render.GpuAcceleratedSpriteSystem.SpriteChunk;
+using static Origin.Source.Resources.Global;
 using static System.Reflection.Metadata.BlobBuilder;
 
 using Sprite = Origin.Source.Resources.Sprite;
@@ -48,30 +49,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             GenerateInstanceGeometry();
 
             StaticDrawer = new StaticSpriteLayeredDrawer(site);
-            StaticDrawer.InitTerrainSprites();
 
             HiddenDrawer = new StaticHiddenLayeredDrawer(site);
-            HiddenDrawer.InitTerrainHiddence();
-        }
-
-        private void CheckCurrentLevelChanged()
-        {
-            // Check if CurrentLevel changed and redraw what need to redraw
-            if (_drawHighest != site.CurrentLevel)
-            {
-                /*if (HalfWallMode)
-                {
-                    RenderTasks.Enqueue(new RenderTask()
-                    {
-                        task = TaskLevelHalfWallUpdate(Site.PreviousLevel, Site.CurrentLevel),
-                        OnComplete = new Action(() => { })
-                    });
-                }*/
-                _drawHighest = site.CurrentLevel;
-                _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
-
-                //RecalcHiddenInstances();
-            }
         }
 
         private void GenerateInstanceGeometry()
@@ -101,8 +80,29 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
         }
 
+        private void CheckCurrentLevelChanged()
+        {
+            // Check if CurrentLevel changed and redraw what need to redraw
+            if (_drawHighest != site.CurrentLevel)
+            {
+                /*if (HalfWallMode)
+                {
+                    RenderTasks.Enqueue(new RenderTask()
+                    {
+                        task = TaskLevelHalfWallUpdate(Site.PreviousLevel, Site.CurrentLevel),
+                        OnComplete = new Action(() => { })
+                    });
+                }*/
+                _drawHighest = site.CurrentLevel;
+                _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+
+                //RecalcHiddenInstances();
+            }
+        }
+
         public void Draw(GameTime gameTime)
         {
+            StaticDrawer.DrawUpdate();
             CheckCurrentLevelChanged();
 
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(site.Camera.WorldMatrix, site.Camera.Transformation),
@@ -126,7 +126,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             foreach (var key in texture2Ds)
             {
                 HiddenDrawer.DrawLayer(_drawHighest);
-                StaticDrawer.Draw(_drawHighest, new List<byte>() { 0 });
+                StaticDrawer.Draw(_drawHighest, new List<byte>() { (byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackInteractives });
             }
         }
     }

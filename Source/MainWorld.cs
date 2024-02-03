@@ -13,7 +13,6 @@ namespace Origin.Source
         public Site ActiveSite { get; private set; }
         //public SiteRenderer Renderer { get; private set; }
 
-        public Render.GpuAcceleratedSpriteSystem.SiteRenderer Renderer { get; private set; }
         public int Seed { get; private set; } = 1234;
 
         private SpriteBatch spriteBatch;
@@ -29,10 +28,6 @@ namespace Origin.Source
             /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);
             ActiveSite.InitPathFinder();*/
-
-            Trace.WriteLine("Start creating render");
-            Renderer = new(ActiveSite, OriginGame.Instance.GraphicsDevice);
-            Trace.WriteLine("End creating render");
 
             /*var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
             sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");
@@ -78,12 +73,13 @@ namespace Origin.Source
                 });
             }*/
 
-            Renderer.Update(gameTime);
+            //Renderer.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            Renderer.Draw(gameTime);
+            ActiveSite.Draw(gameTime);
+            //Renderer.Draw(gameTime);
         }
 
         public void Dispose()

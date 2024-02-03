@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using Origin.Source.ECS;
 using Origin.Source.Generators;
 using Origin.Source.Pathfind;
+using Origin.Source.Render.GpuAcceleratedSpriteSystem;
 using Origin.Source.Resources;
 using Origin.Source.Tools;
 using Origin.Source.Utils;
@@ -30,6 +31,8 @@ namespace Origin.Source
 
         public SiteGeneratorService MapGenerator { get; private set; }
         public SitePathfindingService Pathfinder { get; private set; }
+
+        public SiteDrawControlService DrawControl { get; private set; }
 
         public SiteToolController Tools { get; private set; }
 
@@ -70,16 +73,15 @@ namespace Origin.Source
 
             Tools = new SiteToolController(this);
 
-            Trace.WriteLine("Start Site map gen");
-
             MapGenerator = new SiteGeneratorService(this, Size);
             MapGenerator.Visit(new Point3(0, 0, 127));
+            Trace.WriteLine("End map gen");
 
-            Trace.WriteLine("Start Site pathfind gen");
+            DrawControl = new SiteDrawControlService(this);
+            Trace.WriteLine("End creating render");
 
             Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
-
-            Trace.WriteLine("End init Site");
+            Trace.WriteLine("End pathfinder init");
         }
 
         public void Update(GameTime gameTime)
@@ -87,6 +89,8 @@ namespace Origin.Source
             Tools.Update(gameTime);
 
             Pathfinder.Update(gameTime);
+
+            DrawControl.Update(gameTime);
 
             //SetSelected(sel);
             /*EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
@@ -96,6 +100,11 @@ namespace Origin.Source
                 ["DayTime"] = (SiteTime).ToString("#.##")
             }));*/
             //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+            DrawControl.Draw(gameTime);
         }
 
         public void RemoveBlock(Point3 pos)

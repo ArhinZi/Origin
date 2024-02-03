@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Sprite = Origin.Source.Resources.Sprite;
+using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.Render
 {
@@ -32,7 +33,7 @@ namespace Origin.Source.Render
         /// </summary>
         public static int MaxVertexCount = Global.BASE_CHUNK_SIZE.X * Global.BASE_CHUNK_SIZE.Y * 6;
 
-        public static int CountOfLayers => Enum.GetNames(typeof(VertexBufferLayer)).Length;
+        public static int CountOfLayers => Enum.GetNames(typeof(DrawBufferLayer)).Length;
 
         public Point3 SelfChunkPos { get; private set; }
         public Point SelfChunkSize { get; private set; }
@@ -223,7 +224,7 @@ namespace Origin.Source.Render
                                     Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                                     AddSprite(
                                         VertexBufferType.Static,
-                                        (int)VertexBufferLayer.Back,
+                                        (int)DrawBufferLayer.Back,
                                         sprite, col, tilePos,
                                         new Point(0, 0) + spriteShift);
 
@@ -233,14 +234,14 @@ namespace Origin.Source.Render
                                             !tmp.Has<BaseConstruction>()))
                                         AddSprite(
                                                 VertexBufferType.Static,
-                                                (int)VertexBufferLayer.Back,
+                                                (int)DrawBufferLayer.Back,
                                                 lborderSprite, borderColor, tilePos,
                                                 new Point(0, 0) + spriteShift);
                                     if (Blocks.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null && (
                                             !tmp.Has<BaseConstruction>()))
                                         AddSprite(
                                                 VertexBufferType.Static,
-                                                (int)VertexBufferLayer.Back,
+                                                (int)DrawBufferLayer.Back,
                                                 rborderSprite, borderColor, tilePos,
                                                 new Point(GlobalResources.Settings.TileSize.X / 2, 0) + spriteShift);
 
@@ -260,7 +261,7 @@ namespace Origin.Source.Render
                                     Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                                     AddSprite(
                                         VertexBufferType.Static,
-                                        (int)VertexBufferLayer.Front,
+                                        (int)DrawBufferLayer.Front,
                                         sprite, col, tilePos,
                                         new Point(0, -GlobalResources.Settings.FloorYoffset));
 
@@ -270,14 +271,14 @@ namespace Origin.Source.Render
                                             !tmp.Has<BaseConstruction>()))
                                         AddSprite(
                                                 VertexBufferType.Static,
-                                                (int)VertexBufferLayer.Front,
+                                                (int)DrawBufferLayer.Front,
                                                 lborderSprite, borderColor, tilePos,
                                                 new Point(0, -GlobalResources.Settings.FloorYoffset));
                                     if (Blocks.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null && (
                                             !tmp.Has<BaseConstruction>()))
                                         AddSprite(
                                                 VertexBufferType.Static,
-                                                (int)VertexBufferLayer.Front,
+                                                (int)DrawBufferLayer.Front,
                                                 rborderSprite, borderColor, tilePos,
                                                 new Point(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1));
 
@@ -295,7 +296,7 @@ namespace Origin.Source.Render
                                         if (spritesIDs != null)
                                             AddSprite(
                                                     VertexBufferType.Static,
-                                                    (int)VertexBufferLayer.Front,
+                                                    (int)DrawBufferLayer.Front,
                                                     sprite, Color.White, tilePos,
                                                     new Point(0, -GlobalResources.Settings.FloorYoffset));
                                     }
@@ -313,24 +314,24 @@ namespace Origin.Source.Render
                             if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                 AddSprite(
                                     VertexBufferType.Static,
-                                    (int)VertexBufferLayer.Back,
+                                    (int)DrawBufferLayer.Back,
                                     sprite, c, tilePos, new Point(0, 0));
                             else
                                 AddSprite(
                                     VertexBufferType.Static,
-                                    (int)VertexBufferLayer.HiddenBack,
+                                    (int)DrawBufferLayer.HiddenBack,
                                     sprite, c, tilePos, new Point(0, 0));
 
                             sprite = GlobalResources.HIDDEN_FLOOR_SPRITE;
                             if (Renderer.Site.Size.X - 1 == tileCoordX || Renderer.Site.Size.Y - 1 == tileCoordY)
                                 AddSprite(
                                     VertexBufferType.Static,
-                                    (int)VertexBufferLayer.Front,
+                                    (int)DrawBufferLayer.Front,
                                     sprite, c, tilePos, new Point(0, -GlobalResources.Settings.FloorYoffset));
                             else
                                 AddSprite(
                                 VertexBufferType.Static,
-                                (int)VertexBufferLayer.HiddenFront,
+                                (int)DrawBufferLayer.HiddenFront,
                                 sprite, c, tilePos, new Point(0, -GlobalResources.Settings.FloorYoffset));
                         }
                     }
@@ -464,7 +465,7 @@ namespace Origin.Source.Render
             _staticVertexBuffers = new Dictionary<Texture2D, List<VertexBuffer>[]>();
             foreach (var key in _staticVertices.Keys)
             {
-                List<VertexBuffer>[] lvb = new List<VertexBuffer>[Enum.GetNames(typeof(VertexBufferLayer)).Length];
+                List<VertexBuffer>[] lvb = new List<VertexBuffer>[Enum.GetNames(typeof(DrawBufferLayer)).Length];
                 for (int ilayer = 0; ilayer < _staticVertices[key].Length; ilayer++)
                 {
                     ref List<VertexPositionColorTextureBlock[]> list = ref _staticVertices[key][ilayer];
@@ -490,7 +491,7 @@ namespace Origin.Source.Render
 
         public void Draw(Effect effect, List<int> typesToDraw = null, bool drawstatic = true, bool drawdynamic = true)
         {
-            //if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(VertexBufferLayer));
+            //if (typesToDraw == null) typesToDraw = Enum.GetValues(typeof(DrawBufferLayer));
             typesToDraw ??= Enumerable.Range(0, CountOfLayers).ToList();
             foreach (var key in Texture2Ds)
             {

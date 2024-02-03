@@ -4,6 +4,17 @@ namespace Origin.Source.Resources
 {
     public static class Global
     {
+        public enum DrawBufferLayer : byte
+        {
+            HiddenBack = 0,
+            Back = 1,
+            BackInteractives = 5,
+            HiddenFront = 10,
+            Front = 11,
+            FrontOver = 12,
+            FrontInteractives = 15,
+        }
+
         #region Camera
 
         public static float SITE_CAM_MIN_ZOOM = 0.05f;

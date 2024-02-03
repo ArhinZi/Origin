@@ -44,7 +44,7 @@ namespace Origin.Source.GameStates
             if (World.ActiveSite.Tools.CurrentTool != null)
             {
                 Point3 pos = World.ActiveSite.Tools.CurrentTool.Position;
-                string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.Renderer.StaticDrawer.ChunkSize, 1)).ToString();
+                //string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.ActiveSite.DrawControl.StaticDrawer.ChunkSize, 1)).ToString();
 
                 string blockMat = "NONE";
                 BaseConstruction bc;
@@ -56,7 +56,7 @@ namespace Origin.Source.GameStates
 
                 EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
                 {
-                    ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position.ToString() + chunk + blockMat,
+                    ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position.ToString() + blockMat,
                     ["DebugLayer"] = World.ActiveSite.CurrentLevel.ToString(),
                     //["DayTime"] = World.ActiveSite.SiteTime.ToString("#.##")
                 }));

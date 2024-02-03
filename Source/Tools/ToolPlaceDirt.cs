@@ -11,6 +11,8 @@ using Origin.Source.Resources;
 using System;
 using System.Collections.Generic;
 
+using static Origin.Source.Resources.Global;
+
 namespace Origin.Source.Tools
 {
     public class ToolPlaceDirt : Tool
@@ -35,7 +37,7 @@ namespace Origin.Source.Tools
         {
             Name = "ToolPlaceDirt";
             sprites = new List<SpritePositionColor> { };
-            RenderLayer = VertexBufferLayer.FrontInteractives;
+            RenderLayer = DrawBufferLayer.FrontInteractives;
         }
 
         public override void Reset()
