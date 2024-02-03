@@ -174,7 +174,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                     SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
 
-                    device.DrawPrimitives(PrimitiveType.TriangleList, 0, dlayer.dataIndex * 2);
+                    device.DrawPrimitives(PrimitiveType.TriangleList, 0, (int)(dlayer.dataIndex * 2));
                 }
             }
 

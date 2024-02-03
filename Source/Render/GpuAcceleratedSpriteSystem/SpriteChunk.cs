@@ -28,41 +28,6 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
-    [StructLayout(LayoutKind.Explicit, Size = 4)]
-    public struct SpriteLocator
-    {
-        [FieldOffset(0)]
-        private int data; // 32 bits in total
-
-        // BitField 3 bits - 8
-        public int x
-        {
-            get { return data & 0x7; } // Mask the lower 3 bits
-            set => data = (int)((data & 0xFFFFFFF8) | (value & 0x7));
-        }
-
-        // BitField 3 bits - 8
-        public int y
-        {
-            get { return (data >> 3) & 0x7; } // Shift and mask the next 3 bits
-            set => data = (int)((data & 0xFFFFFFF1F) | ((value & 0x7) << 3));
-        }
-
-        // BitField 20 bits - 1048576 (1024^2)
-        public int i
-        {
-            get { return (data >> 6) & 0xFFFFF; } // Shift and mask the lower 20 bits
-            set => data = (int)((data & 0xFFFFFC3F) | ((value & 0xFFFFF) << 6));
-        }
-
-        // BitField 6 bits - 64
-        public int layer
-        {
-            get { return (data >> 26) & 0x3F; } // Shift and mask the next 6 bits
-            set => data = (int)((data & 0xFC000000) | ((value & 0x3F) << 26));
-        }
-    }
-
     /// <summary>
     /// Batched levels.
     /// Levels have batches by Texture
@@ -79,7 +44,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
             public SpriteMainData[] dataMain;
             public SpriteExtraData[] dataExtra;
-            public int dataIndex = 0;
+            public uint dataIndex = 0;
 
             public int structSize;
             private byte _layer;
@@ -102,7 +67,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                 ReallocMainBuffer();
                 ReallocExtraBuffer();
-                ReGenerateCommonGeometry();
             }
 
             public void ReallocMainBuffer()
@@ -127,8 +91,9 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     bufferDataExtra.Dispose();
             }
 
-            public void ReGenerateCommonGeometry()
+            public void Clear()
             {
+                dataIndex = 0;
             }
         }
 
@@ -181,15 +146,14 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 Array.Resize(ref layer.dataMain, layer.structSize * 2);
                 Array.Resize(ref layer.dataExtra, layer.structSize * 2);
                 layer.structSize = layer.structSize * 2;
-                layer.ReGenerateCommonGeometry();
                 Debug.Assert(layer.structSize <= 1048576, "Too many elements");
             }
             SpriteLocator spriteLocator = new SpriteLocator()
             {
                 i = layer.dataIndex,
                 layer = layer.LayerID,
-                x = position.X,
-                y = position.Y
+                x = (uint)position.X,
+                y = (uint)position.Y
             };
             layer.dataMain[layer.dataIndex] = dataMain;
             layer.dataExtra[layer.dataIndex] = dataExtra;
@@ -241,9 +205,18 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             foreach (var level in layersBatches)
             {
                 var batch = level.Value;
-                for (int i = 0; i < batch.Count; i++)
+                batch.Clear();
+            }
+        }
+
+        public void ClearLayer(int l)
+        {
+            foreach (var level in layersBatches)
+            {
+                var batch = level.Value;
+                if (batch.TryGetValue(l, out Layer layer))
                 {
-                    batch.Clear();
+                    layer.Clear();
                 }
             }
         }
