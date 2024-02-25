@@ -14,6 +14,9 @@ namespace Origin.Source.Resources
         public string Name { get; set; }
         public bool ConstructAble { get; set; }
         public bool RotateAble { get; set; }
+        public bool OverAble { get; set; }
+
+        public float WalkDifficulty { get; set; }
         public bool HasMaterialColor { get; set; }
         public string Type { get; set; }
         public string WallRemovedConstruction { get; set; }

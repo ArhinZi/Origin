@@ -6,6 +6,7 @@
       "ConstructAble": false,
       "RotateAble": false,
       "HasMaterialColor": true,
+      "WalkDifficulty": 1.5,
       "Type": "WallFloor",
       "WallRemovedConstruction": "SoilFloor",
       "Category": "Soil",
@@ -27,6 +28,8 @@
       "ConstructAble": false,
       "RotateAble": false,
       "HasMaterialColor": true,
+      "OverAble": true,
+      "WalkDifficulty": 1.5,
       "Type": "Floor",
       "Category": "Soil",
 
@@ -46,6 +49,7 @@
       "ConstructAble": false,
       "RotateAble": false,
       "HasMaterialColor": true,
+      "WalkDifficulty": 1.2,
       "Type": "WallFloor",
       "WallRemovedConstruction": "StoneFloor",
       "Category": "Stone",
@@ -67,6 +71,8 @@
       "ConstructAble": false,
       "RotateAble": false,
       "HasMaterialColor": true,
+      "OverAble": true,
+      "WalkDifficulty": 1.2,
       "Type": "Floor",
       "Category": "Stone",
 
@@ -86,6 +92,7 @@
       "ConstructAble": false,
       "RotateAble": true,
       "HasMaterialColor": true,
+      "WalkDifficulty": 1.5,
       "Type": "Ramp",
       "Category": "Soil",
 
@@ -106,6 +113,7 @@
       "ConstructAble": false,
       "RotateAble": true,
       "HasMaterialColor": true,
+      "WalkDifficulty": 1.2,
       "Type": "Ramp",
       "Category": "Stone",
 

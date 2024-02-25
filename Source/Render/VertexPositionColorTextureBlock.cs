@@ -6,6 +6,12 @@ using System.Runtime.InteropServices;
 
 namespace Origin.Source.Render
 {
+    [Flags]
+    public enum VertexFlags : int
+    {
+        SunLight = 1 << 0,
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct VertexPositionColorTextureBlock : IVertexType
     {
@@ -17,20 +23,24 @@ namespace Origin.Source.Render
 
         public Vector3 BlockPosition;
 
+        public VertexFlags PackedValues;
+
         public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration(
                 new VertexElement(VertexElementByteOffset.PositionStartOffset(), VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
                 new VertexElement(VertexElementByteOffset.OffsetColor(), VertexElementFormat.Color, VertexElementUsage.Color, 0),
                 new VertexElement(VertexElementByteOffset.OffsetVector2(), VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
-                new VertexElement(VertexElementByteOffset.OffsetVector3(), VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 1));
+                new VertexElement(VertexElementByteOffset.OffsetVector3(), VertexElementFormat.Vector3, VertexElementUsage.TextureCoordinate, 1),
+                new VertexElement(VertexElementByteOffset.OffsetInt(), VertexElementFormat.Single, VertexElementUsage.TextureCoordinate, 2));
 
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
-        public VertexPositionColorTextureBlock(Vector3 position, Color color, Vector2 textureCoordinate, Vector3 blockPosition)
+        public VertexPositionColorTextureBlock(Vector3 position, Color color, Vector2 textureCoordinate, Vector3 blockPosition, VertexFlags packedV = 0)
         {
             Position = position;
             Color = color;
             TextureCoordinate = textureCoordinate;
             BlockPosition = blockPosition;
+            PackedValues = packedV;
         }
 
         public override int GetHashCode()

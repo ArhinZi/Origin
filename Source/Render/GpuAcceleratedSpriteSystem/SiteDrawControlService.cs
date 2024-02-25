@@ -5,7 +5,8 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS;
-
+using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Vegetation;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -30,11 +31,14 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         private Site site;
         private SiteRenderer _siteRenderer;
         private int seed = 123456789;
+        private Random random;
 
         public SiteDrawControlService(Site site)
         {
             this.site = site;
             _siteRenderer = new(site, OriginGame.Instance.GraphicsDevice);
+
+            random = new Random(seed);
 
             InitTerrainSprites();
             InitTerrainHiddence();
@@ -42,8 +46,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void InitTerrainSprites()
         {
-            int rand = seed;
-            Random random = new Random(seed);
             for (int z = 0; z < site.Size.Z; z++)
                 for (int x = 0; x < site.Size.X; x++)
                     for (int y = 0; y < site.Size.Y; y++)
@@ -52,7 +54,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                         Entity tile = site.Map[tilePos];
                         SpriteLocatorsStatic locators = tile.AddOrGet(new SpriteLocatorsStatic());
 
-                        rand = random.Next();
+                        int rand = random.Next();
 
                         BaseConstruction bcc;
                         if (tile != Entity.Null && tile.TryGet(out bcc))
@@ -96,10 +98,10 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                                 //TODO Draw Vegetation
                                 LAYER = (int)DrawBufferLayer.FrontOver;
-                                HasVegetation hveg;
+                                BaseVegetationComponent hveg;
                                 if (tile.TryGet(out hveg))
                                 {
-                                    Vegetation veg = GlobalResources.GetResourceBy(GlobalResources.Vegetations, "ID", hveg.VegetationID);
+                                    Vegetation veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
                                     List<string> spritesIDs;
                                     if (Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
                                         sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
@@ -136,14 +138,11 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void ScheduleUpdateTile(Entity entity)
         {
-            int rand = seed;
-            Random random = new Random(seed);
-
             Point3 tilePos = entity.Get<IsTile>().Position;
             Entity tile = entity;
             SpriteLocatorsStatic locators = tile.AddOrGet(new SpriteLocatorsStatic());
 
-            rand = random.Next();
+            int rand = random.Next();
 
             BaseConstruction bcc;
             if (tile != Entity.Null && tile.TryGet(out bcc))
@@ -187,10 +186,10 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                     //TODO Draw Vegetation
                     LAYER = (int)DrawBufferLayer.FrontOver;
-                    HasVegetation hveg;
+                    BaseVegetationComponent hveg;
                     if (tile.TryGet(out hveg))
                     {
-                        Vegetation veg = GlobalResources.GetResourceBy(GlobalResources.Vegetations, "ID", hveg.VegetationID);
+                        Vegetation veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
                         List<string> spritesIDs;
                         if (Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
                             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
@@ -207,9 +206,9 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         private void UpdateChangedTiles()
         {
-            if (site.ArchWorld.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileRender>()) > 0)
+            if (site.ArchWorld.CountEntities(new QueryDescription().WithAll<UpdateTileRenderSelfRequest>()) > 0)
             {
-                var query = new QueryDescription().WithAll<WaitingForUpdateTileRender, IsTile>();
+                var query = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile>();
                 var commands = new CommandBuffer(site.ArchWorld);
                 site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
@@ -229,10 +228,10 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                         }
                     }
                     _siteRenderer.HiddenDrawer.ClearHidden(item);
-                    commands.Remove<WaitingForUpdateTileRender>(entity);
+                    commands.Remove<UpdateTileRenderSelfRequest>(entity);
                 });
                 _siteRenderer.StaticDrawer.RemoveSprites();
-                query = new QueryDescription().WithAll<WaitingForUpdateTileRender, IsTile>();
+                query = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile>();
                 site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
                     ScheduleUpdateTile(entity);

@@ -4,7 +4,7 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-using Origin.Source.ECS;
+using Origin.Source.ECS.Construction;
 using Origin.Source.IO;
 using Origin.Source.Resources;
 
@@ -24,6 +24,9 @@ namespace Origin.Source.Tools
         private Point3 start;
         private Point3 end;
         private int CurrSiteLevel;
+
+        private Sprite Wall;
+        private Sprite Floor;
 
         private SpritePositionColor template = new SpritePositionColor()
         {
@@ -50,6 +53,9 @@ namespace Origin.Source.Tools
         public override void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
+
+            Wall = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall");
+            Floor = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtFloor");
 
             if (!Active)
             {
@@ -96,14 +102,14 @@ namespace Origin.Source.Tools
                                     {
                                         sprites.Add(new SpritePositionColor()
                                         {
-                                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
+                                            sprite = Wall,
                                             color = Color.White * 0.5f,
                                             offset = new Point(0, 0),
                                             position = Pos
                                         });
                                         sprites.Add(new SpritePositionColor()
                                         {
-                                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtFloor"),
+                                            sprite = Floor,
                                             color = Color.White * 0.5f,
                                             offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
                                             position = Pos
@@ -117,6 +123,8 @@ namespace Origin.Source.Tools
                     {
                         DrawDirty = true;
                         sprites.Clear();
+                        Construction construction = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", "SoilWallFloor");
+                        Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "Dirt");
                         for (int z = start.Z; z <= end.Z; z++)
                         {
                             for (int x = start.X; x <= end.X; x++)
@@ -124,26 +132,18 @@ namespace Origin.Source.Tools
                                 for (int y = start.Y; y <= end.Y; y++)
                                 {
                                     Point3 pos = new Point3(x, y, z);
-                                    var ent = Controller.Site.Map[pos];
-                                    Controller.Site.ArchWorld.Destroy(ent);
-                                    ent = Controller.Site.ArchWorld.Create(new IsTile() { Position = pos });
-                                    ent.Add(new BaseConstruction()
-                                    {
-                                        ConstructionMetaID = GlobalResources.GetResourceMetaID<Construction>(GlobalResources.Constructions, "SoilWallFloor"),
-                                        MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
-                                    });
-                                    ent.Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
-                                    Controller.Site.Map[x, y, z] = ent;
+
+                                    Controller.Site.PlaceConstruction(pos, construction, mat);
                                 }
+
+                                Active = false;
+                                startPos = Position;
+                            }
+                            if (InputManager.JustPressed("mouse.right"))
+                            {
+                                Reset();
                             }
                         }
-
-                        Active = false;
-                        startPos = Position;
-                    }
-                    if (InputManager.JustPressed("mouse.right"))
-                    {
-                        Reset();
                     }
                 }
             }
@@ -156,14 +156,14 @@ namespace Origin.Source.Tools
                 }
                 sprites.Add(new SpritePositionColor()
                 {
-                    sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
+                    sprite = Wall,
                     color = Color.White * 0.5f,
                     offset = new Point(0, 0),
                     position = Position
                 });
                 sprites.Add(new SpritePositionColor()
                 {
-                    sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtFloor"),
+                    sprite = Floor,
                     color = Color.White * 0.5f,
                     offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
                     position = Position
@@ -181,8 +181,8 @@ namespace Origin.Source.Tools
         }
 
         public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
-            bool onFloor = false,
-            bool clip = false)
+                bool onFloor = false,
+                bool clip = false)
         {
             Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
             worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +

@@ -5,6 +5,7 @@ using Arch.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Origin.Source.Components;
 using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.Render;
@@ -378,27 +379,27 @@ namespace Origin.Source
 
         private void ControlChunkReloading()
         {
-            if (Site.ArchWorld.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileRender>()) > 0)
+            if (Site.ArchWorld.CountEntities(new QueryDescription().WithAll<UpdateTileRenderSelfRequest>()) > 0)
             {
                 // Collect all ChunksToReload and redraw them
-                var query = new QueryDescription().WithAll<WaitingForUpdateTileRender, IsTile>();
+                var query = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile>();
                 var commands = new CommandBuffer(Site.ArchWorld);
                 Site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
                     var item = tile.Position;
-                    List<Point3> neighbours = new List<Point3>()
+                    /*List<Point3> neighbours = new List<Point3>()
                         {
                             new Point3(0, 0, 0),
                             new Point3(-1, 0, 0),new Point3(0, -1, 0),
                             new Point3(1, 0, 0),new Point3(0, 1, 0)
-                        };
-                    foreach (var n in neighbours)
+                        };*/
+                    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_3L())
                     {
                         if (!(item + n).LessOr(Point3.Zero) && !(item + n).GraterEqualOr(Site.Size))
                         {
                             Point3 chunk = WorldUtils.GetChunkByCell(item + n, new Point3(ChunkSize, 1));
                             _reloadChunkList.Add(chunk);
-                        }
+                        }/*
                         if (!(item + n + new Point3(0, 0, -1)).LessOr(Point3.Zero) && !(item + n + new Point3(0, 0, -1)).GraterEqualOr(Site.Size))
                         {
                             Point3 chunk = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, -1), new Point3(ChunkSize, 1));
@@ -408,9 +409,9 @@ namespace Origin.Source
                         {
                             Point3 chunk = WorldUtils.GetChunkByCell(item + n + new Point3(0, 0, 1), new Point3(ChunkSize, 1));
                             _reloadChunkList.Add(chunk);
-                        }
+                        }*/
                     }
-                    commands.Remove<WaitingForUpdateTileRender>(entity);
+                    commands.Remove<UpdateTileRenderSelfRequest>(entity);
                 });
                 commands.Playback();
                 RenderTasks.Enqueue(new RenderTask()

@@ -28,13 +28,6 @@ namespace Origin.Source
             if (InputManager.JustPressed("game.halfwallswitch"))
             {
                 EventBus.Send(new HalfWallModeChanged());
-                for (int i = 1; i < 4; i++)
-                {
-                    for (int j = 1; j < 4; j++)
-                    {
-                        MainWorld.Instance.ActiveSite.RemoveBlock(new Utils.Point3(i, j, 93));
-                    }
-                }
             }
 
             Camera2D activeCamera = StateMainGame.ActiveCamera;

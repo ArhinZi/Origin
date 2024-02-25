@@ -79,14 +79,15 @@ namespace Origin.Source.Resources
         //performance increase(~10 times) confirmed
         public static T GetResourceBy<T>(List<T> src, string propName, string value)
         {
-            if (ResourceByCache.ContainsKey((typeof(T), propName, value)))
-                return (T)ResourceByCache[(typeof(T), propName, value)];
+            object obj;
+            if (ResourceByCache.TryGetValue((typeof(T), propName, value), out obj))
+                return (T)obj;
 
-            T obj = src.FirstOrDefault(i => ((string)typeof(T).GetProperty(propName).GetValue(i, null)).ToUpper() == value.ToUpper());
+            T Tobj = src.FirstOrDefault(i => ((string)typeof(T).GetProperty(propName).GetValue(i, null)).ToUpper() == value.ToUpper());
 
-            ResourceByCache.TryAdd((typeof(T), propName, value), obj);
+            ResourceByCache.TryAdd((typeof(T), propName, value), Tobj);
 
-            return obj;
+            return Tobj;
         }
 
         public static int GetResourceMetaID<T>(List<T> src, string ID)

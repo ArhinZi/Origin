@@ -4,7 +4,9 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Origin.Source.ECS;
+using Origin.Source.Components;
+using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Vegetation;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -273,7 +275,7 @@ namespace Origin.Source.Render
                                                 VertexBufferType.Static,
                                                 (int)DrawBufferLayer.Front,
                                                 lborderSprite, borderColor, tilePos,
-                                                new Point(0, -GlobalResources.Settings.FloorYoffset));
+                                                new Point(0, -GlobalResources.Settings.FloorYoffset - 1));
                                     if (Blocks.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null && (
                                             !tmp.Has<BaseConstruction>()))
                                         AddSprite(
@@ -283,10 +285,10 @@ namespace Origin.Source.Render
                                                 new Point(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1));
 
                                     //TODO Draw Vegetation
-                                    HasVegetation hveg;
+                                    BaseVegetationComponent hveg;
                                     if (tile.TryGet(out hveg))
                                     {
-                                        Vegetation veg = GlobalResources.GetResourceBy(GlobalResources.Vegetations, "ID", hveg.VegetationID);
+                                        Vegetation veg = GlobalResources.GetByMetaID(GlobalResources.Vegetations, hveg.VegetationMetaID);
                                         List<string> spritesIDs;
                                         if (Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
                                             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);

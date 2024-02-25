@@ -7,7 +7,12 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended.Screens;
 
 using Origin.Source.ECS;
+using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Light;
+using Origin.Source.ECS.Pathfinding;
+using Origin.Source.ECS.Vegetation;
 using Origin.Source.Events;
+using Origin.Source.Systems;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
@@ -27,6 +32,8 @@ namespace Origin.Source.GameStates
         {
             World = new MainWorld();
             _inputControl = new InputController();
+
+            World.Init();
 
             ActiveCamera = World.ActiveSite.Camera;
         }

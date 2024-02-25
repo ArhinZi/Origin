@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 using Origin.Source.ECS;
+using Origin.Source.ECS.Construction;
 using Origin.Source.Generators;
 using Origin.Source.Pathfind;
 using Origin.Source.Render.GpuAcceleratedSpriteSystem;
@@ -78,16 +79,22 @@ namespace Origin.Source
             MapGenerator = new SiteGeneratorService(this, Size);
             MapGenerator.Visit(new Point3(0, 0, 127));
             Trace.WriteLine("End map gen");
+        }
+
+        public void PostInit()
+        {
+            Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
+            Trace.WriteLine("End pathfinder init");
 
             DrawControl = new SiteDrawControlService(this);
             Trace.WriteLine("End creating render");
-
-            Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
-            Trace.WriteLine("End pathfinder init");
         }
 
         public void Update(GameTime gameTime)
         {
+            var query = new QueryDescription().WithAny<ConstructionRemovedEvent, ConstructionPlacedEvent>();
+            ArchWorld.Destroy(query);
+
             Tools.Update(gameTime);
 
             Pathfinder.Update(gameTime);
@@ -109,24 +116,66 @@ namespace Origin.Source
             DrawControl.Draw(gameTime);
         }
 
-        public void RemoveBlock(Point3 pos)
+        public void RemoveConstruction(Point3 pos)
         {
             MapGenerator.Visit(pos, false, true);
 
             Entity ent;
-            if (Map.TryGet(pos, out ent) && ent == Entity.Null)
+            if (Map.TryGet(pos, out ent) && ent != Entity.Null)
             {
-                ent = Map[pos];
-            }
+                BaseConstruction bcc;
+                if (ent.TryGet<BaseConstruction>(out bcc))
+                {
+                    ent.Remove<BaseConstruction>();
 
-            if (ent.Has<BaseConstruction>())
+                    ArchWorld.Create(new ConstructionRemovedEvent()
+                    {
+                        Position = pos,
+                        ConstructionMetaID = bcc.ConstructionMetaID,
+                        MaterialMetaID = bcc.MaterialMetaID
+                    });
+
+                    if (!ent.Has<UpdateTileRenderSelfRequest>())
+                        ent.Add<UpdateTileRenderSelfRequest>();
+                }
+            }
+        }
+
+        public void PlaceConstruction(Point3 pos, Construction constr, Material mat)
+        {
+            Entity ent = Map[pos];
+            BaseConstruction bcc = new BaseConstruction()
             {
-                ent.Remove<BaseConstruction>();
-                ent.Add<WaitingForUpdateTileLogic, WaitingForUpdateTileRender>();
-            }
+                ConstructionMetaID = GlobalResources.GetResourceMetaID<Construction>(GlobalResources.Constructions, "SoilWallFloor"),
+                MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
+            };
 
-            /*RemoveWall(pos);
-            RemoveFloor(pos);*/
+            if (ent.Has<BaseConstruction>() && !constr.OverAble || constr.OverAble && ent.Has<OverConstruction>())
+            {
+                Debug.WriteLine(string.Format("Cant place construction {0}", constr.ID));
+                return;
+            }
+            if (!ent.Has<BaseConstruction>())
+            {
+                ent.Add(bcc);
+            }
+            else if (!ent.Has<OverConstruction>() && constr.OverAble)
+            {
+                throw new Exception("Something went wrong");
+                ent.Add(new OverConstruction()
+                {
+                    ConstructionMetaID = GlobalResources.GetResourceMetaID<Construction>(GlobalResources.Constructions, "SoilWallFloor"),
+                    MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
+                });
+            }
+            ent.Add<UpdateTileRenderSelfRequest>();
+
+            ArchWorld.Create(new ConstructionPlacedEvent()
+            {
+                Position = pos,
+                ConstructionMetaID = bcc.ConstructionMetaID,
+                MaterialMetaID = bcc.MaterialMetaID
+            });
         }
 
         public void Dispose()

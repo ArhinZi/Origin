@@ -2,7 +2,7 @@
 {
     public struct OverConstruction
     {
-        public string ConstructionID;
-        public string MaterialID;
+        public int ConstructionMetaID;
+        public int MaterialMetaID;
     }
 }

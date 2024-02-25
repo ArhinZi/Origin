@@ -1,4 +1,4 @@
-﻿namespace Origin.Source.ECS
+﻿namespace Origin.Source.Components
 {
     public struct ItemComponent
     {

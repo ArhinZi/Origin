@@ -1,6 +1,6 @@
 ﻿using Origin.Source.Resources;
 
-namespace Origin.Source.ECS
+namespace Origin.Source.Components
 {
     public struct OnSitePosition
     {
@@ -10,7 +10,7 @@ namespace Origin.Source.ECS
 
         public OnSitePosition(Point3 pos, IsometricDirection dir = IsometricDirection.NONE)
         {
-            this.position = pos;
+            position = pos;
             DirectionOfView = dir;
         }
     }

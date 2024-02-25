@@ -3,7 +3,10 @@ using Arch.Core.Extensions;
 
 using MonoGame.Extended;
 
+using Origin.Source.Components;
 using Origin.Source.ECS;
+using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Pathfinding;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
@@ -75,21 +78,25 @@ namespace Origin.Source.Generators
                 bool isAir = true;
                 if (tileEnt.Has<BaseConstruction>())
                     isAir = false;
+                else
+                {
+                    tileEnt.Add<IsAirTile>();
+                }
                 //Checking Path Ability
                 Entity tmp;
                 if (isAir && _site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
                 {
-                    tileEnt.Add<TilePathAble>();
+                    tileEnt.Add<IsWalkAbleTile>();
                 }
                 if (tileEnt.Has<BaseConstruction>() &&
                     _site.Map.TryGet(pos + new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>())
                 {
-                    tmp.Add<TilePathAble>();
+                    tmp.Add<IsWalkAbleTile>();
                 }
 
                 if (upd)
                 {
-                    tileEnt.Add<WaitingForUpdateTileRender>();
+                    tileEnt.Add<ECS.UpdateTileRenderSelfRequest>();
                 }
 
                 // Visit neighbours

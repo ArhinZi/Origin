@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 using Origin.Source.ECS;
+using Origin.Source.ECS.Pathfinding;
 using Origin.Source.Utils;
 
 using System;
@@ -42,10 +43,10 @@ namespace Origin.Source.Pathfind
 
         private void InitPathFinder()
         {
-            var query = new QueryDescription().WithAll<TilePathAble, IsTile>();
+            var query = new QueryDescription().WithAll<IsWalkAbleTile, IsTile>();
 
             _pathfinderSystem = new PathfinderSystem();
-            _world.Query(in query, (ref TilePathAble pn, ref IsTile tile) =>
+            _world.Query(in query, (ref IsWalkAbleTile pn, ref IsTile tile) =>
             {
                 Point3 pos = tile.Position;
                 SetPathNode(pos);
@@ -54,7 +55,7 @@ namespace Origin.Source.Pathfind
 
         private void SetPathNode(Point3 pos)
         {
-            if (Map[pos.X, pos.Y, pos.Z] != Entity.Null && Map[pos.X, pos.Y, pos.Z].Has<TilePathAble>())
+            if (Map[pos.X, pos.Y, pos.Z] != Entity.Null && Map[pos.X, pos.Y, pos.Z].Has<IsWalkAbleTile>())
             {
                 if (!_pathfinderSystem.HasNode(pos))
                     _pathfinderSystem.AddNode(pos, 1);
@@ -74,7 +75,8 @@ namespace Origin.Source.Pathfind
                                 if (x != pos.X && y != pos.Y) v = 1.414f;
                                 if (z != pos.Z) v = 3;
 
-                                if (Map[x, y, z] != Entity.Null && Map[x, y, z].Has<TilePathAble>())
+                                IsWalkAbleTile wat;
+                                if (Map[x, y, z] != Entity.Null && Map[x, y, z].TryGet<IsWalkAbleTile>(out wat))
                                 {
                                     Point3 otherPos = new Point3(x, y, z);
 
@@ -96,7 +98,7 @@ namespace Origin.Source.Pathfind
             }
         }
 
-        private void UpdatePathNode(Point3 pos)
+        public void UpdatePathNode(Point3 pos)
         {
             if (_pathfinderSystem.HasNode(pos))
             {
@@ -123,7 +125,7 @@ namespace Origin.Source.Pathfind
 
         public void Update(GameTime gameTime)
         {
-            if (_world.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileLogic>()) > 0)
+            /*if (_world.CountEntities(new QueryDescription().WithAll<WaitingForUpdateTileLogic>()) > 0)
             {
                 // Update pathes
                 var query = new QueryDescription().WithAll<WaitingForUpdateTileLogic, IsTile>();
@@ -180,7 +182,7 @@ namespace Origin.Source.Pathfind
                 {
                     UpdatePathNode(item);
                 }
-            }
+            }*/
         }
     }
 }

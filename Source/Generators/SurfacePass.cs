@@ -3,7 +3,9 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 
-using Origin.Source.ECS;
+using Origin.Source.Components;
+using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Vegetation;
 using Origin.Source.Resources;
 
 using Roy_T.AStar.Paths;
@@ -91,10 +93,14 @@ namespace Origin.Source.Generators
                     MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
                 });
 
-                if (pos.Z == height)
+                /*if (pos.Z == height)
                 {
-                    ent.Add(new HasVegetation() { Volume = 100, VegetationID = Vegetation.VegetationByConstruction["SoilWallFloor"].ID });
-                }
+                    ent.Add(new BaseVegetationComponent()
+                    {
+                        VegetationMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Vegetations, Vegetation.VegetationByConstruction["SoilWallFloor"].ID)
+                    },
+                    new GrownUpVegetationComponent());
+                }*/
             }
 
             return ent;

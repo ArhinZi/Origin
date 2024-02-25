@@ -2,7 +2,7 @@
 
 using Microsoft.Xna.Framework;
 
-using Origin.Source.ECS;
+using Origin.Source.ECS.Pathfinding;
 using Origin.Source.IO;
 using Origin.Source.Pathfind;
 using Origin.Source.Resources;
@@ -61,7 +61,7 @@ namespace Origin.Source.Tools
             else
             {
                 var SelectedBlock = Controller.Site.Map[pos.X, pos.Y, pos.Z];
-                if (SelectedBlock != Arch.Core.Entity.Null && SelectedBlock.Has<TilePathAble>())
+                if (SelectedBlock != Arch.Core.Entity.Null && SelectedBlock.Has<IsWalkAbleTile>())
                     Position = pos;
                 else
                     Position = Point3.Null;

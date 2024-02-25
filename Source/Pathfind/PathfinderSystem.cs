@@ -72,7 +72,7 @@ namespace Origin.Source.Pathfind
             }
         }
 
-        public void AddNode(Point3 position, int difficulty)
+        public void AddNode(Point3 position, float difficulty)
         {
             var node = new Node()
             {

@@ -3,7 +3,7 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 
-using Origin.Source.ECS;
+using Origin.Source.ECS.Construction;
 using Origin.Source.Resources;
 
 using System;
@@ -149,6 +149,51 @@ namespace Origin.Source.Utils
                     new Point3(0,1,0),
                     new Point3(-1,0,0),
                     new Point3(0,-1,0)
+                };
+        }
+
+        public static Point3[] PLUS_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+                    new Point3(0,0,1),
+                    new Point3(1,0,1),
+                    new Point3(0,1,1),
+                    new Point3(-1,0,1),
+                    new Point3(0,-1,1),
+
+                    new Point3(0,0,0),
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0),
+
+                    new Point3(0,0,-1),
+                    new Point3(1,0,-1),
+                    new Point3(0,1,-1),
+                    new Point3(-1,0,-1),
+                    new Point3(0,-1,-1)
+                };
+            else
+                return new Point3[]
+                {
+                    new Point3(0,0,1),
+                    new Point3(1,0,1),
+                    new Point3(0,1,1),
+                    new Point3(-1,0,1),
+                    new Point3(0,-1,1),
+
+                    new Point3(1,0,0),
+                    new Point3(0,1,0),
+                    new Point3(-1,0,0),
+                    new Point3(0,-1,0),
+
+                    new Point3(0,0,-1),
+                    new Point3(1,0,-1),
+                    new Point3(0,1,-1),
+                    new Point3(-1,0,-1),
+                    new Point3(0,-1,-1)
                 };
         }
 

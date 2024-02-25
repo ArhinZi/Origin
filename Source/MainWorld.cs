@@ -1,6 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Origin.Source.ECS;
+using Origin.Source.ECS.Light;
+using Origin.Source.ECS.Pathfinding;
+using Origin.Source.ECS.Vegetation;
+
 using System;
 using System.Diagnostics;
 
@@ -11,6 +16,7 @@ namespace Origin.Source
         public static MainWorld Instance { get; private set; }
 
         public Site ActiveSite { get; private set; }
+        private TickManager _tickManager;
         //public SiteRenderer Renderer { get; private set; }
 
         public int Seed { get; private set; } = 1234;
@@ -25,6 +31,17 @@ namespace Origin.Source
             // 64 128 192 256 320 384
             ActiveSite = new Site(this, new Utils.Point3(128, 128, 128));
 
+            _tickManager = new TickManager();
+
+            _tickManager.Systems.Add(new UpdateSitePathTickSystem(ActiveSite));
+            _tickManager.Systems.Add(new UtilizeVegetationOnConstructionTickSystem(ActiveSite));
+            _tickManager.Systems.Add(new UpdateLightTickSystem(ActiveSite));
+            _tickManager.Systems.Add(new VegatationControlTickSystem(ActiveSite));
+
+            _tickManager.Init();
+
+            ActiveSite.PostInit();
+
             /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);
             ActiveSite.InitPathFinder();*/
@@ -36,8 +53,14 @@ namespace Origin.Source
                 new OnSitePosition() { position = new Utils.Point3(0, 0, 100) });*/
         }
 
+        public void Init()
+        {
+            //Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
+        }
+
         public void Update(GameTime gameTime)
         {
+            _tickManager.Update(gameTime);
             ActiveSite.Update(gameTime);
 
             /*if (gameTime.TotalGameTime.Ticks % 10 == 0)

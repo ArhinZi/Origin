@@ -4,7 +4,7 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-using Origin.Source.ECS;
+using Origin.Source.ECS.Construction;
 using Origin.Source.IO;
 using Origin.Source.Resources;
 
@@ -93,7 +93,7 @@ namespace Origin.Source.Tools
                         {
                             for (int j = start.Y; j <= end.Y; j++)
                             {
-                                Controller.Site.RemoveBlock(new Point3(i, j, start.Z));
+                                Controller.Site.RemoveConstruction(new Point3(i, j, start.Z));
                             }
                         }
 
@@ -115,6 +115,7 @@ namespace Origin.Source.Tools
                 }
                 sprites.Add(template);
                 sprites[^1].position = Position;
+                if (Active) sprites[^1].color = Color.Blue;
                 for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)
                 {
                     sprites.Add(new SpritePositionColor()
