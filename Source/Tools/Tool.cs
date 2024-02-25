@@ -33,6 +33,7 @@ namespace Origin.Source.Tools
         public List<SpritePositionColor> sprites;
         public Point3 Position = Point3.Null;
         public Point3 PrevPosition = Point3.Null;
+        public bool DrawDirty = false;
 
         public Tool(SiteToolController controller)
         {

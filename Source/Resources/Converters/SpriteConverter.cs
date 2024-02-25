@@ -27,7 +27,7 @@ namespace Origin.Source.Resources.Converters
                 string textureName = jsonObject["TextureName"].Value<string>();
                 string sourceRect = jsonObject["SourceRect"].Value<string>();
 
-                Texture2D texture = GlobalResources.Textures.ContainsKey(textureName) ? GlobalResources.Textures[textureName] : null;
+                Texture2D texture = GlobalResources.GetResourceBy(GlobalResources.Textures, "Name", textureName);
                 if (texture == null)
                 {
                     Debug.WriteLine(string.Format("ERROR: No texture with name {}", textureName));

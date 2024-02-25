@@ -18,7 +18,7 @@ namespace Origin.Source.Resources
     {
         private static JsonSerializerSettings settings;
 
-        public static Dictionary<string, Texture2D> Textures { get; private set; } = new();
+        public static List<Texture2D> Textures = new();
 
         public static List<Sprite> Sprites = new();
         public static List<Material> Materials = new();
@@ -70,7 +70,7 @@ namespace Origin.Source.Resources
             {
                 Texture2D texture = Texture2D.FromStream(OriginGame.Instance.GraphicsDevice, stream);
                 texture.Name = Path.GetFileNameWithoutExtension(path);
-                Textures[texture.Name] = texture;
+                Textures.Add(texture);
             }
         }
 
@@ -100,6 +100,11 @@ namespace Origin.Source.Resources
             {
                 return src.IndexOf((T)GetResourceBy<T>(src, "ID", ID));
             }
+        }
+
+        public static int GetResourceMetaID<T>(List<T> src, object obj)
+        {
+            return src.IndexOf((T)obj);
         }
 
         public static T GetByMetaID<T>(List<T> src, int metaID)

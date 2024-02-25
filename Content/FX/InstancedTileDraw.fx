@@ -82,6 +82,7 @@ struct SpriteMain
     //float2 SpriteSize;
     //float3 CellPosition;
 };
+RWStructuredBuffer<SpriteMain> RWMainBuffer;
 StructuredBuffer<SpriteMain> MainBuffer;
 
 // 32 bits
@@ -90,12 +91,55 @@ struct SpriteExtra
     float4 Color;
     float4 TextureRect;
 };
+RWStructuredBuffer<SpriteExtra> RWExtraBuffer;
 StructuredBuffer<SpriteExtra> ExtraBuffer;
 
 
 StructuredBuffer<uint4> HiddenLBuffer;
 StructuredBuffer<uint4> HiddenSBuffer;
 
+
+struct UpdateSpriteData
+{
+    uint index;
+    float pud1;
+    float pud2;
+    float pud3;
+    SpriteMain mainData;
+    SpriteExtra extraData;
+};
+StructuredBuffer<UpdateSpriteData> UpdateData;
+
+StructuredBuffer<uint> Remove;
+
+uint count;
+#define GroupSize 64
+[numthreads(GroupSize, 1, 1)]
+void RemoveSpriteCS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
+        uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+{
+    if (globalID.x >= count)
+    {
+        return;
+    }
+    int index = Remove[globalID.x];
+    RWMainBuffer[index].SpritePosition = float3(0, 0, 0);
+    RWExtraBuffer[index].TextureRect = float4(0, 0, 0, 0);
+}
+
+[numthreads(GroupSize, 1, 1)]
+void UpdateSpriteCS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
+        uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+{
+    if (globalID.x >= count)
+    {
+        return;
+    }
+    int index = UpdateData[globalID.x].index;
+    RWMainBuffer[index] = UpdateData[globalID.x].mainData;
+    RWExtraBuffer[index] = UpdateData[globalID.x].extraData;
+
+}
 
 
 //8 bytes in total
@@ -226,7 +270,6 @@ technique SpriteInstancing
 {
     pass Main
     {
-        //ComputeShader = compile CS_SHADERMODEL InstancingCS();
         VertexShader = compile VS_SHADERMODEL SpriteInstancingVS();
         PixelShader = compile PS_SHADERMODEL InstancingPS();
     }
@@ -249,5 +292,17 @@ technique HiddenSInstancing
         //ComputeShader = compile CS_SHADERMODEL InstancingCS();
         VertexShader = compile VS_SHADERMODEL HiddenSInstancingVS();
         PixelShader = compile PS_SHADERMODEL InstancingPS();
+    }
+};
+
+technique BufferUpdating
+{
+    pass Remove
+    {
+        ComputeShader = compile CS_SHADERMODEL RemoveSpriteCS();
+    }
+    pass Update
+    {
+        ComputeShader = compile CS_SHADERMODEL UpdateSpriteCS();
     }
 };

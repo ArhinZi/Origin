@@ -13,25 +13,20 @@ using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct SpriteMainData
     {
-        [FieldOffset(0)] public Vector3 SpritePosition; //12
-        [FieldOffset(12)] public float pud1;
+        public Vector3 SpritePosition; //12
+        public float pud1;
         //[FieldOffset(12)] public Vector2 SpriteSize; //8
         //[FieldOffset(20)] public Vector3 CellPosition; //12
-
-        /*public override string ToString()
-        {
-            return CellPosition.ToString();
-        }*/
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    [StructLayout(LayoutKind.Sequential)]
     public struct SpriteExtraData
     {
-        [FieldOffset(0)] public Vector4 Color; //16
-        [FieldOffset(16)] public Vector4 TextureRect; //16
+        public Vector4 Color; //16
+        public Vector4 TextureRect; //16
 
         public override string ToString()
         {

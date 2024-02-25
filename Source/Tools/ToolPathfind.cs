@@ -45,6 +45,7 @@ namespace Origin.Source.Tools
         {
             Active = false;
             start = Point3.Null;
+            DrawDirty = true;
             sprites.Clear();
         }
 
@@ -52,8 +53,6 @@ namespace Origin.Source.Tools
         {
             Point m = new Point(InputManager.MouseX, InputManager.MouseY);
             Point3 pos = Position = WorldUtils.MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site);
-
-            sprites.Clear();
 
             if (pos.X < 0 || pos.X >= Controller.Site.Size.X || pos.Y < 0 || pos.Y >= Controller.Site.Size.Y)
             {
@@ -71,6 +70,8 @@ namespace Origin.Source.Tools
             {
                 start = Point3.Null;
                 LastPath = null;
+                sprites.Clear();
+                DrawDirty = true;
             }
             if (InputManager.JustPressed("mouse.left") && Position != Point3.Null)
             {
@@ -88,14 +89,16 @@ namespace Origin.Source.Tools
                 }
             }
 
-            if (Position != Point3.Null)
+            /*if (Position != Point3.Null)
             {
                 sprites.Add(template.Clone() as SpritePositionColor);
                 sprites[^1].position = Position;
                 sprites[^1].color = baseColor;
-            }
-            if (LastPath != null)
+            }*/
+            if (LastPath != null && !DrawDirty)
             {
+                DrawDirty = true;
+                sprites.Clear();
                 foreach (var Pos in LastPath.visited)
                 {
                     SpritePositionColor spc = template.Clone() as SpritePositionColor;

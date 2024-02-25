@@ -23,7 +23,7 @@ namespace Origin.Source
             spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
+            ActiveSite = new Site(this, new Utils.Point3(128, 128, 128));
 
             /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
             SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);

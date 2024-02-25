@@ -38,9 +38,11 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             this.site = site;
 
-            if (ChunkSize.X > this.site.Size.X) ChunkSize.X = this.site.Size.X;
-            if (ChunkSize.Y > this.site.Size.Y) ChunkSize.Y = this.site.Size.Y;
-            Debug.Assert(!(this.site.Size.X % ChunkSize.X != 0 || this.site.Size.Y % ChunkSize.Y != 0), "Site size is invalid!");
+            /*if (ChunkSize.X > this.site.Size.X) */
+            ChunkSize.X = this.site.Size.X;
+            /*if (ChunkSize.Y > this.site.Size.Y) */
+            ChunkSize.Y = this.site.Size.Y;
+            //Debug.Assert(!(this.site.Size.X % ChunkSize.X != 0 || this.site.Size.Y % ChunkSize.Y != 0), "Site size is invalid!");
 
             chunksCount = new Point3(site.Size.X / ChunkSize.X, site.Size.Y / ChunkSize.Y, site.Size.Z);
 
@@ -54,7 +56,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     for (int y = 0; y < chunksCount.Y; y++)
                     {
                         if (spriteChunks[x, y, z] != null)
-                            spriteChunks[x, y, z].Set();
+                            spriteChunks[x, y, z].InitSet();
                     }
         }
 
@@ -68,7 +70,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             return chunk;
         }
 
-        public void AddTileSprite(byte nlayer, Point3 tilePos, Sprite sprite, Color color, Vector3 spriteOffset = new())
+        public SpriteLocator AddTileSprite(byte nlayer, Point3 tilePos, Sprite sprite, Color color, Vector3 spriteOffset = new())
         {
             var chunk = GetChunkByPos(tilePos);
 
@@ -86,7 +88,28 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 Color = color.ToVector4(),
                 TextureRect = new Vector4(sprite.RectPos.X, sprite.RectPos.Y, sprite.RectPos.Width, sprite.RectPos.Height)
             };
-            chunk.AppendDataDirectly(layer, smd, sed);
+            return chunk.AppendDataDirectly(layer, smd, sed);
+        }
+
+        public SpriteLocator ScheduleUpdate(byte nlayer, Point3 tilePos, Sprite sprite, Color color, Vector3 spriteOffset = new())
+        {
+            var chunk = GetChunkByPos(tilePos);
+
+            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
+            Layer layer = chunk.GetLayer(sprite.Texture, nlayer);
+
+            SpriteMainData smd = new SpriteMainData()
+            {
+                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
+                //CellPosition = tilePos.ToVector3(),
+                //SpriteSize = new Vector2(32, 32)
+            };
+            SpriteExtraData sed = new SpriteExtraData()
+            {
+                Color = color.ToVector4(),
+                TextureRect = new Vector4(sprite.RectPos.X, sprite.RectPos.Y, sprite.RectPos.Width, sprite.RectPos.Height)
+            };
+            return ScheduleAdd(layer, smd, sed, tilePos);
         }
 
         public void ClearLayer(DrawBufferLayer layer)
@@ -100,8 +123,31 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     }
         }
 
-        public void DrawUpdate()
+        public void ScheduleRemove(SpriteLocatorsStatic locators, Point3 pos)
         {
+            foreach (var locator in locators.list)
+            {
+                spriteChunks[0, 0, pos.Z].ScheduleRemove(locator);
+            }
+        }
+
+        public SpriteLocator ScheduleAdd(Layer layer, SpriteMainData dataMain, SpriteExtraData dataExtra, Point3 pos)
+        {
+            return spriteChunks[0, 0, pos.Z].ScheduleAdd(layer, dataMain, dataExtra);
+        }
+
+        public void RemoveSprites()
+        {
+            for (int z = 0; z < chunksCount.Z; z++)
+                if (spriteChunks[0, 0, z] != null)
+                    spriteChunks[0, 0, z].RemoveScheduled();
+        }
+
+        public void AddSprites()
+        {
+            for (int z = 0; z < chunksCount.Z; z++)
+                if (spriteChunks[0, 0, z] != null)
+                    spriteChunks[0, 0, z].AddScheduled();
         }
 
         public void Draw(int layer, List<byte> drawableSubLayers = null)

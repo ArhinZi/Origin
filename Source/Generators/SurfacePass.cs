@@ -65,7 +65,7 @@ namespace Origin.Source.Generators
             this.river = new RiverData(MapBorder.TopLeft, MapBorder.BottomLeft, 5);
 
             GenerateHeightMap(10);
-            GenerateRiverOnHeightMap();
+            //GenerateRiverOnHeightMap();
             SmoothHeightMap();
         }
 

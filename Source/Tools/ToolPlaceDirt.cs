@@ -43,13 +43,13 @@ namespace Origin.Source.Tools
         public override void Reset()
         {
             Active = false;
+            DrawDirty = true;
             sprites.Clear();
         }
 
         public override void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
-            sprites.Clear();
 
             if (!Active)
             {
@@ -79,8 +79,10 @@ namespace Origin.Source.Tools
                 {
                     if (prevPos != Position)
                     {
+                        DrawDirty = true;
+                        sprites.Clear();
                         start = startPos;
-                        end = Position;
+                        end = prevPos = Position;
                         if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
                         if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
                         for (int z = start.Z; z <= end.Z; z++)
@@ -113,6 +115,7 @@ namespace Origin.Source.Tools
                     }
                     if (InputManager.JustPressed("mouse.left"))
                     {
+                        DrawDirty = true;
                         sprites.Clear();
                         for (int z = start.Z; z <= end.Z; z++)
                         {
@@ -144,8 +147,13 @@ namespace Origin.Source.Tools
                     }
                 }
             }
-            if (Position != Point3.Null)
+            if (Position != Point3.Null && (DrawDirty || !Active))
             {
+                if (!DrawDirty)
+                {
+                    sprites.Clear();
+                    DrawDirty = true;
+                }
                 sprites.Add(new SpritePositionColor()
                 {
                     sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),

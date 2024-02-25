@@ -50,23 +50,37 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             private byte _layer;
             public byte LayerID => _layer;
 
+            public int TextureMetaID { get; private set; }
+
             public StructuredBuffer bufferDataMain;
             public StructuredBuffer bufferDataExtra;
 
             public bool dirtyDataMain = false;
             public bool dirtyDataExtra = false;
 
-            public Layer(byte layer)
+            public Queue<uint> FreeSpace;
+            public List<SpriteLocator> SpritesToRemove;
+            public List<UpdateSpriteInstanceData> SpritesToUpdate;
+            public List<UpdateSpriteInstanceData> SpritesToAdd;
+
+            public Layer(byte layer, Texture2D tex)
             {
                 _layer = layer;
                 structSize = Global.GPU_LAYER_PACK_COUNT;
                 dataMain = new SpriteMainData[structSize];
                 dataExtra = new SpriteExtraData[structSize];
 
+                TextureMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Textures, tex);
+
                 dataIndex = 0;
 
                 ReallocMainBuffer();
                 ReallocExtraBuffer();
+
+                SpritesToRemove = new List<SpriteLocator>();
+                SpritesToUpdate = new List<UpdateSpriteInstanceData>();
+                SpritesToAdd = new List<UpdateSpriteInstanceData>();
+                FreeSpace = new Queue<uint>();
             }
 
             public void ReallocMainBuffer()
@@ -126,7 +140,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 }
                 else
                 {
-                    layerList.Add(layer, new Layer(layer));
+                    layerList.Add(layer, new Layer(layer, texture));
                     return layerList.Last().Value;
                 }
             }
@@ -150,10 +164,9 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
             SpriteLocator spriteLocator = new SpriteLocator()
             {
-                i = layer.dataIndex,
-                layer = layer.LayerID,
-                x = (uint)position.X,
-                y = (uint)position.Y
+                TextureMetaID = (uint)layer.TextureMetaID,
+                Layer = layer.LayerID,
+                Index = layer.dataIndex
             };
             layer.dataMain[layer.dataIndex] = dataMain;
             layer.dataExtra[layer.dataIndex] = dataExtra;
@@ -163,7 +176,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             return spriteLocator;
         }
 
-        public void Set()
+        public void InitSet()
         {
             // Set Data Main
             void SetDataMain(Layer layer)
@@ -217,6 +230,117 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 if (batch.TryGetValue(l, out Layer layer))
                 {
                     layer.Clear();
+                }
+            }
+        }
+
+        public void ScheduleRemove(SpriteLocator locator)
+        {
+            layersBatches[GlobalResources.GetByMetaID(GlobalResources.Textures, (int)locator.TextureMetaID)]
+                [(int)locator.Layer].SpritesToRemove.Add(locator);
+        }
+
+        public SpriteLocator ScheduleAdd(Layer layer, SpriteMainData dataMain, SpriteExtraData dataExtra)
+        {
+            uint ind = 0;
+            if (layer.FreeSpace.TryDequeue(out uint res))
+            {
+                ind = res;
+            }
+            else
+            {
+                ind = layer.dataIndex;
+                layer.dataIndex++;
+                Debug.Assert(layer.dataIndex < layer.structSize);
+            }
+            layer.SpritesToAdd.Add(new UpdateSpriteInstanceData()
+            {
+                index = ind,
+                mainData = dataMain,
+                extraData = dataExtra
+            });
+            SpriteLocator spriteLocator = new SpriteLocator()
+            {
+                TextureMetaID = (uint)layer.TextureMetaID,
+                Layer = layer.LayerID,
+                Index = ind
+            };
+            return spriteLocator;
+        }
+
+        public void RemoveScheduled()
+        {
+            void Remove(Effect effect, GraphicsDevice device, Layer layer)
+            {
+                int count = layer.SpritesToRemove.Count;
+                if (count == 0) return;
+
+                uint[] remove = new uint[layer.SpritesToRemove.Count];
+                for (int i = 0; i < remove.Length; i++)
+                {
+                    remove[i] = layer.SpritesToRemove[i].Index;
+                    layer.FreeSpace.Enqueue(remove[i]);
+                }
+                layer.SpritesToRemove.Clear();
+                var rbuff = new StructuredBuffer(device, typeof(uint), count, BufferUsage.WriteOnly, ShaderAccess.Read);
+
+                SiteRenderer.InstanceMainEffect.Parameters["RWMainBuffer"].SetValue(layer.bufferDataMain);
+                SiteRenderer.InstanceMainEffect.Parameters["RWExtraBuffer"].SetValue(layer.bufferDataExtra);
+                rbuff.SetData(remove);
+                SiteRenderer.InstanceMainEffect.Parameters["Remove"].SetValue(rbuff);
+                SiteRenderer.InstanceMainEffect.Parameters["count"].SetValue(count);
+
+                effect.CurrentTechnique.Passes["Remove"].ApplyCompute();
+                int ihh = (count + 63) / 64;
+                device.DispatchCompute((count + 63) / 64, 1, 1);
+            }
+
+            Effect effect = SiteRenderer.InstanceMainEffect;
+            GraphicsDevice device = OriginGame.Instance.GraphicsDevice;
+            effect.CurrentTechnique = effect.Techniques["BufferUpdating"];
+
+            foreach (var level in layersBatches)
+            {
+                var batch = level.Value;
+                foreach (var layer in batch.Values)
+                {
+                    Remove(effect, device, layer);
+                }
+            }
+        }
+
+        public void AddScheduled()
+        {
+            void Add(Effect effect, GraphicsDevice device, Layer layer)
+            {
+                int count = layer.SpritesToAdd.Count;
+                if (count == 0) return;
+
+                UpdateSpriteInstanceData[] add = layer.SpritesToAdd.ToArray();
+                layer.SpritesToAdd.Clear();
+                var buff = new StructuredBuffer(device, typeof(UpdateSpriteInstanceData), count, BufferUsage.WriteOnly, ShaderAccess.Read);
+
+                SiteRenderer.InstanceMainEffect.Parameters["RWMainBuffer"].SetValue(layer.bufferDataMain);
+                SiteRenderer.InstanceMainEffect.Parameters["RWExtraBuffer"].SetValue(layer.bufferDataExtra);
+                buff.SetData(add);
+                SiteRenderer.InstanceMainEffect.Parameters["UpdateData"].SetValue(buff);
+                SiteRenderer.InstanceMainEffect.Parameters["count"].SetValue(count);
+
+                effect.CurrentTechnique.Passes["Update"].ApplyCompute();
+                int ihh = (count + 63) / 64;
+                device.DispatchCompute((count + 63) / 64, 1, 1);
+            }
+
+            Effect effect = SiteRenderer.InstanceMainEffect;
+            GraphicsDevice device = OriginGame.Instance.GraphicsDevice;
+            effect.CurrentTechnique = effect.Techniques["BufferUpdating"];
+
+            foreach (var level in layersBatches)
+            {
+                var batch = level.Value;
+                foreach (var layer in batch.Values)
+                {
+                    Add(effect, device, layer);
                 }
             }
         }

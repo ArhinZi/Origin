@@ -55,7 +55,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         private void GenerateInstanceGeometry()
         {
-            int size = site.Size.X * site.Size.Y;
+            int size = site.Size.X * site.Size.Y * 4;
             GeometryData[] _vertices = new GeometryData[6 * size];
 
             #region filling vertices
@@ -102,7 +102,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void Draw(GameTime gameTime)
         {
-            StaticDrawer.DrawUpdate();
             CheckCurrentLevelChanged();
 
             Matrix WVP = Matrix.Multiply(Matrix.Multiply(site.Camera.WorldMatrix, site.Camera.Transformation),

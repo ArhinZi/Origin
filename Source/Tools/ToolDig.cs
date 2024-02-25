@@ -39,13 +39,14 @@ namespace Origin.Source.Tools
         public override void Reset()
         {
             Active = false;
+            DrawDirty = true;
             sprites.Clear();
         }
 
         public override void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
-            sprites.Clear();
+            //sprites.Clear();
             if (!Active)
             {
                 Position = MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site, true);
@@ -65,8 +66,9 @@ namespace Origin.Source.Tools
                 {
                     if (prevPos != Position)
                     {
+                        DrawDirty = true;
                         start = startPos;
-                        end = Position;
+                        end = prevPos = Position;
                         if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
                         if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
                         sprites.Clear();
@@ -104,8 +106,13 @@ namespace Origin.Source.Tools
                     }
                 }
             }
-            if (Position != Point3.Null)
+            if (Position != Point3.Null && (DrawDirty || !Active))
             {
+                if (!DrawDirty)
+                {
+                    sprites.Clear();
+                    DrawDirty = true;
+                }
                 sprites.Add(template);
                 sprites[^1].position = Position;
                 for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)

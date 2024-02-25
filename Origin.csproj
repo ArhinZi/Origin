@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows7.0</TargetFramework>
 		<RollForward>Major</RollForward>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
@@ -14,14 +14,20 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
+		<Compile Remove="Arch.Extended\**" />
+		<Compile Remove="Arch\**" />
 		<Compile Remove="Content\bin\**" />
 		<Compile Remove="MGUI.Core\**" />
 		<Compile Remove="MGUI.Shared\**" />
 		<Compile Remove="Roy-T.AStar\**" />
+		<EmbeddedResource Remove="Arch.Extended\**" />
+		<EmbeddedResource Remove="Arch\**" />
 		<EmbeddedResource Remove="Content\bin\**" />
 		<EmbeddedResource Remove="MGUI.Core\**" />
 		<EmbeddedResource Remove="MGUI.Shared\**" />
 		<EmbeddedResource Remove="Roy-T.AStar\**" />
+		<None Remove="Arch.Extended\**" />
+		<None Remove="Arch\**" />
 		<None Remove="Content\bin\**" />
 		<None Remove="MGUI.Core\**" />
 		<None Remove="MGUI.Shared\**" />
@@ -31,19 +37,15 @@
 		<MonoGameContentReference Include="Content\Content.mgcb" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Arch" Version="1.2.7" />
-		<PackageReference Include="Arch.EventBus" Version="1.0.2" />
-		<PackageReference Include="Arch.Relationships" Version="1.0.1" />
-		<PackageReference Include="Arch.System" Version="1.0.2" />
+		<PackageReference Include="AssetManagementBase" Version="0.6.7" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
 		<PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 		<PackageReference Include="Myra" Version="1.4.5" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.2.1" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
-		<PackageReference Include="System.Collections.Specialized" Version="4.3.0" />
-		<PackageReference Include="System.Runtime.Caching" Version="7.0.0" />
+		<PackageReference Include="System.Runtime.Caching" Version="9.0.0-preview.1.24080.9" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Icon.bmp">
@@ -74,7 +76,15 @@
 	  <None Remove="Mods\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="Arch\src\Arch.SourceGen\Arch.SourceGen.csproj" />
+	  <ProjectReference Include="Arch\src\Arch\Arch.csproj" />
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
+		<ProjectReference Include="Arch.Extended\Arch.AOT.SourceGenerator\Arch.AOT.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="Arch.Extended\Arch.EventBus\Arch.EventBus.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="Arch.Extended\Arch.Persistence\Arch.Persistence.csproj" />
+		<ProjectReference Include="Arch.Extended\Arch.Relationships\Arch.Relationships.csproj" />
+		<ProjectReference Include="Arch.Extended\Arch.System.SourceGenerator\Arch.System.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<ProjectReference Include="Arch.Extended\Arch.System\Arch.System.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Settings.Designer.cs">

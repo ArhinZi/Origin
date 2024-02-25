@@ -30,7 +30,7 @@ namespace Origin.Source.Generators
             };
         }
 
-        public void Visit(Point3 startPos, bool visitStart = true)
+        public void Visit(Point3 startPos, bool visitStart = true, bool upd = false)
         {
             Dictionary<int, bool[,]> visited = new Dictionary<int, bool[,]>();
             Stack<Point3> stack = new Stack<Point3>();
@@ -40,7 +40,7 @@ namespace Origin.Source.Generators
             }
             else
             {
-                foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L())
+                foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(false))
                 {
                     stack.Push(startPos + p);
                 }
@@ -62,6 +62,10 @@ namespace Origin.Source.Generators
                 Entity tileEnt = _site.ArchWorld.Create(new IsTile() { Position = pos });
                 _site.Map[pos] = tileEnt;
 
+                if (pos.X == 1 && pos.Y == 1 && pos.Z == 93)
+                {
+                }
+
                 // Passes
                 foreach (var pass in passes)
                 {
@@ -81,6 +85,11 @@ namespace Origin.Source.Generators
                     _site.Map.TryGet(pos + new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>())
                 {
                     tmp.Add<TilePathAble>();
+                }
+
+                if (upd)
+                {
+                    tileEnt.Add<WaitingForUpdateTileRender>();
                 }
 
                 // Visit neighbours

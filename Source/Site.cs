@@ -5,6 +5,8 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
+using MonoGame.Extended;
+
 using Origin.Source.ECS;
 using Origin.Source.Generators;
 using Origin.Source.Pathfind;
@@ -109,7 +111,7 @@ namespace Origin.Source
 
         public void RemoveBlock(Point3 pos)
         {
-            MapGenerator.Visit(pos, false);
+            MapGenerator.Visit(pos, false, true);
 
             Entity ent;
             if (Map.TryGet(pos, out ent) && ent == Entity.Null)

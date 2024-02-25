@@ -11,6 +11,7 @@ using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace Origin.Source.Pathfind
@@ -127,44 +128,54 @@ namespace Origin.Source.Pathfind
                 // Update pathes
                 var query = new QueryDescription().WithAll<WaitingForUpdateTileLogic, IsTile>();
                 var commands = new CommandBuffer(_world);
+                var visit = new HashSet<Point3>();
                 var visited = new HashSet<Point3>();
+
                 _world.Query(in query, (Entity entity, ref IsTile rootComp) =>
                 {
                     var p = rootComp.Position;
-
+                    visit.Add(p);
+                    commands.Remove<WaitingForUpdateTileLogic>(entity);
+                });
+                commands.Playback();
+                foreach (var v in visit)
+                {
                     foreach (var n in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
                     {
-                        Point3 nPos = p + n;
-                        Entity rootN;
-                        if (Map.TryGet(nPos, out rootN) && rootN != Entity.Null)
+                        Point3 nPos = v + n;
+
+                        if (Map.TryGet(nPos, out Entity rootN) && rootN != Entity.Null)
                         {
                             // Remove path if Construction is on Tile
                             if (rootN.Has<BaseConstruction>())
                             {
-                                commands.Remove<TilePathAble>(rootN);
+                                if (rootN.Has<TilePathAble>())
+                                    rootN.Remove<TilePathAble>();
+                                //commands.Remove<TilePathAble>(rootN);
                             }
                             else
                             {
                                 // Check a construction under the Tile
-                                Entity tmp;
-                                if (Map.TryGet(nPos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null)
+                                if (Map.TryGet(nPos - new Point3(0, 0, 1), out Entity tmp) && tmp != Entity.Null)
                                 {
                                     if (tmp.Has<BaseConstruction>())
                                     {
-                                        commands.Add<TilePathAble>(rootN);
+                                        if (!rootN.Has<TilePathAble>())
+                                            rootN.Add<TilePathAble>();
+                                        //commands.Add<TilePathAble>(rootN);
                                     }
                                     else
                                     {
-                                        commands.Remove<TilePathAble>(rootN);
+                                        if (rootN.Has<TilePathAble>())
+                                            rootN.Remove<TilePathAble>();
+                                        //commands.Remove<TilePathAble>(rootN);
                                     }
                                 }
                             }
                         }
                         visited.Add(nPos);
-                        commands.Remove<WaitingForUpdateTileLogic>(entity);
                     }
-                });
-                commands.Playback();
+                }
                 foreach (var item in visited)
                 {
                     UpdatePathNode(item);

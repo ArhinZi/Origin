@@ -10,10 +10,9 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
-    [StructLayout(LayoutKind.Explicit, Size = 4)]
-    public struct SpriteLocator
+    /*[StructLayout(LayoutKind.Sequential)]
+    public struct SpriteLocatorPacked
     {
-        [FieldOffset(0)]
         private uint data; // 32 bits in total
 
         // BitField 3 bits - 8
@@ -59,5 +58,14 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 data = ((data & 0xFC000000) | ((value & 0x3F) << 26));
             }
         }
+    }*/
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SpriteLocator
+    {
+        public uint TextureMetaID;
+        public uint Layer;
+        public uint Index;
+        public uint pud1;
     }
 }
