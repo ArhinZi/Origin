@@ -1,0 +1,7 @@
+[submodule "Arch"]
+	path = Arch
+	url = https://github.com/genaray/Arch.git
+
+[submodule "Arch.Extended"]
+	path = Arch.Extended
+	url = https://github.com/genaray/Arch.Extended.git
