@@ -27,7 +27,7 @@ namespace Origin.Source
 
             if (InputManager.JustPressed("game.halfwallswitch"))
             {
-                EventBus.Send(new HalfWallModeChanged());
+                //EventBus.Send(new HalfWallModeChanged());
             }
 
             Camera2D activeCamera = StateMainGame.ActiveCamera;

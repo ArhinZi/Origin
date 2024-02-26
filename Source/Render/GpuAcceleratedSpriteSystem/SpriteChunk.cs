@@ -38,80 +38,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     {
         public static HashSet<Texture2D> texture2Ds { get; private set; } = new HashSet<Texture2D>();
 
-        public class Layer : IDisposable
-        {
-            private GraphicsDevice graphicsDevice = OriginGame.Instance.GraphicsDevice;
-
-            public SpriteMainData[] dataMain;
-            public SpriteExtraData[] dataExtra;
-            public uint dataIndex = 0;
-
-            public int structSize;
-            private byte _layer;
-            public byte LayerID => _layer;
-
-            public int TextureMetaID { get; private set; }
-
-            public StructuredBuffer bufferDataMain;
-            public StructuredBuffer bufferDataExtra;
-
-            public bool dirtyDataMain = false;
-            public bool dirtyDataExtra = false;
-
-            public Queue<uint> FreeSpace;
-            public List<SpriteLocator> SpritesToRemove;
-            public List<UpdateSpriteInstanceData> SpritesToUpdate;
-            public List<UpdateSpriteInstanceData> SpritesToAdd;
-
-            public Layer(byte layer, Texture2D tex)
-            {
-                _layer = layer;
-                structSize = Global.GPU_LAYER_PACK_COUNT;
-                dataMain = new SpriteMainData[structSize];
-                dataExtra = new SpriteExtraData[structSize];
-
-                TextureMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Textures, tex);
-
-                dataIndex = 0;
-
-                ReallocMainBuffer();
-                ReallocExtraBuffer();
-
-                SpritesToRemove = new List<SpriteLocator>();
-                SpritesToUpdate = new List<UpdateSpriteInstanceData>();
-                SpritesToAdd = new List<UpdateSpriteInstanceData>();
-                FreeSpace = new Queue<uint>();
-            }
-
-            public void ReallocMainBuffer()
-            {
-                if (bufferDataMain != null)
-                    bufferDataMain.Dispose();
-                bufferDataMain = new StructuredBuffer(graphicsDevice, typeof(SpriteMainData), structSize, BufferUsage.WriteOnly, ShaderAccess.Read);
-            }
-
-            public void ReallocExtraBuffer()
-            {
-                if (bufferDataExtra != null)
-                    bufferDataExtra.Dispose();
-                bufferDataExtra = new StructuredBuffer(graphicsDevice, typeof(SpriteExtraData), structSize, BufferUsage.WriteOnly, ShaderAccess.Read);
-            }
-
-            public void Dispose()
-            {
-                if (bufferDataMain != null)
-                    bufferDataMain.Dispose();
-                if (bufferDataExtra != null)
-                    bufferDataExtra.Dispose();
-            }
-
-            public void Clear()
-            {
-                dataIndex = 0;
-            }
-        }
-
-        public Dictionary<Texture2D, Dictionary<int, Layer>> layersBatches = new();
+        public Dictionary<Texture2D, Dictionary<int, SpriteLayer>> layersBatches = new();
         private object _lock = new object();
 
         public Point position;
@@ -122,25 +49,25 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             Debug.Assert(!(position.X >= 8 || position.Y >= 8), "Position is invalid " + position.ToString());
         }
 
-        public Layer GetLayer(Texture2D texture, byte layer)
+        public SpriteLayer GetLayer(Texture2D texture, byte layer)
         {
             Debug.Assert(layer < 64, "Layer is invalid " + layer);
             lock (_lock)
             {
-                if (!layersBatches.TryGetValue(texture, out Dictionary<int, Layer> layerList))
+                if (!layersBatches.TryGetValue(texture, out Dictionary<int, SpriteLayer> layerList))
                 {
-                    layerList = new Dictionary<int, Layer>();
+                    layerList = new Dictionary<int, SpriteLayer>();
                     layersBatches.Add(texture, layerList);
                     texture2Ds.Add(texture);
                 }
 
-                if (layerList.TryGetValue(layer, out Layer val))
+                if (layerList.TryGetValue(layer, out SpriteLayer val))
                 {
                     return val;
                 }
                 else
                 {
-                    layerList.Add(layer, new Layer(layer, texture));
+                    layerList.Add(layer, new SpriteLayer(layer, texture));
                     return layerList.Last().Value;
                 }
             }
@@ -153,15 +80,15 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         /// <param name="dataMain"></param>
         /// <param name="dataExtra"></param>
         /// <returns></returns>
-        public SpriteLocator AppendDataDirectly(Layer layer, SpriteMainData dataMain, SpriteExtraData dataExtra)
+        public SpriteLocator AppendDataDirectly(SpriteLayer layer, SpriteMainData dataMain, SpriteExtraData dataExtra)
         {
-            if (layer.structSize == layer.dataIndex)
+            /*if (layer.structSize == layer.dataIndex)
             {
                 Array.Resize(ref layer.dataMain, layer.structSize * 2);
                 Array.Resize(ref layer.dataExtra, layer.structSize * 2);
                 layer.structSize = layer.structSize * 2;
                 Debug.Assert(layer.structSize <= 1048576, "Too many elements");
-            }
+            }*/
             SpriteLocator spriteLocator = new SpriteLocator()
             {
                 TextureMetaID = (uint)layer.TextureMetaID,
@@ -170,34 +97,42 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             };
             layer.dataMain[layer.dataIndex] = dataMain;
             layer.dataExtra[layer.dataIndex] = dataExtra;
-            layer.dataIndex++;
             layer.dirtyDataMain = true;
             layer.dirtyDataExtra = true;
+            layer.Increment();
             return spriteLocator;
         }
 
         public void InitSet()
         {
             // Set Data Main
-            void SetDataMain(Layer layer)
+            void SetDataMain(SpriteLayer layer)
             {
                 if (layer.dirtyDataMain)
                 {
                     layer.dirtyDataMain = false;
                     if (layer.bufferDataMain.ElementCount < layer.structSize)
+                    {
+                        // TODO delete
+                        Debug.Assert(false);
                         layer.ReallocMainBuffer();
+                    }
                     layer.bufferDataMain.SetData(layer.dataMain);
                 }
             }
 
             // Set Data Extra
-            void SetDataExtra(Layer layer)
+            void SetDataExtra(SpriteLayer layer)
             {
                 if (layer.dirtyDataExtra)
                 {
                     layer.dirtyDataExtra = false;
                     if (layer.bufferDataExtra.ElementCount < layer.structSize)
+                    {
+                        // TODO delete
+                        Debug.Assert(false);
                         layer.ReallocExtraBuffer();
+                    }
                     layer.bufferDataExtra.SetData(layer.dataExtra);
                 }
             }
@@ -227,7 +162,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             foreach (var level in layersBatches)
             {
                 var batch = level.Value;
-                if (batch.TryGetValue(l, out Layer layer))
+                if (batch.TryGetValue(l, out SpriteLayer layer))
                 {
                     layer.Clear();
                 }
@@ -240,7 +175,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 [(int)locator.Layer].SpritesToRemove.Add(locator);
         }
 
-        public SpriteLocator ScheduleAdd(Layer layer, SpriteMainData dataMain, SpriteExtraData dataExtra)
+        public SpriteLocator ScheduleAdd(SpriteLayer layer, SpriteMainData dataMain, SpriteExtraData dataExtra)
         {
             uint ind = 0;
             if (layer.FreeSpace.TryDequeue(out uint res))
@@ -250,7 +185,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             else
             {
                 ind = layer.dataIndex;
-                layer.dataIndex++;
+                layer.Increment(true);
                 Debug.Assert(layer.dataIndex < layer.structSize);
             }
             layer.SpritesToAdd.Add(new UpdateSpriteInstanceData()
@@ -270,7 +205,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void RemoveScheduled()
         {
-            void Remove(Effect effect, GraphicsDevice device, Layer layer)
+            void Remove(Effect effect, GraphicsDevice device, SpriteLayer layer)
             {
                 int count = layer.SpritesToRemove.Count;
                 if (count == 0) return;
@@ -311,7 +246,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void AddScheduled()
         {
-            void Add(Effect effect, GraphicsDevice device, Layer layer)
+            void Add(Effect effect, GraphicsDevice device, SpriteLayer layer)
             {
                 int count = layer.SpritesToAdd.Count;
                 if (count == 0) return;

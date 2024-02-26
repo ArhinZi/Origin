@@ -73,10 +73,12 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                                 // Draw borders of Wall
                                 if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out tmp) && tmp != Entity.Null &&
                                         !tmp.Has<BaseConstruction>())
-                                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor));
+                                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
+                                        new Vector3(0, -1, 0)));
                                 if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
                                         !tmp.Has<BaseConstruction>())
-                                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor, new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
+                                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor,
+                                        new Vector3(GlobalResources.Settings.TileSize.X / 2, -1, 0)));
                             }
                             {
                                 byte LAYER = (int)DrawBufferLayer.Front;
@@ -161,10 +163,12 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     // Draw borders of Wall
                     if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out tmp) && tmp != Entity.Null &&
                             !tmp.Has<BaseConstruction>())
-                        locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, lborderSprite, borderColor));
+                        locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, lborderSprite, borderColor,
+                            new Vector3(0, -1, 0)));
                     if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
                             !tmp.Has<BaseConstruction>())
-                        locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, rborderSprite, borderColor, new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
+                        locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, rborderSprite, borderColor,
+                            new Vector3(GlobalResources.Settings.TileSize.X / 2, -1, 0)));
                 }
                 {
                     byte LAYER = (int)DrawBufferLayer.Front;
@@ -209,7 +213,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             if (site.ArchWorld.CountEntities(new QueryDescription().WithAll<UpdateTileRenderSelfRequest>()) > 0)
             {
                 var query = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile>();
-                var commands = new CommandBuffer(site.ArchWorld);
                 site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
                     var item = tile.Position;
@@ -228,17 +231,17 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                         }
                     }
                     _siteRenderer.HiddenDrawer.ClearHidden(item);
-                    commands.Remove<UpdateTileRenderSelfRequest>(entity);
                 });
                 _siteRenderer.StaticDrawer.RemoveSprites();
-                query = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile>();
+
                 site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
                     ScheduleUpdateTile(entity);
                 });
-                commands.Playback();
                 _siteRenderer.StaticDrawer.AddSprites();
                 _siteRenderer.HiddenDrawer.Set();
+
+                site.ArchWorld.Remove<UpdateTileRenderSelfRequest>(query);
             }
         }
 

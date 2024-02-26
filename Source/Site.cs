@@ -118,25 +118,24 @@ namespace Origin.Source
 
         public void RemoveConstruction(Point3 pos)
         {
-            MapGenerator.Visit(pos, false, true);
+            MapGenerator.Visit(pos, true, true);
 
-            Entity ent;
-            if (Map.TryGet(pos, out ent) && ent != Entity.Null)
+            if (Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out BaseConstruction bcc))
             {
-                BaseConstruction bcc;
-                if (ent.TryGet<BaseConstruction>(out bcc))
+                ent.Remove<BaseConstruction>();
+
+                ArchWorld.Create(new ConstructionRemovedEvent()
                 {
-                    ent.Remove<BaseConstruction>();
+                    Position = pos,
+                    ConstructionMetaID = bcc.ConstructionMetaID,
+                    MaterialMetaID = bcc.MaterialMetaID
+                });
 
-                    ArchWorld.Create(new ConstructionRemovedEvent()
-                    {
-                        Position = pos,
-                        ConstructionMetaID = bcc.ConstructionMetaID,
-                        MaterialMetaID = bcc.MaterialMetaID
-                    });
-
-                    if (!ent.Has<UpdateTileRenderSelfRequest>())
-                        ent.Add<UpdateTileRenderSelfRequest>();
+                foreach (var item in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
+                {
+                    var pos2 = item + pos;
+                    if (Map.TryGet(pos2, out Entity e) && !e.Has<UpdateTileRenderSelfRequest>())
+                        e.Add<UpdateTileRenderSelfRequest>();
                 }
             }
         }

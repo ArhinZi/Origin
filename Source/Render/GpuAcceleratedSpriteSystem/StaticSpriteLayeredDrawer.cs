@@ -75,7 +75,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             var chunk = GetChunkByPos(tilePos);
 
             float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
-            Layer layer = chunk.GetLayer(sprite.Texture, nlayer);
+            SpriteLayer layer = chunk.GetLayer(sprite.Texture, nlayer);
 
             SpriteMainData smd = new SpriteMainData()
             {
@@ -96,7 +96,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             var chunk = GetChunkByPos(tilePos);
 
             float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
-            Layer layer = chunk.GetLayer(sprite.Texture, nlayer);
+            SpriteLayer layer = chunk.GetLayer(sprite.Texture, nlayer);
 
             SpriteMainData smd = new SpriteMainData()
             {
@@ -131,7 +131,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
         }
 
-        public SpriteLocator ScheduleAdd(Layer layer, SpriteMainData dataMain, SpriteExtraData dataExtra, Point3 pos)
+        public SpriteLocator ScheduleAdd(SpriteLayer layer, SpriteMainData dataMain, SpriteExtraData dataExtra, Point3 pos)
         {
             return spriteChunks[0, 0, pos.Z].ScheduleAdd(layer, dataMain, dataExtra);
         }
@@ -152,7 +152,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void Draw(int layer, List<byte> drawableSubLayers = null)
         {
-            void SubDraw(Layer dlayer)
+            void SubDraw(SpriteLayer dlayer)
             {
                 if (dlayer.dataIndex != 0)
                 {
@@ -187,7 +187,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                                 if (drawableSubLayers != null)
                                 {
                                     foreach (var sublayer in drawableSubLayers)
-                                        if (layersBatches[tex].TryGetValue(sublayer, out Layer dlayer))
+                                        if (layersBatches[tex].TryGetValue(sublayer, out SpriteLayer dlayer))
                                             SubDraw(dlayer);
                                 }
                                 else

@@ -49,9 +49,9 @@ float4 ShadeColor(float4 color, uint3 pos)
     
     // level shading
     float4 fogColor = float4(0.8, 0.8, 0.8, 1.0); // color of fog
-    float hyperKS = 0.2;
+    float hyperKS = 0.7;
     float shadeFactor = hyperKS / (hyperKS + (LowHighLevel.y - pos.z) * 0.01);
-    float hyperKF = 0.5;
+    float hyperKF = 0.9;
     float fogFactor = hyperKF / (hyperKF + (LowHighLevel.y - pos.z) * 0.01);
     //color.rgb *= hyperK / (hyperK + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);
     return float4(lerp(color.rgb, fogColor.rgb, 1 - fogFactor) * shadeFactor, color.a);

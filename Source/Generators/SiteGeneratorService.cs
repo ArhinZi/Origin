@@ -37,16 +37,9 @@ namespace Origin.Source.Generators
         {
             Dictionary<int, bool[,]> visited = new Dictionary<int, bool[,]>();
             Stack<Point3> stack = new Stack<Point3>();
-            if (visitStart)
+            foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(visitStart))
             {
-                stack.Push(startPos);
-            }
-            else
-            {
-                foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(false))
-                {
-                    stack.Push(startPos + p);
-                }
+                stack.Push(startPos + p);
             }
 
             while (stack.Count > 0)

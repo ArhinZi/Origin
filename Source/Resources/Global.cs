@@ -44,7 +44,7 @@ namespace Origin.Source.Resources
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 32;
 
         //public static int GPU_LAYER_PACK_COUNT = 65536;
-        public static int GPU_LAYER_PACK_COUNT = BASE_CHUNK_SIZE.X * BASE_CHUNK_SIZE.Y / 4;
+        public const int GPU_LAYER_PACK_COUNT = 1024;
 
         #endregion Render
     }
