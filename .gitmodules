@@ -5,3 +5,6 @@
 [submodule "Arch.Extended"]
 	path = Arch.Extended
 	url = https://github.com/genaray/Arch.Extended.git
+[submodule "MonoGame.ImGuiNet"]
+	path = MonoGame.ImGuiNet
+	url = https://github.com/Mezo-hx/MonoGame.ImGuiNet.git
