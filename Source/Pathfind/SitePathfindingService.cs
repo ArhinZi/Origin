@@ -118,8 +118,8 @@ namespace Origin.Source.Pathfind
 
             watch.Stop();
             b = watch.ElapsedMilliseconds;
-            if (currPath2 != null)
-                Debug.WriteLine(String.Format("Path Found with Len={0} in {1}ms looked {2} Nodes", currPath2.path.Count, b.ToString(), _pathfinderSystem.LastVisitedCount));
+            //if (currPath2 != null)
+            //Debug.WriteLine(String.Format("Path Found with Len={0} in {1}ms looked {2} Nodes", currPath2.path.Count, b.ToString(), _pathfinderSystem.LastVisitedCount));
             return currPath2;
         }
 

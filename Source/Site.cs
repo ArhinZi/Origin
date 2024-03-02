@@ -100,15 +100,6 @@ namespace Origin.Source
             Pathfinder.Update(gameTime);
 
             DrawControl.Update(gameTime);
-
-            //SetSelected(sel);
-            /*EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
-            {
-                ["SelectedBlock"] = sel.ToString(),
-                ["Layer"] = CurrentLevel.ToString(),
-                ["DayTime"] = (SiteTime).ToString("#.##")
-            }));*/
-            //SiteTime = ((float)gameTime.TotalGameTime.TotalMilliseconds % 100000) / 100000f;
         }
 
         public void Draw(GameTime gameTime)
@@ -167,7 +158,6 @@ namespace Origin.Source
                     MaterialMetaID = GlobalResources.GetResourceMetaID<Material>(GlobalResources.Materials, "Dirt")
                 });
             }
-            ent.Add<UpdateTileRenderSelfRequest>();
 
             ArchWorld.Create(new ConstructionPlacedEvent()
             {
@@ -175,6 +165,12 @@ namespace Origin.Source
                 ConstructionMetaID = bcc.ConstructionMetaID,
                 MaterialMetaID = bcc.MaterialMetaID
             });
+            foreach (var item in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
+            {
+                var pos2 = item + pos;
+                if (Map.TryGet(pos2, out Entity e) && !e.Has<UpdateTileRenderSelfRequest>())
+                    e.Add<UpdateTileRenderSelfRequest>();
+            }
         }
 
         public void Dispose()

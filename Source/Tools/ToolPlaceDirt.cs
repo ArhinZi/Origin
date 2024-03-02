@@ -139,11 +139,11 @@ namespace Origin.Source.Tools
                                 Active = false;
                                 startPos = Position;
                             }
-                            if (InputManager.JustPressed("mouse.right"))
-                            {
-                                Reset();
-                            }
                         }
+                    }
+                    if (InputManager.JustPressed("mouse.right"))
+                    {
+                        Reset();
                     }
                 }
             }
@@ -177,6 +177,11 @@ namespace Origin.Source.Tools
                         position = new Point3(Position.X, Position.Y, i)
                     });
                 }
+            }
+            else if (!Active)
+            {
+                sprites.Clear();
+                DrawDirty = true;
             }
         }
 

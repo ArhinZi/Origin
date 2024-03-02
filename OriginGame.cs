@@ -3,20 +3,22 @@ global using Point3 = Origin.Source.Utils.Point3;
 
 using Arch.Bus;
 
+using ImGuiNET;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
+using MonoGame.ImGuiNet;
 
 using Myra;
 
+using Origin.Source;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
-using Origin.Source.GCs;
 using Origin.Source.IO;
 using Origin.Source.Resources;
-using Origin.Source.UI;
 
 using System;
 using System.Collections.Generic;
@@ -40,9 +42,9 @@ namespace Origin
 
         private Rectangle _prevBounds;
 
-        public FpsCountGC fpsCounter;
+        public DebugMonitor dmonitor;
 
-        public UIManager UiManager;
+        public static ImGuiRenderer GuiRenderer;
 
         public OriginGame()
         {
@@ -52,12 +54,12 @@ namespace Origin
             Content.RootDirectory = "Content";
 
             _screenManager = new ScreenManager();
-            fpsCounter = new FpsCountGC();
+            dmonitor = new DebugMonitor(this);
             // Sleep time when Window not in focus
             InactiveSleepTime = TimeSpan.FromMilliseconds(100);
 
             Components.Add(_screenManager);
-            Components.Add(fpsCounter);
+            Components.Add(dmonitor);
             //Components.Add(debug);
         }
 
@@ -87,7 +89,8 @@ namespace Origin
             IsMouseVisible = true;
             MyraEnvironment.Game = this;
             MyraEnvironment.DisableClipping = true;
-            UiManager = new UIManager(this);
+
+            GuiRenderer = new ImGuiRenderer(this);
 
             InputManager.Initialise(this);
             base.Initialize();
@@ -105,6 +108,8 @@ namespace Origin
 
             // Load Resources
             ResourceLoader.LoadResources();
+
+            GuiRenderer.RebuildFontAtlas();
 
             //LoadMenuMainScreen();
             LoadGameScreen();
@@ -136,7 +141,6 @@ namespace Origin
                 graphics.ApplyChanges();
             }
 
-            UiManager.Update();
             base.Update(gameTime);
             if (IsActive) InputManager.FinalUpdate();
         }
@@ -147,18 +151,12 @@ namespace Origin
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            OriginGame.GuiRenderer.BeginLayout(gameTime);
 
             base.Draw(gameTime);
 
-            UiManager.Draw();
-
-            long drawcalls = GraphicsDevice.Metrics.DrawCount;
-            EventBus.Send(new DebugValueChanged(3, new Dictionary<string, string>()
-            {
-                ["DebugDrawCalls"] = drawcalls.ToString(),
-                ["DebugElapsedTime"] = gameTime.ElapsedGameTime.ToString()
-            }));
+            OriginGame.GuiRenderer.EndLayout();
         }
 
         private void LoadMenuMainScreen()

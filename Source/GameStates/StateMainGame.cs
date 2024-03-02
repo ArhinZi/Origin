@@ -41,6 +41,7 @@ namespace Origin.Source.GameStates
         public override void LoadContent()
         {
             base.LoadContent();
+
         }
 
         public override void Update(GameTime gameTime)

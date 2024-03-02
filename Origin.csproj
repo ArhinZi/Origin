@@ -19,18 +19,21 @@
 		<Compile Remove="Content\bin\**" />
 		<Compile Remove="MGUI.Core\**" />
 		<Compile Remove="MGUI.Shared\**" />
+		<Compile Remove="Monogame.ImGuiNET\**" />
 		<Compile Remove="Roy-T.AStar\**" />
 		<EmbeddedResource Remove="Arch.Extended\**" />
 		<EmbeddedResource Remove="Arch\**" />
 		<EmbeddedResource Remove="Content\bin\**" />
 		<EmbeddedResource Remove="MGUI.Core\**" />
 		<EmbeddedResource Remove="MGUI.Shared\**" />
+		<EmbeddedResource Remove="Monogame.ImGuiNET\**" />
 		<EmbeddedResource Remove="Roy-T.AStar\**" />
 		<None Remove="Arch.Extended\**" />
 		<None Remove="Arch\**" />
 		<None Remove="Content\bin\**" />
 		<None Remove="MGUI.Core\**" />
 		<None Remove="MGUI.Shared\**" />
+		<None Remove="Monogame.ImGuiNET\**" />
 		<None Remove="Roy-T.AStar\**" />
 	</ItemGroup>
 	<ItemGroup>
@@ -78,6 +81,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="Arch\src\Arch.SourceGen\Arch.SourceGen.csproj" />
 	  <ProjectReference Include="Arch\src\Arch\Arch.csproj" />
+	  <ProjectReference Include="Monogame.ImGuiNET\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj" />
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
 		<ProjectReference Include="Arch.Extended\Arch.AOT.SourceGenerator\Arch.AOT.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="Arch.Extended\Arch.EventBus\Arch.EventBus.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -98,6 +102,9 @@
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Source\UI\" />
 	</ItemGroup>
 	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
 		<Message Text="Restoring dotnet tools" Importance="High" />

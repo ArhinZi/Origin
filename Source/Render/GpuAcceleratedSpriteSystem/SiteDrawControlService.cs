@@ -1,18 +1,20 @@
 ﻿using Arch.CommandBuffer;
 using Arch.Core;
 using Arch.Core.Extensions;
+using Arch.Bus;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.ECS;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Vegetation;
+using Origin.Source.Events;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -22,7 +24,7 @@ using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
-    public class SiteDrawControlService
+    public partial class SiteDrawControlService
     {
         private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
         private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
@@ -33,15 +35,31 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         private int seed = 123456789;
         private Random random;
 
+        private RenderTarget2D renderTarget2D;
+        private SpriteBatch spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
+
         public SiteDrawControlService(Site site)
         {
             this.site = site;
             _siteRenderer = new(site, OriginGame.Instance.GraphicsDevice);
 
+            renderTarget2D = new RenderTarget2D(OriginGame.Instance.GraphicsDevice,
+                OriginGame.Instance.Window.ClientBounds.Width, OriginGame.Instance.Window.ClientBounds.Height,
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+
             random = new Random(seed);
 
             InitTerrainSprites();
             InitTerrainHiddence();
+            Hook();
+        }
+
+        [Event]
+        public void OnScreenBoundsChanged(ScreenBoundsChanged bounds)
+        {
+            renderTarget2D = new RenderTarget2D(OriginGame.Instance.GraphicsDevice,
+                bounds.screenBounds.Width, bounds.screenBounds.Height,
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
         }
 
         public void InitTerrainSprites()
@@ -265,7 +283,14 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void Draw(GameTime gameTime)
         {
+            OriginGame.Instance.GraphicsDevice.SetRenderTarget(renderTarget2D);
+            OriginGame.Instance.GraphicsDevice.Clear(Color.CornflowerBlue);
             _siteRenderer.Draw(gameTime);
+            OriginGame.Instance.GraphicsDevice.SetRenderTarget(null);
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(renderTarget2D, Vector2.Zero, Color.White);
+            spriteBatch.End();
         }
     }
 }
