@@ -1,6 +1,6 @@
 ﻿using Origin.Source.Render.GpuAcceleratedSpriteSystem;
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,10 +10,28 @@ namespace Origin.Source.ECS
 {
     public struct SpriteLocatorsStatic
     {
-        public List<SpriteLocator> list = new List<SpriteLocator>();
+        private List<SpriteLocator> _list = null;
+
+        public List<SpriteLocator> list
+        {
+            get
+            {
+                if (_list == null) return _list = new List<SpriteLocator>();
+                return _list;
+            }
+            set
+            {
+                _list = value;
+            }
+        }
 
         public SpriteLocatorsStatic()
         {
+        }
+
+        public void Clear()
+        {
+            list = null;
         }
     }
 }

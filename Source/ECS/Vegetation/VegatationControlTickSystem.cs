@@ -38,7 +38,7 @@ namespace Origin.Source.ECS.Vegetation
                 foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
                 {
                     pos = pos + item;
-                    if ((_site.Map.TryGet(pos, out Entity e) && e.Has<GrownUpVegetationComponent>()) ||
+                    if ((_site.Map.TryGet(pos, out Entity e) && e != Entity.Null && e.Has<GrownUpVegetationComponent>()) ||
                                     !pos.InBounds(new Utils.Point3(0, 0, 0), _site.Size, true, false))
                     {
                         bvc.VegetationNeighbours++;

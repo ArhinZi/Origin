@@ -2,6 +2,7 @@
 global using Point3 = Origin.Source.Utils.Point3;
 
 using Arch.Bus;
+using Arch.Persistence;
 
 using ImGuiNET;
 
@@ -12,9 +13,8 @@ using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using MonoGame.ImGuiNet;
 
-using Myra;
-
 using Origin.Source;
+using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.IO;
@@ -87,8 +87,6 @@ namespace Origin
             Window.Title = "Dwarf`s Origin";
 
             IsMouseVisible = true;
-            MyraEnvironment.Game = this;
-            MyraEnvironment.DisableClipping = true;
 
             GuiRenderer = new ImGuiRenderer(this);
 
@@ -110,9 +108,16 @@ namespace Origin
             ResourceLoader.LoadResources();
 
             GuiRenderer.RebuildFontAtlas();
-
             //LoadMenuMainScreen();
             LoadGameScreen();
+
+            ArchWorld world = ArchWorld.Create();
+            world.Create<IsTile>();
+            world.Create<IsTile>();
+            world.Create<IsTile>();
+
+            ArchJsonSerializer ajs = new ArchJsonSerializer();
+            //string s = ajs.ToJson(world);
         }
 
         /// <summary>
@@ -153,6 +158,7 @@ namespace Origin
         {
             //GraphicsDevice.Clear(Color.CornflowerBlue);
             OriginGame.GuiRenderer.BeginLayout(gameTime);
+            ImGui.PushFont(GlobalResources.Fonts["Default"]);
 
             base.Draw(gameTime);
 

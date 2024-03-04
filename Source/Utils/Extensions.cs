@@ -1,12 +1,13 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
-using Arch.Relationships;
+
+//using Arch.Relationships;
 
 namespace Origin.Source.Utils
 {
     public static class Extensions
     {
-        public static bool HasRelationWithComponent<T, R>(this Relationship<R> rels)
+        /*public static bool HasRelationWithComponent<T, R>(this Relationship<R> rels)
         {
             foreach (var rel in rels)
             {
@@ -23,6 +24,6 @@ namespace Origin.Source.Utils
                     return rel.Key;
             }
             return Entity.Null;
-        }
+        }*/
     }
 }

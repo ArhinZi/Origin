@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using static Origin.Source.Resources.Global;
+using Origin.Source.Components;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
@@ -35,7 +36,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         private int seed = 123456789;
         private Random random;
 
-        private RenderTarget2D renderTarget2D;
+        public RenderTarget2D RenderTarget2D { get; private set; }
         private SpriteBatch spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
         public SiteDrawControlService(Site site)
@@ -43,7 +44,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             this.site = site;
             _siteRenderer = new(site, OriginGame.Instance.GraphicsDevice);
 
-            renderTarget2D = new RenderTarget2D(OriginGame.Instance.GraphicsDevice,
+            RenderTarget2D = new RenderTarget2D(OriginGame.Instance.GraphicsDevice,
                 OriginGame.Instance.Window.ClientBounds.Width, OriginGame.Instance.Window.ClientBounds.Height,
                 false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
 
@@ -57,26 +58,31 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         [Event]
         public void OnScreenBoundsChanged(ScreenBoundsChanged bounds)
         {
-            renderTarget2D = new RenderTarget2D(OriginGame.Instance.GraphicsDevice,
+            RenderTarget2D = new RenderTarget2D(OriginGame.Instance.GraphicsDevice,
                 bounds.screenBounds.Width, bounds.screenBounds.Height,
                 false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
         }
 
         public void InitTerrainSprites()
         {
+            var query = new QueryDescription().WithAll<IsTile, BaseConstruction>();
+            site.ArchWorld.Add<SpriteLocatorsStatic>(query);
+            var a = site.ArchWorld.CountEntities(query);
+            var b = 0;
             for (int z = 0; z < site.Size.Z; z++)
                 for (int x = 0; x < site.Size.X; x++)
                     for (int y = 0; y < site.Size.Y; y++)
                     {
                         Point3 tilePos = new Point3(x, y, z);
                         Entity tile = site.Map[tilePos];
-                        SpriteLocatorsStatic locators = tile.AddOrGet(new SpriteLocatorsStatic());
 
                         int rand = random.Next();
 
                         BaseConstruction bcc;
                         if (tile != Entity.Null && tile.TryGet(out bcc))
                         {
+                            ref SpriteLocatorsStatic locators = ref tile.Get<SpriteLocatorsStatic>();
+                            b++;
                             Construction constr = bcc.Construction;
                             Material mat = bcc.Material;
                             {
@@ -160,7 +166,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             Point3 tilePos = entity.Get<IsTile>().Position;
             Entity tile = entity;
-            SpriteLocatorsStatic locators = tile.AddOrGet(new SpriteLocatorsStatic());
+            ref SpriteLocatorsStatic locators = ref tile.AddOrGet(new SpriteLocatorsStatic());
 
             int rand = random.Next();
 
@@ -283,13 +289,13 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void Draw(GameTime gameTime)
         {
-            OriginGame.Instance.GraphicsDevice.SetRenderTarget(renderTarget2D);
+            OriginGame.Instance.GraphicsDevice.SetRenderTarget(RenderTarget2D);
             OriginGame.Instance.GraphicsDevice.Clear(Color.CornflowerBlue);
             _siteRenderer.Draw(gameTime);
             OriginGame.Instance.GraphicsDevice.SetRenderTarget(null);
 
             spriteBatch.Begin();
-            spriteBatch.Draw(renderTarget2D, Vector2.Zero, Color.White);
+            spriteBatch.Draw(RenderTarget2D, Vector2.Zero, Color.White);
             spriteBatch.End();
         }
     }

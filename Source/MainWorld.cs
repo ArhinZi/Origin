@@ -17,19 +17,19 @@ namespace Origin.Source
 
         public Site ActiveSite { get; private set; }
         private TickManager _tickManager;
-        //public SiteRenderer Renderer { get; private set; }
+
+        private SaveGameEntity sge = null;
 
         public int Seed { get; private set; } = 1234;
 
-        private SpriteBatch spriteBatch;
+        public string Name { get; private set; } = "Lost fields";
 
         public MainWorld()
         {
             Instance = this;
-            spriteBatch = new SpriteBatch(OriginGame.Instance.GraphicsDevice);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Utils.Point3(128, 128, 128));
+            ActiveSite = new Site(this, new Utils.Point3(256, 256, 128));
 
             _tickManager = new TickManager();
 
@@ -56,6 +56,18 @@ namespace Origin.Source
         public void Init()
         {
             //Renderer = new SiteRenderer(ActiveSite, OriginGame.Instance.GraphicsDevice);
+        }
+
+        public void Save()
+        {
+            if (sge == null)
+            {
+                sge = new SaveGameEntity();
+                sge.Name = Name;
+                sge.LastSaveTime = DateTime.Now;
+                sge.Texture = ActiveSite.DrawControl.RenderTarget2D;
+                sge.Save(this);
+            }
         }
 
         public void Update(GameTime gameTime)

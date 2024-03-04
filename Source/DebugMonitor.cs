@@ -19,7 +19,6 @@ using System.Threading.Tasks;
 using System.Xml.Schema;
 using Vector2 = System.Numerics.Vector2;
 using Origin.Utils;
-using Myra.Graphics2D.UI;
 
 namespace Origin.Source
 {
@@ -132,8 +131,11 @@ namespace Origin.Source
             ImGui.SetNextWindowBgAlpha(0.35f); // Transparent background
             if (ImGui.Begin("Example: Simple overlay", ref isVisible, window_flags))
             {
-                ImGui.Text("(right-click to change position)");
-                ImGui.Separator();
+                if (ImGui.IsWindowHovered())
+                    ImGui.SetNextFrameWantCaptureMouse(false);
+
+                //ImGui.Text("(right-click to change position)");
+                //ImGui.Separator();
                 if (ImGui.IsMousePosValid())
                     ImGui.Text($"Mouse Position: ({io.MousePos.X},{io.MousePos.Y})");
                 else
@@ -150,7 +152,7 @@ namespace Origin.Source
                 {
                     ImGui.Text($"{item.Key}: {item.Value}");
                 }
-                if (ImGui.BeginPopupContextWindow())
+                /*if (ImGui.BeginPopupContextWindow())
                 {
                     if (ImGui.MenuItem("Custom", null, location == -1)) location = -1;
                     if (ImGui.MenuItem("Center", null, location == -2)) location = -2;
@@ -160,8 +162,9 @@ namespace Origin.Source
                     if (ImGui.MenuItem("Bottom-right", null, location == 3)) location = 3;
                     if (isVisible && ImGui.MenuItem("Close")) isVisible = false;
                     ImGui.EndPopup();
-                }
+                }*/
             }
+
             ImGui.End();
         }
 

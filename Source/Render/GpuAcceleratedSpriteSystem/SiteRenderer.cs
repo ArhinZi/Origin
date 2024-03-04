@@ -1,8 +1,6 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
 
-using info.lundin.math;
-
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

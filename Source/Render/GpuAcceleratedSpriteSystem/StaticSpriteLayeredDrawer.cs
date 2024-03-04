@@ -127,7 +127,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             foreach (var locator in locators.list)
             {
-                spriteChunks[0, 0, pos.Z].ScheduleRemove(locator);
+                spriteChunks[0, 0, pos.Z].ScheduleRemove((SpriteLocator)locator);
             }
         }
 

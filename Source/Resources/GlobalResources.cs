@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Newtonsoft.Json;
@@ -34,6 +36,8 @@ namespace Origin.Source.Resources
         public static Sprite HIDDEN_FLOOR_SPRITE;
         public static Color HIDDEN_COLOR;
 
+        public static Dictionary<string, ImFontPtr> Fonts = new Dictionary<string, ImFontPtr>();
+
         public static void Init()
         {
             //wrapper = new DataWrapper();
@@ -41,6 +45,17 @@ namespace Origin.Source.Resources
             settings.Converters.Add(new PointConverter());
             settings.Converters.Add(new ColorConverter());
             settings.Converters.Add(new SpriteConverter());
+
+            var io = ImGui.GetIO();
+            GlobalResources.Fonts.Add("Bold", io.Fonts.AddFontFromFileTTF(
+                "Content\\Fonts\\Nunito-Black.ttf", Global.FontSize, null, io.Fonts.GetGlyphRangesCyrillic()));
+            GlobalResources.Fonts.Add("Default", io.Fonts.AddFontFromFileTTF(
+                "Content\\Fonts\\Nunito-Regular.ttf", Global.FontSize, null, io.Fonts.GetGlyphRangesCyrillic()));
+            GlobalResources.Fonts.Add("DefaultTitle", io.Fonts.AddFontFromFileTTF(
+                "Content\\Fonts\\Nunito-Regular.ttf", Global.FontSize * 2, null, io.Fonts.GetGlyphRangesCyrillic()));
+            GlobalResources.Fonts.Add("BoldTitle", io.Fonts.AddFontFromFileTTF(
+                "Content\\Fonts\\Nunito-Black.ttf", Global.FontSize * 2, null, io.Fonts.GetGlyphRangesCyrillic()));
+            //ImGui.GetIO()  = Fonts["Default"];
         }
 
         public static void ReadFromJson(JObject obj)

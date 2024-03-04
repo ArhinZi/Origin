@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
+using System;
+using System.IO;
+
 namespace Origin.Source.Resources
 {
     public static class Global
@@ -47,5 +50,9 @@ namespace Origin.Source.Resources
         public const int GPU_LAYER_PACK_COUNT = 1024;
 
         #endregion Render
+
+        public static float FontSize = 20;
+
+        public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Arhin Studio", "Origin");
     }
 }

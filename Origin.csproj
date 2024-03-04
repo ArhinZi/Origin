@@ -45,9 +45,9 @@
 		<PackageReference Include="MonoGame.Content.Builder.Task.Compute" Version="3.8.2" />
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2" />
-		<PackageReference Include="Myra" Version="1.4.5" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.2.1" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
+		<PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
 		<PackageReference Include="System.Runtime.Caching" Version="9.0.0-preview.1.24080.9" />
 	</ItemGroup>
 	<ItemGroup>
@@ -60,6 +60,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="Mods\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Content\Fonts\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
@@ -79,13 +82,13 @@
 	  <None Remove="Mods\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="Arch.Extended\Arch.Persistence\Arch.Persistence.csproj" SetTargetReference="netstandard2.1" />
 	  <ProjectReference Include="Arch\src\Arch.SourceGen\Arch.SourceGen.csproj" />
 	  <ProjectReference Include="Arch\src\Arch\Arch.csproj" />
 	  <ProjectReference Include="Monogame.ImGuiNET\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj" />
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
 		<ProjectReference Include="Arch.Extended\Arch.AOT.SourceGenerator\Arch.AOT.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="Arch.Extended\Arch.EventBus\Arch.EventBus.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-		<ProjectReference Include="Arch.Extended\Arch.Persistence\Arch.Persistence.csproj" />
 		<ProjectReference Include="Arch.Extended\Arch.Relationships\Arch.Relationships.csproj" />
 		<ProjectReference Include="Arch.Extended\Arch.System.SourceGenerator\Arch.System.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="Arch.Extended\Arch.System\Arch.System.csproj" />

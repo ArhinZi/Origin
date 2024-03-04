@@ -1,5 +1,7 @@
 ﻿using Arch.Bus;
 
+using ImGuiNET;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -17,13 +19,28 @@ namespace Origin.Source
         private bool LShift;
         private bool LCtrl;
 
+        private StateMainGame StateMainGame;
+
+        public InputController(StateMainGame smg)
+        {
+            StateMainGame = smg;
+        }
+
         public void Update(GameTime gameTime)
         {
-            if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
+            //if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
+
+            if (ImGui.IsKeyPressed(ImGuiKey.Escape))
+            {
+                StateMainGame.EscMenu = !StateMainGame.EscMenu;
+            }
 
             KeyboardState keystate = Keyboard.GetState();
             LShift = keystate.IsKeyDown(Keys.LeftShift);
             LCtrl = keystate.IsKeyDown(Keys.LeftControl);
+
+            var io = ImGui.GetIO();
+            if (io.WantCaptureMouse) return;
 
             if (InputManager.JustPressed("game.halfwallswitch"))
             {

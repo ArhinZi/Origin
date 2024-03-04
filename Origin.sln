@@ -23,6 +23,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arch.AOT.SourceGenerator", "Arch.Extended\Arch.AOT.SourceGenerator\Arch.AOT.SourceGenerator.csproj", "{DC0839BB-4094-4822-8455-01285A0E7633}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arch.Persistence", "Arch.Extended\Arch.Persistence\Arch.Persistence.csproj", "{45F596E3-C279-4DDE-B521-D1ECC87A86C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5FA04196-F927-4F15-8687-C014417430A8} = {5FA04196-F927-4F15-8687-C014417430A8}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arch.Relationships", "Arch.Extended\Arch.Relationships\Arch.Relationships.csproj", "{EA508090-1374-41AB-BB30-3165598D891C}"
 EndProject

@@ -175,7 +175,7 @@ namespace Origin.Source.Generators
             end = nodes[width - 1, Random.Shared.Next() % height];
 
             PathFinder pf = new PathFinder();
-            Path path = pf.FindPath(start, end, Velocity.FromMetersPerSecond(2));
+            Roy_T.AStar.Paths.Path path = pf.FindPath(start, end, Velocity.FromMetersPerSecond(2));
 
             HashSet<Point> visited = new HashSet<Point>();
             foreach (var edge in path.Edges)
