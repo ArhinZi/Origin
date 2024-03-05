@@ -116,8 +116,7 @@ namespace Origin
             world.Create<IsTile>();
             world.Create<IsTile>();
 
-            ArchJsonSerializer ajs = new ArchJsonSerializer();
-            //string s = ajs.ToJson(world);
+            SaveGameEntity.ReadAllSaves();
         }
 
         /// <summary>

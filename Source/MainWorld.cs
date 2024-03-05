@@ -62,8 +62,7 @@ namespace Origin.Source
         {
             if (sge == null)
             {
-                sge = new SaveGameEntity();
-                sge.Name = Name;
+                sge = new SaveGameEntity(Name);
                 sge.LastSaveTime = DateTime.Now;
                 sge.Texture = ActiveSite.DrawControl.RenderTarget2D;
                 sge.Save(this);

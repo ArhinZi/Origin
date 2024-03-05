@@ -16,6 +16,7 @@ using Origin.Source.ECS.Vegetation;
 using Origin.Source.Events;
 using Origin.Source.Resources;
 using Origin.Source.Systems;
+using Origin.Source.UI;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
@@ -37,12 +38,17 @@ namespace Origin.Source.GameStates
             set
             {
                 if (!value)
+                {
                     OptionsMenu = false;
+                    LoadMenu = false;
+                }
                 _escMenu = value;
             }
         }
 
         public bool OptionsMenu = false;
+
+        public bool LoadMenu = false;
         private int flags;
 
         public MainWorld World;
@@ -112,52 +118,7 @@ namespace Origin.Source.GameStates
 
                 ImGui.PushFont(GlobalResources.Fonts["BoldTitle"]);
 
-                if (EscMenu && !OptionsMenu)
-                {
-                    if (ImGui.Begin("EscMenu", (ImGuiWindowFlags)flags))
-                    {
-                        ImGui.SetCursorPosY(200);
-
-                        ImGuiUtil.AlignForWidth(ImGui.CalcTextSize("Main menu").X);
-                        ImGui.Text("Main menu");
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Back to game", bSize))
-                        {
-                            EscMenu = false;
-                        }
-
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Save", bSize))
-                        {
-                            World.Save();
-                        }
-
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Load", bSize))
-                        {
-                            OptionsMenu = true;
-                        }
-
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Options", bSize))
-                        {
-                            OptionsMenu = true;
-                        }
-
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Exit", bSize))
-                        {
-                            OriginGame.Instance.Exit();
-                        }
-                    }
-                }
-                else if (EscMenu && OptionsMenu)
+                if (OptionsMenu)
                 {
                     if (ImGui.Begin("OptionsMenu", (ImGuiWindowFlags)flags))
                     {
@@ -184,6 +145,68 @@ namespace Origin.Source.GameStates
                         if (ImGui.Button("Back", bSize))
                         {
                             OptionsMenu = false;
+                        }
+                    }
+                }
+                else if (LoadMenu)
+                {
+                    LoadSaveGUI.Draw();
+
+                    ImGui.PushFont(GlobalResources.Fonts["BoldTitle"]);
+                    if (ImGui.Begin("Load", (ImGuiWindowFlags)flags))
+                    {
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+                        ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Back", bSize))
+                        {
+                            LoadMenu = false;
+                        }
+                    }
+                    ImGui.PushFont(GlobalResources.Fonts["Default"]);
+                    ImGui.End();
+                }
+                else
+                {
+                    if (ImGui.Begin("EscMenu", (ImGuiWindowFlags)flags))
+                    {
+                        ImGui.SetCursorPosY(200);
+
+                        ImGuiUtil.AlignForWidth(ImGui.CalcTextSize("Main menu").X);
+                        ImGui.Text("Main menu");
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+
+                        ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Back to game", bSize))
+                        {
+                            EscMenu = false;
+                        }
+
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+                        ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Save", bSize))
+                        {
+                            World.Save();
+                        }
+
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+                        ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Load", bSize))
+                        {
+                            LoadMenu = true;
+                        }
+
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+                        ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Options", bSize))
+                        {
+                            OptionsMenu = true;
+                        }
+
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+                        ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Exit", bSize))
+                        {
+                            OriginGame.Instance.Exit();
                         }
                     }
                 }
