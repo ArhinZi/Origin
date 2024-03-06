@@ -34,7 +34,7 @@ namespace Origin.Source.UI
                     ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new Vector2(0.1f, 0.5f));
                     if (ImGui.Button($"{save.Value.Name}\n", bSize))
                     {
-                        save.Value.Load(MainWorld.Instance);
+                        //save.Value.Load(MainWorld.Instance);
                     }
                     ImGui.SameLine();
                     var pos = ImGui.GetCursorPos();

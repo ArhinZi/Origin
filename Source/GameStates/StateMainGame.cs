@@ -185,7 +185,7 @@ namespace Origin.Source.GameStates
                         ImGuiUtil.AlignForWidth(bSize.X);
                         if (ImGui.Button("Save", bSize))
                         {
-                            World.Save();
+                            //World.Save();
                         }
 
                         ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
