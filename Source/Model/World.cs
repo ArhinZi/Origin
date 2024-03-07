@@ -36,7 +36,8 @@ namespace Origin.Source.Model
             _tickManager = new TickManager();
 
             _tickManager.Systems.Add(new UpdateSitePathTickSystem(ActiveSite));
-            _tickManager.Systems.Add(new UtilizeVegetationOnConstructionTickSystem(ActiveSite));
+            _tickManager.Systems.Add(new UpdateVegsOnConstructionRemovedTickSystem(ActiveSite));
+            _tickManager.Systems.Add(new UpdateVegsOnConstructionPlacedTickSystem(ActiveSite));
             _tickManager.Systems.Add(new UpdateLightTickSystem(ActiveSite));
             _tickManager.Systems.Add(new VegatationControlTickSystem(ActiveSite));
 

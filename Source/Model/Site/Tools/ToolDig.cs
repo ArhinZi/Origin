@@ -1,7 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
 using Origin.Source.Controller.IO;
 using Origin.Source.Resources;
+
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +13,6 @@ namespace Origin.Source.Model.Site.Tools
 {
     public class ToolDig : Tool
     {
-        public bool Active = false;
         private Point3 prevPos;
         private Point3 startPos;
         private Point3 start;
@@ -40,6 +43,7 @@ namespace Origin.Source.Model.Site.Tools
         public override void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
+
             //sprites.Clear();
             if (!Active)
             {

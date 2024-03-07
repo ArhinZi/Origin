@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+
+using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
 
@@ -21,6 +23,7 @@ namespace Origin.Source.Model.Site.Tools
                 new ToolDig(this),
                 new ToolPathfind(this),
                 new ToolPlaceDirt(this),
+                new ToolInfo(this),
             };
             //SetToolByName("ToolDig");
         }
@@ -45,7 +48,18 @@ namespace Origin.Source.Model.Site.Tools
         {
             if (CurrentTool != null)
             {
+                var io = ImGui.GetIO();
+                if (io.WantCaptureMouse) return;
+
                 CurrentTool.Update(gameTime);
+            }
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+            if (CurrentTool != null)
+            {
+                CurrentTool.Draw(gameTime);
             }
         }
     }

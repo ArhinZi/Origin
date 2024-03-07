@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Float4
@@ -31,7 +31,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
             if (bitValue)
             {
-                Set(i, Get(i) | (1 << position));
+                Set(i, Get(i) | 1 << position);
             }
             else
             {
@@ -47,7 +47,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 throw new ArgumentOutOfRangeException(nameof(position), "Invalid bit position");
             }
 
-            return (Get(i) & (1 << position)) != 0;
+            return (Get(i) & 1 << position) != 0;
         }
 
         private int Get(int i)

@@ -3,10 +3,12 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
 using Origin.Source.Controller.IO;
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
+
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +18,6 @@ namespace Origin.Source.Model.Site.Tools
 {
     public class ToolPlaceDirt : Tool
     {
-        public bool Active = false;
         private Point3 prevPos;
         private Point3 startPos;
         private int currentLevel;

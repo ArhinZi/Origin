@@ -1,13 +1,18 @@
-﻿using Origin.Source.Render.GpuAcceleratedSpriteSystem;
+﻿using MessagePack;
+
+using Origin.Source.Render;
 
 using System.Collections.Generic;
 
 namespace Origin.Source.ECS
 {
+    [MessagePackObject]
     public struct SpriteLocatorsStatic
     {
+        [IgnoreMember]
         private List<SpriteLocator> _list = null;
 
+        [IgnoreMember]
         public List<SpriteLocator> list
         {
             get

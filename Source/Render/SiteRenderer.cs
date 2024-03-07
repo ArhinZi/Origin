@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Sprites;
-
 using Origin.Source.ECS;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
@@ -18,13 +17,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using static Origin.Source.Render.GpuAcceleratedSpriteSystem.SpriteChunk;
+using static Origin.Source.Render.SpriteChunk;
 using static Origin.Source.Resources.Global;
 using static System.Reflection.Metadata.BlobBuilder;
 
 using Sprite = Origin.Source.Resources.Sprite;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     public class SiteRenderer
     {
@@ -43,7 +42,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             this.site = site;
             _drawHighest = site.CurrentLevel;
-            _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+            _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
             InstanceMainEffect = Global.Game.Content.Load<Effect>("FX/InstancedTileDraw");
             GenerateInstanceGeometry();
 
@@ -93,7 +92,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     });
                 }*/
                 _drawHighest = site.CurrentLevel;
-                _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
+                _drawLowest = DiffUtils.GetOrBound(_drawHighest - ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
 
                 //RecalcHiddenInstances();
             }

@@ -1,6 +1,6 @@
-﻿namespace Origin.Source.ECS.Vegetation
+﻿namespace Origin.Source.ECS.Vegetation.Components
 {
-    internal struct BaseVegetationComponent
+    internal struct BaseVegetation
     {
         public int VegetationMetaID;
         public short VegetationNeighbours;

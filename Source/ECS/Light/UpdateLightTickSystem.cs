@@ -21,7 +21,7 @@ namespace Origin.Source.ECS.Light
                     for (int z = _site.Size.Z - 1; z >= 0; z--)
                     {
                         Entity ent = _site.Map[x, y, z];
-                        ent.Add<IsSunLightedComponent>();
+                        ent.Add<IsSunLighted>();
                         if (ent.Has<BaseConstruction>())
                             break;
                     }
@@ -42,18 +42,18 @@ namespace Origin.Source.ECS.Light
                 else if (ent.TryGet(out ConstructionRemovedEvent cre)) pos = cre.Position;
                 else return;
 
-                if (_site.Map[pos + new Utils.Point3(0, 0, 1)].Has<IsSunLightedComponent>())
-                    if (!ent.Has<IsSunLightedComponent>())
-                        ent.Add<IsSunLightedComponent>();
+                if (_site.Map[pos + new Utils.Point3(0, 0, 1)].Has<IsSunLighted>())
+                    if (!ent.Has<IsSunLighted>())
+                        ent.Add<IsSunLighted>();
                 if (ent.Has<BaseConstruction>())
                     return;
 
                 for (int z = pos.Z - 1; z >= 0; z--)
                 {
                     Entity e = _site.Map[pos.X, pos.Y, z];
-                    if (e.Has<IsSunLightedComponent>())
-                        if (!e.Has<IsSunLightedComponent>())
-                            e.Add<IsSunLightedComponent>();
+                    if (e.Has<IsSunLighted>())
+                        if (!e.Has<IsSunLighted>())
+                            e.Add<IsSunLighted>();
                     if (e.Has<BaseConstruction>())
                         return;
                 }

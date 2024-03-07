@@ -2,9 +2,11 @@
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
+
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
+
 using System;
 using System.Collections.Generic;
 
@@ -37,6 +39,7 @@ namespace Origin.Source.Model.Site.Tools
         public Point3 Position = Point3.Null;
         public Point3 PrevPosition = Point3.Null;
         public bool DrawDirty = false;
+        public bool Active = false;
 
         public Tool(SiteToolsComponent controller)
         {
@@ -47,6 +50,10 @@ namespace Origin.Source.Model.Site.Tools
         public abstract void Update(GameTime gameTime);
 
         public abstract void Reset();
+
+        public virtual void Draw(GameTime gameTime)
+        {
+        }
 
         public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
             bool onFloor = false,

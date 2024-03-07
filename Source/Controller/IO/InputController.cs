@@ -91,6 +91,16 @@ namespace Origin.Source.Controller.IO
                 ActiveSite.Tools.SetToolByName("ToolPlaceDirt");
             if (InputManager.JustPressed("num.5"))
                 ActiveSite.Tools.SetToolByName(null);
+            if (InputManager.JustPressed("num.6"))
+                ActiveSite.Tools.SetToolByName(null);
+            if (InputManager.JustPressed("num.7"))
+                ActiveSite.Tools.SetToolByName(null);
+            if (InputManager.JustPressed("num.8"))
+                ActiveSite.Tools.SetToolByName(null);
+            if (InputManager.JustPressed("num.9"))
+                ActiveSite.Tools.SetToolByName(null);
+            if (InputManager.JustPressed("num.0"))
+                ActiveSite.Tools.SetToolByName("ToolInfo");
 
             /*if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {

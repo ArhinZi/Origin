@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using System.Runtime.InteropServices;
 
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct SpriteMainData

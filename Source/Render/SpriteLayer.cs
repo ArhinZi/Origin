@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-
 using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     public class SpriteLayer : IDisposable
     {

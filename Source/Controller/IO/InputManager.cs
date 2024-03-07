@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
 using System;
 using System.Collections.Generic;
 
@@ -144,6 +145,11 @@ namespace Origin.Source.Controller.IO
             BindKey("num.3", new Keybind(Keys.D3));
             BindKey("num.4", new Keybind(Keys.D4));
             BindKey("num.5", new Keybind(Keys.D5));
+            BindKey("num.6", new Keybind(Keys.D6));
+            BindKey("num.7", new Keybind(Keys.D7));
+            BindKey("num.8", new Keybind(Keys.D8));
+            BindKey("num.9", new Keybind(Keys.D9));
+            BindKey("num.0", new Keybind(Keys.D0));
         }
 
         private static void BindKey(string name, Keybind fallback)

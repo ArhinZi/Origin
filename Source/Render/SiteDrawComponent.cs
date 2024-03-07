@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.ECS;
 using Origin.Source.ECS.Construction;
-using Origin.Source.ECS.Vegetation;
 using Origin.Source.Events;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
@@ -21,8 +20,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using static Origin.Source.Resources.Global;
-using Origin.Source.Components;
 using Origin.Source.Model.Site;
+using Origin.Source.ECS.BaseComponents;
+using Origin.Source.ECS.Vegetation.Components;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
@@ -112,7 +112,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                         //TODO Draw Vegetation
                         LAYER = (int)DrawBufferLayer.FrontOver;
-                        if (ent.TryGet(out BaseVegetationComponent hveg))
+                        if (ent.TryGet(out BaseVegetation hveg))
                         {
                             Vegetation veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
                             List<string> spritesIDs;
@@ -198,7 +198,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
                     //TODO Draw Vegetation
                     LAYER = (int)DrawBufferLayer.FrontOver;
-                    if (tile.TryGet(out BaseVegetationComponent hveg))
+                    if (tile.TryGet(out BaseVegetation hveg))
                     {
                         Vegetation veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
                         List<string> spritesIDs;

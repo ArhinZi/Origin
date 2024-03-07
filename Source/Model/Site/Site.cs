@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended;
 
-using Origin.Source.ECS;
+using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model;
 using Origin.Source.Model.Generators;
@@ -105,6 +105,7 @@ namespace Origin.Source.Model.Site
 
         public void Draw(GameTime gameTime)
         {
+            Tools.Draw(gameTime);
             DrawControl.Draw(gameTime);
         }
 

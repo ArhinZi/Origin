@@ -13,7 +13,7 @@ using MonoGame.Extended.Screens.Transitions;
 using MonoGame.ImGuiNet;
 
 using Origin.Source.Controller.IO;
-using Origin.Source.ECS;
+using Origin.Source.ECS.BaseComponents;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.Resources;

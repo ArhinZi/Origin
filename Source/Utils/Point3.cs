@@ -1,9 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MessagePack;
+
+using Microsoft.Xna.Framework;
 
 using System;
 
 namespace Origin.Source.Utils
 {
+    [MessagePackObject]
     public struct Point3 : IComparable
     {
         public int X;

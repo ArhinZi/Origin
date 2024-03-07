@@ -5,7 +5,7 @@ using Origin.Source.Resources;
 namespace Origin.Source.ECS.Construction
 {
     [MessagePackObject]
-    public struct BaseConstruction
+    public struct OverConstruction
     {
         public int ConstructionMetaID;
         public int MaterialMetaID;

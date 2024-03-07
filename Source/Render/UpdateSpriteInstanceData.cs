@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct UpdateSpriteInstanceData

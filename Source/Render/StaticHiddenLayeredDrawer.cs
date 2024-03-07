@@ -12,19 +12,18 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
 using Origin.Source.ECS;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
-using static Origin.Source.Render.GpuAcceleratedSpriteSystem.SpriteChunk;
+using static Origin.Source.Render.SpriteChunk;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using Vector4 = Microsoft.Xna.Framework.Vector4;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     public class StaticHiddenLayeredDrawer : IBaseLayeredDrawer
     {
@@ -48,8 +47,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             _site = site;
             _texture = GlobalResources.HIDDEN_WALL_SPRITE.Texture;
             RBIT_COUNT = Math.Min(_site.Size.X, BIT_COUNT);
-            LCHUNK_SIZE = (_site.Size.X / RBIT_COUNT) * _site.Size.Y;
-            SCHUNK_SIZE = (_site.Size.X / RBIT_COUNT) + (_site.Size.Y / RBIT_COUNT);
+            LCHUNK_SIZE = _site.Size.X / RBIT_COUNT * _site.Size.Y;
+            SCHUNK_SIZE = _site.Size.X / RBIT_COUNT + _site.Size.Y / RBIT_COUNT;
 
             _lData = new Float4[_site.Size.Z][];
             for (int z = 0; z < _lData.Length; z++)
@@ -92,7 +91,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         public void SetHiddence(Point3 pos, bool value)
         {
             int nxbit = pos.X % RBIT_COUNT;
-            int xy = (_site.Size.X / RBIT_COUNT) * pos.Y + pos.X / RBIT_COUNT;
+            int xy = _site.Size.X / RBIT_COUNT * pos.Y + pos.X / RBIT_COUNT;
             _lData[pos.Z][xy].SetBit(nxbit, value);
 
             if (_site.Size.Y - 1 == pos.Y)
@@ -103,7 +102,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
             else if (_site.Size.X - 1 == pos.X)
             {
-                xy = (_site.Size.X / RBIT_COUNT) + ((_site.Size.Y / RBIT_COUNT) - 1 - pos.Y / RBIT_COUNT);
+                xy = _site.Size.X / RBIT_COUNT + (_site.Size.Y / RBIT_COUNT - 1 - pos.Y / RBIT_COUNT);
                 nxbit = (_site.Size.Y - 1 - pos.Y) % RBIT_COUNT;
                 _sData[pos.Z][xy].SetBit(nxbit, value);
             }

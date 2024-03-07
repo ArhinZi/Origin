@@ -1,6 +1,6 @@
 ﻿namespace Origin.Source.ECS.Light
 {
-    internal struct IsSunLightedComponent
+    internal struct IsSunLighted
     {
         public byte Volume;
     }

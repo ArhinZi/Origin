@@ -1,4 +1,4 @@
-﻿namespace Origin.Source.ECS
+﻿namespace Origin.Source.ECS.BaseComponents
 {
     internal struct UpdateTileRenderSelfRequest
     {

@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Sprites;
-
 using Origin.Source.ECS;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
@@ -19,16 +18,16 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
-using static Origin.Source.Render.GpuAcceleratedSpriteSystem.SpriteChunk;
+using static Origin.Source.Render.SpriteChunk;
 using static Origin.Source.Resources.Global;
 
 using Sprite = Origin.Source.Resources.Sprite;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     public class StaticSpriteLayeredDrawer : IBaseLayeredDrawer
     {
-        public Point ChunkSize = Global.BASE_CHUNK_SIZE;
+        public Point ChunkSize = BASE_CHUNK_SIZE;
         private GraphicsDevice device = Global.GraphicsDevice;
 
         private SpriteChunk[,,] spriteChunks;
@@ -128,7 +127,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             foreach (var locator in locators.list)
             {
-                spriteChunks[0, 0, pos.Z].ScheduleRemove((SpriteLocator)locator);
+                spriteChunks[0, 0, pos.Z].ScheduleRemove(locator);
             }
         }
 

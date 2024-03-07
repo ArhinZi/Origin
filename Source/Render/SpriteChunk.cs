@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 using Newtonsoft.Json.Linq;
-
 using Origin.Source.ECS;
 using Origin.Source.Resources;
 
@@ -21,10 +20,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-using static Origin.Source.Render.GpuAcceleratedSpriteSystem.SpriteChunk;
+using static Origin.Source.Render.SpriteChunk;
 using static System.Reflection.Metadata.BlobBuilder;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     /// <summary>
     /// Batched levels.
