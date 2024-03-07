@@ -53,7 +53,7 @@
     <OrderedMaterialID>RoseGold</OrderedMaterialID>
     <OrderedMaterialID>Platinum</OrderedMaterialID>
     <OrderedMaterialID>Tin</OrderedMaterialID>
-    <ItemID>Helmet</ItemID>      
+    <ItemID>Helmet</ItemID>
     <ItemID>Breastplate</ItemID>
     <ItemID>Pauldron</ItemID>
     <ItemID>Greave</ItemID>
@@ -75,7 +75,7 @@
     <ItemID>MusketRound</ItemID>
     <ItemID>CrossbowBolt</ItemID>
     <ItemID>ITEMID_ANY</ItemID>
-    <ItemID>ITEMID_ANY2H</ItemID>      
+    <ItemID>ITEMID_ANY2H</ItemID>
   </MaterialGroup>
   <MaterialGroup>
     <OrderedMaterialID>Obsidian</OrderedMaterialID>

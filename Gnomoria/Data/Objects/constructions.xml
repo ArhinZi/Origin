@@ -51,7 +51,7 @@
           Quantity (optional): Default is 1.  Quantity of ItemID required.
           AllowedMaterial (optional): Default is all materials.  When this is added it restricts component to only items of these materials.  Supports an arbitrary number
   -->
-  
+
   <!--SoilFloor-->
   <Item>
     <ID>SoilFloor</ID>
@@ -672,7 +672,7 @@
     </StateSprite>
     <Component>
       <ItemID>RawSoil</ItemID>
-    </Component>    
+    </Component>
   </Item>
   <!--RawStoneRamp-->
   <Item>
@@ -1689,7 +1689,7 @@
     </Component>
     <Component>
       <ItemID>Rod</ItemID>
-    </Component>      
+    </Component>
     <Component>
       <ItemID>WindmillBlade</ItemID>
       <Quantity>4</Quantity>

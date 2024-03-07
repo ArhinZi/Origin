@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 
 using Origin.Source.ECS;
+using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -33,7 +34,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         private int _drawLowest;
         private int _drawHighest;
         private Site site;
-        private GraphicsDevice _device = OriginGame.Instance.GraphicsDevice;
+        private GraphicsDevice _device = Global.GraphicsDevice;
 
         public StaticSpriteLayeredDrawer StaticDrawer { get; }
         public StaticHiddenLayeredDrawer HiddenDrawer { get; }
@@ -43,7 +44,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             this.site = site;
             _drawHighest = site.CurrentLevel;
             _drawLowest = DiffUtils.GetOrBound(_drawHighest - Global.ONE_MOMENT_DRAW_LEVELS + 1, 0, _drawHighest);
-            InstanceMainEffect = OriginGame.Instance.Content.Load<Effect>("FX/InstancedTileDraw");
+            InstanceMainEffect = Global.Game.Content.Load<Effect>("FX/InstancedTileDraw");
             GenerateInstanceGeometry();
 
             StaticDrawer = new StaticSpriteLayeredDrawer(site);

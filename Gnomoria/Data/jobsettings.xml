@@ -23,7 +23,7 @@
           Value:
             Item: Supports arbitrary number of these which are rendered in order
               SpriteID: Actual ID of sprite rendered
-        ConstructionID (optional): Potential IDs of constructions for this job.  Only applies to certain job types         
+        ConstructionID (optional): Potential IDs of constructions for this job.  Only applies to certain job types
   -->
   <DefaultSprite>
     <SpriteID>

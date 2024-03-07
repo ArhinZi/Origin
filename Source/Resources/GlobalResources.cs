@@ -83,7 +83,7 @@ namespace Origin.Source.Resources
         {
             using (FileStream stream = new FileStream(path, FileMode.Open))
             {
-                Texture2D texture = Texture2D.FromStream(OriginGame.Instance.GraphicsDevice, stream);
+                Texture2D texture = Texture2D.FromStream(Global.GraphicsDevice, stream);
                 texture.Name = Path.GetFileNameWithoutExtension(path);
                 Textures.Add(texture);
             }

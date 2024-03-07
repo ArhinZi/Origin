@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using System;
 using System.IO;
@@ -30,6 +31,9 @@ namespace Origin.Source.Resources
         #endregion Camera
 
         #region Render
+
+        public static GraphicsDevice GraphicsDevice;
+        public static Game Game;
 
         /// <summary>
         /// Z offset.

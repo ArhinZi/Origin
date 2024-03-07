@@ -229,7 +229,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
 
             Effect effect = SiteRenderer.InstanceMainEffect;
-            GraphicsDevice device = OriginGame.Instance.GraphicsDevice;
+            GraphicsDevice device = Global.GraphicsDevice;
             effect.CurrentTechnique = effect.Techniques["BufferUpdating"];
 
             foreach (var level in layersBatches)
@@ -265,7 +265,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             }
 
             Effect effect = SiteRenderer.InstanceMainEffect;
-            GraphicsDevice device = OriginGame.Instance.GraphicsDevice;
+            GraphicsDevice device = Global.GraphicsDevice;
             effect.CurrentTechnique = effect.Techniques["BufferUpdating"];
 
             foreach (var level in layersBatches)

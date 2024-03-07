@@ -9,7 +9,7 @@
         AudioEventClick (optional): Sound effect played when clicking on this workshop
         Tile: Defines sprites that make up this workshop.  Optionally 1 per cell
           Position: Local offset from workshop position
-          Part: Defines sprites for this cell.  Supports an arbitrary amount of these.  
+          Part: Defines sprites for this cell.  Supports an arbitrary amount of these.
             SpriteID: ID of sprite to render
             SpriteIDByMaterialID (optional): Supports arbitrary number of these.  Uses this sprite instead of SpriteID when component at MaterialIndex is this material
               Key: Material
@@ -344,7 +344,7 @@
         <Orientation>BackLeft</Orientation>
         <MaterialIndex>2</MaterialIndex>
       </Part>
-    </Tile>      
+    </Tile>
     <Tile>
       <Position>1 1</Position>
       <Part>
@@ -362,7 +362,7 @@
       <SkillUsed>Carpentry</SkillUsed>
       <AttributeUsed>Count</AttributeUsed>
       <Component>
-        <ItemID>RawWood</ItemID>          
+        <ItemID>RawWood</ItemID>
       </Component>
     </CraftableItem>
     <ConstructionID>Woodcutter</ConstructionID>
@@ -510,7 +510,7 @@
       <Component>
         <ItemID>Bar</ItemID>
         <Quantity>3</Quantity>
-        <AllowedMaterial>Gold</AllowedMaterial>          
+        <AllowedMaterial>Gold</AllowedMaterial>
       </Component>
       <Component>
         <ItemID>Bar</ItemID>
@@ -708,7 +708,7 @@
       <AttributeUsed>Focus</AttributeUsed>
       <AttributeUsed>Nimbleness</AttributeUsed>
       <Component>
-        <ItemID>RawGem</ItemID>          
+        <ItemID>RawGem</ItemID>
       </Component>
     </CraftableItem>
     <ConstructionID>Gemcutter</ConstructionID>
@@ -4014,7 +4014,7 @@
     </CraftableItem>
     <ConstructionID>Kitchen</ConstructionID>
   </Item>
-  
+
   <Item>
     <ID>Weaponsmith</ID>
     <Name>Weaponsmith</Name>
@@ -4317,7 +4317,7 @@
       <Part>
         <SpriteID>ForgeTop</SpriteID>
       </Part>
-    </Tile>     
+    </Tile>
     <Tile>
       <Position>1 1</Position>
       <Part>
@@ -5076,7 +5076,7 @@
       </Component>
       <Component>
         <ItemID>Bar</ItemID>
-      </Component>        
+      </Component>
     </CraftableItem>
     <CraftableItem>
       <ItemID>Hatch</ItemID>

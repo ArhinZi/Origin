@@ -42,8 +42,8 @@
     <AllowedItem>Bread</AllowedItem>
     <AllowedItem>Sausage</AllowedItem>
     <AllowedItem>Egg</AllowedItem>
-    <AllowedItem>Meat</AllowedItem>      
-    <AllowedItem>Sandwich</AllowedItem>      
+    <AllowedItem>Meat</AllowedItem>
+    <AllowedItem>Sandwich</AllowedItem>
     <AllowedItem>Bone</AllowedItem>
     <AllowedItem>Skull</AllowedItem>
     <AllowedItem>Block</AllowedItem>
@@ -165,7 +165,7 @@
     <RequireSame>true</RequireSame>
     <AllowedItem>RawCloth</AllowedItem>
     <AllowedItem>Seed</AllowedItem>
-    <AllowedItem>Clipping</AllowedItem>      
+    <AllowedItem>Clipping</AllowedItem>
     <AllowedItem>Wheat</AllowedItem>
   </Item>
   <Item>

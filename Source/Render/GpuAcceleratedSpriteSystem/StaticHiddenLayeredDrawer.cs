@@ -14,6 +14,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.ECS;
+using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -28,7 +29,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     public class StaticHiddenLayeredDrawer : IBaseLayeredDrawer
     {
         public static int BIT_COUNT = 32 * 4;
-        private GraphicsDevice device = OriginGame.Instance.GraphicsDevice;
+        private GraphicsDevice device = Global.GraphicsDevice;
         private Float4[][] _lData;
         private Float4[][] _sData;
         private StructuredBuffer[] bufferLayers;

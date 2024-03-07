@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Origin.Utils
+namespace Origin.Source.Utils
 {
     public class FixedSizedQueue<T> : ConcurrentQueue<T>
     {
@@ -18,10 +18,10 @@ namespace Origin.Utils
             base.Enqueue(obj);
             lock (syncObject)
             {
-                while (base.Count > Size)
+                while (Count > Size)
                 {
                     T outObj;
-                    base.TryDequeue(out outObj);
+                    TryDequeue(out outObj);
                 }
             }
         }

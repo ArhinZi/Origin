@@ -1,16 +1,14 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Arch.Persistence;
 
-using Arch.Persistence;
+using Microsoft.Xna.Framework.Graphics;
+
+using Origin.Source.Model;
+
+using Origin.Source.Resources;
+using Origin.Source.Utils;
 
 using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Origin.Source.Resources;
-using Origin.Source.Utils;
-using System.Diagnostics;
 
 namespace Origin.Source
 {
@@ -31,7 +29,7 @@ namespace Origin.Source
                     //var Name = ini.Read("SaveName", "General");
 
                     var LastSaveTime = DateTime.Parse(ini.Read("Time", "General"));
-                    var Texture = Texture2D.FromFile(OriginGame.Instance.GraphicsDevice, Path.Combine(dir, "ico.png"));
+                    var Texture = Texture2D.FromFile(Global.GraphicsDevice, Path.Combine(dir, "ico.png"));
 
                     save.LastSaveTime = LastSaveTime;
                     save.Texture = Texture;
@@ -62,7 +60,7 @@ namespace Origin.Source
             Saves.Add(this);
         }
 
-        public void Save(MainWorld world)
+        public void Save(World world)
         {
             if (SavePath == null)
             {
@@ -98,7 +96,7 @@ namespace Origin.Source
             File.WriteAllText(Path.Combine(SavePath, "arch.json"), s);
         }
 
-        public void Load(MainWorld world)
+        public void Load(World world)
         {
             /*if (File.Exists(Path.Combine(SavePath, "arch.data")))
             {

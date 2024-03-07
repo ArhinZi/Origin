@@ -9,7 +9,7 @@
 	<MenuItem>
 	  <Text>Terrain</Text>
 	  <MenuItem>
-		<Text>Mine</Text>         
+		<Text>Mine</Text>
 		  <MenuItem>
 			<Text>Wall</Text>
 			<ToolTip>Remove wall</ToolTip>
@@ -30,7 +30,7 @@
 			<Action>
 			  <Type>MineRampUp</Type>
 			</Action>
-		  </MenuItem>          
+		  </MenuItem>
 	  </MenuItem>
 	  <MenuItem>
 		<Text>Dig</Text>

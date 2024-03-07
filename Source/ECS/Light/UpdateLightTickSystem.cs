@@ -1,16 +1,8 @@
-﻿using Arch.CommandBuffer;
-using Arch.Core;
+﻿using Arch.Core;
 using Arch.Core.Extensions;
 
-using Origin.Source.Components;
-
 using Origin.Source.ECS.Construction;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Origin.Source.Model.Site;
 
 namespace Origin.Source.ECS.Light
 {

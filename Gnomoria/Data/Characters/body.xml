@@ -25,7 +25,7 @@
           Symmetrical (Optional): Default is false.  If true, generates a left and right of this section
           EquipType (Optional): When wearing equipment of this type it covers this section.  Supports Head, Body, Arm, Leg, Glove, Foot, Back, Belt
           Hand (Optional): Default is false.  If true, it generates additional LeftHand and RightHand equipment slots used for uniforms. (Actually carrying items is determined by body parts with the Grip function
-          Tile (Optional): 
+          Tile (Optional):
             BodyTiles:
               TileDetails: Supports arbitrary amount
                 SpriteID: ID of Sprite.  If BodyTile it is combined with BaseSprite of the body. (Decorations aren't combined)

@@ -5,7 +5,7 @@
         SkillID: ID of skill associate with progressing this research
         BaseDifficulty: Base difficulty of research
         PerLevelDifficulty: Per level difficulty of research
-        
+
         Difficulty is in units of seconds (but is modified by skill when researching)
         Each level of difficulty uses the formula BaseDifficulty + CurrentResearchLevel * PerLevelDifficulty
         Using a base of 10 and a per level of 5, to research level 1 it would be 10, level 2 15, level 3 20, etc.  Each level takes slightly longer to research than the previous
@@ -15,5 +15,5 @@
     <SkillID>Tinkering</SkillID>
     <BaseDifficulty>6000</BaseDifficulty>
     <PerLevelDifficulty>10000</PerLevelDifficulty>
-  </Item> 
+  </Item>
 </Research>

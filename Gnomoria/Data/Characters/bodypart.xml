@@ -14,7 +14,7 @@
         Symmetrical (Optional): Default is false.  If true, generates a left and right of this body part
         Contains (Optional): Additional body parts that are inside this one.  ID is not needed for these internal body parts
         NaturalWeapon (Optional):
-          Name: Name of weapon.          
+          Name: Name of weapon.
           MaterialID: Material of weapon
           TemplateMaterialIndex (Optional): Index into template materials.  Overwrites MaterialID if used
           Size: Size of weapon.  Used to calculate damage
@@ -36,7 +36,7 @@
               AttackDef:  AttackMove defined above
             DefendMove (optional): Supports an arbitrary number
               Verb: Used in combat log
-              SFXEventName (optional): sound effect that fires for this defend move        
+              SFXEventName (optional): sound effect that fires for this defend move
               DefendTime (optional, seconds): Default is 1.  Time before this weapon can be used to defend with again
               AttackDelay (optional, seconds): Default is 1.  Delays next attack by this amount when defending.
               DefendType: Supports an arbitrary number of these.  AttackType that this move can defend against
@@ -1512,7 +1512,7 @@
     <BodyProperties>HasBlood</BodyProperties>
     <HarvestedItem>RawHide</HarvestedItem>
     <HarvestedQuantity>1</HarvestedQuantity>
-    <Symmetrical>true</Symmetrical>      
+    <Symmetrical>true</Symmetrical>
     <Contains>
       <Name>muscle</Name>
       <MaterialID>OgreFlesh</MaterialID>
@@ -1718,7 +1718,7 @@
     <BodyProperties>HasBlood</BodyProperties>
     <HarvestedItem>RawHide</HarvestedItem>
     <HarvestedQuantity>1</HarvestedQuantity>
-    <Symmetrical>true</Symmetrical>      
+    <Symmetrical>true</Symmetrical>
     <Contains>
       <Name>muscle</Name>
       <MaterialID>TwoHeadedOgreFlesh</MaterialID>
@@ -1740,7 +1740,7 @@
     <BodyProperties>HasBlood</BodyProperties>
     <HarvestedItem>RawHide</HarvestedItem>
     <HarvestedQuantity>1</HarvestedQuantity>
-    <Symmetrical>true</Symmetrical>      
+    <Symmetrical>true</Symmetrical>
     <Contains>
       <Name>muscle</Name>
       <MaterialID>TwoHeadedOgreFlesh</MaterialID>
@@ -2201,7 +2201,7 @@
     <Name>bone</Name>
     <MaterialID>StandardBone</MaterialID>
     <BodyFunction>Structure</BodyFunction>
-    <Symmetrical>true</Symmetrical>      
+    <Symmetrical>true</Symmetrical>
   </Item>
   <Item>
     <ID>SkeletonLeg</ID>

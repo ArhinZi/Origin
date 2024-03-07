@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 
 using Origin.Source.ECS;
+using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -28,7 +29,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     public class StaticSpriteLayeredDrawer : IBaseLayeredDrawer
     {
         public Point ChunkSize = Global.BASE_CHUNK_SIZE;
-        private GraphicsDevice device = OriginGame.Instance.GraphicsDevice;
+        private GraphicsDevice device = Global.GraphicsDevice;
 
         private SpriteChunk[,,] spriteChunks;
         private Site site;

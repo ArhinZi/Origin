@@ -111,7 +111,7 @@
         <Skill>Woodcutting</Skill>
         <Min>15</Min>
         <Max>40</Max>
-        <Mean>25</Mean>        
+        <Mean>25</Mean>
       </Skill>
       <Skill>
         <Skill>Carpentry</Skill>
@@ -1823,7 +1823,7 @@ selling goods across the region.</Description>
           <TradeGood>
             <ItemID>RawOre</ItemID>
             <SellModifier>15</SellModifier>
-          </TradeGood>          
+          </TradeGood>
         </TradeModifiers>
       </Class>
       <Class>
@@ -2667,7 +2667,7 @@ selling goods across the region.</Description>
           </Item>
           <Item>
             <ItemID>WornHandAxe</ItemID>
-            <Weight>9</Weight>            
+            <Weight>9</Weight>
           </Item>
           <Item>
             <ItemID>WornHammer</ItemID>
@@ -2731,7 +2731,7 @@ selling goods across the region.</Description>
         <Equipment>
           <Item>
             <ItemID>WornSword</ItemID>
-            <Weight>9</Weight>            
+            <Weight>9</Weight>
           </Item>
           <Item>
             <ItemID>WornHandAxe</ItemID>
@@ -5579,7 +5579,7 @@ food, drink, bandages and pick axes.</Description>
           <TradeGood>
             <ItemID>Fruit</ItemID>
             <BuyModifier>1.2</BuyModifier>
-            <SellModifier>1.5</SellModifier>              
+            <SellModifier>1.5</SellModifier>
           </TradeGood>
           <TradeGood>
             <ItemID>Wine</ItemID>
@@ -6304,7 +6304,7 @@ bandages and pick axes.</Description>
           <TradeGood>
             <ItemID>Clipping</ItemID>
             <BuyModifier>0.6</BuyModifier>
-            <SellModifier>8</SellModifier>              
+            <SellModifier>8</SellModifier>
           </TradeGood>
           <TradeGood>
             <ItemID>Fruit</ItemID>
@@ -6408,7 +6408,7 @@ bandages and pick axes.</Description>
           <TradeGood>
             <ItemID>Clipping</ItemID>
             <BuyModifier>0.6</BuyModifier>
-            <SellModifier>8</SellModifier>              
+            <SellModifier>8</SellModifier>
           </TradeGood>
           <TradeGood>
             <ItemID>Fruit</ItemID>

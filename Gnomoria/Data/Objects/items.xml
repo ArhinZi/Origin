@@ -39,7 +39,7 @@
             AttackDef:  AttackMove defined above
           DefendMove (optional): Supports an arbitrary number
             Verb: Used in combat log
-            SFXEventName (optional): sound effect that fires for this defend move        
+            SFXEventName (optional): sound effect that fires for this defend move
             DefendTime (optional, seconds): Default is 1.  Time before this weapon can be used to defend with again
             AttackDelay (optional, seconds): Default is 1.  Delays next attack by this amount when defending.
             DefendType: Supports an arbitrary number of these.  AttackType that this move can defend against
@@ -81,7 +81,7 @@
     <ID>RawSoil</ID>
     <Name>clump</Name>
     <ObtainDescription>Raw soil found naturally</ObtainDescription>
-    
+
     <Value>0</Value>
     <HasQuality>false</HasQuality>
     <SpriteID>
@@ -93,7 +93,7 @@
     <Prefix>raw</Prefix>
     <ObtainDescription>Raw stone found naturally</ObtainDescription>
     <GroupName>stone</GroupName>
-    
+
     <Value>0</Value>
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
@@ -105,7 +105,7 @@
     <ID>RawWood</ID>
     <Name>log</Name>
     <ObtainDescription>Obtained by felling trees</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
@@ -118,7 +118,7 @@
     <ObtainDescription>Found in stone walls and
   crafted in a Furnace from logs</ObtainDescription>
     <GroupName>coal</GroupName>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -130,7 +130,7 @@
     <Name>ore</Name>
     <Description>[ITEM_NAME].</Description>
     <ObtainDescription>Found in stone walls</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -233,7 +233,7 @@
       </SpriteIDByMaterialID>
       <SpriteIDByMaterialID>
         <Key>Grape</Key>
-        <Value>GrapeItem</Value>        
+        <Value>GrapeItem</Value>
       </SpriteIDByMaterialID>
       <SpriteIDByMaterialID>
         <Key>Orange</Key>
@@ -245,7 +245,7 @@
     <ID>Egg</ID>
     <Name>egg</Name>
     <Description>A raw [ITEM_NAME].</Description>
-    <ObtainDescription>Gathered from animals</ObtainDescription>      
+    <ObtainDescription>Gathered from animals</ObtainDescription>
     <Effect>
       <Effect>Food</Effect>
       <Amount>15</Amount>
@@ -361,7 +361,7 @@
     <Name>bone</Name>
     <ObtainDescription>Taken from animals
   at a Butcher Shop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -373,7 +373,7 @@
     <Name>skull</Name>
     <ObtainDescription>Taken from animals
   at a Butcher's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -384,7 +384,7 @@
     <ID>Block</ID>
     <Name>block</Name>
     <ObtainDescription>Cut in a Stonecutter's workshop</ObtainDescription>
-    
+
     <BaseValue>1</BaseValue>
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
@@ -396,7 +396,7 @@
     <ID>Plank</ID>
     <Name>plank</Name>
     <ObtainDescription>Cut in a Sawmill</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>100</WeaponSize>
     <SpriteID>
@@ -407,7 +407,7 @@
     <ID>Bar</ID>
     <Name>bar</Name>
     <ObtainDescription>Crafted in a Forge</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>20</WeaponSize>
     <SpriteID>
@@ -707,7 +707,7 @@
       <Effect>Storage</Effect>
       <Amount>32</Amount>
     </Effect>
-    
+
     <WeaponSize>200</WeaponSize>
     <SpriteID>
       <SpriteID>Crate</SpriteID>
@@ -722,7 +722,7 @@
       <Effect>Storage</Effect>
       <Amount>64</Amount>
     </Effect>
-    
+
     <WeaponSize>200</WeaponSize>
     <SpriteID>
       <SpriteID>Barrel</SpriteID>
@@ -746,9 +746,9 @@
     <Name>door</Name>
     <Description>[AN_ITEM_NAME].  It opens AND closes.</Description>
     <GroupName>wood door</GroupName>
-    
+
     <Value>3</Value>
-    <WeaponSize>1000</WeaponSize>      
+    <WeaponSize>1000</WeaponSize>
     <SpriteID>
       <SpriteID>WoodDoor</SpriteID>
     </SpriteID>
@@ -758,7 +758,7 @@
     <Name>door</Name>
     <Description>[AN_ITEM_NAME].  It opens AND closes.</Description>
     <GroupName>stone door</GroupName>
-    
+
     <Value>3</Value>
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
@@ -769,7 +769,7 @@
     <ID>Table</ID>
     <Name>table</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <Value>5</Value>
     <WeaponSize>500</WeaponSize>
     <SpriteID>
@@ -816,7 +816,7 @@
     <ID>Chair</ID>
     <Name>chair</Name>
     <ObtainDescription>Crafted at a Crude Workbench or a Carpenter's workshop</ObtainDescription>
-    
+
     <Value>5</Value>
     <WeaponSize>200</WeaponSize>
     <SpriteID>
@@ -863,7 +863,7 @@
     <ID>Bed</ID>
     <Name>bed</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <Value>5</Value>
     <WeaponSize>2000</WeaponSize>
     <SpriteID>
@@ -878,7 +878,7 @@
     <ID>FancyBed</ID>
     <Name>four poster bed</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <Value>5</Value>
     <WeaponSize>2000</WeaponSize>
     <SpriteID>
@@ -895,7 +895,7 @@
   <Item>
     <ID>Statue</ID>
     <Name>statue</Name>
-    
+
     <Value>25</Value>
     <WeaponSize>10000</WeaponSize>
     <SpriteID>
@@ -906,7 +906,7 @@
     <ID>Pickaxe</ID>
     <Name>pickaxe</Name>
     <Description>[AN_ITEM_NAME].  Used for mining.</Description>
-    
+
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>1</CombatRatingModifier>
     <WeaponDef>
@@ -917,7 +917,7 @@
         <Damage>Pierce</Damage>
       </AttackMove>
       <Point>1</Point>
-      
+
       <VelocityModifier>0.8</VelocityModifier>
     </WeaponDef>
     <SpriteID>
@@ -939,7 +939,7 @@
     <ID>FellingAxe</ID>
     <Name>felling axe</Name>
     <Description>[AN_ITEM_NAME].  Used to fell trees.</Description>
-    
+
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>1</CombatRatingModifier>
     <WeaponDef>
@@ -971,7 +971,7 @@
   <Item>
     <ID>Sword</ID>
     <Name>sword</Name>
-    
+
     <Value>20</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -1003,7 +1003,7 @@
         <DefendType>Thrust</DefendType>
       </DefendMove>
       <Point>1</Point>
-      
+
       <Edge>0.6833333</Edge>
       <BluntModifier>0.2875</BluntModifier>
       <VelocityModifier>1.0</VelocityModifier>
@@ -1021,12 +1021,12 @@
     </HeldSpriteID>
     <HeldSpriteID>
       <SpriteID>GnomeSword</SpriteID>
-    </HeldSpriteID>    
+    </HeldSpriteID>
   </Item>
   <Item>
     <ID>HandAxe</ID>
     <Name>hand axe</Name>
-    
+
     <Value>20</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -1067,7 +1067,7 @@
   <Item>
     <ID>Hammer</ID>
     <Name>hammer</Name>
-    
+
     <Value>20</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -1108,7 +1108,7 @@
   <Item>
     <ID>Claymore</ID>
     <Name>claymore</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <Value>20</Value>
     <WeaponSize>200</WeaponSize>
@@ -1129,7 +1129,7 @@
         <AttackDelay>0.75</AttackDelay>
         <DefendType>Swing</DefendType>
       </DefendMove>
-      
+
       <Edge>0.84166</Edge>
       <BluntModifier>0.84166</BluntModifier>
       <VelocityModifier>1.0</VelocityModifier>
@@ -1152,7 +1152,7 @@
   <Item>
     <ID>BattleAxe</ID>
     <Name>battle axe</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <Value>20</Value>
     <WeaponSize>200</WeaponSize>
@@ -1193,7 +1193,7 @@
   <Item>
     <ID>Warhammer</ID>
     <Name>warhammer</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <Value>20</Value>
     <WeaponSize>200</WeaponSize>
@@ -1235,7 +1235,7 @@
   <Item>
     <ID>Shield</ID>
     <Name>shield</Name>
-    
+
     <Value>20</Value>
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -1284,7 +1284,7 @@
       <Effect>LightSource</Effect>
       <Amount>16</Amount>
     </Effect>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>25</WeaponSize>
     <CombatRatingModifier>2</CombatRatingModifier>
@@ -1295,7 +1295,7 @@
         <AttackType>Swing</AttackType>
         <AttackTime>3</AttackTime>
         <Damage>Blunt</Damage>
-        <Damage>Heat</Damage>          
+        <Damage>Heat</Damage>
       </AttackMove>
       <AttackMove>
         <Verb>thrusts</Verb>
@@ -1324,7 +1324,7 @@
   <Item>
     <ID>Helmet</ID>
     <Name>helmet</Name>
-    
+
     <Value>8.5</Value>
     <CombatRatingModifier>2</CombatRatingModifier>
     <EquipSlot>Head</EquipSlot>
@@ -1343,7 +1343,7 @@
   <Item>
     <ID>Breastplate</ID>
     <Name>breastplate</Name>
-    
+
     <Value>10</Value>
     <CombatRatingModifier>2</CombatRatingModifier>
     <EquipSlot>Body</EquipSlot>
@@ -1362,7 +1362,7 @@
   <Item>
     <ID>Pauldron</ID>
     <Name>pauldron</Name>
-    
+
     <Value>6</Value>
     <CombatRatingModifier>1</CombatRatingModifier>
     <EquipSlot>Arm</EquipSlot>
@@ -1376,12 +1376,12 @@
       <MaterialIndex>-1</MaterialIndex>
     </SpriteID>
     <EquippedSpriteID>GnomeRightPauldron</EquippedSpriteID>
-    <EquippedDetailSpriteID>GnomeRightPauldronHighlight</EquippedDetailSpriteID>    
+    <EquippedDetailSpriteID>GnomeRightPauldronHighlight</EquippedDetailSpriteID>
   </Item>
   <Item>
     <ID>Greave</ID>
     <Name>greave</Name>
-    
+
     <Value>4</Value>
     <CombatRatingModifier>1</CombatRatingModifier>
     <EquipSlot>Leg</EquipSlot>
@@ -1398,7 +1398,7 @@
   <Item>
     <ID>Gauntlet</ID>
     <Name>gauntlet</Name>
-    
+
     <Value>4</Value>
     <CombatRatingModifier>0.5</CombatRatingModifier>
     <EquipSlot>Glove</EquipSlot>
@@ -1412,12 +1412,12 @@
       <MaterialIndex>-1</MaterialIndex>
     </SpriteID>
     <EquippedSpriteID>GnomeRightGauntlet</EquippedSpriteID>
-    <EquippedDetailSpriteID>GnomeRightGauntletHighlight</EquippedDetailSpriteID>    
+    <EquippedDetailSpriteID>GnomeRightGauntletHighlight</EquippedDetailSpriteID>
   </Item>
   <Item>
     <ID>Boot</ID>
     <Name>boot</Name>
-    
+
     <Value>4</Value>
     <CombatRatingModifier>0.5</CombatRatingModifier>
     <EquipSlot>Foot</EquipSlot>
@@ -1436,7 +1436,7 @@
   <Item>
     <ID>LeatherHelm</ID>
     <Name>leather helm</Name>
-    
+
     <Thickness>0.75</Thickness>
     <Value>6</Value>
     <CombatRatingModifier>2</CombatRatingModifier>
@@ -1451,7 +1451,7 @@
   <Item>
     <ID>LeatherCuirass</ID>
     <Name>leather cuirass</Name>
-    
+
     <Thickness>0.75</Thickness>
     <Value>6</Value>
     <CombatRatingModifier>2</CombatRatingModifier>
@@ -1466,7 +1466,7 @@
   <Item>
     <ID>LeatherBracer</ID>
     <Name>leather bracer</Name>
-    
+
     <Thickness>0.75</Thickness>
     <Value>4</Value>
     <CombatRatingModifier>1</CombatRatingModifier>
@@ -1481,7 +1481,7 @@
   <Item>
     <ID>LeatherGreave</ID>
     <Name>leather greave</Name>
-    
+
     <Thickness>0.75</Thickness>
     <Value>2.5</Value>
     <CombatRatingModifier>1</CombatRatingModifier>
@@ -1495,7 +1495,7 @@
   <Item>
     <ID>LeatherGlove</ID>
     <Name>leather glove</Name>
-    
+
     <Thickness>0.75</Thickness>
     <Value>2</Value>
     <CombatRatingModifier>0.5</CombatRatingModifier>
@@ -1510,7 +1510,7 @@
   <Item>
     <ID>LeatherBoot</ID>
     <Name>leather boot</Name>
-    
+
     <Thickness>0.75</Thickness>
     <Value>2</Value>
     <CombatRatingModifier>0.5</CombatRatingModifier>
@@ -1529,7 +1529,7 @@
       <Effect>Rots</Effect>
       <Amount>4</Amount>
     </Effect>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -1543,7 +1543,7 @@
       <Effect>Rots</Effect>
       <Amount>4</Amount>
     </Effect>
-    
+
     <HasQuality>false</HasQuality>
     <SpriteID>
       <SpriteID>RawStone</SpriteID>
@@ -1552,7 +1552,7 @@
   <Item>
     <ID>Pistol</ID>
     <Name>flintlock pistol</Name>
-    
+
     <Value>31</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -1596,7 +1596,7 @@
   <Item>
     <ID>Blunderbuss</ID>
     <Name>blunderbuss</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <Value>30</Value>
     <WeaponSize>200</WeaponSize>
@@ -1641,7 +1641,7 @@
   <Item>
     <ID>Crossbow</ID>
     <Name>crossbow</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <Value>50</Value>
     <WeaponSize>200</WeaponSize>
@@ -1686,7 +1686,7 @@
   <Item>
     <ID>MusketRound</ID>
     <Name>musket round</Name>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -1696,7 +1696,7 @@
   <Item>
     <ID>CrossbowBolt</ID>
     <Name>bolt</Name>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -1736,7 +1736,7 @@
       <Effect>Storage</Effect>
       <Amount>32</Amount>
     </Effect>
-    
+
     <WeaponSize>0</WeaponSize>
     <EquipSlot>Back</EquipSlot>
     <SpriteID>
@@ -1751,7 +1751,7 @@
       <Effect>Storage</Effect>
       <Amount>16</Amount>
     </Effect>
-    
+
     <WeaponSize>0</WeaponSize>
     <EquipSlot>Back</EquipSlot>
     <SpriteID>
@@ -1762,7 +1762,7 @@
   <Item>
     <ID>Pillar</ID>
     <Name>pillar</Name>
-    
+
     <Value>25</Value>
     <WeaponSize>10000</WeaponSize>
     <SpriteID>
@@ -1773,7 +1773,7 @@
     <ID>Workbench</ID>
     <Name>workbench</Name>
     <ObtainDescription>Crafted at a Crude Workbench or a Carpenter's workshop</ObtainDescription>
-    
+
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
       <SpriteID>WorkbenchFL</SpriteID>
@@ -1783,7 +1783,7 @@
     <ID>Chisel</ID>
     <Name>chisel</Name>
     <ObtainDescription>Crafted at a Crude Workbench or a Stonemason's workshop</ObtainDescription>
-    
+
     <BaseValue>1</BaseValue>
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
@@ -1795,7 +1795,7 @@
     <ID>Stick</ID>
     <Name>stick</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>50</WeaponSize>
     <SpriteID>
@@ -1806,7 +1806,7 @@
     <ID>Loom</ID>
     <Name>loom</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
       <SpriteID>LoomFL</SpriteID>
@@ -1820,7 +1820,7 @@
     <ID>Hilt</ID>
     <Name>hilt</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -1831,7 +1831,7 @@
     <ID>StoneKnifeBlade</ID>
     <Name>knife blade</Name>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -1842,7 +1842,7 @@
     <ID>Knife</ID>
     <Name>knife</Name>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>1</CombatRatingModifier>
     <WeaponDef>
@@ -1854,7 +1854,7 @@
         <Damage>Pierce</Damage>
       </AttackMove>
       <Point>0.5</Point>
-      
+
       <VelocityModifier>1.0</VelocityModifier>
     </WeaponDef>
     <SpriteID>
@@ -1869,7 +1869,7 @@
     <ID>Needle</ID>
     <Name>bone needle</Name>
     <ObtainDescription>Crafted in a Bonecarver's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -1880,7 +1880,7 @@
     <ID>Sawblade</ID>
     <Name>sawblade</Name>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <WeaponSize>10</WeaponSize>
     <SpriteID>
       <SpriteID>Gear</SpriteID>
@@ -1890,7 +1890,7 @@
     <ID>Hearth</ID>
     <Name>hearth</Name>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
       <SpriteID>Forge</SpriteID>
@@ -1900,7 +1900,7 @@
     <ID>Mold</ID>
     <Name>mold</Name>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
       <SpriteID>MoldFL</SpriteID>
@@ -1910,7 +1910,7 @@
     <ID>Furnace</ID>
     <Name>furnace</Name>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <WeaponSize>1000</WeaponSize>
     <SpriteID>
       <SpriteID>FurnaceFL</SpriteID>
@@ -1920,7 +1920,7 @@
     <ID>Bellows</ID>
     <Name>bellows</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <WeaponSize>10</WeaponSize>
     <SpriteID>
       <SpriteID>BellowsFL</SpriteID>
@@ -1934,7 +1934,7 @@
     <ID>Anvil</ID>
     <Name>anvil</Name>
     <ObtainDescription>Crafted in a Forge</ObtainDescription>
-    
+
     <WeaponSize>100</WeaponSize>
     <SpriteID>
       <SpriteID>AnvilFL</SpriteID>
@@ -1944,7 +1944,7 @@
     <ID>CuttingWheel</ID>
     <Name>cutting wheel</Name>
     <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
-    
+
     <WeaponSize>10</WeaponSize>
     <SpriteID>
       <SpriteID>Gear</SpriteID>
@@ -1954,7 +1954,7 @@
     <ID>File</ID>
     <Name>file</Name>
     <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
-    
+
     <WeaponSize>10</WeaponSize>
     <SpriteID>
       <SpriteID>Sword</SpriteID>
@@ -1964,7 +1964,7 @@
     <ID>BallPeenHammer</ID>
     <Name>ball-peen hammer</Name>
     <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
-    
+
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>1</CombatRatingModifier>
     <WeaponDef>
@@ -1975,7 +1975,7 @@
         <Damage>Pierce</Damage>
       </AttackMove>
       <Point>1</Point>
-      
+
       <VelocityModifier>0.8</VelocityModifier>
     </WeaponDef>
     <SpriteID>
@@ -1997,7 +1997,7 @@
     <ID>Wrench</ID>
     <Name>wrench</Name>
     <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
-    
+
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>1</CombatRatingModifier>
     <WeaponDef>
@@ -2008,7 +2008,7 @@
         <Damage>Pierce</Damage>
       </AttackMove>
       <Point>1</Point>
-      
+
       <VelocityModifier>0.8</VelocityModifier>
     </WeaponDef>
     <SpriteID>
@@ -2019,7 +2019,7 @@
     <ID>Haft</ID>
     <Name>haft</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <WeaponDef>
@@ -2030,7 +2030,7 @@
         <Damage>Pierce</Damage>
       </AttackMove>
       <Point>1</Point>
-      
+
       <VelocityModifier>0.8</VelocityModifier>
     </WeaponDef>
     <SpriteID>
@@ -2041,7 +2041,7 @@
     <ID>Mattress</ID>
     <Name>mattress</Name>
     <ObtainDescription>Crafted at a Tailor</ObtainDescription>
-    
+
     <WeaponSize>10</WeaponSize>
     <SpriteID>
       <SpriteID>Mattress</SpriteID>
@@ -2051,7 +2051,7 @@
     <ID>BedFrame</ID>
     <Name>bed frame</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <WeaponSize>2000</WeaponSize>
     <SpriteID>
       <SpriteID>WoodBedFL</SpriteID>
@@ -2061,7 +2061,7 @@
     <ID>FancyBedFrame</ID>
     <Name>four poster bed frame</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <WeaponSize>2000</WeaponSize>
     <SpriteID>
       <SpriteID>FancyWoodBedFL</SpriteID>
@@ -2075,7 +2075,7 @@
     <Name>straw</Name>
     <Description>[ITEM_NAME].</Description>
     <ObtainDescription>Harvested from a wheat farm</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -2090,8 +2090,8 @@
       <Effect>Storage</Effect>
       <Amount>16</Amount>
     </Effect>
-    
-    <HasQuality>false</HasQuality>      
+
+    <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
       <SpriteID>Wheat</SpriteID>
@@ -2102,7 +2102,7 @@
     <ID>String</ID>
     <Name>string</Name>
     <ObtainDescription>Crafted at a Tailor</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -2113,7 +2113,7 @@
     <ID>Padding</ID>
     <Name>padding</Name>
     <ObtainDescription>Crafted at a Tailor</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -2124,7 +2124,7 @@
     <ID>PickaxeHead</ID>
     <Name>pickaxe head</Name>
     <ObtainDescription>Crafted in a Blacksmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2135,7 +2135,7 @@
     <ID>FellingAxeHead</ID>
     <Name>felling axe head</Name>
     <ObtainDescription>Crafted aint a Blacksmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2146,7 +2146,7 @@
     <ID>SwordBlade</ID>
     <Name>sword blade</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2157,7 +2157,7 @@
     <ID>HandAxeHead</ID>
     <Name>hand axe head</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2168,7 +2168,7 @@
     <ID>HammerHead</ID>
     <Name>hammer head</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2179,7 +2179,7 @@
     <ID>ClaymoreBlade</ID>
     <Name>claymore blade</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2190,7 +2190,7 @@
     <ID>BattleAxeHead</ID>
     <Name>battle axe head</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2201,7 +2201,7 @@
     <ID>WarhammerHead</ID>
     <Name>warhammer head</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2212,7 +2212,7 @@
     <ID>ShieldBoss</ID>
     <Name>shield boss</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2223,7 +2223,7 @@
     <ID>ShieldBacking</ID>
     <Name>shield backing</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2234,7 +2234,7 @@
     <ID>LeatherStrap</ID>
     <Name>leather strap</Name>
     <ObtainDescription>Crafted in a Leatherworker's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -2245,7 +2245,7 @@
     <ID>LeatherArmorPanel</ID>
     <Name>leather panel</Name>
     <ObtainDescription>Crafted in a Leatherworker's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2256,7 +2256,7 @@
     <ID>ArmorPlate</ID>
     <Name>armor plate</Name>
     <ObtainDescription>Crafted in an Armorer's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>20</WeaponSize>
     <SpriteID>
@@ -2267,7 +2267,7 @@
     <ID>PistolStock</ID>
     <Name>pistol stock</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2278,7 +2278,7 @@
     <ID>PistolBarrel</ID>
     <Name>pistol barrel</Name>
     <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2289,7 +2289,7 @@
     <ID>BlunderbussStock</ID>
     <Name>blunderbuss stock</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2300,7 +2300,7 @@
     <ID>BlunderbussBarrel</ID>
     <Name>blunderbuss barrel</Name>
     <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2311,7 +2311,7 @@
     <ID>CrossbowBow</ID>
     <Name>crossbow bow</Name>
     <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2322,7 +2322,7 @@
     <ID>CrossbowStock</ID>
     <Name>crossbow stock</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2333,7 +2333,7 @@
     <ID>TrapBase</ID>
     <Name>trap base</Name>
     <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
-    
+
     <Value>3</Value>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2348,7 +2348,7 @@
     <ID>Spike</ID>
     <Name>spike</Name>
     <ObtainDescription>Crafted in a Machine Shop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>50</WeaponSize>
     <SpriteID>
@@ -2359,7 +2359,7 @@
     <ID>MechanismBase</ID>
     <Name>mechanism base</Name>
     <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2374,7 +2374,7 @@
     <ID>WindmillBlade</ID>
     <Name>windmill blade</Name>
     <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2386,7 +2386,7 @@
     <ID>Cylinder</ID>
     <Name>cylinder</Name>
     <ObtainDescription>Crafted in an Engineer's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -2397,7 +2397,7 @@
     <ID>TrainingDummy</ID>
     <Name>training dummy</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <WeaponSize>50</WeaponSize>
     <SpriteID>
       <SpriteID>TrainingDummyFL</SpriteID>
@@ -2407,7 +2407,7 @@
     <ID>Dresser</ID>
     <Name>dresser</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <Value>10</Value>
     <WeaponSize>200</WeaponSize>
     <SpriteID>
@@ -2418,7 +2418,7 @@
     <ID>Cabinet</ID>
     <Name>cabinet</Name>
     <ObtainDescription>Crafted in a Carpenter's workshop</ObtainDescription>
-    
+
     <Value>10</Value>
     <WeaponSize>200</WeaponSize>
     <SpriteID>
@@ -2428,7 +2428,7 @@
   <Item>
     <ID>SkullHelmet</ID>
     <Name>skull helmet</Name>
-    
+
     <CombatRatingModifier>1</CombatRatingModifier>
     <EquipSlot>Head</EquipSlot>
     <EquippedMovePenalty>1.6</EquippedMovePenalty>
@@ -2441,7 +2441,7 @@
   <Item>
     <ID>BoneShirt</ID>
     <Name>bone shirt</Name>
-    
+
     <CombatRatingModifier>2</CombatRatingModifier>
     <EquipSlot>Body</EquipSlot>
     <EquippedMovePenalty>2.8</EquippedMovePenalty>
@@ -2465,7 +2465,7 @@
     <ID>WornHelmet</ID>
     <Prefix>worn</Prefix>
     <Name>helmet</Name>
-    
+
     <CombatRatingModifier>2</CombatRatingModifier>
     <EquipSlot>Head</EquipSlot>
     <EquippedMovePenalty>4</EquippedMovePenalty>
@@ -2484,7 +2484,7 @@
     <ID>WornBreastplate</ID>
     <Prefix>worn</Prefix>
     <Name>breastplate</Name>
-    
+
     <CombatRatingModifier>2</CombatRatingModifier>
     <EquipSlot>Body</EquipSlot>
     <EquippedMovePenalty>7</EquippedMovePenalty>
@@ -2503,7 +2503,7 @@
     <ID>WornPauldron</ID>
     <Prefix>worn</Prefix>
     <Name>pauldron</Name>
-    
+
     <CombatRatingModifier>1</CombatRatingModifier>
     <EquipSlot>Arm</EquipSlot>
     <EquippedMovePenalty>2.5</EquippedMovePenalty>
@@ -2522,7 +2522,7 @@
     <ID>WornGreave</ID>
     <Prefix>worn</Prefix>
     <Name>greave</Name>
-    
+
     <CombatRatingModifier>1</CombatRatingModifier>
     <EquipSlot>Leg</EquipSlot>
     <EquippedMovePenalty>2.5</EquippedMovePenalty>
@@ -2539,7 +2539,7 @@
     <ID>WornGauntlet</ID>
     <Prefix>worn</Prefix>
     <Name>gauntlet</Name>
-    
+
     <CombatRatingModifier>0.5</CombatRatingModifier>
     <EquipSlot>Glove</EquipSlot>
     <EquippedMovePenalty>1</EquippedMovePenalty>
@@ -2558,7 +2558,7 @@
     <ID>WornBoot</ID>
     <Prefix>worn</Prefix>
     <Name>boot</Name>
-    
+
     <CombatRatingModifier>0.5</CombatRatingModifier>
     <EquipSlot>Foot</EquipSlot>
     <EquippedMovePenalty>1</EquippedMovePenalty>
@@ -2577,7 +2577,7 @@
     <ID>WornSword</ID>
     <Prefix>worn</Prefix>
     <Name>sword</Name>
-    
+
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
     <WeaponDef>
@@ -2608,7 +2608,7 @@
         <DefendType>Thrust</DefendType>
       </DefendMove>
       <Point>1</Point>
-      
+
       <Edge>0.6833333</Edge>
       <BluntModifier>0.2875</BluntModifier>
       <VelocityModifier>1.0</VelocityModifier>
@@ -2632,7 +2632,7 @@
     <ID>WornHandAxe</ID>
     <Prefix>worn</Prefix>
     <Name>hand axe</Name>
-    
+
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
     <WeaponDef>
@@ -2673,7 +2673,7 @@
     <ID>WornHammer</ID>
     <Prefix>worn</Prefix>
     <Name>hammer</Name>
-    
+
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
     <WeaponDef>
@@ -2714,7 +2714,7 @@
     <ID>WornClaymore</ID>
     <Prefix>worn</Prefix>
     <Name>claymore</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <WeaponSize>200</WeaponSize>
     <CombatRatingModifier>6</CombatRatingModifier>
@@ -2734,7 +2734,7 @@
         <AttackDelay>0.75</AttackDelay>
         <DefendType>Swing</DefendType>
       </DefendMove>
-      
+
       <Edge>0.84166</Edge>
       <BluntModifier>0.84166</BluntModifier>
       <VelocityModifier>1.0</VelocityModifier>
@@ -2758,7 +2758,7 @@
     <ID>WornBattleAxe</ID>
     <Prefix>worn</Prefix>
     <Name>battle axe</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <WeaponSize>200</WeaponSize>
     <CombatRatingModifier>6</CombatRatingModifier>
@@ -2799,7 +2799,7 @@
     <ID>WornWarhammer</ID>
     <Prefix>worn</Prefix>
     <Name>warhammer</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <WeaponSize>200</WeaponSize>
     <CombatRatingModifier>6</CombatRatingModifier>
@@ -2841,7 +2841,7 @@
     <ID>WornShield</ID>
     <Prefix>worn</Prefix>
     <Name>shield</Name>
-    
+
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
     <WeaponDef>
@@ -2886,7 +2886,7 @@
     <Name>sliver</Name>
     <ObtainDescription>Crafted in a Smelter</ObtainDescription>
     <GroupName>metal sliver</GroupName>
-    
+
     <Value>0.2</Value>
     <HasQuality>false</HasQuality>
     <WeaponSize>20</WeaponSize>
@@ -2899,7 +2899,7 @@
     <Name>trough</Name>
     <Description>[AN_ITEM_NAME].  Used to feed pastured animals.</Description>
     <ObtainDescription>Crafted in a Stonemason's workshop</ObtainDescription>
-    
+
     <WeaponSize>200</WeaponSize>
     <SpriteID>
       <SpriteID>TroughFL</SpriteID>
@@ -2999,7 +2999,7 @@
       <Effect>Storage</Effect>
       <Amount>32</Amount>
     </Effect>
-    
+
     <WeaponSize>200</WeaponSize>
     <SpriteID>
       <SpriteID>WheelbarrowBackHandle</SpriteID>
@@ -3015,7 +3015,7 @@
     <ID>AlarmBell</ID>
     <Name>alarm bell</Name>
     <Description></Description>
-    
+
     <WeaponSize>100</WeaponSize>
     <SpriteID>
       <SpriteID>AlarmBellBase</SpriteID>
@@ -3030,7 +3030,7 @@
     <ID>WoodenShield</ID>
     <Name>shield</Name>
     <GroupName>wooden shield</GroupName>
-    
+
     <Value>20</Value>
     <WeaponSize>50</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -3074,7 +3074,7 @@
   <Item>
     <ID>TowerShield</ID>
     <Name>tower shield</Name>
-    
+
     <TwoHanded>true</TwoHanded>
     <Value>40</Value>
     <WeaponSize>100</WeaponSize>
@@ -3120,7 +3120,7 @@
     <ID>StoneSword</ID>
     <Name>sword</Name>
     <GroupName>stone sword</GroupName>
-    
+
     <Value>20</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -3152,7 +3152,7 @@
         <DefendType>Thrust</DefendType>
       </DefendMove>
       <Point>1</Point>
-      
+
       <Edge>0.6833333</Edge>
       <BluntModifier>0.2875</BluntModifier>
       <VelocityModifier>1.0</VelocityModifier>
@@ -3176,7 +3176,7 @@
     <ID>StoneHandAxe</ID>
     <Name>hand axe</Name>
     <GroupName>stone hand axe</GroupName>
-    
+
     <Value>20</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -3218,7 +3218,7 @@
     <ID>StoneHammer</ID>
     <Name>hammer</Name>
     <GroupName>stone hammer</GroupName>
-    
+
     <Value>20</Value>
     <WeaponSize>100</WeaponSize>
     <CombatRatingModifier>3</CombatRatingModifier>
@@ -3260,7 +3260,7 @@
     <ID>TowerShieldBacking</ID>
     <Name>tower shield backing</Name>
     <ObtainDescription>Crafted in a Weaponsmith's workshop</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -3280,7 +3280,7 @@
       <Effect>Storage</Effect>
       <Amount>32</Amount>
     </Effect>
-    
+
     <WeaponSize>50</WeaponSize>
     <SpriteID>
       <SpriteID>Bucket</SpriteID>
@@ -3303,7 +3303,7 @@
     <ID>Silica</ID>
     <ObtainDescription>Obtained through Prospecting</ObtainDescription>
     <GroupName>silica</GroupName>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -3327,7 +3327,7 @@
     <ID>Tile</ID>
     <Name>tile</Name>
     <ObtainDescription>Fired in a Kiln</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>10</WeaponSize>
     <SpriteID>
@@ -3338,7 +3338,7 @@
     <ID>GlassPane</ID>
     <Name>pane</Name>
     <ObtainDescription>Fired in a Kiln</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <WeaponSize>0</WeaponSize>
     <SpriteID>
@@ -3349,7 +3349,7 @@
     <ID>ArtificialArm</ID>
     <Name>arm</Name>
     <GroupName>prosthetic arm</GroupName>
-    
+
     <SpriteID>
       <SpriteID>ArtificialRightArmItem</SpriteID>
     </SpriteID>
@@ -3363,7 +3363,7 @@
     <ID>ArtificialHand</ID>
     <Name>hand</Name>
     <GroupName>prosthetic hand</GroupName>
-    
+
     <SpriteID>
       <SpriteID>ArtificialRightHandItem</SpriteID>
     </SpriteID>
@@ -3373,7 +3373,7 @@
     <ID>ArtificialLeg</ID>
     <Name>leg</Name>
     <GroupName>prosthetic leg</GroupName>
-    
+
     <SpriteID>
       <SpriteID>ArtificialRightLegItem</SpriteID>
     </SpriteID>
@@ -3383,7 +3383,7 @@
     <ID>ArtificialFoot</ID>
     <Name>foot</Name>
     <GroupName>prosthetic foot</GroupName>
-    
+
     <SpriteID>
       <SpriteID>ArtificialRightLegItem</SpriteID>
     </SpriteID>
@@ -3402,7 +3402,7 @@
     <ID>GolemCore</ID>
     <Name>golem core</Name>
     <ObtainDescription>Occasionally found on golems</ObtainDescription>
-    
+
     <HasQuality>false</HasQuality>
     <SpriteID>
       <SpriteID>GolemCore</SpriteID>
@@ -3412,7 +3412,7 @@
     <ID>AutomatonCore</ID>
     <Name>core</Name>
     <GroupName>automaton core</GroupName>
-    
+
     <HasQuality>false</HasQuality>
     <SpriteID>
       <SpriteID>GolemCore</SpriteID>

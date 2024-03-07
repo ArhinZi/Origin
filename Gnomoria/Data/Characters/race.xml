@@ -17,10 +17,10 @@
       SpriteID: SpriteID for this race.  Only used if the Body doesn't have a BaseSprite defined
       Weight: Weight that this RaceVisual is picked
       SkinColorTemplateIndex(Optional): Index into materials for race that uses template (golems).
-      SkinColor: 
+      SkinColor:
         Color: Tint color (multiply) on body sprites
         Weight: Weight that this color is picked
-      HairColor: 
+      HairColor:
         Color: Tint color (multiply) on hair sprites
         Weight: Weight that this color is picked
     MoveSpeed: Speed that this race moves.  Defined as number of tiles per second

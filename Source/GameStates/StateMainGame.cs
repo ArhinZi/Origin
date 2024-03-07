@@ -8,15 +8,18 @@ using Microsoft.Xna.Framework;
 
 using MonoGame.Extended.Screens;
 
+using Origin.Source.Controller.IO;
+using Origin.Source.Controller.UI;
 using Origin.Source.ECS;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Vegetation;
 using Origin.Source.Events;
+using Origin.Source.Model;
+using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Systems;
-using Origin.Source.UI;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
@@ -51,14 +54,14 @@ namespace Origin.Source.GameStates
         public bool LoadMenu = false;
         private int flags;
 
-        public MainWorld World;
+        public Model.World World;
         public static Camera2D ActiveCamera { get; private set; }
 
         private InputController _inputControl;
 
         public StateMainGame(Game game) : base(game)
         {
-            World = new MainWorld();
+            World = new Model.World();
             _inputControl = new InputController(this);
 
             World.Init();
@@ -206,7 +209,7 @@ namespace Origin.Source.GameStates
                         ImGuiUtil.AlignForWidth(bSize.X);
                         if (ImGui.Button("Exit", bSize))
                         {
-                            OriginGame.Instance.Exit();
+                            Global.Game.Exit();
                         }
                     }
                 }

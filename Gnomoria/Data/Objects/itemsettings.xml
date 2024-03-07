@@ -3,7 +3,7 @@
         ItemID: ID of transport container.  Supports arbitrary number of these
   -->
   <!--WornEquipment: Items that can be smelted into a fix amount of another item
-        Item: 
+        Item:
           ItemID: ID of item
           SmeltIntoItemID (optional): Default is MetalSliver.  New item that is generated when smelting
           SmeltAmount: Amount of SmeltIntoItemID to generate
@@ -17,10 +17,10 @@
           Skill:  Associated Skill
   -->
   <!--Weapons: Used in Stock UI to display combined quantity of these items under Weapons
-        ItemID: ID of item.  
+        ItemID: ID of item.
   -->
   <!--Armor: Used in Stock UI to display combined quantity of these items under Weapons
-        ItemID: ID of item.  
+        ItemID: ID of item.
   -->
   <!--ItemIDToPileItemID
         Item: These items can be converted to the associated pile Item ID
@@ -77,7 +77,7 @@
           AttackDef:  AttackMove defined above
         DefendMove (optional): Supports an arbitrary number
           Verb: Used in combat log
-          SFXEventName (optional): sound effect that fires for this defend move        
+          SFXEventName (optional): sound effect that fires for this defend move
           DefendTime (optional, seconds): Default is 1.  Time before this weapon can be used to defend with again
           AttackDelay (optional, seconds): Default is 1.  Delays next attack by this amount when defending.
           DefendType: Supports an arbitrary number of these.  AttackType that this move can defend against

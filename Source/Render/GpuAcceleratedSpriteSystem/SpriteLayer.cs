@@ -5,15 +5,12 @@ using Origin.Source.Resources;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
     public class SpriteLayer : IDisposable
     {
-        private GraphicsDevice graphicsDevice = OriginGame.Instance.GraphicsDevice;
+        private GraphicsDevice graphicsDevice = Global.GraphicsDevice;
 
         public SpriteMainData[] dataMain;
         public SpriteExtraData[] dataExtra;

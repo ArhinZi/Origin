@@ -1,17 +1,11 @@
-﻿using Arch.CommandBuffer;
-using Arch.Core;
+﻿using Arch.Core;
 using Arch.Core.Extensions;
 
 using Origin.Source.ECS.Construction;
-using Origin.Source.ECS.Light;
-using Origin.Source.ECS.Pathfinding;
+using Origin.Source.Model.Site;
 using Origin.Source.Utils;
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Source.ECS.Vegetation
 {

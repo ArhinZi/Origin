@@ -57,7 +57,7 @@
       <Blocks>36.66666</Blocks>
     </Pierce>
     <Blunt>
-      <Blocks>68.33333</Blocks>        
+      <Blocks>68.33333</Blocks>
     </Blunt>
     <Heat>
       <Blocks>10</Blocks>
@@ -779,7 +779,7 @@
     <Blunt>
       <Blocks>0</Blocks>
       <PercentTransfered>0.9</PercentTransfered>
-      <PercentReceived>0.0</PercentReceived>        
+      <PercentReceived>0.0</PercentReceived>
     </Blunt>
     <Heat>
       <Blocks>5</Blocks>
@@ -870,7 +870,7 @@
     <Blunt>
       <Blocks>0</Blocks>
       <PercentTransfered>0.75</PercentTransfered>
-      <PercentReceived>0.0</PercentReceived>        
+      <PercentReceived>0.0</PercentReceived>
     </Blunt>
     <Heat>
       <Blocks>5</Blocks>

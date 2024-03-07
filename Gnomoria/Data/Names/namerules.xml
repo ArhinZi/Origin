@@ -25,22 +25,22 @@
         Verb_PastParticiple
         Verb_PresentParticiple
         Compound_Verb_PresentParticiple (verb present participle)(singular)
-  
+
   Faction: Rules for generating faction names
         Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
           Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
-          
+
   Squad: Rules for generating squad names
         Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
           Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
-          
+
   Item: Rules for generating item names
         Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
           Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
-          
+
   EnemyName: Rules for generating names of enemies
         Rule: Supports arbitrary number of these.  Defines a rule for how to generate a name
-          Part: Supports arbitrary number of these. Used in order.  Allowed options defined above          
+          Part: Supports arbitrary number of these. Used in order.  Allowed options defined above
   -->
   <Faction>
     <Rule>

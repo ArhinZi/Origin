@@ -4,6 +4,7 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS.Construction;
+using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 
 using System;
@@ -27,7 +28,7 @@ namespace Origin.Source.Utils
 
         public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level)
         {
-            Vector3 worldPos = OriginGame.Instance.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
+            Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
             worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset), 0);
             // Also works
             //int tileX = (int)Math.Round((worldPos.X / GlobalResources.Settings.TileSize.X + worldPos.Y / GlobalResources.Settings.TileSize.Y - 1));

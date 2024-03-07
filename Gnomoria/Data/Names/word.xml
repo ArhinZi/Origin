@@ -3795,7 +3795,7 @@
     <ActionNoun>
       <Singular>flamer</Singular>
       <Plural>flamers</Plural>
-    </ActionNoun>      
+    </ActionNoun>
   </Item>
   <Item>
     <Word>flank</Word>
@@ -5692,7 +5692,7 @@
     <Noun>
       <Singular>irony</Singular>
       <Plural>ironies</Plural>
-    </Noun>      
+    </Noun>
   </Item>
   <Item>
     <Word>itch</Word>
@@ -10285,7 +10285,7 @@
       <Singular>tar</Singular>
       <Plural>tars</Plural>
     </Noun>
-  </Item>   
+  </Item>
   <Item>
     <Word>tarnish</Word>
     <Noun>
@@ -11611,4 +11611,3 @@
     </Noun>
   </Item>
 </Words>
-

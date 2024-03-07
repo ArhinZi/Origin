@@ -35,7 +35,7 @@
   -->
   <Doors>
     <ConstructionID>WoodDoor</ConstructionID>
-    <ConstructionID>StoneDoor</ConstructionID>    
+    <ConstructionID>StoneDoor</ConstructionID>
   </Doors>
   <ConstructedContainers>
     <ConstructionID>Crate</ConstructionID>
