@@ -24,11 +24,13 @@ namespace Origin.Source.ECS.Vegetation
 
         protected override void DoTick()
         {
-            var query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
+            base.DoTick();
+
             var commands = new CommandBuffer(_site.ArchWorld);
             var visited = new HashSet<Point3>();
 
-            query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
+            var query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
+
             _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cpe) =>
             {
                 // Update Vegs on tile below

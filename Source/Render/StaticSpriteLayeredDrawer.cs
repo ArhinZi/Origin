@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Sprites;
+
 using Origin.Source.ECS;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
@@ -80,7 +81,7 @@ namespace Origin.Source.Render
             SpriteMainData smd = new SpriteMainData()
             {
                 SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
-                //CellPosition = tilePos.ToVector3(),
+                CellPosition = tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
             SpriteExtraData sed = new SpriteExtraData()
@@ -101,7 +102,7 @@ namespace Origin.Source.Render
             SpriteMainData smd = new SpriteMainData()
             {
                 SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
-                //CellPosition = tilePos.ToVector3(),
+                CellPosition = tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
             SpriteExtraData sed = new SpriteExtraData()
@@ -152,6 +153,30 @@ namespace Origin.Source.Render
 
         public void Draw(int layer, List<byte> drawableSubLayers = null)
         {
+            void CheckLayerLight(byte sublayer)
+            {
+                site.LightControl.SetBuffers();
+                //SiteRenderer.InstanceMainEffect.Parameters["LightBuffer"].SetValue(site.LightControl.buffers[127]);
+                if (sublayer == Global.LightFrontStart)
+                {
+                    if (layer + 1 < site.Size.Z && site.LightControl.buffers[layer + 1].ElementCount > 0)
+                        SiteRenderer.InstanceMainEffect.Parameters["LightBuffer"].SetValue(site.LightControl.buffers[layer + 1]);
+                    SiteRenderer.InstanceMainEffect.Parameters["front"].SetValue(true);
+                }
+                else if (sublayer < Global.LightFrontStart)
+                {
+                    SiteRenderer.InstanceMainEffect.Parameters["front"].SetValue(false);
+                }
+                if (Global.NoLightLayers.Contains(sublayer))
+                {
+                    SiteRenderer.InstanceMainEffect.Parameters["nolight"].SetValue(true);
+                }
+                else
+                {
+                    SiteRenderer.InstanceMainEffect.Parameters["nolight"].SetValue(false);
+                }
+            }
+
             void SubDraw(SpriteLayer dlayer)
             {
                 if (dlayer.dataIndex != 0)
@@ -188,12 +213,18 @@ namespace Origin.Source.Render
                                 {
                                     foreach (var sublayer in drawableSubLayers)
                                         if (layersBatches[tex].TryGetValue(sublayer, out SpriteLayer dlayer))
+                                        {
+                                            CheckLayerLight(sublayer);
                                             SubDraw(dlayer);
+                                        }
                                 }
                                 else
                                 {
                                     foreach (var pair in layersBatches[tex].OrderBy(x => x.Key))
+                                    {
+                                        CheckLayerLight((byte)pair.Key);
                                         SubDraw(pair.Value);
+                                    }
                                 }
                             }
                         }

@@ -19,6 +19,15 @@ namespace Origin.Source.Resources
             FrontInteractives = 15,
         }
 
+        public static byte LightFrontStart = 11;
+
+        public static byte[] NoLightLayers = {
+            (byte)DrawBufferLayer.HiddenBack,
+            (byte)DrawBufferLayer.BackInteractives,
+            (byte)DrawBufferLayer.HiddenFront,
+            (byte)DrawBufferLayer.FrontInteractives
+        };
+
         #region Camera
 
         public static float SITE_CAM_MIN_ZOOM = 0.05f;

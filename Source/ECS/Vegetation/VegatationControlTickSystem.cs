@@ -31,7 +31,7 @@ namespace Origin.Source.ECS.Vegetation
         {
             base.Init();
 
-            var query = new QueryDescription().WithAll<BaseConstruction, IsTile, IsSunLighted>();
+            var query = new QueryDescription().WithAll<BaseConstruction, IsTile>();
 
             _site.ArchWorld.Add(query, new BaseVegetation(), new GrownUpVegetation());
 

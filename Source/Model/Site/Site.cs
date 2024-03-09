@@ -11,6 +11,7 @@ using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model;
 using Origin.Source.Model.Generators;
+using Origin.Source.Model.Site.Light;
 using Origin.Source.Model.Site.Tools;
 using Origin.Source.Pathfind;
 using Origin.Source.Render.GpuAcceleratedSpriteSystem;
@@ -37,6 +38,7 @@ namespace Origin.Source.Model.Site
         public SitePathfindingService Pathfinder { get; private set; }
 
         public SiteDrawComponent DrawControl { get; private set; }
+        public SiteLightBufferComponent LightControl { get; private set; }
 
         public SiteToolsComponent Tools { get; private set; }
 
@@ -75,11 +77,12 @@ namespace Origin.Source.Model.Site
                     - GlobalResources.Settings.TileSize.Y * (Size.X / 2)
                  ));
 
-            Tools = new SiteToolsComponent(this);
-
             MapGenerator = new SiteGeneratorService(this, Size);
             MapGenerator.Visit(new Point3(0, 0, 127));
             Trace.WriteLine("End map gen");
+
+            LightControl = new SiteLightBufferComponent(this);
+            Trace.WriteLine("End light init");
         }
 
         public void PostInit()
@@ -89,6 +92,8 @@ namespace Origin.Source.Model.Site
 
             DrawControl = new SiteDrawComponent(this);
             Trace.WriteLine("End creating render");
+
+            Tools = new SiteToolsComponent(this);
         }
 
         public void Update(GameTime gameTime)

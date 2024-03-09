@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using System.Runtime.InteropServices;
 
 using Vector3 = Microsoft.Xna.Framework.Vector3;
@@ -11,8 +12,8 @@ namespace Origin.Source.Render
     {
         public Vector3 SpritePosition; //12
         public float pud1;
-        //[FieldOffset(12)] public Vector2 SpriteSize; //8
-        //[FieldOffset(20)] public Vector3 CellPosition; //12
+        public Point3 CellPosition; //12
+        public float pud2;
     }
 
     [StructLayout(LayoutKind.Sequential)]

@@ -11,6 +11,8 @@ float2 WorldSize;
 float CurrentLevel;
 float2 LowHighLevel;
 float3 PositionOffset = float3(0,0,0);
+bool nolight = false;
+bool front = false;
 
 float2 TileSize = float2(32,16);
 float2 SpriteSize = float2(32, 32);
@@ -26,6 +28,15 @@ bool Unpack(uint packedFlags, int bitOffset)
 {
     return ((int) (packedFlags) & (1 << bitOffset)) != 0;
 }
+uint Unpack(uint packedValue, uint shift, uint count)
+{
+    // Create a mask with the specified count of bits shifted to the left
+    uint mask = ((1 << count) - 1);
+    // Extract the bits by shifting and applying the mask
+    uint result = ((packedValue >> shift) & mask);
+    return result;
+}
+
 float2 GetSpritePositionByCellPosition(float3 cellPos)
 {
     float VertexX = (cellPos.x - cellPos.y) * TileSize.x / 2;
@@ -79,8 +90,8 @@ struct SpriteMain
 {
     float3 SpritePosition;
     float pud1;
-    //float2 SpriteSize;
-    //float3 CellPosition;
+    uint3 CellPosition;
+    float pud2;
 };
 RWStructuredBuffer<SpriteMain> RWMainBuffer;
 StructuredBuffer<SpriteMain> MainBuffer;
@@ -98,6 +109,8 @@ StructuredBuffer<SpriteExtra> ExtraBuffer;
 StructuredBuffer<uint4> HiddenLBuffer;
 StructuredBuffer<uint4> HiddenSBuffer;
 
+
+StructuredBuffer<uint> LightBuffer;
 
 struct UpdateSpriteData
 {
@@ -154,6 +167,8 @@ struct InstancingVSoutput
     float4 Position : SV_POSITION;
     float2 TexCoord : TEXCOORD0;
     float4 ColorD : COLOR0; // only xyz are needed
+    bool dolight: COLOR1;
+    float light : COLOR2;
 };
 
 InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
@@ -178,6 +193,24 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     //float4 pos = float4(spritePos.xy + vertPos, spritePos.z, 1);
     pos = mul(pos, WorldViewProjection);
     
+    
+    //int n = (main.CellPosition.x * WorldSize.x + main.CellPosition.y) % 4;
+    uint sun = Unpack(LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)], 4, 3);
+        
+    if (!front)
+    {
+        uint s1 = (main.CellPosition.x + 1) < WorldSize.x ?
+        Unpack(LightBuffer[((main.CellPosition.x + 1) * WorldSize.x + (main.CellPosition.y + 0))], 4, 3) : 0;
+        uint s2 = (main.CellPosition.y + 1) < WorldSize.y ?
+        Unpack(LightBuffer[((main.CellPosition.x + 0) * WorldSize.x + (main.CellPosition.y + 1))], 4, 3) : 0;
+        uint s3 = (main.CellPosition.x - 1) >= 0 ?
+        Unpack(LightBuffer[((main.CellPosition.x - 1) * WorldSize.x + (main.CellPosition.y - 0))], 4, 3) : 0;
+        uint s4 = (main.CellPosition.y - 1) >= 0 ?
+        Unpack(LightBuffer[((main.CellPosition.x - 0) * WorldSize.x + (main.CellPosition.y - 1))], 4, 3) : 0;
+    
+        sun = max(sun, max(s1, max(s2, max(s3, s4))));
+    }
+    
     output.Position = pos;
 	
     output.TexCoord = float2((extra.TextureRect.x + vertPos.x) / TextureSize.x,
@@ -185,6 +218,10 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     
     output.ColorD = extra.Color;
     output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
+    output.dolight = true;
+    output.light = sun / 7.0f;
+    //if(sun == 7)
+        //output.ColorD.r = 1;
     
     return output;
 }
@@ -255,10 +292,16 @@ InstancingVSoutput HiddenSInstancingVS(in StaticVSinput input)
 float4 InstancingPS(InstancingVSoutput input) : SV_TARGET
 {
     float4 color = SpriteTexture.Sample(SpriteTextureSampler, input.TexCoord);
-    float4 color_sh = color * input.ColorD;
+    color = color * input.ColorD;
+    
+    if (input.dolight && !nolight)
+    {
+        float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
+        color.rgb = lerp(float3(luminance, luminance, luminance)/2, color.rgb, float3(input.light, input.light, input.light));
+    }
     
     clip((color.a < 0.1) ? -1 : 1);
-    return color_sh;
+    return color;
 }
 
 

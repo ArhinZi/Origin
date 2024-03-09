@@ -110,6 +110,7 @@ namespace Origin.Source.Pathfind
         public void RemoveNode(Point3 position)
         {
             var n = nodes[position];
+            if(connections[TraversalTypes.Walk].ContainsKey(n))
             foreach (var nnode in connections[TraversalTypes.Walk][n].Item1)
             {
                 var its = connections[TraversalTypes.Walk][nnode];

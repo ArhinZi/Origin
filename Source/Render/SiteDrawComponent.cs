@@ -254,6 +254,10 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
         public void Update(GameTime gameTime)
         {
+        }
+
+        public void Draw(GameTime gameTime)
+        {
             UpdateChangedTiles();
 
             if (site.Tools.CurrentTool != null && site.Tools.CurrentTool.DrawDirty)
@@ -268,10 +272,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 }
                 _siteRenderer.StaticDrawer.SetChunks();
             }
-        }
 
-        public void Draw(GameTime gameTime)
-        {
             Global.GraphicsDevice.SetRenderTarget(RenderTarget2D);
             Global.GraphicsDevice.Clear(Color.CornflowerBlue);
             _siteRenderer.Draw(gameTime);

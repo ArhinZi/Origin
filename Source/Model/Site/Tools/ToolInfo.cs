@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json.Linq;
 
 using Origin.Source.Controller.IO;
+using Origin.Source.Model.Site.Light;
 using Origin.Source.Resources;
 
 using System;
@@ -81,6 +82,100 @@ namespace Origin.Source.Model.Site.Tools
                     Reset();
                 }
             }
+        }
+
+        private ComponentType selectedType;
+        private int selectedOther = 0;
+
+        public override void Draw(GameTime gameTime)
+        {
+            if (!Active) return;
+
+            if (Controller.Site.Map.TryGet(selected, out Entity ent))
+            {
+                var a = ent.GetArchetype();
+                var types = a.Types;
+
+                ImGui.SetNextWindowSize(new System.Numerics.Vector2(500, 440), ImGuiCond.FirstUseEver);
+                if (ImGui.Begin($"Tile explorer {selected}###TileExplorer"))
+                {
+                    // Left
+                    {
+                        ImGui.BeginChild("left pane", new System.Numerics.Vector2(150, 0),
+                            ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX);
+                        foreach (ref var type in types.AsSpan())
+                        {
+                            if (ImGui.Selectable(type.Type.Name, selectedType == type && selectedOther == 0))
+                            {
+                                selectedType = type;
+                                selectedOther = 0;
+                            }
+                        }
+                        if (ImGui.Selectable("Light", selectedOther == 1))
+                        {
+                            selectedOther = 1;
+                        }
+
+                        /*for (int i = 0; i < 100; i++)
+                        {
+                            // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
+                            char label[128];
+                            sprintf(label, "MyObject %d", i);
+                            if (ImGui::Selectable(label, selected == i))
+                                selected = i;
+                        }*/
+                        ImGui.EndChild();
+                    }
+                    ImGui.SameLine();
+
+                    // Right
+                    {
+                        string name = selectedType.Type != null ? selectedType.Type.Name : "NONE";
+                        if (selectedOther != 0) { name = "Other"; }
+                        ImGui.BeginGroup();
+                        ImGui.BeginChild("item view", new System.Numerics.Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+                        ImGui.Text(name);
+                        ImGui.Separator();
+                        if (ImGui.BeginTabBar("##Tabs", ImGuiTabBarFlags.None))
+                        {
+                            if (ImGui.BeginTabItem("Info"))
+                            {
+                                if (selectedOther == 0 && selectedType.Type != null && ent.TryGet(selectedType, out object obj))
+                                {
+                                    foreach (var f in selectedType.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public))
+                                    {
+                                        ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(obj))}");
+                                    }
+                                }
+                                if (selectedOther == 1)
+                                {
+                                    Controller.Site.LightControl.TryGetTile(selected, out PackedLight pl);
+                                    foreach (var f in typeof(PackedLight).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                                    {
+                                        ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(pl))}");
+                                    }
+                                }
+                            }
+                            ImGui.EndTabItem();
+                        }
+                        ImGui.EndTabBar();
+                    }
+
+                    if (ImGui.Button("Up"))
+                    {
+                        selected += new Utils.Point3(0, 0, 1);
+                        sprites.Clear();
+                        DrawDirty = true;
+                    }
+                    if (ImGui.Button("Down"))
+                    {
+                        selected -= new Utils.Point3(0, 0, 1);
+                        sprites.Clear();
+                        DrawDirty = true;
+                    }
+                }
+                ImGui.End();
+            }
 
             if (selected != Point3.Null && (DrawDirty || !Active))
             {
@@ -107,68 +202,6 @@ namespace Origin.Source.Model.Site.Tools
             {
                 sprites.Clear();
                 DrawDirty = true;
-            }
-        }
-
-        private ComponentType selectedType;
-
-        public override void Draw(GameTime gameTime)
-        {
-            if (!Active) return;
-
-            if (Controller.Site.Map.TryGet(selected, out Entity ent))
-            {
-                var a = ent.GetArchetype();
-                var types = a.Types;
-
-                ImGui.SetNextWindowSize(new System.Numerics.Vector2(500, 440), ImGuiCond.FirstUseEver);
-                if (ImGui.Begin($"Tile explorer {selected}###TileExplorer"))
-                {
-                    // Left
-                    {
-                        ImGui.BeginChild("left pane", new System.Numerics.Vector2(150, 0),
-                            ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX);
-                        foreach (ref var type in types.AsSpan())
-                        {
-                            if (ImGui.Selectable(type.Type.Name, selectedType == type))
-                                selectedType = type;
-                        }
-                        /*for (int i = 0; i < 100; i++)
-                        {
-                            // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-                            char label[128];
-                            sprintf(label, "MyObject %d", i);
-                            if (ImGui::Selectable(label, selected == i))
-                                selected = i;
-                        }*/
-                        ImGui.EndChild();
-                    }
-                    ImGui.SameLine();
-
-                    // Right
-                    {
-                        ImGui.BeginGroup();
-                        ImGui.BeginChild("item view", new System.Numerics.Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-                        ImGui.Text(selectedType.Type != null ? selectedType.Type.Name : "NONE");
-                        ImGui.Separator();
-                        if (ImGui.BeginTabBar("##Tabs", ImGuiTabBarFlags.None))
-                        {
-                            if (ImGui.BeginTabItem("Info"))
-                            {
-                                if (selectedType.Type != null && ent.TryGet(selectedType, out object obj))
-                                {
-                                    foreach (var f in selectedType.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public))
-                                    {
-                                        ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(obj))}");
-                                    }
-                                }
-                            }
-                            ImGui.EndTabItem();
-                        }
-                        ImGui.EndTabBar();
-                    }
-                }
-                ImGui.End();
             }
         }
     }

@@ -30,7 +30,7 @@ namespace Origin.Source.Model.Site.Tools
 
         public void SetToolByName(string name)
         {
-            if (name == null)
+            if (name == null && CurrentTool != null)
             {
                 CurrentTool.Reset();
                 CurrentTool = null;

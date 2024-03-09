@@ -227,6 +227,52 @@ namespace Origin.Source.Utils
                 };
         }
 
+        public static Point3[] FULL_NEIGHBOUR_PATTERN_1L_4x4(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+            new Point3(0, 0, 0),
+            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
+            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
+            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
+            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0)
+                };
+            else
+                return new Point3[]
+                {
+            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
+            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
+            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
+            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0)
+                };
+        }
+
+        public static Point3[] FULL_NEIGHBOUR_PATTERN_1L_5x5(bool inclusive = true)
+        {
+            if (inclusive)
+                return new Point3[]
+                {
+            new Point3(0, 0, 0),
+            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
+            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
+            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
+            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0),
+            new Point3(3, 0, 0), new Point3(3, 1, 0), new Point3(3, 2, 0), new Point3(3, 3, 0), new Point3(2, 3, 0), new Point3(1, 3, 0), new Point3(0, 3, 0), new Point3(-1, 3, 0), new Point3(-2, 3, 0), new Point3(-3, 3, 0),
+            new Point3(-3, 0, 0), new Point3(-3, -1, 0), new Point3(-3, -2, 0), new Point3(-3, -3, 0), new Point3(-2, -3, 0), new Point3(-1, -3, 0), new Point3(0, -3, 0), new Point3(1, -3, 0), new Point3(2, -3, 0), new Point3(3, -3, 0)
+                };
+            else
+                return new Point3[]
+                {
+            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
+            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
+            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
+            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0),
+            new Point3(3, 0, 0), new Point3(3, 1, 0), new Point3(3, 2, 0), new Point3(3, 3, 0), new Point3(2, 3, 0), new Point3(1, 3, 0), new Point3(0, 3, 0), new Point3(-1, 3, 0), new Point3(-2, 3, 0), new Point3(-3, 3, 0),
+            new Point3(-3, 0, 0), new Point3(-3, -1, 0), new Point3(-3, -2, 0), new Point3(-3, -3, 0), new Point3(-2, -3, 0), new Point3(-1, -3, 0), new Point3(0, -3, 0), new Point3(1, -3, 0), new Point3(2, -3, 0), new Point3(3, -3, 0)
+                };
+        }
+
         public static Point3[] STAR_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
         {
             if (inclusive)

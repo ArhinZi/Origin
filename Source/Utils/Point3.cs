@@ -34,8 +34,11 @@ namespace Origin.Source.Utils
             Z = (int)v3.Z;
         }
 
-        public static Point3 Zero = new Point3(0, 0, 0);
         public static Point3 Null = new Point3(-1, -1, -1);
+
+        public static Point3 Zero = new Point3(0, 0, 0);
+        public static Point3 Up = new Point3(0, 0, 1);
+        public static Point3 Down = new Point3(0, 0, -1);
 
         public Point ToPoint()
         {
