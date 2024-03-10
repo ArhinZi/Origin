@@ -12,10 +12,12 @@ namespace Origin.Source.Resources
         {
             HiddenBack = 0,
             Back = 1,
+            BackNoLight = 4,
             BackInteractives = 5,
             HiddenFront = 10,
             Front = 11,
             FrontOver = 12,
+            FrontNoLight = 14,
             FrontInteractives = 15,
         }
 
@@ -24,8 +26,10 @@ namespace Origin.Source.Resources
         public static byte[] NoLightLayers = {
             (byte)DrawBufferLayer.HiddenBack,
             (byte)DrawBufferLayer.BackInteractives,
+            (byte)DrawBufferLayer.BackNoLight,
             (byte)DrawBufferLayer.HiddenFront,
-            (byte)DrawBufferLayer.FrontInteractives
+            (byte)DrawBufferLayer.FrontInteractives,
+            (byte)DrawBufferLayer.FrontNoLight,
         };
 
         #region Camera

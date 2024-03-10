@@ -61,21 +61,6 @@ namespace Origin.Source.Model.Site.Light
             }
         }
 
-        // 1 bit for IsDirectSunLight
-        public bool IsDirectSunLight
-        {
-            get
-            {
-                uint IsDirectSunLightMask = 0b1 << 8;
-                return (packedValue & IsDirectSunLightMask) != 0;
-            }
-            set
-            {
-                uint IsDirectSunLightMask = 0b1 << 8;
-                packedValue = (uint)((packedValue & ~IsDirectSunLightMask) | (value ? IsDirectSunLightMask : 0x00));
-            }
-        }
-
         public override string ToString()
         {
             return $"{SunLighted}";

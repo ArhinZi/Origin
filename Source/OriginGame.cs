@@ -77,7 +77,7 @@ namespace Origin.Source
             graphics.PreferredBackBufferHeight = 1024;
             graphics.PreferredBackBufferWidth = 1024;
             graphics.IsFullScreen = false;
-            graphics.SynchronizeWithVerticalRetrace = false; //Vsync
+            graphics.SynchronizeWithVerticalRetrace = true; //Vsync
             IsFixedTimeStep = true;
             TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / 60);
             graphics.ApplyChanges();

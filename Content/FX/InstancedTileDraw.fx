@@ -12,7 +12,6 @@ float CurrentLevel;
 float2 LowHighLevel;
 float3 PositionOffset = float3(0,0,0);
 bool nolight = false;
-bool front = false;
 
 float2 TileSize = float2(32,16);
 float2 SpriteSize = float2(32, 32);
@@ -197,7 +196,6 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     //int n = (main.CellPosition.x * WorldSize.x + main.CellPosition.y) % 4;
     uint sun = Unpack(LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)], 4, 3);
         
-    if (!front)
     {
         uint s1 = (main.CellPosition.x + 1) < WorldSize.x ?
         Unpack(LightBuffer[((main.CellPosition.x + 1) * WorldSize.x + (main.CellPosition.y + 0))], 4, 3) : 0;
@@ -219,7 +217,7 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     output.ColorD = extra.Color;
     output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
     output.dolight = true;
-    output.light = sun / 7.0f;
+    output.light = max(sun / 7.0f, 0.1);
     //if(sun == 7)
         //output.ColorD.r = 1;
     

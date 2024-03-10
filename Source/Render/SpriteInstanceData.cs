@@ -11,9 +11,9 @@ namespace Origin.Source.Render
     public struct SpriteMainData
     {
         public Vector3 SpritePosition; //12
-        public float pud1;
+        public uint pud1;
         public Point3 CellPosition; //12
-        public float pud2;
+        public uint pud2;
     }
 
     [StructLayout(LayoutKind.Sequential)]

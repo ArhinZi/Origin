@@ -41,8 +41,7 @@ namespace Origin.Source.ECS.Light
                     {
                         PackedLight pl = new PackedLight()
                         {
-                            SunLighted = 7,
-                            IsDirectSunLight = true
+                            SunLighted = 7
                         };
                         _site.LightControl.SetTile(pos, pl);
                         CastLightFrom(pos, pl);
@@ -105,10 +104,7 @@ namespace Origin.Source.ECS.Light
                 ref PackedLight pl = ref _site.LightControl.GetTile(pos);
                 pl.SunLighted = 0;
                 pl.IsLightBlocker = true;
-                pl.IsDirectSunLight = false;
 
-                if (recastPlan[pos.Z] == null)
-                    recastPlan[pos.Z] = new();
                 recastPlan[pos.Z].Add(pos);
                 foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
                 {
@@ -116,6 +112,27 @@ namespace Origin.Source.ECS.Light
                 }
                 recastDirty = true;
             });
+
+            //Update Sunlighted info on RemoveConstruction
+            query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
+            _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cpe) =>
+            {
+                var pos = cpe.Position;
+                Entity ent = _site.Map[pos];
+
+                _site.LightControl.SetTile(pos, new PackedLight());
+                //pl.SunLighted = 0;
+                //pl.IsLightBlocker = false;
+                //pl.IsDirectSunLight = false;
+
+                recastPlan[pos.Z + 1].Add(pos + Point3.Up);
+                foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
+                {
+                    recastPlan[pos.Z + 1].Add(pos + n + Point3.Up);
+                }
+                recastDirty = true;
+            });
+
             if (recastDirty)
             {
                 RecursiveReCastSunlight();
@@ -123,35 +140,6 @@ namespace Origin.Source.ECS.Light
                 recastDirty = false;
                 _site.LightControl.bufferDirty = true;
             }
-
-            ////Update Sunlighted info on RemoveConstruction
-            //query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
-            //_site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cpe) =>
-            //{
-            //    var pos = cpe.Position;
-            //    Entity ent = _site.Map[pos];
-
-            //    _site.LightControl.SetTile(pos, new PackedLight()
-            //    {
-            //        IsLightBlocker = false
-            //    });
-
-            //    pos += new Utils.Point3(0, 0, 1);
-            //    if (_site.LightControl.TryGetTile(pos, out PackedLight pl) && pl.IsSunLighted)
-            //    {
-            //        for (int i = pos.Z; i > 0; i--)
-            //        {
-            //            pos.Z = i;
-            //            if (_site.Map.TryGet(pos, out Entity bent) && bent.Has<BaseConstruction>())
-            //            {
-            //                _site.LightControl.SetTile(pos, new PackedLight()
-            //                {
-            //                    IsLightBlocker = true
-            //                });
-            //            }
-            //        }
-            //    }
-            //});
         }
 
         private void ClearRecastPlan()
@@ -167,18 +155,13 @@ namespace Origin.Source.ECS.Light
             if (pl.SunLighted == 0) return;
 
             ref PackedLight bpl = ref _site.LightControl.GetTile(pos + Point3.Down);
-            bpl.SunLighted = Math.Max(pl.SunLighted, bpl.SunLighted);
-            bpl.IsDirectSunLight = pl.IsDirectSunLight;
-            if (!bpl.IsDirectSunLight)
+            bpl.SunLighted = Math.Max(pl.SunLighted, bpl.SunLighted); foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
             {
-                foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
+                var npos = pos + Point3.Down + n;
+                if (bpl.SunLighted >= 3 && npos.InBounds(Point3.Zero, _site.Size))
                 {
-                    var npos = pos + Point3.Down + n;
-                    if (bpl.SunLighted >= 3 && npos.InBounds(Point3.Zero, _site.Size))
-                    {
-                        ref PackedLight bnpl = ref _site.LightControl.GetTile(npos);
-                        bnpl.SunLighted += 1;
-                    }
+                    ref PackedLight bnpl = ref _site.LightControl.GetTile(npos);
+                    bnpl.SunLighted += 1;
                 }
             }
         }
@@ -204,7 +187,7 @@ namespace Origin.Source.ECS.Light
                         if (npl.SunLighted < 7)
                         {
                             float sl = npl.SunLighted;
-                            foreach (var tn in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
+                            foreach (var tn in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
                             {
                                 var tnpos = npos + tn + Point3.Up;
                                 if (tnpos.InBounds(Point3.Zero, _site.Size) && _site.LightControl.TryGetTile(tnpos, out PackedLight tnpl))
@@ -214,9 +197,7 @@ namespace Origin.Source.ECS.Light
                                         _site.LightControl.TryGetTile(nnpos, out PackedLight nnpl) &&
                                         !nnpl.IsLightBlocker)
                                     {
-                                        sl += tnpl.SunLighted / 7;
-                                        if (tn.Y < 0)
-                                            sl += tnpl.SunLighted / 7;
+                                        sl += tnpl.SunLighted / 2;
                                     }
                                 }
                                 if (sl >= 7) break;

@@ -30,7 +30,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     {
         private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
         private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
-        private Color borderColor = new Color(0, 0, 0, 150);
+        private Color borderColor = new Color(0, 0, 0, 255);
 
         private Site site;
         private SiteRenderer _siteRenderer;
@@ -170,6 +170,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col));
 
                     // Draw borders of Wall
+                    LAYER = (int)DrawBufferLayer.BackNoLight;
                     if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
                             !tmp.Has<BaseConstruction>())
                         locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, lborderSprite, borderColor,
@@ -187,6 +188,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                     locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
 
+                    LAYER = (int)DrawBufferLayer.FrontNoLight;
                     if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
                                 !tmp.Has<BaseConstruction>())
                         locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, lborderSprite, borderColor,

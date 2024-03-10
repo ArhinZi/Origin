@@ -156,16 +156,10 @@ namespace Origin.Source.Render
             void CheckLayerLight(byte sublayer)
             {
                 site.LightControl.SetBuffers();
-                //SiteRenderer.InstanceMainEffect.Parameters["LightBuffer"].SetValue(site.LightControl.buffers[127]);
                 if (sublayer == Global.LightFrontStart)
                 {
                     if (layer + 1 < site.Size.Z && site.LightControl.buffers[layer + 1].ElementCount > 0)
                         SiteRenderer.InstanceMainEffect.Parameters["LightBuffer"].SetValue(site.LightControl.buffers[layer + 1]);
-                    SiteRenderer.InstanceMainEffect.Parameters["front"].SetValue(true);
-                }
-                else if (sublayer < Global.LightFrontStart)
-                {
-                    SiteRenderer.InstanceMainEffect.Parameters["front"].SetValue(false);
                 }
                 if (Global.NoLightLayers.Contains(sublayer))
                 {

@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
 
+using Origin.Source.Resources;
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -49,7 +51,7 @@ namespace Origin.Source.Model.Site.Tools
             if (CurrentTool != null)
             {
                 var io = ImGui.GetIO();
-                if (io.WantCaptureMouse) return;
+                if (io.WantCaptureMouse || !Global.Game.IsActive) return;
 
                 CurrentTool.Update(gameTime);
             }

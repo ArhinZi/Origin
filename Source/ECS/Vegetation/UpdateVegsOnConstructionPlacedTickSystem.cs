@@ -72,7 +72,7 @@ namespace Origin.Source.ECS.Vegetation
                     {
                         var pos2 = pos + item;
                         if ((_site.Map.TryGet(pos2, out Entity e) && e.Has<GrownUpVegetation>()) ||
-                                    !pos.InBounds(new Utils.Point3(0, 0, 0), _site.Size, true, false))
+                                    !pos2.InBounds(new Utils.Point3(0, 0, 0), _site.Size, true, false))
                         {
                             count++;
                         }
