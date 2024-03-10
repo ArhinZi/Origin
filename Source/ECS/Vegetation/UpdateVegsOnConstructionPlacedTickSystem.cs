@@ -18,13 +18,13 @@ namespace Origin.Source.ECS.Vegetation
         {
         }
 
-        public override void Init()
+        public override void Initialize()
         {
         }
 
-        protected override void DoTick()
+        public override void Update(in ulong t)
         {
-            base.DoTick();
+            base.Update(in t);
 
             var commands = new CommandBuffer(_site.ArchWorld);
             var visited = new HashSet<Point3>();

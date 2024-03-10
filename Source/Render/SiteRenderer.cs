@@ -124,7 +124,7 @@ namespace Origin.Source.Render
             foreach (var key in texture2Ds)
             {
                 HiddenDrawer.DrawLayer(_drawHighest);
-                StaticDrawer.Draw(_drawHighest, new List<byte>() { (byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackInteractives });
+                StaticDrawer.Draw(_drawHighest, new List<byte>() { (byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackNoLight, (byte)DrawBufferLayer.BackInteractives });
             }
         }
     }

@@ -27,9 +27,9 @@ namespace Origin.Source.ECS.Vegetation
             random = site.World.Random;
         }
 
-        public override void Init()
+        public override void Initialize()
         {
-            base.Init();
+            base.Initialize();
 
             var query = new QueryDescription().WithAll<BaseConstruction, IsTile>();
 
@@ -54,15 +54,9 @@ namespace Origin.Source.ECS.Vegetation
             });
         }
 
-        public override void Tick(long ticks)
+        public override void Update(in ulong t)
         {
-            if (ticks % 30 != 0) return;
-            base.Tick(ticks);
-        }
-
-        protected override void DoTick()
-        {
-            base.DoTick();
+            base.Update(in t);
 
             var query = new QueryDescription().WithAll<BaseConstruction, IsTile, /*IsSunLightedComponent,*/ BaseVegetation>()
                                             .WithNone<GrownUpVegetation>();

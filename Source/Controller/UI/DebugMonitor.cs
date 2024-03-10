@@ -142,6 +142,7 @@ namespace Origin.Source
                 ImGui.Text($"Mouse over UI: {io.WantCaptureMouse}");
 
                 ImGui.Separator();
+                ImGui.Separator();
 
                 foreach (var item in values)
                 {

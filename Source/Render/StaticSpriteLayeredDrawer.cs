@@ -156,6 +156,8 @@ namespace Origin.Source.Render
             void CheckLayerLight(byte sublayer)
             {
                 site.LightControl.SetBuffers();
+
+                SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(site.World.TimeManager.GetSunLightIntensity());
                 if (sublayer == Global.LightFrontStart)
                 {
                     if (layer + 1 < site.Size.Z && site.LightControl.buffers[layer + 1].ElementCount > 0)

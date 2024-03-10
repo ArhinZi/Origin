@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.System;
+
+using Microsoft.Xna.Framework;
 
 using Origin.Source.Model.Site;
 using Origin.Source.Utils;
@@ -12,13 +14,10 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.ECS
 {
-    public class TickSystem
+    public class TickSystem : ISystem<ulong>
     {
         public int Interval { get; private set; } = 1;
-        public bool Debug = true;
-        public long LastElapsedMilliseconds = 0;
 
-        private Stopwatch watch;
         protected Site _site;
 
         public TickSystem(Site site)
@@ -26,30 +25,23 @@ namespace Origin.Source.ECS
             _site = site;
         }
 
-        public virtual void Init()
+        public virtual void Initialize()
         { }
 
-        protected virtual void DoTick()
+        public virtual void BeforeUpdate(in ulong t)
         {
         }
 
-        public virtual void Tick(long ticks)
+        public virtual void Update(in ulong t)
         {
-            if (ticks % Interval == 0)
-            {
-                if (Debug)
-                {
-                    watch = Stopwatch.StartNew();
-                }
+        }
 
-                DoTick();
+        public virtual void AfterUpdate(in ulong t)
+        {
+        }
 
-                if (Debug)
-                {
-                    watch.Stop();
-                    LastElapsedMilliseconds = watch.ElapsedMilliseconds;
-                }
-            }
+        public virtual void Dispose()
+        {
         }
     }
 }

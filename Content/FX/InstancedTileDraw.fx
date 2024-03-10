@@ -12,6 +12,7 @@ float CurrentLevel;
 float2 LowHighLevel;
 float3 PositionOffset = float3(0,0,0);
 bool nolight = false;
+float SunLightIntensity = 1;
 
 float2 TileSize = float2(32,16);
 float2 SpriteSize = float2(32, 32);
@@ -217,7 +218,7 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     output.ColorD = extra.Color;
     output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
     output.dolight = true;
-    output.light = max(sun / 7.0f, 0.1);
+    output.light = max(sun / 7.0f, 0.1) * SunLightIntensity;
     //if(sun == 7)
         //output.ColorD.r = 1;
     

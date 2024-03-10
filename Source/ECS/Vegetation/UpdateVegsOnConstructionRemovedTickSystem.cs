@@ -18,11 +18,11 @@ namespace Origin.Source.ECS.Vegetation
         {
         }
 
-        public override void Init()
+        public override void Initialize()
         {
         }
 
-        protected override void DoTick()
+        public override void Update(in ulong t)
         {
             var query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
             var commands = new CommandBuffer(_site.ArchWorld);

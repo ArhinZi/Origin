@@ -8,12 +8,14 @@ using Origin.Source.Model.Site;
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Origin.Source.Model
 {
     public class World : IDisposable
     {
-        private TickManager _tickManager;
+        public SystemGroupsManager SystemManager;
+        public WorldTimeManager TimeManager;
 
         //private SaveGameEntity sge = null;
 
@@ -33,15 +35,24 @@ namespace Origin.Source.Model
             ActiveSite = new Site.Site(this, new Point3(256, 256, 128));
             Sites.Add(ActiveSite);
 
-            _tickManager = new TickManager();
+            TimeManager = new WorldTimeManager();
+            TimeManager.SetGameSpeed(0.5f);
 
-            _tickManager.Systems.Add(new UpdateSitePathTickSystem(ActiveSite));
-            _tickManager.Systems.Add(new UpdateVegsOnConstructionRemovedTickSystem(ActiveSite));
-            _tickManager.Systems.Add(new UpdateVegsOnConstructionPlacedTickSystem(ActiveSite));
-            _tickManager.Systems.Add(new UpdateLightTickSystem(ActiveSite));
-            _tickManager.Systems.Add(new VegatationControlTickSystem(ActiveSite));
+            SystemManager = new SystemGroupsManager(TimeManager);
 
-            _tickManager.Init();
+            SystemManager.Groups.Add(new("Pathfinder", new Arch.System.ISystem<ulong>[] {
+                new UpdateSitePathTickSystem(ActiveSite)
+            }));
+            SystemManager.Groups.Add(new("Vegetation", new Arch.System.ISystem<ulong>[] {
+                new UpdateVegsOnConstructionRemovedTickSystem(ActiveSite),
+                new UpdateVegsOnConstructionPlacedTickSystem(ActiveSite),
+                new VegatationControlTickSystem(ActiveSite)
+            }));
+            SystemManager.Groups.Add(new("SunLight", new Arch.System.ISystem<ulong>[] {
+                new UpdateLightTickSystem(ActiveSite)
+            }));
+
+            SystemManager.Init();
 
             ActiveSite.PostInit();
 
@@ -74,7 +85,8 @@ namespace Origin.Source.Model
 
         public void Update(GameTime gameTime)
         {
-            _tickManager.Update(gameTime);
+            TimeManager.Update(gameTime);
+            SystemManager.Update(gameTime);
             ActiveSite.Update(gameTime);
 
             /*if (gameTime.TotalGameTime.Ticks % 10 == 0)

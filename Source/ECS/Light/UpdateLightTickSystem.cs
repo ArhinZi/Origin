@@ -23,7 +23,7 @@ namespace Origin.Source.ECS.Light
         private List<HashSet<Point3>> recastPlan = new List<HashSet<Point3>>();
         private bool recastDirty = false;
 
-        public override void Init()
+        public override void Initialize()
         {
             recastPlan.Capacity = _site.Size.Z;
             for (int i = 0; i < _site.Size.Z; i++)
@@ -67,17 +67,6 @@ namespace Origin.Source.ECS.Light
                             }
                             else
                             {
-                                /*byte sl = 0;
-                                foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
-                                {
-                                    var npos = pos + n;
-                                    if (_site.LightControl.TryGetTile(npos, out PackedLight pl))
-                                    {
-                                        sl = pl.SunLighted;
-                                    }
-                                    if (sl >= 7)
-                                        break;
-                                }*/
                                 _site.LightControl.SetTile(pos, new PackedLight()
                                 {
                                     IsLightBlocker = true,
@@ -89,7 +78,7 @@ namespace Origin.Source.ECS.Light
             _site.LightControl.bufferDirty = true;
         }
 
-        protected override void DoTick()
+        public override void Update(in ulong t)
         {
             var commands = new CommandBuffer(_site.ArchWorld);
             var visited = new HashSet<Point3>();
@@ -121,9 +110,6 @@ namespace Origin.Source.ECS.Light
                 Entity ent = _site.Map[pos];
 
                 _site.LightControl.SetTile(pos, new PackedLight());
-                //pl.SunLighted = 0;
-                //pl.IsLightBlocker = false;
-                //pl.IsDirectSunLight = false;
 
                 recastPlan[pos.Z + 1].Add(pos + Point3.Up);
                 foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
@@ -179,7 +165,6 @@ namespace Origin.Source.ECS.Light
                     {
                         // Collect available tiles below and clean them
                         recastPlan[i - 1].Add(npos);
-                        //npl.SunLighted = 0;
 
                         // After clean the tile recalc its Sunlight using tiles Above
                         ref PackedLight unpl = ref _site.LightControl.GetTile(npos + Point3.Up);

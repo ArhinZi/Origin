@@ -96,9 +96,14 @@ namespace Origin.Source.GameStates
                 {
                     ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position.ToString() + blockMat,
                     ["DebugLayer"] = World.ActiveSite.CurrentLevel.ToString(),
-                    //["DayTime"] = World.ActiveSite.SiteTime.ToString("#.##")
                 }));
             }
+
+            EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
+            {
+                ["DayTime"] = World.TimeManager.DayTime.ToString(),
+                ["SunIntensity"] = World.TimeManager.GetSunLightIntensity().ToString("#.##"),
+            }));
         }
 
         public override void Draw(GameTime gameTime)
