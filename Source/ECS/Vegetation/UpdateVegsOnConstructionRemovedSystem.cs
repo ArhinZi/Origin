@@ -12,9 +12,9 @@ using System.Collections.Generic;
 
 namespace Origin.Source.ECS.Vegetation
 {
-    internal class UpdateVegsOnConstructionRemovedTickSystem : TickSystem
+    internal class UpdateVegsOnConstructionRemovedSystem : TickSystem
     {
-        public UpdateVegsOnConstructionRemovedTickSystem(Site site) : base(site)
+        public UpdateVegsOnConstructionRemovedSystem(Site site) : base(site)
         {
         }
 

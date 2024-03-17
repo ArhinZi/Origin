@@ -18,11 +18,11 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.ECS.Vegetation
 {
-    internal class VegatationControlTickSystem : TickSystem
+    internal class VegatationControlSystem : TickSystem
     {
         private Random random;
 
-        public VegatationControlTickSystem(Site site) : base(site)
+        public VegatationControlSystem(Site site) : base(site)
         {
             random = site.World.Random;
         }
@@ -57,6 +57,7 @@ namespace Origin.Source.ECS.Vegetation
         public override void Update(in ulong t)
         {
             base.Update(in t);
+            if (t % 60 != 0) return;
 
             var query = new QueryDescription().WithAll<BaseConstruction, IsTile, /*IsSunLightedComponent,*/ BaseVegetation>()
                                             .WithNone<GrownUpVegetation>();

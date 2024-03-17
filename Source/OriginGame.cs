@@ -111,13 +111,6 @@ namespace Origin.Source
             GuiRenderer.RebuildFontAtlas();
             //LoadMenuMainScreen();
             LoadGameScreen();
-
-            ArchWorld world = ArchWorld.Create();
-            world.Create<IsTile>();
-            world.Create<IsTile>();
-            world.Create<IsTile>();
-
-            SaveGameEntity.ReadAllSaves();
         }
 
         /// <summary>

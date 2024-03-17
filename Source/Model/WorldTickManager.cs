@@ -2,6 +2,7 @@
 
 using MonoGame.Extended;
 
+using Origin.Source.ECS;
 using Origin.Source.Resources;
 
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.Model
 {
-    public class WorldTimeManager : IUpdate
+    public class WorldTickManager : IUpdate
     {
         public static readonly ulong MINUTE = 10;
         public static readonly ulong HOUR = 600;
@@ -28,8 +29,7 @@ namespace Origin.Source.Model
         public ulong Ticks { get; private set; } = DAY / 4;
 
         public float TimeMod { get; private set; } = 1f;
-
-        public bool ShouldTick { get; private set; } = false;
+        public float PrePauseTimeMod { get; private set; } = 1f;
 
         public ulong DayTick => Ticks % DAY;
 
@@ -46,22 +46,25 @@ namespace Origin.Source.Model
 
         private float _htick = 0;
 
+        public SystemGroupsManager SystemsManager;
+
+        public bool Pause { get; private set; }
+
+        public WorldTickManager()
+        {
+            SystemsManager = new SystemGroupsManager(this);
+        }
+
         public void Update(GameTime gameTime)
         {
             _htick += TimeMod;
-            if (_htick >= 1)
+            while (_htick > 1)
             {
-                Ticks++;
+                SystemsManager.Tick(gameTime);
                 _htick--;
-                ShouldTick = true;
+                Ticks++;
+                //do smth
             }
-            else
-                ShouldTick = false;
-        }
-
-        public void SetGameSpeed(float mod = 1)
-        {
-            Global.Game.TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / (60 * mod));
         }
 
         public float GetSunLightIntensity()
@@ -96,6 +99,21 @@ namespace Origin.Source.Model
             }
 
             return 1f; // It's daytime, so SunLightIntensity is 1
+        }
+
+        public bool TogglePause()
+        {
+            Pause = !Pause;
+            if (Pause)
+            {
+                PrePauseTimeMod = TimeMod;
+                TimeMod = 0;
+            }
+            else
+            {
+                TimeMod = PrePauseTimeMod;
+            }
+            return Pause;
         }
     }
 }

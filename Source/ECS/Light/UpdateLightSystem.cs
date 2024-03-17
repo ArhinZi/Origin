@@ -2,6 +2,8 @@
 using Arch.Core;
 using Arch.Core.Extensions;
 
+using MessagePack;
+
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Vegetation.Components;
 using Origin.Source.Model.Site;
@@ -11,12 +13,13 @@ using Origin.Source.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Origin.Source.ECS.Light
 {
-    internal class UpdateLightTickSystem : TickSystem
+    internal class UpdateLightSystem : TickSystem
     {
-        public UpdateLightTickSystem(Site site) : base(site)
+        public UpdateLightSystem(Site site) : base(site)
         {
         }
 
@@ -31,7 +34,25 @@ namespace Origin.Source.ECS.Light
                 recastPlan.Add(new());
             }
 
-            Point3 pos;
+            recastDirty = true;
+            for (int x = 0; x < _site.Size.X; x++)
+                for (int y = 0; y < _site.Size.Y; y++)
+                {
+                    var pos = new Point3(x, y, _site.Size.Z - 1);
+                    recastPlan[_site.Size.Z - 1].Add(pos);
+                    Entity ent = _site.Map[pos];
+                    if (!ent.Has<BaseConstruction>())
+                    {
+                        PackedLight pl = new PackedLight()
+                        {
+                            SunLighted = 7
+                        };
+                        _site.LightControl.SetTile(pos, pl);
+                    }
+                }
+            RecursiveReCastSunlight(true);
+            ClearRecastPlan();
+            /*Point3 pos;
             for (int x = 0; x < _site.Size.X; x++)
                 for (int y = 0; y < _site.Size.Y; y++)
                 {
@@ -74,7 +95,7 @@ namespace Origin.Source.ECS.Light
                                 done[x, y] = z;
                             }
                         }
-                    }
+                    }*/
             _site.LightControl.bufferDirty = true;
         }
 
@@ -95,7 +116,7 @@ namespace Origin.Source.ECS.Light
                 pl.IsLightBlocker = true;
 
                 recastPlan[pos.Z].Add(pos);
-                foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
+                foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
                 {
                     recastPlan[pos.Z].Add(pos + n);
                 }
@@ -112,7 +133,7 @@ namespace Origin.Source.ECS.Light
                 _site.LightControl.SetTile(pos, new PackedLight());
 
                 recastPlan[pos.Z + 1].Add(pos + Point3.Up);
-                foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
+                foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
                 {
                     recastPlan[pos.Z + 1].Add(pos + n + Point3.Up);
                 }
@@ -136,23 +157,24 @@ namespace Origin.Source.ECS.Light
             }
         }
 
-        private void CastLightFrom(Point3 pos, PackedLight pl)
-        {
-            if (pl.SunLighted == 0) return;
+        //private void CastLightFrom(Point3 pos, PackedLight pl)
+        //{
+        //    if (pl.SunLighted == 0) return;
 
-            ref PackedLight bpl = ref _site.LightControl.GetTile(pos + Point3.Down);
-            bpl.SunLighted = Math.Max(pl.SunLighted, bpl.SunLighted); foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(false))
-            {
-                var npos = pos + Point3.Down + n;
-                if (bpl.SunLighted >= 3 && npos.InBounds(Point3.Zero, _site.Size))
-                {
-                    ref PackedLight bnpl = ref _site.LightControl.GetTile(npos);
-                    bnpl.SunLighted += 1;
-                }
-            }
-        }
+        //    ref PackedLight bpl = ref _site.LightControl.GetTile(pos + Point3.Down);
+        //    bpl.SunLighted = Math.Max(pl.SunLighted, bpl.SunLighted);
+        //    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
+        //    {
+        //        var npos = pos + Point3.Down + n;
+        //        if (bpl.SunLighted >= 3 && npos.InBounds(Point3.Zero, _site.Size))
+        //        {
+        //            ref PackedLight bnpl = ref _site.LightControl.GetTile(npos);
+        //            bnpl.SunLighted += 1;
+        //        }
+        //    }
+        //}
 
-        private void RecursiveReCastSunlight()
+        private void RecursiveReCastSunlight(bool init = false)
         {
             for (int i = 127; i > 0; i--)
             {
@@ -161,6 +183,14 @@ namespace Origin.Source.ECS.Light
                 {
                     var npos = pos + Point3.Down;
                     ref PackedLight npl = ref _site.LightControl.GetTile(npos);
+                    if (init)
+                    {
+                        Entity ent = _site.Map[npos];
+                        if (ent.Has<BaseConstruction>())
+                        {
+                            npl.IsLightBlocker = true;
+                        }
+                    }
                     if (!npl.IsLightBlocker)
                     {
                         // Collect available tiles below and clean them

@@ -38,6 +38,10 @@ namespace Origin.Source.Controller.IO
             {
                 StateMainGame.EscMenu = !StateMainGame.EscMenu;
             }
+            if (ImGui.IsKeyPressed(ImGuiKey.Space))
+            {
+                World.TimeManager.TogglePause();
+            }
 
             KeyboardState keystate = Keyboard.GetState();
             LShift = keystate.IsKeyDown(Keys.LeftShift);

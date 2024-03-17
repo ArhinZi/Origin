@@ -98,9 +98,6 @@ namespace Origin.Source.Model.Site
 
         public void Update(GameTime gameTime)
         {
-            var query = new QueryDescription().WithAny<ConstructionRemovedEvent, ConstructionPlacedEvent>();
-            ArchWorld.Destroy(query);
-
             Tools.Update(gameTime);
 
             Pathfinder.Update(gameTime);

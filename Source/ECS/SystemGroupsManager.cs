@@ -8,12 +8,12 @@ using Origin.Source.Model;
 
 namespace Origin.Source.ECS
 {
-    public class SystemGroupsManager : IUpdate
+    public class SystemGroupsManager
     {
         public List<Group<ulong>> Groups = new();
-        private WorldTimeManager WorldTimeManager;
+        private WorldTickManager WorldTimeManager;
 
-        public SystemGroupsManager(WorldTimeManager wtm)
+        public SystemGroupsManager(WorldTickManager wtm)
         {
             WorldTimeManager = wtm;
         }
@@ -26,10 +26,8 @@ namespace Origin.Source.ECS
             }
         }
 
-        public void Update(GameTime gameTime)
+        public void Tick(GameTime gameTime)
         {
-            if (!WorldTimeManager.ShouldTick) return;
-
             foreach (var group in Groups)
             {
                 group.BeforeUpdate(WorldTimeManager.Ticks);

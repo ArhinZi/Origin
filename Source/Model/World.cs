@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS;
+using Origin.Source.ECS.BaseSystems;
 using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Vegetation;
@@ -14,8 +15,7 @@ namespace Origin.Source.Model
 {
     public class World : IDisposable
     {
-        public SystemGroupsManager SystemManager;
-        public WorldTimeManager TimeManager;
+        public WorldTickManager TimeManager;
 
         //private SaveGameEntity sge = null;
 
@@ -35,21 +35,24 @@ namespace Origin.Source.Model
             ActiveSite = new Site.Site(this, new Point3(256, 256, 128));
             Sites.Add(ActiveSite);
 
-            TimeManager = new WorldTimeManager();
-            TimeManager.SetGameSpeed(0.5f);
+            TimeManager = new WorldTickManager();
 
-            SystemManager = new SystemGroupsManager(TimeManager);
+            var SystemManager = TimeManager.SystemsManager;
 
             SystemManager.Groups.Add(new("Pathfinder", new Arch.System.ISystem<ulong>[] {
-                new UpdateSitePathTickSystem(ActiveSite)
+                new UpdateSitePathSystem(ActiveSite)
             }));
             SystemManager.Groups.Add(new("Vegetation", new Arch.System.ISystem<ulong>[] {
-                new UpdateVegsOnConstructionRemovedTickSystem(ActiveSite),
-                new UpdateVegsOnConstructionPlacedTickSystem(ActiveSite),
-                new VegatationControlTickSystem(ActiveSite)
+                new UpdateVegsOnConstructionRemovedSystem(ActiveSite),
+                new UpdateVegsOnConstructionPlacedSystem(ActiveSite),
+                new VegatationControlSystem(ActiveSite)
             }));
             SystemManager.Groups.Add(new("SunLight", new Arch.System.ISystem<ulong>[] {
-                new UpdateLightTickSystem(ActiveSite)
+                new UpdateLightSystem(ActiveSite)
+            }));
+
+            SystemManager.Groups.Add(new("Final", new Arch.System.ISystem<ulong>[] {
+                new ClearEventsSystem(ActiveSite)
             }));
 
             SystemManager.Init();
@@ -86,7 +89,6 @@ namespace Origin.Source.Model
         public void Update(GameTime gameTime)
         {
             TimeManager.Update(gameTime);
-            SystemManager.Update(gameTime);
             ActiveSite.Update(gameTime);
 
             /*if (gameTime.TotalGameTime.Ticks % 10 == 0)

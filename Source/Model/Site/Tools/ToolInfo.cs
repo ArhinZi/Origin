@@ -149,11 +149,11 @@ namespace Origin.Source.Model.Site.Tools
                                 }
                                 if (selectedOther == 1)
                                 {
-                                    Controller.Site.LightControl.TryGetTile(selected, out PackedLight pl);
-                                    foreach (var f in typeof(PackedLight).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                                    {
-                                        ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(pl))}");
-                                    }
+                                    if (Controller.Site.LightControl.TryGetTile(selected, out PackedLight pl))
+                                        foreach (var f in typeof(PackedLight).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+                                        {
+                                            ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(pl))}");
+                                        }
                                 }
                             }
                             ImGui.EndTabItem();

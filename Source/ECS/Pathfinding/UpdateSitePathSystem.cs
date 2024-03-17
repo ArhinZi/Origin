@@ -10,9 +10,9 @@ using System.Collections.Generic;
 
 namespace Origin.Source.ECS.Pathfinding
 {
-    public class UpdateSitePathTickSystem : TickSystem
+    public class UpdateSitePathSystem : TickSystem
     {
-        public UpdateSitePathTickSystem(Site site) : base(site)
+        public UpdateSitePathSystem(Site site) : base(site)
         {
         }
 

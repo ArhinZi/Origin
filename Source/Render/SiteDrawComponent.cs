@@ -84,6 +84,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                         locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col));
 
                         // Draw borders of Wall
+                        LAYER = (int)DrawBufferLayer.BackNoLight;
                         if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
                                 !tmp.Has<BaseConstruction>())
                             locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
@@ -101,6 +102,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                         Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                         locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
 
+                        LAYER = (int)DrawBufferLayer.FrontNoLight;
                         if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
                                     !tmp.Has<BaseConstruction>())
                             locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
