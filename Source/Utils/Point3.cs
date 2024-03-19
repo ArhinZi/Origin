@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 
 using System;
 
+using static Origin.Source.Resources.Global;
+
 namespace Origin.Source.Utils
 {
     [MessagePackObject]
@@ -34,13 +36,38 @@ namespace Origin.Source.Utils
             Z = (int)v3.Z;
         }
 
-        public static Point3 Null = new Point3(-1, -1, -1);
+        public static Point3 Null = new(int.MinValue, int.MinValue, int.MinValue);
 
-        public static Point3 Zero = new Point3(0, 0, 0);
-        public static Point3 Up = new Point3(0, 0, 1);
-        public static Point3 Down = new Point3(0, 0, -1);
+        public static Point3 Zero = new(0, 0, 0);
+        public static Point3 Up = new(0, 0, 1);
+        public static Point3 Down = new(0, 0, -1);
+        public static Point3 North = new(0, -1, 0);
+        public static Point3 South = new(0, 1, 0);
+        public static Point3 West = new(-1, 0, 0);
+        public static Point3 East = new(1, 0, 0);
 
-        public Point ToPoint()
+        public static Point3 Dir(Direction dir)
+        {
+            switch (dir)
+            {
+                case Direction.NORTH:
+                    return North;
+
+                case Direction.SOUTH:
+                    return South;
+
+                case Direction.WEST:
+                    return West;
+
+                case Direction.EAST:
+                    return East;
+
+                default:
+                    return Zero;
+            }
+        }
+
+        public Point XY()
         {
             return new Point(X, Y);
         }

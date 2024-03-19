@@ -63,7 +63,9 @@ namespace Origin.Source.Model.Site.Light
 
         public override string ToString()
         {
-            return $"{SunLighted}";
+            if (!IsLightBlocker)
+                return $"S{SunLighted}, L{LightLevel}";
+            else return "BLOCKER";
         }
     }
 }

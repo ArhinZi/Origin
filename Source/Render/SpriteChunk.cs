@@ -33,10 +33,10 @@ namespace Origin.Source.Render
     /// </summary>
     public class SpriteChunk
     {
-        public static HashSet<Texture2D> texture2Ds { get; private set; } = new HashSet<Texture2D>();
+        public static HashSet<Texture2D> texture2Ds { get; private set; } = [];
 
-        public Dictionary<Texture2D, Dictionary<int, SpriteLayer>> layersBatches = new();
-        private object _lock = new object();
+        public Dictionary<Texture2D, Dictionary<int, SpriteLayer>> layersBatches = [];
+        private object _lock = new();
 
         public Point position;
 
@@ -53,7 +53,7 @@ namespace Origin.Source.Render
             {
                 if (!layersBatches.TryGetValue(texture, out Dictionary<int, SpriteLayer> layerList))
                 {
-                    layerList = new Dictionary<int, SpriteLayer>();
+                    layerList = [];
                     layersBatches.Add(texture, layerList);
                     texture2Ds.Add(texture);
                 }
@@ -86,7 +86,7 @@ namespace Origin.Source.Render
                 layer.structSize = layer.structSize * 2;
                 Debug.Assert(layer.structSize <= 1048576, "Too many elements");
             }*/
-            SpriteLocator spriteLocator = new SpriteLocator()
+            SpriteLocator spriteLocator = new()
             {
                 TextureMetaID = (uint)layer.TextureMetaID,
                 Layer = layer.LayerID,
@@ -191,7 +191,7 @@ namespace Origin.Source.Render
                 mainData = dataMain,
                 extraData = dataExtra
             });
-            SpriteLocator spriteLocator = new SpriteLocator()
+            SpriteLocator spriteLocator = new()
             {
                 TextureMetaID = (uint)layer.TextureMetaID,
                 Layer = layer.LayerID,

@@ -10,7 +10,7 @@ namespace Origin.Source.ECS
 {
     public class SystemGroupsManager
     {
-        public List<Group<ulong>> Groups = new();
+        public List<Group<ulong>> Groups = [];
         private WorldTickManager WorldTimeManager;
 
         public SystemGroupsManager(WorldTickManager wtm)

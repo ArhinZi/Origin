@@ -38,7 +38,7 @@ namespace Origin.Source.Model.Site
         public SitePathfindingService Pathfinder { get; private set; }
 
         public SiteDrawComponent DrawControl { get; private set; }
-        public SiteLightBufferComponent LightControl { get; private set; }
+        public LightComponent LightControl { get; private set; }
 
         public SiteToolsComponent Tools { get; private set; }
 
@@ -81,7 +81,7 @@ namespace Origin.Source.Model.Site
             MapGenerator.Visit(new Point3(0, 0, 127));
             Trace.WriteLine("End map gen");
 
-            LightControl = new SiteLightBufferComponent(this);
+            LightControl = new LightComponent(this);
             Trace.WriteLine("End light init");
         }
 
@@ -138,7 +138,7 @@ namespace Origin.Source.Model.Site
         public void PlaceConstruction(Point3 pos, Construction constr, Material mat)
         {
             Entity ent = Map[pos];
-            BaseConstruction bcc = new BaseConstruction()
+            BaseConstruction bcc = new()
             {
                 ConstructionMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, "SoilWallFloor"),
                 MaterialMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Materials, "Dirt")

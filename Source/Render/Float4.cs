@@ -69,7 +69,7 @@ namespace Origin.Source.Render
 
         public override string ToString()
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new();
 
             foreach (int value in new List<int>() { A, B, C, D })
             {

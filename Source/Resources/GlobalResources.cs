@@ -20,13 +20,13 @@ namespace Origin.Source.Resources
     {
         private static JsonSerializerSettings settings;
 
-        public static List<Texture2D> Textures = new();
+        public static List<Texture2D> Textures = [];
 
-        public static List<Sprite> Sprites = new();
-        public static List<Material> Materials = new();
-        public static List<Item> Items = new();
-        public static List<Construction> Constructions = new();
-        public static List<Vegetation> Vegetations = new();
+        public static List<Sprite> Sprites = [];
+        public static List<Material> Materials = [];
+        public static List<Item> Items = [];
+        public static List<Construction> Constructions = [];
+        public static List<Vegetation> Vegetations = [];
 
         public static Settings Settings = new();
 
@@ -36,7 +36,7 @@ namespace Origin.Source.Resources
         public static Sprite HIDDEN_FLOOR_SPRITE;
         public static Color HIDDEN_COLOR;
 
-        public static Dictionary<string, ImFontPtr> Fonts = new Dictionary<string, ImFontPtr>();
+        public static Dictionary<string, ImFontPtr> Fonts = [];
 
         public static void Init()
         {
@@ -81,7 +81,7 @@ namespace Origin.Source.Resources
 
         public static void LoadTexture(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open))
+            using (FileStream stream = new(path, FileMode.Open))
             {
                 Texture2D texture = Texture2D.FromStream(Global.GraphicsDevice, stream);
                 texture.Name = Path.GetFileNameWithoutExtension(path);

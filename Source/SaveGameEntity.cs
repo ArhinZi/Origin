@@ -15,17 +15,17 @@ namespace Origin.Source
     public class SaveGameEntity
     {
         public static MarkedDictionary<string, SaveGameEntity> Saves =
-            new MarkedDictionary<string, SaveGameEntity>((obj) => { return obj.Name; });
+            new((obj) => { return obj.Name; });
 
         public static void ReadAllSaves()
         {
             var dirs = Directory.GetDirectories(Path.Combine(Global.AppData, "Saves"));
             foreach (var dir in dirs)
             {
-                SaveGameEntity save = new SaveGameEntity(Path.GetFileName(dir));
+                SaveGameEntity save = new(Path.GetFileName(dir));
                 try
                 {
-                    IniFile ini = new IniFile(Path.Combine(dir, "Info.ini"));
+                    IniFile ini = new(Path.Combine(dir, "Info.ini"));
                     //var Name = ini.Read("SaveName", "General");
 
                     var LastSaveTime = DateTime.Parse(ini.Read("Time", "General"));
@@ -77,7 +77,7 @@ namespace Origin.Source
                     Directory.CreateDirectory(SavePath);
             }
 
-            IniFile ini = new IniFile(Path.Combine(SavePath, "Info.ini"));
+            IniFile ini = new(Path.Combine(SavePath, "Info.ini"));
             ini.Write("SaveName", Name, "General");
             ini.Write("Time", LastSaveTime.ToString(), "General");
             ini.Write("Seed", world.Seed.ToString(), "General");
@@ -87,11 +87,11 @@ namespace Origin.Source
             Texture.SaveAsPng(stream, Texture.Width, Texture.Height);
             stream.Dispose();
 
-            Arch.Persistence.ArchBinarySerializer abs = new Arch.Persistence.ArchBinarySerializer();
+            Arch.Persistence.ArchBinarySerializer abs = new();
             byte[] b = abs.Serialize(world.ActiveSite.ArchWorld);
             File.WriteAllBytes(Path.Combine(SavePath, "arch.data"), b);
 
-            ArchJsonSerializer ajs = new ArchJsonSerializer();
+            ArchJsonSerializer ajs = new();
             string s = ajs.ToJson(world.ActiveSite.ArchWorld);
             File.WriteAllText(Path.Combine(SavePath, "arch.json"), s);
         }

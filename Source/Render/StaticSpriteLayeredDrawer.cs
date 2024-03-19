@@ -63,10 +63,10 @@ namespace Origin.Source.Render
 
         private SpriteChunk GetChunkByPos(Point3 pos)
         {
-            Point3 pchunk = new Point3(pos.X / ChunkSize.X, pos.Y / ChunkSize.Y, pos.Z);
+            Point3 pchunk = new(pos.X / ChunkSize.X, pos.Y / ChunkSize.Y, pos.Z);
             SpriteChunk chunk = spriteChunks[pchunk.X, pchunk.Y, pchunk.Z];
             if (chunk == null)
-                chunk = spriteChunks[pchunk.X, pchunk.Y, pchunk.Z] = new SpriteChunk(pchunk.ToPoint());
+                chunk = spriteChunks[pchunk.X, pchunk.Y, pchunk.Z] = new SpriteChunk(pchunk.XY());
 
             return chunk;
         }
@@ -78,13 +78,13 @@ namespace Origin.Source.Render
             float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
             SpriteLayer layer = chunk.GetLayer(sprite.Texture, nlayer);
 
-            SpriteMainData smd = new SpriteMainData()
+            SpriteMainData smd = new()
             {
                 SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
                 CellPosition = tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
-            SpriteExtraData sed = new SpriteExtraData()
+            SpriteExtraData sed = new()
             {
                 Color = color.ToVector4(),
                 TextureRect = new Vector4(sprite.RectPos.X, sprite.RectPos.Y, sprite.RectPos.Width, sprite.RectPos.Height)
@@ -99,13 +99,13 @@ namespace Origin.Source.Render
             float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
             SpriteLayer layer = chunk.GetLayer(sprite.Texture, nlayer);
 
-            SpriteMainData smd = new SpriteMainData()
+            SpriteMainData smd = new()
             {
                 SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
                 CellPosition = tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
-            SpriteExtraData sed = new SpriteExtraData()
+            SpriteExtraData sed = new()
             {
                 Color = color.ToVector4(),
                 TextureRect = new Vector4(sprite.RectPos.X, sprite.RectPos.Y, sprite.RectPos.Width, sprite.RectPos.Height)

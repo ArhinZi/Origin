@@ -6,7 +6,7 @@ namespace Origin.Source.ECS.BaseComponents
     {
         public Point3 Position;
 
-        public PackedLight GetLight(SiteLightBufferComponent lcomp)
+        public PackedLight GetLight(LightComponent lcomp)
         {
             lcomp.TryGetTile(Position, out PackedLight light);
             return light;

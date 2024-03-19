@@ -37,7 +37,7 @@ namespace Origin.Source.Utils
             var cellPosX = (worldPos.X / GlobalResources.Settings.TileSize.X) - 0.5;
             var cellPosY = (worldPos.Y / GlobalResources.Settings.TileSize.Y) - 0.5;
 
-            Point3 cellPos = new Point3()
+            Point3 cellPos = new()
             {
                 X = (int)Math.Round((cellPosX + cellPosY)),
                 Y = (int)Math.Round((cellPosY - cellPosX)),
@@ -97,7 +97,7 @@ namespace Origin.Source.Utils
 
         public static Point3 GetChunkByCell(Point3 cellPos, Point3 chunkSize)
         {
-            Point3 chunkPos = new Point3(
+            Point3 chunkPos = new(
                 cellPos.X / chunkSize.X,
                 cellPos.Y / chunkSize.Y,
                 cellPos.Z);
@@ -106,7 +106,7 @@ namespace Origin.Source.Utils
 
         public static Point3 RotatePosition(Point3 pos, Point3 size, WorldRotation rotation)
         {
-            Point3 res = new Point3(0, 0, pos.Z);
+            Point3 res = new(0, 0, pos.Z);
             if (rotation == WorldRotation.TR)
                 res = pos;
             else if (rotation == WorldRotation.TL)
@@ -135,245 +135,245 @@ namespace Origin.Source.Utils
         public static Point3[] PLUS_NEIGHBOUR_PATTERN_1L(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-                    new Point3(0,0,0),
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0)
-                };
+                return
+                [
+                    new(0,0,0),
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(-1,0,0),
+                    new(0,-1,0)
+                ];
             else
-                return new Point3[]
-                {
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0)
-                };
+                return
+                [
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(-1,0,0),
+                    new(0,-1,0)
+                ];
         }
 
         public static Point3[] PLUS_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-                    new Point3(0,0,1),
-                    new Point3(1,0,1),
-                    new Point3(0,1,1),
-                    new Point3(-1,0,1),
-                    new Point3(0,-1,1),
+                return
+                [
+                    new(0,0,1),
+                    new(1,0,1),
+                    new(0,1,1),
+                    new(-1,0,1),
+                    new(0,-1,1),
 
-                    new Point3(0,0,0),
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0),
+                    new(0,0,0),
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(-1,0,0),
+                    new(0,-1,0),
 
-                    new Point3(0,0,-1),
-                    new Point3(1,0,-1),
-                    new Point3(0,1,-1),
-                    new Point3(-1,0,-1),
-                    new Point3(0,-1,-1)
-                };
+                    new(0,0,-1),
+                    new(1,0,-1),
+                    new(0,1,-1),
+                    new(-1,0,-1),
+                    new(0,-1,-1)
+                ];
             else
-                return new Point3[]
-                {
-                    new Point3(0,0,1),
-                    new Point3(1,0,1),
-                    new Point3(0,1,1),
-                    new Point3(-1,0,1),
-                    new Point3(0,-1,1),
+                return
+                [
+                    new(0,0,1),
+                    new(1,0,1),
+                    new(0,1,1),
+                    new(-1,0,1),
+                    new(0,-1,1),
 
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0),
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(-1,0,0),
+                    new(0,-1,0),
 
-                    new Point3(0,0,-1),
-                    new Point3(1,0,-1),
-                    new Point3(0,1,-1),
-                    new Point3(-1,0,-1),
-                    new Point3(0,-1,-1)
-                };
+                    new(0,0,-1),
+                    new(1,0,-1),
+                    new(0,1,-1),
+                    new(-1,0,-1),
+                    new(0,-1,-1)
+                ];
         }
 
         public static Point3[] FULL_NEIGHBOUR_PATTERN_1L(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-                    new Point3(0,0,0),
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0),
-                    new Point3(-1,-1,0),
-                    new Point3(-1,1,0),
-                    new Point3(1,-1,0),
-                    new Point3(1,1,0),
-                };
+                return
+                [
+                    new(0,0,0),
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(-1,0,0),
+                    new(0,-1,0),
+                    new(-1,-1,0),
+                    new(-1,1,0),
+                    new(1,-1,0),
+                    new(1,1,0),
+                ];
             else
-                return new Point3[]
-                {
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0),
-                    new Point3(-1,-1,0),
-                    new Point3(-1,1,0),
-                    new Point3(1,-1,0),
-                    new Point3(1,1,0),
-                };
+                return
+                [
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(-1,0,0),
+                    new(0,-1,0),
+                    new(-1,-1,0),
+                    new(-1,1,0),
+                    new(1,-1,0),
+                    new(1,1,0),
+                ];
         }
 
         public static Point3[] FULL_NEIGHBOUR_PATTERN_1L_4x4(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-            new Point3(0, 0, 0),
-            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
-            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
-            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
-            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0)
-                };
+                return
+                [
+            new(0, 0, 0),
+            new(1, 0, 0), new(1, 1, 0), new(0, 1, 0), new(-1, 1, 0),
+            new(-1, 0, 0), new(-1, -1, 0), new(0, -1, 0), new(1, -1, 0),
+            new(2, 0, 0), new(2, 1, 0), new(2, 2, 0), new(1, 2, 0), new(0, 2, 0), new(-1, 2, 0),
+            new(-2, 0, 0), new(-2, -1, 0), new(-2, -2, 0), new(-1, -2, 0), new(0, -2, 0), new(1, -2, 0)
+                ];
             else
-                return new Point3[]
-                {
-            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
-            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
-            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
-            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0)
-                };
+                return
+                [
+            new(1, 0, 0), new(1, 1, 0), new(0, 1, 0), new(-1, 1, 0),
+            new(-1, 0, 0), new(-1, -1, 0), new(0, -1, 0), new(1, -1, 0),
+            new(2, 0, 0), new(2, 1, 0), new(2, 2, 0), new(1, 2, 0), new(0, 2, 0), new(-1, 2, 0),
+            new(-2, 0, 0), new(-2, -1, 0), new(-2, -2, 0), new(-1, -2, 0), new(0, -2, 0), new(1, -2, 0)
+                ];
         }
 
         public static Point3[] FULL_NEIGHBOUR_PATTERN_1L_5x5(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-            new Point3(0, 0, 0),
-            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
-            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
-            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
-            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0),
-            new Point3(3, 0, 0), new Point3(3, 1, 0), new Point3(3, 2, 0), new Point3(3, 3, 0), new Point3(2, 3, 0), new Point3(1, 3, 0), new Point3(0, 3, 0), new Point3(-1, 3, 0), new Point3(-2, 3, 0), new Point3(-3, 3, 0),
-            new Point3(-3, 0, 0), new Point3(-3, -1, 0), new Point3(-3, -2, 0), new Point3(-3, -3, 0), new Point3(-2, -3, 0), new Point3(-1, -3, 0), new Point3(0, -3, 0), new Point3(1, -3, 0), new Point3(2, -3, 0), new Point3(3, -3, 0)
-                };
+                return
+                [
+            new(0, 0, 0),
+            new(1, 0, 0), new(1, 1, 0), new(0, 1, 0), new(-1, 1, 0),
+            new(-1, 0, 0), new(-1, -1, 0), new(0, -1, 0), new(1, -1, 0),
+            new(2, 0, 0), new(2, 1, 0), new(2, 2, 0), new(1, 2, 0), new(0, 2, 0), new(-1, 2, 0),
+            new(-2, 0, 0), new(-2, -1, 0), new(-2, -2, 0), new(-1, -2, 0), new(0, -2, 0), new(1, -2, 0),
+            new(3, 0, 0), new(3, 1, 0), new(3, 2, 0), new(3, 3, 0), new(2, 3, 0), new(1, 3, 0), new(0, 3, 0), new(-1, 3, 0), new(-2, 3, 0), new(-3, 3, 0),
+            new(-3, 0, 0), new(-3, -1, 0), new(-3, -2, 0), new(-3, -3, 0), new(-2, -3, 0), new(-1, -3, 0), new(0, -3, 0), new(1, -3, 0), new(2, -3, 0), new(3, -3, 0)
+                ];
             else
-                return new Point3[]
-                {
-            new Point3(1, 0, 0), new Point3(1, 1, 0), new Point3(0, 1, 0), new Point3(-1, 1, 0),
-            new Point3(-1, 0, 0), new Point3(-1, -1, 0), new Point3(0, -1, 0), new Point3(1, -1, 0),
-            new Point3(2, 0, 0), new Point3(2, 1, 0), new Point3(2, 2, 0), new Point3(1, 2, 0), new Point3(0, 2, 0), new Point3(-1, 2, 0),
-            new Point3(-2, 0, 0), new Point3(-2, -1, 0), new Point3(-2, -2, 0), new Point3(-1, -2, 0), new Point3(0, -2, 0), new Point3(1, -2, 0),
-            new Point3(3, 0, 0), new Point3(3, 1, 0), new Point3(3, 2, 0), new Point3(3, 3, 0), new Point3(2, 3, 0), new Point3(1, 3, 0), new Point3(0, 3, 0), new Point3(-1, 3, 0), new Point3(-2, 3, 0), new Point3(-3, 3, 0),
-            new Point3(-3, 0, 0), new Point3(-3, -1, 0), new Point3(-3, -2, 0), new Point3(-3, -3, 0), new Point3(-2, -3, 0), new Point3(-1, -3, 0), new Point3(0, -3, 0), new Point3(1, -3, 0), new Point3(2, -3, 0), new Point3(3, -3, 0)
-                };
+                return
+                [
+            new(1, 0, 0), new(1, 1, 0), new(0, 1, 0), new(-1, 1, 0),
+            new(-1, 0, 0), new(-1, -1, 0), new(0, -1, 0), new(1, -1, 0),
+            new(2, 0, 0), new(2, 1, 0), new(2, 2, 0), new(1, 2, 0), new(0, 2, 0), new(-1, 2, 0),
+            new(-2, 0, 0), new(-2, -1, 0), new(-2, -2, 0), new(-1, -2, 0), new(0, -2, 0), new(1, -2, 0),
+            new(3, 0, 0), new(3, 1, 0), new(3, 2, 0), new(3, 3, 0), new(2, 3, 0), new(1, 3, 0), new(0, 3, 0), new(-1, 3, 0), new(-2, 3, 0), new(-3, 3, 0),
+            new(-3, 0, 0), new(-3, -1, 0), new(-3, -2, 0), new(-3, -3, 0), new(-2, -3, 0), new(-1, -3, 0), new(0, -3, 0), new(1, -3, 0), new(2, -3, 0), new(3, -3, 0)
+                ];
         }
 
         public static Point3[] STAR_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-                    new Point3(0,0,0),
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(0,0,1),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0),
-                    new Point3(0,0,-1),
-                };
+                return
+                [
+                    new(0,0,0),
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(0,0,1),
+                    new(-1,0,0),
+                    new(0,-1,0),
+                    new(0,0,-1),
+                ];
             else
-                return new Point3[]
-                {
-                    new Point3(1,0,0),
-                    new Point3(0,1,0),
-                    new Point3(0,0,1),
-                    new Point3(-1,0,0),
-                    new Point3(0,-1,0),
-                    new Point3(0,0,-1),
-                };
+                return
+                [
+                    new(1,0,0),
+                    new(0,1,0),
+                    new(0,0,1),
+                    new(-1,0,0),
+                    new(0,-1,0),
+                    new(0,0,-1),
+                ];
         }
 
         public static Point3[] FULL_NEIGHBOUR_PATTERN_3L(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-                    new Point3(0,0,0),
-                    new Point3(1,0,     0),
-                    new Point3(0,1,     0),
-                    new Point3(-1,0,    0),
-                    new Point3(0,-1,    0),
-                    new Point3(-1,-1,   0),
-                    new Point3(-1,1,    0),
-                    new Point3(1,-1,    0),
-                    new Point3(1,1,     0),
-                    new Point3(1,0,     -1),
-                    new Point3(0,1,     -1),
-                    new Point3(-1,0,    -1),
-                    new Point3(0,-1,    -1),
-                    new Point3(-1,-1,   -1),
-                    new Point3(-1,1,    -1),
-                    new Point3(1,-1,    -1),
-                    new Point3(1,1,     -1),
-                    new Point3(1,0,     1),
-                    new Point3(0,1,     1),
-                    new Point3(-1,0,    1),
-                    new Point3(0,-1,    1),
-                    new Point3(-1,-1,   1),
-                    new Point3(-1,1,    1),
-                    new Point3(1,-1,    1),
-                    new Point3(1,1,     1),
-                };
+                return
+                [
+                    new(0,0,0),
+                    new(1,0,     0),
+                    new(0,1,     0),
+                    new(-1,0,    0),
+                    new(0,-1,    0),
+                    new(-1,-1,   0),
+                    new(-1,1,    0),
+                    new(1,-1,    0),
+                    new(1,1,     0),
+                    new(1,0,     -1),
+                    new(0,1,     -1),
+                    new(-1,0,    -1),
+                    new(0,-1,    -1),
+                    new(-1,-1,   -1),
+                    new(-1,1,    -1),
+                    new(1,-1,    -1),
+                    new(1,1,     -1),
+                    new(1,0,     1),
+                    new(0,1,     1),
+                    new(-1,0,    1),
+                    new(0,-1,    1),
+                    new(-1,-1,   1),
+                    new(-1,1,    1),
+                    new(1,-1,    1),
+                    new(1,1,     1),
+                ];
             else
-                return new Point3[]
-                {
-                    new Point3(1,0,     0),
-                    new Point3(0,1,     0),
-                    new Point3(-1,0,    0),
-                    new Point3(0,-1,    0),
-                    new Point3(-1,-1,   0),
-                    new Point3(-1,1,    0),
-                    new Point3(1,-1,    0),
-                    new Point3(1,1,     0),
-                    new Point3(1,0,     -1),
-                    new Point3(0,1,     -1),
-                    new Point3(-1,0,    -1),
-                    new Point3(0,-1,    -1),
-                    new Point3(-1,-1,   -1),
-                    new Point3(-1,1,    -1),
-                    new Point3(1,-1,    -1),
-                    new Point3(1,1,     -1),
-                    new Point3(1,0,     1),
-                    new Point3(0,1,     1),
-                    new Point3(-1,0,    1),
-                    new Point3(0,-1,    1),
-                    new Point3(-1,-1,   1),
-                    new Point3(-1,1,    1),
-                    new Point3(1,-1,    1),
-                    new Point3(1,1,     1),
-                };
+                return
+                [
+                    new(1,0,     0),
+                    new(0,1,     0),
+                    new(-1,0,    0),
+                    new(0,-1,    0),
+                    new(-1,-1,   0),
+                    new(-1,1,    0),
+                    new(1,-1,    0),
+                    new(1,1,     0),
+                    new(1,0,     -1),
+                    new(0,1,     -1),
+                    new(-1,0,    -1),
+                    new(0,-1,    -1),
+                    new(-1,-1,   -1),
+                    new(-1,1,    -1),
+                    new(1,-1,    -1),
+                    new(1,1,     -1),
+                    new(1,0,     1),
+                    new(0,1,     1),
+                    new(-1,0,    1),
+                    new(0,-1,    1),
+                    new(-1,-1,   1),
+                    new(-1,1,    1),
+                    new(1,-1,    1),
+                    new(1,1,     1),
+                ];
         }
 
         public static Point3[] TOP_BOTTOM_NEIGHBOUR_PATTERN(bool inclusive = true)
         {
             if (inclusive)
-                return new Point3[]
-                {
-                    new Point3(0,0,0),
-                    new Point3(0,0,     1),
-                    new Point3(0,0,     -1)
-                };
+                return
+                [
+                    new(0,0,0),
+                    new(0,0,     1),
+                    new(0,0,     -1)
+                ];
             else
-                return new Point3[]
-                    {
-                    new Point3(0,0,     1),
-                    new Point3(0,0,     -1)
-                    };
+                return
+                    [
+                    new(0,0,     1),
+                    new(0,0,     -1)
+                    ];
         }
 
         #endregion Neighbour Patterns

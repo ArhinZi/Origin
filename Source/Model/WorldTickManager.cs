@@ -33,7 +33,7 @@ namespace Origin.Source.Model
 
         public ulong DayTick => Ticks % DAY;
 
-        public TimeOnly DayTime => new TimeOnly(
+        public TimeOnly DayTime => new(
             hour: (int)(DayTick / HOUR),
             minute: (int)((DayTick % HOUR) / MINUTE),
             second: (int)(DayTick % MINUTE)

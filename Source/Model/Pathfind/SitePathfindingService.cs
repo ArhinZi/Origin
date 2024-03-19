@@ -79,16 +79,16 @@ namespace Origin.Source.Pathfind
                                 IsWalkAbleTile wat;
                                 if (Map[x, y, z] != Entity.Null && Map[x, y, z].TryGet<IsWalkAbleTile>(out wat))
                                 {
-                                    Point3 otherPos = new Point3(x, y, z);
+                                    Point3 otherPos = new(x, y, z);
 
                                     if (!_pathfinderSystem.HasNode(otherPos))
                                         _pathfinderSystem.AddNode(otherPos, 1);
                                     _pathfinderSystem.AddNodeIntersections(pos,
-                                        new RelationWith[] {new RelationWith() {
+                                        [new() {
                                             position = otherPos ,
                                             traversalType = TraversalTypes.Walk,
                                             cost = v
-                                        } });
+                                        } ]);
                                     i++;
                                     //otherNode.Connect(node, Velocity.FromMetersPerSecond(1));
                                 }

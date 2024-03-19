@@ -20,13 +20,13 @@ namespace Origin.Source.Model.Site.Tools
         public SiteToolsComponent(Site site)
         {
             Site = site;
-            toolList = new List<Tool>()
-            {
+            toolList =
+            [
                 new ToolDig(this),
                 new ToolPathfind(this),
                 new ToolPlaceDirt(this),
                 new ToolInfo(this),
-            };
+            ];
             //SetToolByName("ToolDig");
         }
 

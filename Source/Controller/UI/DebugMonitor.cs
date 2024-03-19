@@ -32,14 +32,14 @@ namespace Origin.Source
         private int fps = 0;
         private int min = 0;
         private int max = 0;
-        private FixedSizedQueue<float> fpss = new FixedSizedQueue<float>(600);
+        private FixedSizedQueue<float> fpss = new(600);
 
         private long drawCalls;
 
         private bool isVisible = true;
         private int location = 0;
 
-        private Dictionary<string, string> values = new();
+        private Dictionary<string, string> values = [];
 
         public bool IsVisible
         {
@@ -136,7 +136,7 @@ namespace Origin.Source
                 else
                     ImGui.Text("Mouse Position: <invalid>");
                 ImGui.Text($"FPS : {fps} ({min}, {max}) - {avgTickTime.ToString("0.####")}");
-                float[] samples = fpss.ToArray();
+                float[] samples = [.. fpss];
                 ImGui.PlotLines("##FPS", ref samples[0], samples.Length, 0, null, 0, 100, default(Vector2), 4);
                 ImGui.Text($"DrawCalls : {drawCalls}");
                 ImGui.Text($"Mouse over UI: {io.WantCaptureMouse}");

@@ -12,7 +12,7 @@ namespace Origin.Source.Utils
     {
         #region Private Members
 
-        private static readonly Dictionary<String, List<Vector2>> circleCache = new Dictionary<string, List<Vector2>>();
+        private static readonly Dictionary<String, List<Vector2>> circleCache = [];
 
         //private static readonly Dictionary<String, List<Vector2>> arcCache = new Dictionary<string, List<Vector2>>();
         private static Texture2D pixel;
@@ -61,7 +61,7 @@ namespace Origin.Source.Utils
                 return circleCache[circleKey];
             }
 
-            List<Vector2> vectors = new List<Vector2>();
+            List<Vector2> vectors = [];
 
             const double max = 2.0 * Math.PI;
             double step = max / sides;
@@ -90,8 +90,7 @@ namespace Origin.Source.Utils
         /// <returns>A list of vectors that, if connected, will create an arc</returns>
         private static List<Vector2> CreateArc(float radius, int sides, float startingAngle, float radians)
         {
-            List<Vector2> points = new List<Vector2>();
-            points.AddRange(CreateCircle(radius, sides));
+            List<Vector2> points = [.. CreateCircle(radius, sides)];
             points.RemoveAt(points.Count - 1); // remove the last point because it's a duplicate of the first
 
             // The circle starts at (radius, 0)

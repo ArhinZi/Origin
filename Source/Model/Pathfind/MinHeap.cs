@@ -10,7 +10,7 @@ namespace Origin.Source.Pathfind
 
         public MinHeap()
         {
-            this.Items = new List<T>();
+            this.Items = [];
         }
 
         public int Count => this.Items.Count;

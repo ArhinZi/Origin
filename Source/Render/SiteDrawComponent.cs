@@ -30,14 +30,14 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     {
         private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
         private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
-        private Color borderColor = new Color(0, 0, 0, 255);
+        private Color borderColor = new(0, 0, 0, 255);
 
         private Site site;
         private SiteRenderer _siteRenderer;
         private Random random;
 
         public RenderTarget2D RenderTarget2D { get; private set; }
-        private SpriteBatch spriteBatch = new SpriteBatch(Global.GraphicsDevice);
+        private SpriteBatch spriteBatch = new(Global.GraphicsDevice);
 
         public SiteDrawComponent(Site site)
         {
@@ -140,7 +140,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 for (int x = 0; x < site.Size.X; x++)
                     for (int y = 0; y < site.Size.Y; y++)
                     {
-                        Point3 tilePos = new Point3(x, y, z);
+                        Point3 tilePos = new(x, y, z);
                         Entity tile = site.Map[tilePos];
 
                         if (tile == Entity.Null)
@@ -227,12 +227,12 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 site.ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
                 {
                     var item = tile.Position;
-                    List<Point3> neighbours = new List<Point3>()
-                        {
+                    List<Point3> neighbours =
+                        [
                             new Point3(0, 0, 0),
                             new Point3(-1, 0, 0),new Point3(0, -1, 0),
                             new Point3(1, 0, 0),new Point3(0, 1, 0)
-                        };
+                        ];
                     //foreach (var n in neighbours)
                     {
                         if (entity.TryGet(out SpriteLocatorsStatic locators))

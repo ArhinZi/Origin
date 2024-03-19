@@ -46,9 +46,9 @@ namespace Origin.Source.Render
             ReallocMainBuffer();
             ReallocExtraBuffer();
 
-            SpritesToRemove = new List<SpriteLocator>();
-            SpritesToUpdate = new List<UpdateSpriteInstanceData>();
-            SpritesToAdd = new List<UpdateSpriteInstanceData>();
+            SpritesToRemove = [];
+            SpritesToUpdate = [];
+            SpritesToAdd = [];
             FreeSpace = new Queue<uint>();
         }
 

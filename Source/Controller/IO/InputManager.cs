@@ -99,7 +99,7 @@ namespace Origin.Source.Controller.IO
         /// </summary>
         public static Game game;
 
-        private static Dictionary<string, Keybind> keybinds = new Dictionary<string, Keybind>();
+        private static Dictionary<string, Keybind> keybinds = [];
         private static bool _centerMouse = false;
 
         #endregion Variables
@@ -204,7 +204,7 @@ namespace Origin.Source.Controller.IO
 
         private static Buttons GetGamepadButtons()
         {
-            Buttons buttons = new Buttons();
+            Buttons buttons = new();
 
             //DPad
             if (CurrentGamepad.IsButtonDown(Buttons.DPadUp))
@@ -327,7 +327,7 @@ namespace Origin.Source.Controller.IO
 
         private static MouseButton GetMouseButtons()
         {
-            MouseButton mouse = new MouseButton();
+            MouseButton mouse = new();
 
             //Check the button
             if (CurrentMouse.LeftButton == ButtonState.Pressed)

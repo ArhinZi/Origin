@@ -17,21 +17,21 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Origin.Source.Model.Site.Light
 {
-    public class SiteLightBufferComponent
+    public class LightComponent
     {
-        private Site site;
+        private readonly Site site;
 
-        public List<PackedLight[]> lightData { get; private set; }
+        private List<PackedLight[]> lightData;
 
         public List<StructuredBuffer> buffers;
         public bool bufferDirty = false;
 
-        public SiteLightBufferComponent(Site site)
+        public LightComponent(Site site)
         {
             this.site = site;
-            lightData = new List<PackedLight[]>();
+            lightData = [];
             lightData.Capacity = site.Size.Z;
-            buffers = new List<StructuredBuffer>();
+            buffers = [];
             for (int i = 0; i < site.Size.Z; i++)
             {
                 lightData.Add(null);
@@ -39,12 +39,12 @@ namespace Origin.Source.Model.Site.Light
             }
         }
 
-        private int unfold(int X, int Y)
+        private int Unfold(int X, int Y)
         {
             return (X * site.Size.X + Y);
         }
 
-        private void fold(int index, out int X, out int Y)
+        private void Fold(int index, out int X, out int Y)
         {
             Y = index / site.Size.Y;
             X = index % site.Size.Y;
@@ -56,7 +56,7 @@ namespace Origin.Source.Model.Site.Light
             {
                 lightData[pos.Z] = new PackedLight[site.Size.X * site.Size.Y];
             }
-            lightData[pos.Z][unfold(pos.X, pos.Y)] = pl;
+            lightData[pos.Z][Unfold(pos.X, pos.Y)] = pl;
         }
 
         public bool TryGetTile(Point3 pos, out PackedLight pl)
@@ -64,7 +64,7 @@ namespace Origin.Source.Model.Site.Light
             pl = default;
             if (lightData[pos.Z] == null) return false;
 
-            pl = lightData[pos.Z][unfold(pos.X, pos.Y)];
+            pl = lightData[pos.Z][Unfold(pos.X, pos.Y)];
             return true;
         }
 
@@ -74,7 +74,7 @@ namespace Origin.Source.Model.Site.Light
             {
                 lightData[pos.Z] = new PackedLight[site.Size.X * site.Size.Y];
             }
-            return ref lightData[pos.Z][unfold(pos.X, pos.Y)];
+            return ref lightData[pos.Z][Unfold(pos.X, pos.Y)];
         }
 
         public void SetBuffers()

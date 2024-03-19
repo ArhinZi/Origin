@@ -24,7 +24,7 @@ namespace Origin.Source.Model
         public Random Random { get; private set; }
 
         public Site.Site ActiveSite { get; private set; }
-        public List<Site.Site> Sites { get; private set; } = new();
+        public List<Site.Site> Sites { get; private set; } = [];
 
         public World()
         {
@@ -39,21 +39,21 @@ namespace Origin.Source.Model
 
             var SystemManager = TimeManager.SystemsManager;
 
-            SystemManager.Groups.Add(new("Pathfinder", new Arch.System.ISystem<ulong>[] {
+            SystemManager.Groups.Add(new("Pathfinder", [
                 new UpdateSitePathSystem(ActiveSite)
-            }));
-            SystemManager.Groups.Add(new("Vegetation", new Arch.System.ISystem<ulong>[] {
+            ]));
+            SystemManager.Groups.Add(new("Vegetation", [
                 new UpdateVegsOnConstructionRemovedSystem(ActiveSite),
                 new UpdateVegsOnConstructionPlacedSystem(ActiveSite),
                 new VegatationControlSystem(ActiveSite)
-            }));
-            SystemManager.Groups.Add(new("SunLight", new Arch.System.ISystem<ulong>[] {
+            ]));
+            SystemManager.Groups.Add(new("SunLight", [
                 new UpdateLightSystem(ActiveSite)
-            }));
+            ]));
 
-            SystemManager.Groups.Add(new("Final", new Arch.System.ISystem<ulong>[] {
+            SystemManager.Groups.Add(new("Final", [
                 new ClearEventsSystem(ActiveSite)
-            }));
+            ]));
 
             SystemManager.Init();
 

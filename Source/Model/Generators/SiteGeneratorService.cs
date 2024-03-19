@@ -26,16 +26,16 @@ namespace Origin.Source.Model.Generators
             _site = site;
             Size = size;
 
-            passes = new List<AbstractPass>()
-            {
+            passes =
+            [
                 new SurfacePass(Size, _seed)
-            };
+            ];
         }
 
         public void Visit(Point3 startPos, bool visitStart = true, bool upd = false)
         {
-            Dictionary<int, bool[,]> visited = new Dictionary<int, bool[,]>();
-            Stack<Point3> stack = new Stack<Point3>();
+            Dictionary<int, bool[,]> visited = [];
+            Stack<Point3> stack = new();
             foreach (var p in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(visitStart))
             {
                 stack.Push(startPos + p);

@@ -106,7 +106,7 @@ namespace Origin.Source.Model.Generators
         public void GenerateHeightMap(float scale, float freq = 0.003f)
         {
             heightMap = new HeightTile[Size.X, Size.Y];
-            FastNoiseLite fnl = new FastNoiseLite(Seed);
+            FastNoiseLite fnl = new(Seed);
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
             fnl.SetFractalType(FastNoiseLite.FractalType.FBm);
             fnl.SetFractalOctaves(8);
@@ -171,13 +171,13 @@ namespace Origin.Source.Model.Generators
             start = nodes[0, Random.Shared.Next() % height];
             end = nodes[width - 1, Random.Shared.Next() % height];
 
-            PathFinder pf = new PathFinder();
+            PathFinder pf = new();
             Path path = pf.FindPath(start, end, Velocity.FromMetersPerSecond(2));
 
-            HashSet<Point> visited = new HashSet<Point>();
+            HashSet<Point> visited = [];
             foreach (var edge in path.Edges)
             {
-                Point3 pos = new Point3((int)edge.Start.Position.X, (int)edge.Start.Position.Y, (int)edge.Start.Position.Z);
+                Point3 pos = new((int)edge.Start.Position.X, (int)edge.Start.Position.Y, (int)edge.Start.Position.Z);
                 // Calculate the boundaries of the square area
                 int radius = river.Strength * 5;
                 int minX = Math.Max(pos.X - radius, 0);

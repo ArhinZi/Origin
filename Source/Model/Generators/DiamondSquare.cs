@@ -41,7 +41,7 @@ namespace Origin.Source.Model.Generators
             data[DATA_SIZE - 1, DATA_SIZE - 1] = 0.2;
 
             double h = _roughness;//the range (-h -> +h) for the average offset - affects roughness
-            Random r = new Random();//for the new value in range of h
+            Random r = new();//for the new value in range of h
                                     //side length is distance of a single square side
                                     //or distance of diagonal in diamond
 

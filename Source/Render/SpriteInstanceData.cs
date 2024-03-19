@@ -33,11 +33,10 @@ namespace Origin.Source.Render
     {
         [FieldOffset(0)] public Color World;
 
-        public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration
-        (
-            new VertexElement[]{
-                new VertexElement(0, VertexElementFormat.Color,
-                                     VertexElementUsage.Color, 0) }
+        public static readonly VertexDeclaration VertexDeclaration = new        (
+            [
+                new(0, VertexElementFormat.Color,
+                                     VertexElementUsage.Color, 0) ]
         );
 
         VertexDeclaration IVertexType.VertexDeclaration

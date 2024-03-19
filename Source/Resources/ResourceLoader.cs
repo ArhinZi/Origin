@@ -13,7 +13,7 @@ namespace Origin.Source.Resources
         {
             GlobalResources.Init();
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            JObject jobj = new JObject();
+            JObject jobj = [];
             foreach (var modeFolder in Directory.GetDirectories(Path.Combine(path, "Mods\\")))
             {
                 foreach (var file in GetAllFiles(modeFolder))
@@ -36,7 +36,7 @@ namespace Origin.Source.Resources
 
         private static IEnumerable<string> GetAllFiles(string rootDirectory)
         {
-            Queue<string> pending = new Queue<string>();
+            Queue<string> pending = new();
             pending.Enqueue(rootDirectory);
 
             while (pending.Count > 0)

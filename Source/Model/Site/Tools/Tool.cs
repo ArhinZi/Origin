@@ -67,7 +67,7 @@ namespace Origin.Source.Model.Site.Tools
             var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
             var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
 
-            Point3 cellPos = new Point3()
+            Point3 cellPos = new()
             {
                 X = (int)Math.Round(cellPosX + cellPosY),
                 Y = (int)Math.Round(cellPosY - cellPosX),

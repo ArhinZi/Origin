@@ -17,7 +17,7 @@ namespace Origin.Source.ECS
         {
             get
             {
-                if (_list == null) return _list = new List<SpriteLocator>();
+                if (_list == null) return _list = [];
                 return _list;
             }
             set

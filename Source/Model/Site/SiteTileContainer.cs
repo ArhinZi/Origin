@@ -12,7 +12,7 @@ namespace Origin.Source.Model.Site
 
         public SiteTileContainer(Point3 size)
         {
-            Blocks = new List<Entity[,]>();
+            Blocks = [];
             _size = size;
             Blocks.Capacity = _size.Z;
             for (int i = 0; i < size.Z; i++)

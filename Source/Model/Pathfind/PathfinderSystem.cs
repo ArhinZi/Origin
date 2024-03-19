@@ -58,12 +58,12 @@ namespace Origin.Source.Pathfind
 
         public PathfinderSystem()
         {
-            nodes = new Dictionary<Point3, Node>();
-            connections = new Dictionary<TraversalTypes, Dictionary<Node, (List<Node>, List<Edge>)>>();
+            nodes = [];
+            connections = [];
             foreach (var type in Enum.GetNames(typeof(TraversalTypes)))
             {
                 TraversalTypes t = (TraversalTypes)Enum.Parse(typeof(TraversalTypes), type);
-                connections.Add(t, new Dictionary<Node, (List<Node>, List<Edge>)>());
+                connections.Add(t, []);
             }
         }
 
@@ -110,28 +110,28 @@ namespace Origin.Source.Pathfind
         public void RemoveNode(Point3 position)
         {
             var n = nodes[position];
-            if(connections[TraversalTypes.Walk].ContainsKey(n))
-            foreach (var nnode in connections[TraversalTypes.Walk][n].Item1)
-            {
-                var its = connections[TraversalTypes.Walk][nnode];
-                int index = connections[TraversalTypes.Walk][nnode].Item1.IndexOf(n);
-                connections[TraversalTypes.Walk][nnode].Item1.RemoveAt(index);
-                connections[TraversalTypes.Walk][nnode].Item2.RemoveAt(index);
-            }
+            if (connections[TraversalTypes.Walk].ContainsKey(n))
+                foreach (var nnode in connections[TraversalTypes.Walk][n].Item1)
+                {
+                    var its = connections[TraversalTypes.Walk][nnode];
+                    int index = connections[TraversalTypes.Walk][nnode].Item1.IndexOf(n);
+                    connections[TraversalTypes.Walk][nnode].Item1.RemoveAt(index);
+                    connections[TraversalTypes.Walk][nnode].Item2.RemoveAt(index);
+                }
             connections[TraversalTypes.Walk].Remove(n);
             nodes.Remove(position);
         }
 
         public PathInfo FindPath(Point3 pstart, Point3 pgoal, bool debug = false)
         {
-            MinHeap<PFNode> interesting = new MinHeap<PFNode>();
-            Dictionary<Point3, PFNode> visited = new Dictionary<Point3, PFNode>();
-            Dictionary<PFNode, PFNode> path = new Dictionary<PFNode, PFNode>();
+            MinHeap<PFNode> interesting = new();
+            Dictionary<Point3, PFNode> visited = [];
+            Dictionary<PFNode, PFNode> path = [];
             Node goal;
 
-            PathInfo pathInfo = new PathInfo();
+            PathInfo pathInfo = new();
             if (debug)
-                pathInfo.visited = new();
+                pathInfo.visited = [];
 
             if (!nodes.TryGetValue(pgoal, out goal) || !nodes.ContainsKey(pstart))
                 return null;
@@ -191,7 +191,7 @@ namespace Origin.Source.Pathfind
                 visitedCount++;
             }
 
-            pathInfo.path = new List<Point3>();
+            pathInfo.path = [];
             bool reconstructed = false;
             if (reached != null)
             {

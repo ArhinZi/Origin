@@ -39,9 +39,9 @@ namespace Origin.Source.Resources
             }
         }
 
-        public static Dictionary<string, Vegetation> VegetationByConstruction = new();
-        public static Dictionary<string, Vegetation> VegetationByConstrCategory = new();
-        public static Dictionary<(Vegetation, string), List<string>> VegetationSpritesByConstruction = new();
-        public static Dictionary<(Vegetation, string), List<string>> VegetationSpritesByConstrCategory = new();
+        public static Dictionary<string, Vegetation> VegetationByConstruction = [];
+        public static Dictionary<string, Vegetation> VegetationByConstrCategory = [];
+        public static Dictionary<(Vegetation, string), List<string>> VegetationSpritesByConstruction = [];
+        public static Dictionary<(Vegetation, string), List<string>> VegetationSpritesByConstrCategory = [];
     }
 }

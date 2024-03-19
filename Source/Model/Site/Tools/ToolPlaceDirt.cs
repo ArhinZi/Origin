@@ -28,7 +28,7 @@ namespace Origin.Source.Model.Site.Tools
         private Sprite Wall;
         private Sprite Floor;
 
-        private SpritePositionColor template = new SpritePositionColor()
+        private SpritePositionColor template = new()
         {
             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
             offset = new Point(0, 0),
@@ -39,7 +39,7 @@ namespace Origin.Source.Model.Site.Tools
             base(controller)
         {
             Name = "ToolPlaceDirt";
-            sprites = new List<SpritePositionColor> { };
+            sprites = [];
             RenderLayer = DrawBufferLayer.FrontInteractives;
         }
 
@@ -97,7 +97,7 @@ namespace Origin.Source.Model.Site.Tools
                             {
                                 for (int y = start.Y; y <= end.Y; y++)
                                 {
-                                    Point3 Pos = new Point3(x, y, z);
+                                    Point3 Pos = new(x, y, z);
                                     if (Pos != Position)
                                     {
                                         sprites.Add(new SpritePositionColor()
@@ -131,7 +131,7 @@ namespace Origin.Source.Model.Site.Tools
                             {
                                 for (int y = start.Y; y <= end.Y; y++)
                                 {
-                                    Point3 pos = new Point3(x, y, z);
+                                    Point3 pos = new(x, y, z);
 
                                     Controller.Site.PlaceConstruction(pos, construction, mat);
                                 }
@@ -197,7 +197,7 @@ namespace Origin.Source.Model.Site.Tools
             var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
             var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
 
-            Point3 cellPos = new Point3()
+            Point3 cellPos = new()
             {
                 X = (int)Math.Round(cellPosX + cellPosY),
                 Y = (int)Math.Round(cellPosY - cellPosX),

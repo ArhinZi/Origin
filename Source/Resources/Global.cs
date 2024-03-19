@@ -21,25 +21,40 @@ namespace Origin.Source.Resources
             FrontInteractives = 15,
         }
 
-        public static byte LightFrontStart = 11;
+        public static readonly byte LightFrontStart = 11;
 
-        public static byte[] NoLightLayers = {
+        public static byte[] NoLightLayers = [
             (byte)DrawBufferLayer.HiddenBack,
             (byte)DrawBufferLayer.BackInteractives,
             (byte)DrawBufferLayer.BackNoLight,
             (byte)DrawBufferLayer.HiddenFront,
             (byte)DrawBufferLayer.FrontInteractives,
             (byte)DrawBufferLayer.FrontNoLight,
-        };
+        ];
+
+        public enum FluidType : byte // 4b - 16 vals
+        {
+            WATER = 0,
+            LAVA = 1
+        }
+
+        public enum Direction
+        {
+            NONE,
+            NORTH,
+            EAST,
+            WEST,
+            SOUTH
+        }
 
         #region Camera
 
-        public static float SITE_CAM_MIN_ZOOM = 0.05f;
-        public static float SITE_CAM_MAX_ZOOM = 4f;
-        public static int CAM_SPEED = 1000;
-        public static int CAM_SHIFT_SPEED_MULT = 4;
-        public static int CAM_ZOOM_SPEED = 1;
-        public static int CAM_MOUSE_ZOOM_SPEED = 10;
+        public static readonly float SITE_CAM_MIN_ZOOM = 0.05f;
+        public static readonly float SITE_CAM_MAX_ZOOM = 4f;
+        public static readonly int CAM_SPEED = 1000;
+        public static readonly int CAM_SHIFT_SPEED_MULT = 4;
+        public static readonly int CAM_ZOOM_SPEED = 1;
+        public static readonly int CAM_MOUSE_ZOOM_SPEED = 10;
 
         #endregion Camera
 
@@ -60,7 +75,7 @@ namespace Origin.Source.Resources
         /// </summary>
         public static readonly float Z_LEVEL_OFFSET = 0.01f;
 
-        public static readonly Point BASE_CHUNK_SIZE = new Point(512, 512);
+        public static readonly Point BASE_CHUNK_SIZE = new(512, 512);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 32;
 
         //public static int GPU_LAYER_PACK_COUNT = 65536;
@@ -68,8 +83,8 @@ namespace Origin.Source.Resources
 
         #endregion Render
 
-        public static float FontSize = 20;
+        public static readonly float FontSize = 20;
 
-        public static string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Arhin Studio", "Origin");
+        public static readonly string AppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Arhin Studio", "Origin");
     }
 }

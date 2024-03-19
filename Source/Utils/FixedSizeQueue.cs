@@ -4,7 +4,7 @@ namespace Origin.Source.Utils
 {
     public class FixedSizedQueue<T> : ConcurrentQueue<T>
     {
-        private readonly object syncObject = new object();
+        private readonly object syncObject = new();
 
         public int Size { get; private set; }
 

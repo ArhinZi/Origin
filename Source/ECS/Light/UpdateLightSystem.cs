@@ -23,7 +23,7 @@ namespace Origin.Source.ECS.Light
         {
         }
 
-        private List<HashSet<Point3>> recastPlan = new List<HashSet<Point3>>();
+        private List<HashSet<Point3>> recastPlan = [];
         private bool recastDirty = false;
 
         public override void Initialize()
@@ -31,7 +31,7 @@ namespace Origin.Source.ECS.Light
             recastPlan.Capacity = _site.Size.Z;
             for (int i = 0; i < _site.Size.Z; i++)
             {
-                recastPlan.Add(new());
+                recastPlan.Add([]);
             }
 
             recastDirty = true;
@@ -43,7 +43,7 @@ namespace Origin.Source.ECS.Light
                     Entity ent = _site.Map[pos];
                     if (!ent.Has<BaseConstruction>())
                     {
-                        PackedLight pl = new PackedLight()
+                        PackedLight pl = new()
                         {
                             SunLighted = 7
                         };

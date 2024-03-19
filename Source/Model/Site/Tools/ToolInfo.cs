@@ -30,7 +30,7 @@ namespace Origin.Source.Model.Site.Tools
     {
         private Point3 selected = Point3.Null;
 
-        private SpritePositionColor template = new SpritePositionColor()
+        private SpritePositionColor template = new()
         {
             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionFloor"),
             offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
@@ -41,7 +41,7 @@ namespace Origin.Source.Model.Site.Tools
             base(controller)
         {
             Name = "ToolInfo";
-            sprites = new List<SpritePositionColor> { };
+            sprites = [];
         }
 
         public override void Reset()

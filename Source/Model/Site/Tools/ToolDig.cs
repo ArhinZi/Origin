@@ -18,7 +18,7 @@ namespace Origin.Source.Model.Site.Tools
         private Point3 start;
         private Point3 end;
 
-        private SpritePositionColor template = new SpritePositionColor()
+        private SpritePositionColor template = new()
         {
             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionFloor"),
             offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
@@ -29,7 +29,7 @@ namespace Origin.Source.Model.Site.Tools
             base(controller)
         {
             Name = "ToolDig";
-            sprites = new List<SpritePositionColor> { };
+            sprites = [];
             RenderLayer = Global.DrawBufferLayer.FrontInteractives;
         }
 
@@ -74,7 +74,7 @@ namespace Origin.Source.Model.Site.Tools
                         {
                             for (int j = start.Y; j <= end.Y; j++)
                             {
-                                Point3 Pos = new Point3(i, j, start.Z);
+                                Point3 Pos = new(i, j, start.Z);
                                 if (Pos != Position)
                                 {
                                     SpritePositionColor spc = template.Clone() as SpritePositionColor;

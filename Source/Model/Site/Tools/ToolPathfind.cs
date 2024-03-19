@@ -21,21 +21,21 @@ namespace Origin.Source.Model.Site.Tools
 
         public PathInfo LastPath = null;
 
-        private SpritePositionColor template = new SpritePositionColor()
+        private SpritePositionColor template = new()
         {
             sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SolidSelectionWall"),
             offset = new Point(0, 0)
         };
 
-        private Color baseColor = new Color(255, 0, 0);
-        private Color pathColor = new Color(0, 0, 255);
+        private Color baseColor = new(255, 0, 0);
+        private Color pathColor = new(0, 0, 255);
         private Color debugColor = Color.Yellow;
 
         public ToolPathfind(SiteToolsComponent controller) :
             base(controller)
         {
             Name = "ToolPathfind";
-            sprites = new List<SpritePositionColor> { };
+            sprites = [];
             RenderLayer = DrawBufferLayer.FrontInteractives;
         }
 
@@ -49,7 +49,7 @@ namespace Origin.Source.Model.Site.Tools
 
         public override void Update(GameTime gameTime)
         {
-            Point m = new Point(InputManager.MouseX, InputManager.MouseY);
+            Point m = new(InputManager.MouseX, InputManager.MouseY);
             Point3 pos = Position = WorldUtils.MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site);
 
             if (pos.X < 0 || pos.X >= Controller.Site.Size.X || pos.Y < 0 || pos.Y >= Controller.Site.Size.Y)
