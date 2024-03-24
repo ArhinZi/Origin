@@ -8,10 +8,12 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
 using Origin.Source.Events;
+using Origin.Source.Model;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 using Vector2 = System.Numerics.Vector2;
 
@@ -162,6 +164,26 @@ namespace Origin.Source
             }
 
             ImGui.End();
+        }
+
+        public void DrawSystemsPerformanceWindow(GameTime gameTime)
+        {
+            //ImGui.SetNextWindowSize(new System.Numerics.Vector2(500, 440), ImGuiCond.Always);
+            //if (ImGui.Begin($"Systems Performance"))
+            //{
+            //    World world = Global.World;
+            //    var tickManager = world.TimeManager;
+            //    var groups = tickManager.SystemsManager.Groups;
+            //    foreach (var group in groups)
+            //    {
+            //        group.
+            //        foreach (var item in group)
+            //        {
+            //        }
+            //    }
+            //    ImGui.Text(name);
+            //}
+            //ImGui.End();
         }
 
         [Event]

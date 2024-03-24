@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Arch.Core;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using System;
@@ -12,12 +14,13 @@ namespace Origin.Source.Resources
         {
             HiddenBack = 0,
             Back = 1,
+            Water = 2,
             BackNoLight = 4,
             BackInteractives = 5,
             HiddenFront = 10,
             Front = 11,
-            FrontOver = 12,
-            FrontNoLight = 14,
+            FrontNoLight = 12,
+            FrontOver = 14,
             FrontInteractives = 15,
         }
 
@@ -62,6 +65,7 @@ namespace Origin.Source.Resources
 
         public static GraphicsDevice GraphicsDevice;
         public static Game Game;
+        public static Model.World World;
 
         /// <summary>
         /// Z offset.

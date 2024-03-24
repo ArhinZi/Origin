@@ -87,7 +87,7 @@ namespace Origin.Source.GameStates
                 string blockMat = "NONE";
                 BaseConstruction bc;
 
-                if (World.ActiveSite.Map[pos.X, pos.Y, pos.Z] != Entity.Null && World.ActiveSite.Map[pos.X, pos.Y, pos.Z].TryGet(out bc))
+                if (World.ActiveSite.Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out bc))
                 {
                     blockMat = string.Format("{0} of {1}", bc.Construction.ID, bc.Material.ID);
                 }

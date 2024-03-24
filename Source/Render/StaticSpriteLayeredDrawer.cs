@@ -6,14 +6,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Sprites;
 
+using Arch.Bus;
+
 using Origin.Source.ECS;
+using Origin.Source.Events;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -23,10 +25,11 @@ using static Origin.Source.Render.SpriteChunk;
 using static Origin.Source.Resources.Global;
 
 using Sprite = Origin.Source.Resources.Sprite;
+using MonoGame.Extended.Timers;
 
 namespace Origin.Source.Render
 {
-    public class StaticSpriteLayeredDrawer : IBaseLayeredDrawer
+    public partial class StaticSpriteLayeredDrawer : IBaseLayeredDrawer
     {
         public Point ChunkSize = BASE_CHUNK_SIZE;
         private GraphicsDevice device = Global.GraphicsDevice;
@@ -34,6 +37,8 @@ namespace Origin.Source.Render
         private SpriteChunk[,,] spriteChunks;
         private Site site;
         private Point3 chunksCount;
+
+        public RenderTarget2D RenderTarget2D { get; private set; }
 
         public StaticSpriteLayeredDrawer(Site site)
         {
@@ -48,6 +53,20 @@ namespace Origin.Source.Render
             chunksCount = new Point3(site.Size.X / ChunkSize.X, site.Size.Y / ChunkSize.Y, site.Size.Z);
 
             spriteChunks = new SpriteChunk[chunksCount.X, chunksCount.Y, chunksCount.Z];
+
+            RenderTarget2D = new RenderTarget2D(Global.GraphicsDevice,
+                Global.Game.Window.ClientBounds.Width, Global.Game.Window.ClientBounds.Height,
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+
+            Hook();
+        }
+
+        [Event]
+        public void OnScreenBoundsChanged(ScreenBoundsChanged bounds)
+        {
+            RenderTarget2D = new RenderTarget2D(Global.GraphicsDevice,
+                bounds.screenBounds.Width, bounds.screenBounds.Height,
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
         }
 
         public void SetChunks()
@@ -171,18 +190,64 @@ namespace Origin.Source.Render
                 {
                     SiteRenderer.InstanceMainEffect.Parameters["nolight"].SetValue(false);
                 }
+
+                if (sublayer == (int)DrawBufferLayer.Water)
+                {
+                    /*var blend = new BlendState();
+                    blend.ColorSourceBlend = Blend.SourceAlpha;
+                    blend.AlphaSourceBlend = Blend.SourceAlpha;
+                    blend.ColorDestinationBlend = Blend.One;
+                    blend.AlphaDestinationBlend = Blend.One;
+                    BlendState blendState = new BlendState();
+                    blendState.ColorSourceBlend = Blend.SourceAlpha;
+                    blendState.AlphaSourceBlend = Blend.SourceAlpha;
+                    blendState.ColorDestinationBlend = Blend.InverseSourceAlpha;
+                    blendState.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+                    blendState.ColorBlendFunction = BlendFunction.Add;
+                    blendState.AlphaBlendFunction = BlendFunction.Add;*/
+                    device.BlendState = BlendState.Additive;
+                }
+                else
+                    device.BlendState = BlendState.AlphaBlend;
             }
 
-            void SubDraw(SpriteLayer dlayer)
+            void SubDraw(byte sublayer, SpriteLayer dlayer)
             {
                 if (dlayer.dataIndex != 0)
                 {
-                    SiteRenderer.InstanceMainEffect.Parameters["MainBuffer"].SetValue(dlayer.bufferDataMain);
-                    SiteRenderer.InstanceMainEffect.Parameters["ExtraBuffer"].SetValue(dlayer.bufferDataExtra);
+                    /*if (sublayer == (int)DrawBufferLayer.Water)
+                    {
+                        BlendState blendState = new BlendState();
+                        blendState.ColorSourceBlend = Blend.SourceAlpha;
+                        blendState.AlphaSourceBlend = Blend.SourceAlpha;
+                        blendState.ColorDestinationBlend = Blend.InverseSourceAlpha;
+                        blendState.AlphaDestinationBlend = Blend.InverseSourceAlpha;
+                        blendState.ColorBlendFunction = BlendFunction.Add;
+                        blendState.AlphaBlendFunction = BlendFunction.Add;
+                        device.BlendState = blendState;
 
-                    SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
+                        var lastRT = Global.GraphicsDevice.GetRenderTargets()[0];
+                        Global.GraphicsDevice.SetRenderTarget(RenderTarget2D);
+                        Global.GraphicsDevice.Clear(new Color(0, 0, 0, 0));
 
-                    device.DrawPrimitives(PrimitiveType.TriangleList, 0, (int)(dlayer.dataIndex * 2));
+                        SiteRenderer.InstanceMainEffect.Parameters["MainBuffer"].SetValue(dlayer.bufferDataMain);
+                        SiteRenderer.InstanceMainEffect.Parameters["ExtraBuffer"].SetValue(dlayer.bufferDataExtra);
+                        SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
+                        device.DrawPrimitives(PrimitiveType.TriangleList, 0, (int)(dlayer.dataIndex * 2));
+
+                        Global.GraphicsDevice.SetRenderTarget((RenderTarget2D)lastRT.RenderTarget);
+                        device.BlendState = BlendState.AlphaBlend;
+                        return;
+                    }
+                    else*/
+                    {
+                        SiteRenderer.InstanceMainEffect.Parameters["MainBuffer"].SetValue(dlayer.bufferDataMain);
+                        SiteRenderer.InstanceMainEffect.Parameters["ExtraBuffer"].SetValue(dlayer.bufferDataExtra);
+
+                        SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
+
+                        device.DrawPrimitives(PrimitiveType.TriangleList, 0, (int)(dlayer.dataIndex * 2));
+                    }
                 }
             }
 
@@ -211,7 +276,7 @@ namespace Origin.Source.Render
                                         if (layersBatches[tex].TryGetValue(sublayer, out SpriteLayer dlayer))
                                         {
                                             CheckLayerLight(sublayer);
-                                            SubDraw(dlayer);
+                                            SubDraw(sublayer, dlayer);
                                         }
                                 }
                                 else
@@ -219,7 +284,7 @@ namespace Origin.Source.Render
                                     foreach (var pair in layersBatches[tex].OrderBy(x => x.Key))
                                     {
                                         CheckLayerLight((byte)pair.Key);
-                                        SubDraw(pair.Value);
+                                        SubDraw((byte)pair.Key, pair.Value);
                                     }
                                 }
                             }

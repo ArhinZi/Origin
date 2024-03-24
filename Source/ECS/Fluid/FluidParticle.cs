@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 using static Origin.Source.Resources.Global;
 
-namespace Origin.Source.Model.Site.Fluid
+namespace Origin.Source.ECS.Fluid
 {
-    public abstract class Fluid
+    public struct FluidParticle
     {
         public FluidType Type;
-        public byte MaxVolume = 100;
-        public float Fluidity;
+
+        /// <summary>
+        /// 0-64
+        /// </summary>
+        public byte Volume;
     }
 }

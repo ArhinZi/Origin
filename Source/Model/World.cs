@@ -2,6 +2,7 @@
 
 using Origin.Source.ECS;
 using Origin.Source.ECS.BaseSystems;
+using Origin.Source.ECS.Fluid;
 using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Vegetation;
@@ -35,7 +36,7 @@ namespace Origin.Source.Model
             ActiveSite = new Site.Site(this, new Point3(256, 256, 128));
             Sites.Add(ActiveSite);
 
-            TimeManager = new WorldTickManager();
+            TimeManager = new WorldTickManager(this);
 
             var SystemManager = TimeManager.SystemsManager;
 
@@ -49,6 +50,11 @@ namespace Origin.Source.Model
             ]));
             SystemManager.Groups.Add(new("SunLight", [
                 new UpdateLightSystem(ActiveSite)
+            ]));
+            SystemManager.Groups.Add(new("Fluids", [
+                new UpdateFluidsOnConstructionPlacedSystem(ActiveSite),
+                new UpdateFluidsOnConstructionRemovedSystem(ActiveSite),
+                new UpdateFluidsSystem(ActiveSite)
             ]));
 
             SystemManager.Groups.Add(new("Final", [

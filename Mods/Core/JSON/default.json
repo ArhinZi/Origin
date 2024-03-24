@@ -1,0 +1,59 @@
+{
+    "Sprites": [
+        {
+            "TextureName": "default",
+            "ID": "SelectionFloor",
+            "SourceRect": "0 0 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "SolidFloor",
+            "SourceRect": "65 0 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "SolidSelectionFloor",
+            "SourceRect": "130 0 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "Water",
+            "SourceRect": "195 0 62 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "SelectionWall",
+            "SourceRect": "0 65 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "SolidWall",
+            "SourceRect": "65 65 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "SolidSelectionWall",
+            "SourceRect": "130 65 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "DirtFloor",
+            "SourceRect": "0 130 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "DirtWall",
+            "SourceRect": "0 195 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "EmbeddedGrassFloor1",
+            "SourceRect": "0 260 64 64"
+        },
+        {
+            "TextureName": "default",
+            "ID": "EmbeddedGrassFloor2",
+            "SourceRect": "65 260 64 64"
+        }
+    ]
+}

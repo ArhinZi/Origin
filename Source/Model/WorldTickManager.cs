@@ -47,23 +47,54 @@ namespace Origin.Source.Model
         private float _htick = 0;
 
         public SystemGroupsManager SystemsManager;
+        private World World;
 
         public bool Pause { get; private set; }
 
-        public WorldTickManager()
+        public WorldTickManager(World world)
         {
             SystemsManager = new SystemGroupsManager(this);
+            World = world;
         }
 
         public void Update(GameTime gameTime)
         {
             _htick += TimeMod;
+            var counter = 0;
             while (_htick > 1)
             {
+                BeforeTickSimple();
                 SystemsManager.Tick(gameTime);
+                AfterTickSimple();
                 _htick--;
                 Ticks++;
+                counter++;
                 //do smth
+            }
+            TickTricky(counter);
+        }
+
+        private void BeforeTickSimple()
+        {
+            foreach (var item in World.Sites)
+            {
+                item.BeforeTick();
+            }
+        }
+
+        private void AfterTickSimple()
+        {
+            foreach (var item in World.Sites)
+            {
+                item.AfterTick();
+            }
+        }
+
+        private void TickTricky(int mult)
+        {
+            foreach (var item in World.Sites)
+            {
+                item.TickTricky(mult);
             }
         }
 

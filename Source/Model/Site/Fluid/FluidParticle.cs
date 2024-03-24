@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Origin.Source.Render;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -16,9 +18,19 @@ namespace Origin.Source.Model.Site.Fluid
         public bool IsFluidBlocker;
         public bool IsStatic;
 
+        /// <summary>
+        /// 0-12
+        /// </summary>
         public byte Volume;
+
+        /// <summary>
+        /// 0-255
+        /// </summary>
         public byte Pressure;
+
         public Direction Direction;
+
+        public SpriteLocator SpriteLocator;
 
         public override string ToString()
         {

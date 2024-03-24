@@ -14,8 +14,8 @@ float3 PositionOffset = float3(0,0,0);
 bool nolight = false;
 float SunLightIntensity = 1;
 
-float2 TileSize = float2(32,16);
-float2 SpriteSize = float2(32, 32);
+float2 TileSize = float2(64,32);
+float2 SpriteSize = float2(64, 64);
 
 // hidden
 float2 HiddenSpriteTexturePos;

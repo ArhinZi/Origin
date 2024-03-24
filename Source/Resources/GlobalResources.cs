@@ -63,6 +63,27 @@ namespace Origin.Source.Resources
             var tok = obj.ToObject<Dictionary<string, JToken>>();
 
             Sprites = JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings);
+            var selection = GetResourceBy(Sprites, "ID", "SelectionWall");
+            Sprites.Add(new Sprite(
+                id: "RightBorder",
+                GetResourceBy(Textures, "Name", "default"),
+                new Rectangle()
+                {
+                    X = selection.RectPos.Width / 2,
+                    Y = selection.RectPos.Y,
+                    Width = selection.RectPos.Width / 2,
+                    Height = selection.RectPos.Height / 4
+                }));
+            Sprites.Add(new Sprite(
+                id: "LeftBorder",
+                GetResourceBy(Textures, "Name", "default"),
+                new Rectangle()
+                {
+                    X = selection.RectPos.X,
+                    Y = selection.RectPos.Y,
+                    Width = selection.RectPos.Width / 2,
+                    Height = selection.RectPos.Height / 4
+                }));
 
             Materials = JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings);
             Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);

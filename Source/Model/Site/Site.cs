@@ -11,6 +11,7 @@ using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model;
 using Origin.Source.Model.Generators;
+using Origin.Source.Model.Site.Fluid;
 using Origin.Source.Model.Site.Light;
 using Origin.Source.Model.Site.Tools;
 using Origin.Source.Pathfind;
@@ -24,7 +25,7 @@ using System.Diagnostics;
 
 namespace Origin.Source.Model.Site
 {
-    public class Site : IDisposable
+    public class Site : IDisposable, ITickKeeper
     {
         public World World { get; private set; }
 
@@ -37,7 +38,7 @@ namespace Origin.Source.Model.Site
         public SiteGeneratorService MapGenerator { get; private set; }
         public SitePathfindingService Pathfinder { get; private set; }
 
-        public SiteDrawComponent DrawControl { get; private set; }
+        public SiteDrawComponent DrawComponent { get; private set; }
         public LightComponent LightControl { get; private set; }
 
         public SiteToolsComponent Tools { get; private set; }
@@ -90,7 +91,7 @@ namespace Origin.Source.Model.Site
             Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
             Trace.WriteLine("End pathfinder init");
 
-            DrawControl = new SiteDrawComponent(this);
+            DrawComponent = new SiteDrawComponent(this);
             Trace.WriteLine("End creating render");
 
             Tools = new SiteToolsComponent(this);
@@ -102,13 +103,13 @@ namespace Origin.Source.Model.Site
 
             Pathfinder.Update(gameTime);
 
-            DrawControl.Update(gameTime);
+            DrawComponent.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
             Tools.Draw(gameTime);
-            DrawControl.Draw(gameTime);
+            DrawComponent.Draw(gameTime);
         }
 
         public void RemoveConstruction(Point3 pos)
@@ -179,6 +180,22 @@ namespace Origin.Source.Model.Site
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
+        }
+
+        public void BeforeTick()
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void AfterTick()
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void TickTricky(int mult)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

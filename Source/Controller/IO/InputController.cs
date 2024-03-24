@@ -94,7 +94,7 @@ namespace Origin.Source.Controller.IO
             if (InputManager.JustPressed("num.4"))
                 ActiveSite.Tools.SetToolByName("ToolPlaceDirt");
             if (InputManager.JustPressed("num.5"))
-                ActiveSite.Tools.SetToolByName(null);
+                ActiveSite.Tools.SetToolByName("ToolPlaceWater");
             if (InputManager.JustPressed("num.6"))
                 ActiveSite.Tools.SetToolByName(null);
             if (InputManager.JustPressed("num.7"))
