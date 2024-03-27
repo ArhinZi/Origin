@@ -7,6 +7,7 @@ using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Vegetation;
 using Origin.Source.Model.Site;
+using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
