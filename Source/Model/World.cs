@@ -30,6 +30,7 @@ namespace Origin.Source.Model
         public World()
         {
             //Instance = this;
+            Global.World = this;
             Random = new Random(Seed);
 
             // 64 128 192 256 320 384

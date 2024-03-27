@@ -228,7 +228,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     Color col = Color.Aqua;
                     col.A = 255 / 3;
                     locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
-                                    new Vector3(0, 32 - fluid.Volume / 2, 0)));
+                                    new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
                 }
             }
         }

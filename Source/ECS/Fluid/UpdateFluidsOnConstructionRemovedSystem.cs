@@ -36,6 +36,15 @@ namespace Origin.Source.ECS.Vegetation
                 // Update Related to current tile
                 Entity ent = _site.Map[pos];
                 ent.Remove<IsFluidBlocker>();
+
+                foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
+                {
+                    var pos2 = pos + item;
+                    if (_site.Map.TryGet(pos2, out Entity nent) && nent.Has<BaseConstruction>() && !nent.Has<IsFluidBlocker>())
+                    {
+                        nent.Add<IsFluidBlocker>();
+                    }
+                }
             });
             commands.Playback();
         }

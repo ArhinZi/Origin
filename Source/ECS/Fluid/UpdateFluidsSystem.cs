@@ -2,13 +2,18 @@
 using Arch.Core;
 using Arch.Core.Extensions;
 
+using CommunityToolkit.HighPerformance;
+
 using MessagePack;
+
+using MonoGame.Extended.Collections;
 
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Vegetation.Components;
 using Origin.Source.Model.Site;
 using Origin.Source.Model.Site.Light;
+using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System;
@@ -16,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Origin.Source.ECS.Fluid
 {
@@ -38,130 +44,165 @@ namespace Origin.Source.ECS.Fluid
             if (t % 10 != 0) return;
 
             var commands = new CommandBuffer(_site.ArchWorld);
+            var query = new QueryDescription().WithAll<IsTile, FluidParticle>();
 
             newEntity.Clear();
-            var query = new QueryDescription().WithAll<IsTile, FluidParticle>().WithNone<IsFluidStatic>();
+            query = new QueryDescription().WithAll<IsTile, FluidParticle>().WithNone<IsFluidStatic>();
             _site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref FluidParticle fluid) =>
             {
                 var pos = tile.Position;
                 bool IsStatic = true;
+                Debug.Assert(fluid.Volume <= 64);
 
-                if (fluid.Volume > 0)
+                // Checking down cell
+                bool step1 = false;
+                var posDown = pos + Point3.Down;
+                bool waterDown = false;
+                if (fluid.Volume > 0 && _site.Map.TryGet(posDown, out Entity entDown))
                 {
-                    // Checking down cell
-                    bool step1 = false;
-                    var posDown = pos + Point3.Down;
-                    if (_site.Map.TryGet(posDown, out Entity entDown) && entDown != Entity.Null)
+                    Debug.Assert(fluid.Volume != 0);
+                    // If cell has some fluid
+                    ref FluidParticle fluidDown = ref entDown.TryGetRef<FluidParticle>(out bool exist);
+                    if (exist)
                     {
-                        // If cell has some fluid
-                        if (entDown.Has<FluidParticle>())
+                        waterDown = true;
+                        if (fluidDown.Volume < FluidParticle.MaxVolume)
                         {
-                            ref FluidParticle fluidDown = ref entDown.Get<FluidParticle>();
-                            if (fluidDown.Volume < 64)
-                            {
-                                byte change = ((byte)(64 - fluidDown.Volume));
-                                change = Math.Min(change, fluid.Volume);
-                                fluidDown.Volume += change;
-                                fluid.Volume -= change;
+                            byte change = (byte)(FluidParticle.MaxVolume - fluidDown.Volume);
+                            change = Math.Min(change, fluid.Volume);
+                            fluidDown.Volume += change;
+                            fluid.Volume -= change;
 
-                                step1 = true;
-                                IsStatic = false;
-                                if (entDown.Has<IsFluidStatic>())
-                                    commands.Remove<IsFluidStatic>(entDown);
-
-                                commands.Add<UpdateTileRenderSelfRequest>(entDown);
-                            }
-                        }
-                        // if cell not have fluid and not FluidBlocker
-                        else if (!entDown.Has<IsFluidBlocker>())
-                        {
-                            commands.Add(entDown, fluid);
-                            fluid.Volume = 0;
                             step1 = true;
                             IsStatic = false;
-                            commands.Add<UpdateTileRenderSelfRequest>(entDown);
+                            if (entDown.Has<IsFluidStatic>())
+                                commands.Remove<IsFluidStatic>(entDown);
+
+                            if (!entDown.Has<UpdateTileRenderSelfRequest>())
+                                commands.Add<UpdateTileRenderSelfRequest>(entDown);
                         }
                     }
-                    if (!step1)
+                    //if cell not have fluid and not FluidBlocker
+                    else if (!entDown.Has<IsFluidBlocker>())
                     {
-                        byte max_change = Math.Min((byte)4, fluid.Volume);
-                        if (max_change == 0 && fluid.Volume > 1) { max_change = 1; }
-                        // Check plus neighbours
-                        if (max_change > 0)
-                            foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L())
+                        Debug.Assert(!entDown.Has<IsFluidStatic>());
+
+                        if (!newEntity.ContainsKey(entDown))
+                        {
+                            newEntity.Add(entDown, fluid);
+                            fluid.Volume = 0;
+                        }
+                        else
+                        {
+                            byte change = (byte)(FluidParticle.MaxVolume - newEntity[entDown].Volume);
+                            change = Math.Min(change, fluid.Volume);
+                            var part = newEntity[entDown];
+                            part.Volume += change;
+                            newEntity[entDown] = part;
+                            fluid.Volume -= change;
+                        }
+
+                        step1 = true;
+                        IsStatic = false;
+                        if (!entDown.Has<UpdateTileRenderSelfRequest>())
+                            commands.Add<UpdateTileRenderSelfRequest>(entDown);
+                    }
+                    Debug.Assert(entDown != Entity.Null);
+                }
+                if (!step1 && (fluid.Volume > 1 || waterDown))
+                {
+                    int max_change = Math.Max(fluid.Volume / 5, 1);
+                    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false)/*.Shuffle(Global.World.Random)*/)
+                    {
+                        var posn = pos + n;
+                        if (fluid.Volume <= 1)
+                        {
+                            break;
+                        }
+
+                        if (_site.Map.TryGet(posn, out Entity entn) && entn != Entity.Null)
+                        {
+                            //Debug.Assert(!entn.Has<UpdateTileRenderSelfRequest>());
+                            ref FluidParticle fluidn = ref entn.TryGetRef<FluidParticle>(out bool exist);
+                            if (exist)
                             {
-                                if (fluid.Volume < max_change) break;
-                                var posn = pos + n;
-                                if (_site.Map.TryGet(posn, out Entity entn) && entn != Entity.Null)
+                                if (!IsStatic && entn.Has<IsFluidStatic>())
+                                    commands.Remove<IsFluidStatic>(entn);
+                                if (fluidn.Volume + 1 < fluid.Volume)
                                 {
-                                    // If cell has some fluid
-                                    if (entn.Has<FluidParticle>())
-                                    {
-                                        ref FluidParticle fluidn = ref entn.Get<FluidParticle>();
-                                        if (fluidn.Volume < fluid.Volume)
-                                        {
-                                            byte change = ((byte)(fluidn.Volume - fluid.Volume));
-                                            change = Math.Min(change, max_change);
-                                            fluidn.Volume += change;
-                                            fluid.Volume -= change;
+                                    byte change = (byte)Math.Min(Math.Max((fluid.Volume - fluidn.Volume) / 2, 1), max_change);
+                                    fluidn.Volume += change;
+                                    fluid.Volume -= change;
 
-                                            IsStatic = false;
-                                            if (entn.Has<IsFluidStatic>())
-                                                commands.Remove<IsFluidStatic>(entn);
+                                    IsStatic = false;
 
-                                            commands.Add<UpdateTileRenderSelfRequest>(entn);
-                                        }
-                                    }
-                                    // if cell not have fluid and not FluidBlocker
-                                    else if (!entn.Has<IsFluidBlocker>())
-                                    {
-                                        Debug.Assert(fluid.Volume > 0);
-                                        Debug.Assert(!entn.Has<IsFluidStatic>());
-
-                                        //commands.Add(entn, new FluidParticle()
-                                        //{
-                                        //    Type = fluid.Type,
-                                        //    Volume = max_change
-                                        //});
-                                        byte change = max_change;
-                                        if (!newEntity.ContainsKey(entn))
-                                            newEntity[entn] = new FluidParticle()
-                                            {
-                                                Type = fluid.Type,
-                                                Volume = change
-                                            };
-                                        else
-                                        {
-                                            change = (byte)Math.Min(max_change, fluid.Volume - newEntity[entn].Volume);
-                                            var val = newEntity[entn];
-                                            val.Volume += change;
-                                            newEntity[entn] = val;
-                                        }
-
-                                        fluid.Volume -= change;
-                                        IsStatic = false;
+                                    if (!entn.Has<UpdateTileRenderSelfRequest>())
                                         commands.Add<UpdateTileRenderSelfRequest>(entn);
-                                    }
                                 }
                             }
+                            // if cell not have fluid and not FluidBlocker
+                            else if (!entn.Has<IsFluidBlocker>())
+                            {
+                                Debug.Assert(!entn.Has<IsFluidStatic>());
+                                IsStatic = false;
+                                if (!entn.Has<UpdateTileRenderSelfRequest>())
+                                    commands.Add<UpdateTileRenderSelfRequest>(entn);
+
+                                if (!newEntity.ContainsKey(entn))
+                                {
+                                    newEntity.Add(entn, new FluidParticle(fluid.Type, (byte)max_change));
+                                    fluid.Volume -= (byte)max_change;
+                                }
+                                else
+                                {
+                                    byte change = (byte)Math.Min((fluid.Volume - newEntity[entn].Volume) / 2, max_change);
+                                    change = Math.Min(change, fluid.Volume);
+                                    var part = newEntity[entn];
+                                    part.Volume += change;
+                                    newEntity[entn] = part;
+                                    fluid.Volume -= change;
+                                }
+                            }
+                            else
+                            {
+                            }
+                        }
                     }
                 }
 
                 if (IsStatic && !ent.Has<IsFluidStatic>())
                 {
-                    //commands.Add<IsFluidStatic>(ent);
+                    //Debug.Assert(fluid.Volume <= 1);
+                    commands.Add<IsFluidStatic>(ent);
                     //commands.Add<UpdateTileRenderSelfRequest>(ent);
                 }
                 if (!IsStatic)
                 {
-                    commands.Add<UpdateTileRenderSelfRequest>(ent);
+                    if (!ent.Has<UpdateTileRenderSelfRequest>())
+                        commands.Add<UpdateTileRenderSelfRequest>(ent);
+                    var posn = pos + Point3.Down;
+                    if (_site.Map.TryGet(posn, out Entity entDown0) && entDown0 != Entity.Null && entDown0.Has<FluidParticle>() && entDown0.Has<IsFluidStatic>())
+                    {
+                        commands.Remove<IsFluidStatic>(entDown0);
+                    }
+                    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false)/*.Shuffle(Global.World.Random)*/)
+                    {
+                        posn = pos + n;
+                        if (_site.Map.TryGet(posn, out Entity entn) && entn != Entity.Null && entn.Has<FluidParticle>() && entn.Has<IsFluidStatic>())
+                        {
+                            commands.Remove<IsFluidStatic>(entn);
+                        }
+                    }
+                }
+                else
+                {
                 }
 
                 if (fluid.Volume == 0)
                 {
                     commands.Remove<FluidParticle>(ent);
-                    //if (ent.Has<IsFluidStatic>())
-                    //commands.Remove<IsFluidStatic>(ent);
+                    if (ent.Has<IsFluidStatic>())
+                        commands.Remove<IsFluidStatic>(ent);
                 }
             });
             foreach (var item in newEntity)

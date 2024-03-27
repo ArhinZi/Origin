@@ -182,6 +182,7 @@ namespace Origin.Source.ECS.Light
                 foreach (var pos in hs)
                 {
                     var npos = pos + Point3.Down;
+                    if (!pos.InBounds(Point3.Zero, _site.Size)) return;
                     ref PackedLight npl = ref _site.LightControl.GetTile(npos);
                     if (init)
                     {
