@@ -52,7 +52,6 @@ namespace Origin.Source.ECS.Fluid
             {
                 var pos = tile.Position;
                 bool IsStatic = true;
-                Debug.Assert(fluid.Volume <= 64);
 
                 // Checking down cell
                 bool step1 = false;
@@ -60,7 +59,8 @@ namespace Origin.Source.ECS.Fluid
                 bool waterDown = false;
                 if (fluid.Volume > 0 && _site.Map.TryGet(posDown, out Entity entDown))
                 {
-                    Debug.Assert(fluid.Volume != 0);
+                    Debug.Assert(entDown != Entity.Null);
+
                     // If cell has some fluid
                     ref FluidParticle fluidDown = ref entDown.TryGetRef<FluidParticle>(out bool exist);
                     if (exist)
@@ -94,9 +94,9 @@ namespace Origin.Source.ECS.Fluid
                         }
                         else
                         {
-                            byte change = (byte)(FluidParticle.MaxVolume - newEntity[entDown].Volume);
-                            change = Math.Min(change, fluid.Volume);
                             var part = newEntity[entDown];
+                            byte change = (byte)(FluidParticle.MaxVolume - part.Volume);
+                            change = Math.Min(change, fluid.Volume);
                             part.Volume += change;
                             newEntity[entDown] = part;
                             fluid.Volume -= change;
@@ -107,9 +107,8 @@ namespace Origin.Source.ECS.Fluid
                         if (!entDown.Has<UpdateTileRenderSelfRequest>())
                             commands.Add<UpdateTileRenderSelfRequest>(entDown);
                     }
-                    Debug.Assert(entDown != Entity.Null);
                 }
-                if (!step1 && (fluid.Volume > 1 || waterDown))
+                if (/*!step1 && */(fluid.Volume > 1 || waterDown))
                 {
                     int max_change = Math.Max(fluid.Volume / 5, 1);
                     foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false)/*.Shuffle(Global.World.Random)*/)
@@ -144,6 +143,7 @@ namespace Origin.Source.ECS.Fluid
                             else if (!entn.Has<IsFluidBlocker>())
                             {
                                 Debug.Assert(!entn.Has<IsFluidStatic>());
+
                                 IsStatic = false;
                                 if (!entn.Has<UpdateTileRenderSelfRequest>())
                                     commands.Add<UpdateTileRenderSelfRequest>(entn);
@@ -155,12 +155,15 @@ namespace Origin.Source.ECS.Fluid
                                 }
                                 else
                                 {
-                                    byte change = (byte)Math.Min((fluid.Volume - newEntity[entn].Volume) / 2, max_change);
-                                    change = Math.Min(change, fluid.Volume);
                                     var part = newEntity[entn];
-                                    part.Volume += change;
-                                    newEntity[entn] = part;
-                                    fluid.Volume -= change;
+                                    if (part.Volume + 1 < fluid.Volume)
+                                    {
+                                        byte change = (byte)Math.Min((fluid.Volume - part.Volume) / 2, max_change);
+                                        change = Math.Min(change, fluid.Volume);
+                                        part.Volume += change;
+                                        newEntity[entn] = part;
+                                        fluid.Volume -= change;
+                                    }
                                 }
                             }
                             else
@@ -172,10 +175,9 @@ namespace Origin.Source.ECS.Fluid
 
                 if (IsStatic && !ent.Has<IsFluidStatic>())
                 {
-                    //Debug.Assert(fluid.Volume <= 1);
                     commands.Add<IsFluidStatic>(ent);
-                    //commands.Add<UpdateTileRenderSelfRequest>(ent);
                 }
+                // if not static -> remove static from neighbour cells
                 if (!IsStatic)
                 {
                     if (!ent.Has<UpdateTileRenderSelfRequest>())

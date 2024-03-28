@@ -205,7 +205,7 @@ namespace Origin.Source.Render
                     blendState.AlphaDestinationBlend = Blend.InverseSourceAlpha;
                     blendState.ColorBlendFunction = BlendFunction.Add;
                     blendState.AlphaBlendFunction = BlendFunction.Add;*/
-                    device.BlendState = BlendState.Additive;
+                    device.BlendState = BlendState.AlphaBlend;
                 }
                 else
                     device.BlendState = BlendState.AlphaBlend;

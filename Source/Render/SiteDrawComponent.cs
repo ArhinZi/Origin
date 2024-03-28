@@ -225,10 +225,17 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     byte LAYER = (int)DrawBufferLayer.Water;
                     Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
                                     "Water");
-                    Color col = Color.Aqua;
-                    col.A = 255 / 3;
+                    Color col = Color.White;
+                    col.A = (byte)(200 - (FluidParticle.MaxVolume - fluid.Volume));
                     locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
                                     new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
+
+                    //sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                    //                "SolidWall");
+                    //col = Color.Blue;
+                    //col.A = (byte)(128 - ((FluidParticle.MaxVolume - fluid.Volume)));
+                    //locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
+                    //                new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
                 }
             }
         }
