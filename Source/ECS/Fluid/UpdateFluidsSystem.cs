@@ -1,4 +1,4 @@
-﻿using Arch.CommandBuffer;
+﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
 
@@ -43,7 +43,7 @@ namespace Origin.Source.ECS.Fluid
         {
             if (t % 10 != 0) return;
 
-            var commands = new CommandBuffer(_site.ArchWorld);
+            var commands = new CommandBuffer();
             var query = new QueryDescription().WithAll<IsTile, FluidParticle>();
 
             newEntity.Clear();
@@ -211,7 +211,7 @@ namespace Origin.Source.ECS.Fluid
             {
                 item.Key.Add(item.Value);
             }
-            commands.Playback();
+            commands.Playback(_site.ArchWorld);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Arch.CommandBuffer;
+﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
 
@@ -26,7 +26,7 @@ namespace Origin.Source.ECS.Vegetation
         public override void Update(in ulong t)
         {
             var query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
-            var commands = new CommandBuffer(_site.ArchWorld);
+            var commands = new CommandBuffer();
             var visited = new HashSet<Point3>();
 
             _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cre) =>
@@ -46,7 +46,7 @@ namespace Origin.Source.ECS.Vegetation
                     }
                 }
             });
-            commands.Playback();
+            commands.Playback(_site.ArchWorld);
         }
     }
 }

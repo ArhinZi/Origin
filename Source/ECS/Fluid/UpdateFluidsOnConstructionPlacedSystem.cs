@@ -1,4 +1,4 @@
-﻿using Arch.CommandBuffer;
+﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
 
@@ -27,7 +27,7 @@ namespace Origin.Source.ECS.Vegetation
         {
             base.Update(in t);
 
-            var commands = new CommandBuffer(_site.ArchWorld);
+            var commands = new CommandBuffer();
 
             var query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
             _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cpe) =>
@@ -42,7 +42,7 @@ namespace Origin.Source.ECS.Vegetation
                 if (!ent.Has<IsFluidBlocker>())
                     ent.Add<IsFluidBlocker>();
             });
-            commands.Playback();
+            commands.Playback(_site.ArchWorld);
         }
     }
 }

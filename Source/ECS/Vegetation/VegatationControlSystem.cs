@@ -1,4 +1,4 @@
-﻿using Arch.CommandBuffer;
+﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
 
@@ -61,7 +61,7 @@ namespace Origin.Source.ECS.Vegetation
 
             var query = new QueryDescription().WithAll<BaseConstruction, IsTile, /*IsSunLightedComponent,*/ BaseVegetation>()
                                             .WithNone<GrownUpVegetation>();
-            var commands = new CommandBuffer(_site.ArchWorld);
+            var commands = new CommandBuffer();
             _site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref BaseConstruction bc, ref BaseVegetation bvc) =>
             {
                 float r = random.Next(0, 100);
@@ -81,7 +81,7 @@ namespace Origin.Source.ECS.Vegetation
                         commands.Add<UpdateTileRenderSelfRequest>(ent);
                 }
             });
-            commands.Playback();
+            commands.Playback(_site.ArchWorld);
         }
     }
 }

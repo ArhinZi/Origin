@@ -1,4 +1,4 @@
-﻿using Arch.CommandBuffer;
+﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
 
@@ -67,7 +67,7 @@ namespace Origin.Source.ECS.Light
 
         public override void Update(in ulong t)
         {
-            var commands = new CommandBuffer(_site.ArchWorld);
+            var commands = new CommandBuffer();
             var visited = new HashSet<Point3>();
 
             // Update Sunlighted info on PlaceConstruction
