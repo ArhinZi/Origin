@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 
 using System;
+using System.Text;
 
 using static Origin.Source.Resources.Global;
 
@@ -11,9 +12,30 @@ namespace Origin.Source.Utils
     [MessagePackObject]
     public struct Point3 : IComparable
     {
+        //[IgnoreMember]
+        [Key(0)]
         public int X;
+
+        //[IgnoreMember]
+        [Key(1)]
         public int Y;
+
+        //[IgnoreMember]
+        [Key(3)]
         public int Z;
+
+        //[Key("data")]
+        //public string Data
+        //{
+        //    get { return $"{X},{Y},{Z}"; }
+        //    set
+        //    {
+        //        var vals = value.Split(',');
+        //        X = int.Parse(vals[0]);
+        //        Y = int.Parse(vals[1]);
+        //        Z = int.Parse(vals[2]);
+        //    }
+        //}
 
         public Point3(int x, int y, int z)
         {
@@ -21,6 +43,11 @@ namespace Origin.Source.Utils
             Y = y;
             Z = z;
         }
+
+        //public Point3(string data)
+        //{
+        //    Data = data;
+        //}
 
         public Point3(Point xy, int z)
         {

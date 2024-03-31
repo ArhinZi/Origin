@@ -1,9 +1,13 @@
-﻿using Origin.Source.Model.Site.Light;
+﻿using MessagePack;
+
+using Origin.Source.Model.Site.Light;
 
 namespace Origin.Source.ECS.BaseComponents
 {
+    [MessagePackObject]
     public struct IsTile
     {
+        [Key(0)]
         public Point3 Position;
 
         public PackedLight GetLight(LightComponent lcomp)

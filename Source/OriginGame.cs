@@ -17,6 +17,7 @@ using Origin.Source.ECS.BaseComponents;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
 using Origin.Source.Resources;
+using Origin.Source.Save;
 
 using System;
 
@@ -107,6 +108,7 @@ namespace Origin.Source
 
             // Load Resources
             ResourceLoader.LoadResources();
+            SaveGameEntity.ReadAllSaves();
 
             GuiRenderer.RebuildFontAtlas();
             //LoadMenuMainScreen();

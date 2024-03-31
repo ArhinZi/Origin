@@ -10,7 +10,7 @@ namespace Origin.Source.ECS
 {
     public class SystemGroupsManager
     {
-        public List<Group<ulong>> Groups = [];
+        public List<TickSystem> Systems = [];
         private WorldTickManager WorldTimeManager;
 
         public SystemGroupsManager(WorldTickManager wtm)
@@ -20,25 +20,33 @@ namespace Origin.Source.ECS
 
         public void Init()
         {
-            foreach (var group in Groups)
+            foreach (var system in Systems)
             {
-                group.Initialize();
+                system.Initialize();
+            }
+        }
+
+        public void LoadInit()
+        {
+            foreach (var system in Systems)
+            {
+                system.LoadInit();
             }
         }
 
         public void Tick(GameTime gameTime)
         {
-            foreach (var group in Groups)
+            foreach (var system in Systems)
             {
-                group.BeforeUpdate(WorldTimeManager.Ticks);
+                system.BeforeUpdate(WorldTimeManager.Ticks);
             }
-            foreach (var group in Groups)
+            foreach (var system in Systems)
             {
-                group.Update(WorldTimeManager.Ticks);
+                system.Update(WorldTimeManager.Ticks);
             }
-            foreach (var group in Groups)
+            foreach (var system in Systems)
             {
-                group.AfterUpdate(WorldTimeManager.Ticks);
+                system.AfterUpdate(WorldTimeManager.Ticks);
             }
         }
     }

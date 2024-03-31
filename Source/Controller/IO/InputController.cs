@@ -55,7 +55,7 @@ namespace Origin.Source.Controller.IO
                 //EventBus.Send(new HalfWallModeChanged());
             }
 
-            Camera2D activeCamera = StateMainGame.ActiveCamera;
+            Camera2D activeCamera = Global.ActiveCamera;
             float camMoveMode = (float)((LShift ? Global.CAM_SHIFT_SPEED_MULT : 1) * Global.CAM_SPEED * gameTime.ElapsedGameTime.TotalSeconds);
             if (InputManager.IsPressed("Camera.left"))
                 activeCamera.Position += new Vector2(-1, 0) * camMoveMode / activeCamera.Zoom;

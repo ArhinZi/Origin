@@ -71,64 +71,82 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
             site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref BaseConstruction bcc) =>
             {
                 Point3 tilePos = tile.Position;
+
+                ref SpriteLocatorsStatic locators = ref ent.Get<SpriteLocatorsStatic>();
+                Construction constr = bcc.Construction;
+                Material mat = bcc.Material;
+                int rand = random.Next();
                 {
-                    ref SpriteLocatorsStatic locators = ref ent.Get<SpriteLocatorsStatic>();
-                    Construction constr = bcc.Construction;
-                    Material mat = bcc.Material;
-                    int rand = random.Next();
+                    byte LAYER = (int)DrawBufferLayer.Back;
+                    string spart = "Wall";
+                    Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                                    constr.Sprites[spart][rand % constr.Sprites[spart].Count]);
+                    Color col = constr.HasMaterialColor ? mat.Color : Color.White;
+                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col));
+
+                    // Draw borders of Wall
+                    LAYER = (int)DrawBufferLayer.BackNoLight;
+                    if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
+                            !tmp.Has<BaseConstruction>())
+                        locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
+                            new Vector3(0, -1, 0)));
+                    if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
+                            !tmp.Has<BaseConstruction>())
+                        locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor,
+                            new Vector3(GlobalResources.Settings.TileSize.X / 2, -1, 0)));
+                }
+                {
+                    byte LAYER = (int)DrawBufferLayer.Front;
+                    string spart = "Floor";
+                    Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                            constr.Sprites[spart][rand % constr.Sprites[spart].Count]);
+                    Color col = constr.HasMaterialColor ? mat.Color : Color.White;
+                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
+
+                    LAYER = (int)DrawBufferLayer.FrontNoLight;
+                    if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
+                                !tmp.Has<BaseConstruction>())
+                        locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
+                            new Vector3(0, -GlobalResources.Settings.FloorYoffset - 2, 0)));
+                    if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
+                            !tmp.Has<BaseConstruction>())
+                        locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor,
+                            new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 2, 0)));
+
+                    //TODO Draw Vegetation
+                    LAYER = (int)DrawBufferLayer.FrontOver;
+                    if (ent.TryGet(out BaseVegetation hveg))
                     {
-                        byte LAYER = (int)DrawBufferLayer.Back;
-                        string spart = "Wall";
-                        Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
-                                        constr.Sprites[spart][rand % constr.Sprites[spart].Count]);
-                        Color col = constr.HasMaterialColor ? mat.Color : Color.White;
-                        locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col));
+                        Vegetation veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
+                        List<string> spritesIDs;
+                        if (Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
+                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
+                        else if (Vegetation.VegetationSpritesByConstruction.TryGetValue((veg, constr.ID), out spritesIDs))
+                            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
 
-                        // Draw borders of Wall
-                        LAYER = (int)DrawBufferLayer.BackNoLight;
-                        if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
-                                !tmp.Has<BaseConstruction>())
-                            locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
-                                new Vector3(0, -1, 0)));
-                        if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
-                                !tmp.Has<BaseConstruction>())
-                            locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor,
-                                new Vector3(GlobalResources.Settings.TileSize.X / 2, -1, 0)));
+                        if (spritesIDs != null)
+                            locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, Color.White,
+                                new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
                     }
-                    {
-                        byte LAYER = (int)DrawBufferLayer.Front;
-                        string spart = "Floor";
-                        Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
-                                constr.Sprites[spart][rand % constr.Sprites[spart].Count]);
-                        Color col = constr.HasMaterialColor ? mat.Color : Color.White;
-                        locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
+                }
+            });
 
-                        LAYER = (int)DrawBufferLayer.FrontNoLight;
-                        if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
-                                    !tmp.Has<BaseConstruction>())
-                            locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, lborderSprite, borderColor,
-                                new Vector3(0, -GlobalResources.Settings.FloorYoffset - 2, 0)));
-                        if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
-                                !tmp.Has<BaseConstruction>())
-                            locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor,
-                                new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 2, 0)));
+            query = new QueryDescription().WithAll<IsTile, FluidParticle>();
+            site.ArchWorld.Add<SpriteLocatorsStatic>(query);
+            site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref FluidParticle fluid) =>
+            {
+                Point3 tilePos = tile.Position;
 
-                        //TODO Draw Vegetation
-                        LAYER = (int)DrawBufferLayer.FrontOver;
-                        if (ent.TryGet(out BaseVegetation hveg))
-                        {
-                            Vegetation veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
-                            List<string> spritesIDs;
-                            if (Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
-                                sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
-                            else if (Vegetation.VegetationSpritesByConstruction.TryGetValue((veg, constr.ID), out spritesIDs))
-                                sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
-
-                            if (spritesIDs != null)
-                                locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, Color.White,
-                                    new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
-                        }
-                    }
+                ref SpriteLocatorsStatic locators = ref ent.Get<SpriteLocatorsStatic>();
+                if (fluid.Volume > 0)
+                {
+                    byte LAYER = (int)DrawBufferLayer.Water;
+                    Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                                    "Water");
+                    Color col = Color.White;
+                    col.A = (byte)(200 - (FluidParticle.MaxVolume - fluid.Volume));
+                    locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col,
+                                    new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
                 }
             });
 
@@ -229,13 +247,6 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     col.A = (byte)(200 - (FluidParticle.MaxVolume - fluid.Volume));
                     locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
                                     new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
-
-                    //sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
-                    //                "SolidWall");
-                    //col = Color.Blue;
-                    //col.A = (byte)(128 - ((FluidParticle.MaxVolume - fluid.Volume)));
-                    //locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
-                    //                new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
                 }
             }
         }

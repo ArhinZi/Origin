@@ -9,6 +9,7 @@ using MonoGame.Extended;
 
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
+using Origin.Source.GameStates;
 using Origin.Source.Model;
 using Origin.Source.Model.Generators;
 using Origin.Source.Model.Site.Light;
@@ -16,6 +17,7 @@ using Origin.Source.Model.Site.Tools;
 using Origin.Source.Pathfind;
 using Origin.Source.Render.GpuAcceleratedSpriteSystem;
 using Origin.Source.Resources;
+using Origin.Source.Save;
 using Origin.Source.Utils;
 
 using System;
@@ -27,9 +29,10 @@ namespace Origin.Source.Model.Site
     public class Site : IDisposable, ITickKeeper
     {
         public World World { get; private set; }
+        public readonly int ID;
 
         public SiteTileContainer Map { get; set; }
-        public ArchWorld ArchWorld { get; private set; }
+        public ArchWorld ArchWorld { get; set; }
 
         public Camera2D Camera { get; private set; }
         public Point3 Size { get; private set; }
@@ -61,7 +64,7 @@ namespace Origin.Source.Model.Site
 
         public int PreviousLevel { get; private set; }
 
-        public Site(World world, Point3 size)
+        public Site(World world, Point3 size, int iD)
         {
             World = world;
             Size = size;
@@ -83,12 +86,54 @@ namespace Origin.Source.Model.Site
 
             LightControl = new LightComponent(this);
             Trace.WriteLine("End light init");
+            ID = iD;
+        }
+
+        public Site(World world, SaveSiteDump dump, ArchWorld arch)
+        {
+            World = world;
+            Size = dump.Size;
+            ID = dump.ID;
+            CurrentLevel = dump.CurrentLevel;
+
+            ArchWorld = arch;
+            Map = new SiteTileContainer(Size);
+
+            Camera = new Camera2D();
+            Camera.Position += new Vector2(0,
+                -(CurrentLevel * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset)
+                    - GlobalResources.Settings.TileSize.Y * (Size.X / 2)
+                 ));
+
+            MapGenerator = new SiteGeneratorService(this, Size);
+            var query = new QueryDescription().WithAll<IsTile>();
+            ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
+            {
+                Point3 pos = tile.Position;
+                Map[pos] = entity;
+            });
+            Trace.WriteLine("End map gen");
+
+            LightControl = new LightComponent(this);
+            Trace.WriteLine("End light init");
+        }
+
+        public SaveSiteDump Dump()
+        {
+            SaveSiteDump ssd = new SaveSiteDump()
+            {
+                ID = ID,
+                //Camera = Camera,
+                CurrentLevel = CurrentLevel,
+                Size = Size
+            };
+            return ssd;
         }
 
         public void PostInit()
         {
-            Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
-            Trace.WriteLine("End pathfinder init");
+            //Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
+            //Trace.WriteLine("End pathfinder init");
 
             DrawComponent = new SiteDrawComponent(this);
             Trace.WriteLine("End creating render");
@@ -100,7 +145,7 @@ namespace Origin.Source.Model.Site
         {
             Tools.Update(gameTime);
 
-            Pathfinder.Update(gameTime);
+            //Pathfinder.Update(gameTime);
 
             DrawComponent.Update(gameTime);
         }

@@ -19,9 +19,11 @@ using Origin.Source.Events;
 using Origin.Source.Model;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
+using Origin.Source.Save;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Unicode;
 
 using Vector2 = System.Numerics.Vector2;
@@ -54,23 +56,41 @@ namespace Origin.Source.GameStates
         private int flags;
 
         public Model.World World;
-        public static Camera2D ActiveCamera { get; private set; }
 
         private InputController _inputControl;
 
         public StateMainGame(Game game) : base(game)
         {
-            World = new Model.World();
+            //World = new();
+
+            //World.Initialize();
+            if (SaveGameEntity.Saves.Count > 0)
+            {
+                LoadWorld(SaveGameEntity.Saves.First().Value);
+            }
+            else
+            {
+                World = new Model.World();
+                World.NewInitialize();
+                World.PostInitialize();
+            }
+
+            Global.World = World;
+            Global.ActiveCamera = World.ActiveSite.Camera;
+
             _inputControl = new InputController(this);
-
-            World.Init();
-
-            ActiveCamera = World.ActiveSite.Camera;
         }
 
         public override void LoadContent()
         {
             base.LoadContent();
+        }
+
+        public void LoadWorld(SaveGameEntity sge)
+        {
+            World = sge.Load();
+            Global.World = World;
+            Global.ActiveCamera = World.ActiveSite.Camera;
         }
 
         public override void Update(GameTime gameTime)
@@ -157,7 +177,7 @@ namespace Origin.Source.GameStates
                 }
                 else if (LoadMenu)
                 {
-                    LoadSaveGUI.Draw();
+                    LoadSaveGUI.Draw(this);
 
                     ImGui.PushFont(GlobalResources.Fonts["BoldTitle"]);
                     if (ImGui.Begin("Load", (ImGuiWindowFlags)flags))
@@ -192,7 +212,7 @@ namespace Origin.Source.GameStates
                         ImGuiUtil.AlignForWidth(bSize.X);
                         if (ImGui.Button("Save", bSize))
                         {
-                            //World.Save();
+                            World.Save();
                         }
 
                         ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);

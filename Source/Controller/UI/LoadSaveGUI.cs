@@ -1,6 +1,8 @@
 ﻿using ImGuiNET;
 
+using Origin.Source.GameStates;
 using Origin.Source.Resources;
+using Origin.Source.Save;
 using Origin.Source.Utils;
 
 using System;
@@ -15,7 +17,7 @@ namespace Origin.Source.Controller.UI
 {
     public static class LoadSaveGUI
     {
-        public static void Draw()
+        public static void Draw(StateMainGame smg)
         {
             var saves = SaveGameEntity.Saves;
 
@@ -34,7 +36,7 @@ namespace Origin.Source.Controller.UI
                     ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new Vector2(0.1f, 0.5f));
                     if (ImGui.Button($"{save.Value.Name}\n", bSize))
                     {
-                        //save.Value.Load(MainWorld.Instance);
+                        smg.LoadWorld(save.Value);
                     }
                     ImGui.SameLine();
                     var pos = ImGui.GetCursorPos();

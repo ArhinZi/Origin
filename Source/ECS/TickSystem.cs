@@ -28,6 +28,10 @@ namespace Origin.Source.ECS
         public virtual void Initialize()
         { }
 
+        public virtual void LoadInit()
+        {
+        }
+
         public virtual void BeforeUpdate(in ulong t)
         {
         }

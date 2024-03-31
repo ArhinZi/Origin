@@ -26,7 +26,7 @@ namespace Origin.Source.Model
         public TimeOnly SunRiseTime { get; private set; } = new TimeOnly(6, 0);
         public TimeOnly SunSetTime { get; private set; } = new TimeOnly(17, 0);
 
-        public ulong Ticks { get; private set; } = DAY / 4;
+        public ulong Ticks { get; set; } = DAY / 4;
 
         public float TimeMod { get; private set; } = 1f;
         public float PrePauseTimeMod { get; private set; } = 1f;

@@ -65,6 +65,12 @@ namespace Origin.Source.ECS.Light
             _site.LightControl.bufferDirty = true;
         }
 
+        public override void LoadInit()
+        {
+            base.LoadInit();
+            Initialize();
+        }
+
         public override void Update(in ulong t)
         {
             var commands = new CommandBuffer();

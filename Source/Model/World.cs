@@ -8,6 +8,7 @@ using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Vegetation;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
+using Origin.Source.Save;
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,15 @@ namespace Origin.Source.Model
     {
         public WorldTickManager TimeManager;
 
-        //private SaveGameEntity sge = null;
+        private SaveGameEntity sge = null;
+
+        public static void Load(World world, string name, int seed, SaveGameEntity sge, List<Site.Site> sites)
+        {
+            world.Name = name;
+            world.sge = sge;
+            world.Sites = sites;
+            world.Random = new Random(seed);
+        }
 
         public string Name { get; private set; } = "Lost fields";
         public int Seed { get; private set; } = 1234;
@@ -30,68 +39,74 @@ namespace Origin.Source.Model
 
         public World()
         {
-            //Instance = this;
-            Global.World = this;
-            Random = new Random(Seed);
+        }
+
+        public void NewInitialize()
+        {
+            Random = new Random(1234);
+
+            if (SaveGameEntity.Saves.ContainsKey(Name))
+                sge = SaveGameEntity.Saves[Name];
+            else
+                sge = new SaveGameEntity(this.Name);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site.Site(this, new Point3(256, 256, 128));
+            ActiveSite = new Site.Site(this, new Point3(256, 256, 128), Sites.Count);
             Sites.Add(ActiveSite);
+        }
+
+        public void PostInitialize(bool load = false)
+        {
+            if (ActiveSite == null)
+                ActiveSite = Sites[0];
 
             TimeManager = new WorldTickManager(this);
 
-            var SystemManager = TimeManager.SystemsManager;
+            InitSystemManager(load);
 
-            SystemManager.Groups.Add(new("Pathfinder", [
-                new UpdateSitePathSystem(ActiveSite)
-            ]));
-            SystemManager.Groups.Add(new("Vegetation", [
-                new UpdateVegsOnConstructionRemovedSystem(ActiveSite),
-                new UpdateVegsOnConstructionPlacedSystem(ActiveSite),
-                new VegatationControlSystem(ActiveSite)
-            ]));
-            SystemManager.Groups.Add(new("SunLight", [
-                new UpdateLightSystem(ActiveSite)
-            ]));
-            SystemManager.Groups.Add(new("Fluids", [
-                new UpdateFluidsOnConstructionPlacedSystem(ActiveSite),
-                new UpdateFluidsOnConstructionRemovedSystem(ActiveSite),
-                new UpdateFluidsSystem(ActiveSite)
-            ]));
-
-            SystemManager.Groups.Add(new("Final", [
-                new ClearEventsSystem(ActiveSite)
-            ]));
-
-            SystemManager.Init();
-
-            ActiveSite.PostInit();
-
-            /*SiteGeneratorParameters parameters = SiteBlocksMaker.GetDefaultParameters();
-            SiteBlocksMaker.GenerateSite(ActiveSite, parameters, 553);
-            ActiveSite.InitPathFinder();*/
-
-            /*var sd = new Sprite[Enum.GetNames(typeof(IsometricDirection)).Length];
-            sd[(int)IsometricDirection.NONE] = GlobalResources.GetSpriteByID("tempPawn");
-            var entity = ECSworld.Create(new UserControlPawnComponent(),
-                new DrawComponent() { Sprites = sd },
-                new OnSitePosition() { position = new Utils.Point3(0, 0, 100) });*/
+            foreach (var site in Sites)
+            {
+                site.PostInit();
+            }
         }
 
-        public void Init()
+        private void InitSystemManager(bool load = false)
         {
-            //Renderer = new SiteRenderer(ActiveSite, Global.GraphicsDevice);
+            var SystemManager = TimeManager.SystemsManager;
+
+            //SystemManager.Groups.Add(new("Pathfinder", [
+            //    new UpdateSitePathSystem(ActiveSite)
+            //]));
+            SystemManager.Systems.Add(new UpdateVegsOnConstructionRemovedSystem(ActiveSite));
+            SystemManager.Systems.Add(new UpdateVegsOnConstructionPlacedSystem(ActiveSite));
+            SystemManager.Systems.Add(new VegatationControlSystem(ActiveSite));
+
+            SystemManager.Systems.Add(new UpdateLightSystem(ActiveSite));
+
+            SystemManager.Systems.Add(new UpdateFluidsOnConstructionPlacedSystem(ActiveSite));
+            SystemManager.Systems.Add(new UpdateFluidsOnConstructionRemovedSystem(ActiveSite));
+            SystemManager.Systems.Add(new UpdateFluidsSystem(ActiveSite));
+
+            SystemManager.Systems.Add(new ClearEventsSystem(ActiveSite));
+
+            if (!load)
+            {
+                SystemManager.Init();
+            }
+            else
+            {
+                SystemManager.LoadInit();
+            }
         }
 
         public void Save()
         {
-            /*if (sge == null)
+            //if (sge == null)
             {
-                sge = new SaveGameEntity(Name);
                 sge.LastSaveTime = DateTime.Now;
-                sge.Texture = ActiveSite.DrawControl.RenderTarget2D;
+                sge.Texture = ActiveSite.DrawComponent.RenderTarget2D;
                 sge.Save(this);
-            }*/
+            }
         }
 
         public void Update(GameTime gameTime)
