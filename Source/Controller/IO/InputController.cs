@@ -27,11 +27,11 @@ namespace Origin.Source.Controller.IO
         public InputController(StateMainGame smg)
         {
             StateMainGame = smg;
-            World = smg.World;
         }
 
         public void Update(GameTime gameTime)
         {
+            World = StateMainGame.World;
             //if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
 
             if (ImGui.IsKeyPressed(ImGuiKey.Escape))
