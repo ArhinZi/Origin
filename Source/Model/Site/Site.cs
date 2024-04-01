@@ -81,7 +81,7 @@ namespace Origin.Source.Model.Site
                  ));
 
             MapGenerator = new SiteGeneratorService(this, Size);
-            MapGenerator.Visit(new Point3(0, 0, 127));
+            MapGenerator.Visit(new Point3(0, 0, Size.Z - 1));
             Trace.WriteLine("End map gen");
 
             LightControl = new LightComponent(this);

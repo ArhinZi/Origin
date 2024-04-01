@@ -71,7 +71,7 @@ namespace Origin.Source.ECS.Vegetation
                     foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
                     {
                         var pos2 = tile.Position + item;
-                        if ((_site.Map.TryGet(pos2, out Entity nent) && nent.Has<BaseVegetation>()))
+                        if ((_site.Map.TryGet(pos2, out Entity nent) && nent != Entity.Null && nent.Has<BaseVegetation>()))
                         {
                             ref BaseVegetation nvbc = ref nent.Get<BaseVegetation>();
                             nvbc.VegetationNeighbours++;

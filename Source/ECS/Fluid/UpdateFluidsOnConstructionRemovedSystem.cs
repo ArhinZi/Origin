@@ -40,7 +40,7 @@ namespace Origin.Source.ECS.Vegetation
                 foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
                 {
                     var pos2 = pos + item;
-                    if (_site.Map.TryGet(pos2, out Entity nent) && nent.Has<BaseConstruction>() && !nent.Has<IsFluidBlocker>())
+                    if (_site.Map.TryGet(pos2, out Entity nent) && nent != Entity.Null && nent.Has<BaseConstruction>() && !nent.Has<IsFluidBlocker>())
                     {
                         nent.Add<IsFluidBlocker>();
                     }

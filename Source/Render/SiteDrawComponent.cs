@@ -47,7 +47,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 
             RenderTarget2D = new RenderTarget2D(Global.GraphicsDevice,
                 Global.Game.Window.ClientBounds.Width, Global.Game.Window.ClientBounds.Height,
-                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 8, RenderTargetUsage.PreserveContents);
 
             random = site.World.Random;
 
@@ -61,7 +61,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
         {
             RenderTarget2D = new RenderTarget2D(Global.GraphicsDevice,
                 bounds.screenBounds.Width, bounds.screenBounds.Height,
-                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 8, RenderTargetUsage.PreserveContents);
         }
 
         public void InitTerrainSprites()
@@ -143,10 +143,17 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     byte LAYER = (int)DrawBufferLayer.Water;
                     Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
                                     "Water");
-                    Color col = Color.White;
-                    col.A = (byte)(200 - (FluidParticle.MaxVolume - fluid.Volume));
+                    Color col = Color.Blue;
+                    col.A = (byte)(255 - Math.Pow((FluidParticle.MaxVolume - fluid.Volume), 1.2));
                     locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col,
-                                    new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
+                                    new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, 0)));
+
+                    //sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                    //                "SolidWall");
+                    //col = Color.Blue;
+                    //col.A = (byte)(255 - (FluidParticle.MaxVolume - fluid.Volume)*2);
+                    //locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, sprite, col,
+                    //                new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, 0)));
                 }
             });
 
@@ -243,10 +250,17 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                     byte LAYER = (int)DrawBufferLayer.Water;
                     Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
                                     "Water");
-                    Color col = Color.White;
-                    col.A = (byte)(200 - (FluidParticle.MaxVolume - fluid.Volume));
+                    Color col = Color.Blue;
+                    col.A = (byte)(255 - Math.Pow((FluidParticle.MaxVolume - fluid.Volume), 1.2));
                     locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
-                                    new Vector3(0, FluidParticle.MaxVolume / 2 - fluid.Volume / 2, 0)));
+                                    new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, 0)));
+
+                    //sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
+                    //                "SolidWall");
+                    //col = Color.Blue;
+                    //col.A = (byte)(255 - (FluidParticle.MaxVolume - fluid.Volume)*2);
+                    //locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, sprite, col,
+                    //                new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, 0)));
                 }
             }
         }

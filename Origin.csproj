@@ -82,6 +82,7 @@
 	  <None Remove="Mods\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="Arch.Extended\Arch.LowLevel\Arch.LowLevel.csproj" />
 	  <ProjectReference Include="Arch\src\Arch.SourceGen\Arch.SourceGen.csproj" />
 	  <ProjectReference Include="Arch\src\Arch\Arch.csproj" />
 	  <ProjectReference Include="Monogame.ImGuiNET\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj" />
