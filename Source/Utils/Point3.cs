@@ -99,6 +99,22 @@ namespace Origin.Source.Utils
             return new Point(X, Y);
         }
 
+        public Point3 XYdiv(int PackSize)
+        {
+            var val = this;
+            val.X /= PackSize;
+            val.Y /= PackSize;
+            return val;
+        }
+
+        public Point3 XYmod(int PackSize)
+        {
+            var val = this;
+            val.X %= PackSize;
+            val.Y %= PackSize;
+            return val;
+        }
+
         public bool InBounds(Point3 lower, Point3 higher, bool includeLower = true, bool includeHigher = false)
         {
             bool res = true;

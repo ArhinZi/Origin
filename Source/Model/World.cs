@@ -74,9 +74,6 @@ namespace Origin.Source.Model
         {
             var SystemManager = TimeManager.SystemsManager;
 
-            //SystemManager.Groups.Add(new("Pathfinder", [
-            //    new UpdateSitePathSystem(ActiveSite)
-            //]));
             SystemManager.Systems.Add(new UpdateVegsOnConstructionRemovedSystem(ActiveSite));
             SystemManager.Systems.Add(new UpdateVegsOnConstructionPlacedSystem(ActiveSite));
             SystemManager.Systems.Add(new VegatationControlSystem(ActiveSite));
@@ -86,6 +83,8 @@ namespace Origin.Source.Model
             SystemManager.Systems.Add(new UpdateFluidsOnConstructionPlacedSystem(ActiveSite));
             SystemManager.Systems.Add(new UpdateFluidsOnConstructionRemovedSystem(ActiveSite));
             SystemManager.Systems.Add(new UpdateFluidsSystem(ActiveSite));
+
+            SystemManager.Systems.Add(new UpdateSitePathSystem(ActiveSite));
 
             SystemManager.Systems.Add(new ClearEventsSystem(ActiveSite));
 

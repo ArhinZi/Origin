@@ -8,6 +8,7 @@ using MonoGame.Extended;
 
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Pathfinding;
+using Origin.Source.Model.Pathfind.NewPathfind;
 using Origin.Source.Model.Site;
 using Origin.Source.Utils;
 
@@ -24,11 +25,13 @@ namespace Origin.Source.Pathfind
         private Point3 _size;
         private ArchWorld _world;
 
-        private PathfinderSystem _pathfinderSystem;
+        private Pathfinder _pathfinderSystem;
 
         public Point3 startPath;
         public Point3 endPath;
         public List<Point3> currPath2;
+
+        public PathfinderJob job;
 
         public SitePathfindingService(Site site, Point3 size, ArchWorld world)
         {
@@ -46,20 +49,22 @@ namespace Origin.Source.Pathfind
         {
             var query = new QueryDescription().WithAll<IsWalkAbleTile, IsTile>();
 
-            _pathfinderSystem = new PathfinderSystem();
-            _world.Query(in query, (ref IsWalkAbleTile pn, ref IsTile tile) =>
+            _pathfinderSystem = new Pathfinder();
+            _world.Query(in query, (ref IsTile tile) =>
             {
                 Point3 pos = tile.Position;
                 SetPathNode(pos);
             });
+
+            job = new(_pathfinderSystem);
         }
 
-        private void SetPathNode(Point3 pos)
+        // TODO Fix Set incoming connections to changed Node
+        public void SetPathNode(Point3 pos)
         {
             if (Map[pos.X, pos.Y, pos.Z] != Entity.Null && Map[pos.X, pos.Y, pos.Z].Has<IsWalkAbleTile>())
             {
-                if (!_pathfinderSystem.HasNode(pos))
-                    _pathfinderSystem.AddNode(pos, 1);
+                List<Node.Edge> edges = new List<Node.Edge>();
 
                 int i = 0;
                 for (int x = pos.X - 1; x <= pos.X + 1; x++)
@@ -72,23 +77,21 @@ namespace Origin.Source.Pathfind
                                 x < Size.X && y < Size.Y && z < Size.Z &&
                                 (x != pos.X || y != pos.Y || z != pos.Z))
                             {
-                                float v = 1;
-                                if (x != pos.X && y != pos.Y) v = 1.414f;
-                                if (z != pos.Z) v = 3;
+                                short v = 100;
+                                if (x != pos.X && y != pos.Y) v = 141;
+                                if (z != pos.Z) v = 300;
 
                                 IsWalkAbleTile wat;
                                 if (Map[x, y, z] != Entity.Null && Map[x, y, z].TryGet<IsWalkAbleTile>(out wat))
                                 {
                                     Point3 otherPos = new(x, y, z);
 
-                                    if (!_pathfinderSystem.HasNode(otherPos))
-                                        _pathfinderSystem.AddNode(otherPos, 1);
-                                    _pathfinderSystem.AddNodeIntersections(pos,
-                                        [new() {
-                                            position = otherPos ,
-                                            traversalType = TraversalTypes.Walk,
-                                            cost = v
-                                        } ]);
+                                    edges.Add(new Node.Edge()
+                                    {
+                                        Position = otherPos,
+                                        Cost = v
+                                    });
+
                                     i++;
                                     //otherNode.Connect(node, Velocity.FromMetersPerSecond(1));
                                 }
@@ -96,15 +99,25 @@ namespace Origin.Source.Pathfind
                         }
                     }
                 }
+                var redges = new Node.Edge[1][];
+                redges[(byte)TraversalType.Walk] = edges.ToArray();
+                Node node = new Node()
+                {
+                    Difficulty = 1,
+                    Edges = redges
+                };
+                _pathfinderSystem.AddNode(pos, node);
             }
+        }
+
+        public void RemovePathNode(Point3 pos)
+        {
+            _pathfinderSystem.RemoveNode(pos);
         }
 
         public void UpdatePathNode(Point3 pos)
         {
-            if (_pathfinderSystem.HasNode(pos))
-            {
-                _pathfinderSystem.RemoveNode(pos);
-            }
+            RemovePathNode(pos);
             SetPathNode(pos);
         }
 
@@ -115,12 +128,15 @@ namespace Origin.Source.Pathfind
             //List<Point3> path;
             //for (int i = 0; i < 10; i++)
 
-            var currPath2 = _pathfinderSystem.FindPath(start, end, debug);
+            job.Initialize(start, end, new TraversalType[] { TraversalType.Walk });
+
+            job.Execute();
+            var currPath2 = job.ResultPath;
 
             watch.Stop();
             b = watch.ElapsedMilliseconds;
-            //if (currPath2 != null)
-            //Debug.WriteLine(String.Format("Path Found with Len={0} in {1}ms looked {2} Nodes", currPath2.path.Count, b.ToString(), _pathfinderSystem.LastVisitedCount));
+            if (currPath2 != null)
+                Debug.WriteLine(String.Format("Path Found with Len={0} in {1}ms looked {2} Nodes", currPath2.path.Count, b.ToString(), job.VisitedCount));
             return currPath2;
         }
 

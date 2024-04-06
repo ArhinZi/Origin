@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 using Origin.Source.Controller.IO;
 using Origin.Source.ECS.Pathfinding;
-using Origin.Source.Pathfind;
+using Origin.Source.Model.Pathfind.NewPathfind;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -75,9 +75,9 @@ namespace Origin.Source.Model.Site.Tools
             {
                 start = pos;
             }
-            if (start != Point3.Null && pos != Point3.Null)
+            if (start != Point3.Null && Position != Point3.Null && start != Position && Position != Point3.Zero)
             {
-                end = pos;
+                end = Position;
                 LastPath = Controller.Site.Pathfinder.FindPath(start, end, true);
                 if (LastPath != null)
                 {

@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 using Newtonsoft.Json.Linq;
+
 using Origin.Source.ECS;
 using Origin.Source.Resources;
 
@@ -108,12 +109,11 @@ namespace Origin.Source.Render
                 if (layer.dirtyDataMain)
                 {
                     layer.dirtyDataMain = false;
-                    if (layer.bufferDataMain.ElementCount < layer.structSize)
-                    {
-                        // TODO delete
-                        Debug.Assert(false);
-                        layer.ReallocMainBuffer();
-                    }
+                    Debug.Assert(layer.bufferDataMain.ElementCount >= layer.structSize);
+                    //if (layer.bufferDataMain.ElementCount < layer.structSize)
+                    //{
+                    //    layer.ReallocMainBuffer();
+                    //}
                     layer.bufferDataMain.SetData(layer.dataMain);
                 }
             }
@@ -124,12 +124,11 @@ namespace Origin.Source.Render
                 if (layer.dirtyDataExtra)
                 {
                     layer.dirtyDataExtra = false;
-                    if (layer.bufferDataExtra.ElementCount < layer.structSize)
-                    {
-                        // TODO delete
-                        Debug.Assert(false);
-                        layer.ReallocExtraBuffer();
-                    }
+                    Debug.Assert(layer.bufferDataExtra.ElementCount >= layer.structSize);
+                    //if (layer.bufferDataExtra.ElementCount < layer.structSize)
+                    //{
+                    //    layer.ReallocExtraBuffer();
+                    //}
                     layer.bufferDataExtra.SetData(layer.dataExtra);
                 }
             }

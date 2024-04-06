@@ -3,10 +3,12 @@ using Arch.Core;
 using Arch.Core.Extensions;
 
 using Origin.Source.ECS.Construction;
+using Origin.Source.Model.Pathfind.old;
 using Origin.Source.Model.Site;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Origin.Source.ECS.Pathfinding
 {
@@ -31,27 +33,34 @@ namespace Origin.Source.ECS.Pathfinding
 
                 foreach (var n in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
                 {
+                    bool changed = false;
                     var Npos = pos + n;
                     Entity Nent;
                     if (_site.Map.TryGet(Npos, out Nent))
                     {
+                        Debug.Assert(Nent != Entity.Null);
                         // Check a construction below the Tile
-                        Entity below;
-                        if (_site.Map.TryGet(Npos - new Point3(0, 0, 1), out below) && below != Entity.Null)
+                        if (_site.Map.TryGet(Npos - new Point3(0, 0, 1), out Entity below) && below != Entity.Null)
                         {
-                            BaseConstruction belowbc;
-                            if (below.TryGet(out belowbc))
+                            if (below.TryGet(out BaseConstruction belowbc))
                             {
                                 if (!Nent.Has<IsWalkAbleTile>())
+                                {
                                     commands.Add(Nent, new IsWalkAbleTile() { ConstructionBelowMetaID = belowbc.ConstructionMetaID });
+                                    changed = true;
+                                }
                             }
                             else
                             {
                                 if (Nent.Has<IsWalkAbleTile>())
+                                {
+                                    changed = true;
                                     commands.Remove<IsWalkAbleTile>(Nent);
+                                }
                             }
                         }
-                        visited.Add(Npos);
+                        if (changed)
+                            visited.Add(Npos);
                     }
                 }
             });
@@ -65,32 +74,39 @@ namespace Origin.Source.ECS.Pathfinding
 
                 foreach (var n in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
                 {
+                    bool changed = false;
                     var Npos = pos + n;
-                    Entity Nent;
-                    if (_site.Map.TryGet(Npos, out Nent))
+                    if (_site.Map.TryGet(Npos, out Entity Nent))
                     {
                         // Remove path if Construction is on Tile
                         if (Nent.Has<BaseConstruction>())
                         {
                             if (Nent.Has<IsWalkAbleTile>())
+                            {
                                 commands.Remove<IsWalkAbleTile>(Nent);
+                                changed = true;
+                            }
                         }
                         else
                         {
                             // Check a construction below the Tile
-                            Entity below;
-                            if (_site.Map.TryGet(Npos - new Point3(0, 0, 1), out below) && below != Entity.Null)
+                            if (_site.Map.TryGet(Npos - new Point3(0, 0, 1), out Entity below) && below != Entity.Null)
                             {
-                                BaseConstruction belowbc;
-                                if (below.TryGet(out belowbc))
+                                if (below.TryGet(out BaseConstruction belowbc))
                                 {
                                     if (!Nent.Has<IsWalkAbleTile>())
+                                    {
                                         commands.Add(Nent, new IsWalkAbleTile() { ConstructionBelowMetaID = belowbc.ConstructionMetaID });
+                                        changed = true;
+                                    }
                                 }
                                 else
                                 {
                                     if (Nent.Has<IsWalkAbleTile>())
+                                    {
                                         commands.Remove<IsWalkAbleTile>(Nent);
+                                        changed = true;
+                                    }
                                 }
                             }
                         }
@@ -102,7 +118,8 @@ namespace Origin.Source.ECS.Pathfinding
             commands.Playback(_site.ArchWorld);
             foreach (var item in visited)
             {
-                _site.Pathfinder.UpdatePathNode(item);
+                _site.Pathfinder.RemovePathNode(item);
+                _site.Pathfinder.SetPathNode(item);
             }
         }
     }

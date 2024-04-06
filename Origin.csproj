@@ -46,6 +46,7 @@
 		<PackageReference Include="MonoGame.Extended" Version="3.8.0" />
 		<PackageReference Include="MonoGame.Framework.Compute.DesktopGL" Version="3.8.2" />
 		<PackageReference Include="MSTest.TestFramework" Version="3.2.1" />
+		<PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
 		<PackageReference Include="SimplexNoise" Version="2.0.0" />
 		<PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
 		<PackageReference Include="System.Runtime.Caching" Version="9.0.0-preview.1.24080.9" />

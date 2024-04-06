@@ -132,8 +132,8 @@ namespace Origin.Source.Model.Site
 
         public void PostInit()
         {
-            //Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
-            //Trace.WriteLine("End pathfinder init");
+            Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
+            Trace.WriteLine("End pathfinder init");
 
             DrawComponent = new SiteDrawComponent(this);
             Trace.WriteLine("End creating render");

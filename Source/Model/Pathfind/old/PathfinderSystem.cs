@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.Pathfind
+namespace Origin.Source.Model.Pathfind.old
 {
     public enum TraversalTypes : ushort
     {
@@ -39,7 +39,7 @@ namespace Origin.Source.Pathfind
 
         public int CompareTo(PFNode other)
         {
-            return this.Expection.CompareTo(other.Expection);
+            return Expection.CompareTo(other.Expection);
         }
     }
 

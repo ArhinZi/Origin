@@ -113,7 +113,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                         locators.list.Add(_siteRenderer.StaticDrawer.AddTileSprite(LAYER, tilePos, rborderSprite, borderColor,
                             new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 2, 0)));
 
-                    //TODO Draw Vegetation
+                    // Draw Vegetation
                     LAYER = (int)DrawBufferLayer.FrontOver;
                     if (ent.TryGet(out BaseVegetation hveg))
                     {
@@ -228,7 +228,7 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                             locators.list.Add(_siteRenderer.StaticDrawer.ScheduleUpdate(LAYER, tilePos, rborderSprite, borderColor,
                                 new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset - 1, 0)));
 
-                        //TODO Draw Vegetation
+                        // Draw Vegetation
                         LAYER = (int)DrawBufferLayer.FrontOver;
                         if (tile.TryGet(out BaseVegetation hveg))
                         {
