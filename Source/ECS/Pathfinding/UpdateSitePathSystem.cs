@@ -74,7 +74,6 @@ namespace Origin.Source.ECS.Pathfinding
 
                 foreach (var n in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
                 {
-                    bool changed = false;
                     var Npos = pos + n;
                     if (_site.Map.TryGet(Npos, out Entity Nent))
                     {
@@ -84,7 +83,6 @@ namespace Origin.Source.ECS.Pathfinding
                             if (Nent.Has<IsWalkAbleTile>())
                             {
                                 commands.Remove<IsWalkAbleTile>(Nent);
-                                changed = true;
                             }
                         }
                         else
@@ -97,7 +95,6 @@ namespace Origin.Source.ECS.Pathfinding
                                     if (!Nent.Has<IsWalkAbleTile>())
                                     {
                                         commands.Add(Nent, new IsWalkAbleTile() { ConstructionBelowMetaID = belowbc.ConstructionMetaID });
-                                        changed = true;
                                     }
                                 }
                                 else
@@ -105,7 +102,6 @@ namespace Origin.Source.ECS.Pathfinding
                                     if (Nent.Has<IsWalkAbleTile>())
                                     {
                                         commands.Remove<IsWalkAbleTile>(Nent);
-                                        changed = true;
                                     }
                                 }
                             }

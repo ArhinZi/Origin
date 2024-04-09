@@ -19,7 +19,7 @@ using System.Diagnostics;
 
 namespace Origin.Source.Pathfind
 {
-    public class SitePathfindingService : IUpdate
+    public class SitePathfindingComponent : IUpdate
     {
         private Site _site;
         private Point3 _size;
@@ -31,9 +31,9 @@ namespace Origin.Source.Pathfind
         public Point3 endPath;
         public List<Point3> currPath2;
 
-        public PathfinderJob job;
+        private PathfinderJob job;
 
-        public SitePathfindingService(Site site, Point3 size, ArchWorld world)
+        public SitePathfindingComponent(Site site, Point3 size, ArchWorld world)
         {
             _site = site;
             _size = size;
@@ -99,8 +99,8 @@ namespace Origin.Source.Pathfind
                         }
                     }
                 }
-                var redges = new Node.Edge[1][];
-                redges[(byte)TraversalType.Walk] = edges.ToArray();
+
+                var redges = edges.ToArray();
                 Node node = new Node()
                 {
                     Difficulty = 1,

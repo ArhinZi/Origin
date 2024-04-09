@@ -38,7 +38,7 @@ namespace Origin.Source.Model.Site
         public Point3 Size { get; private set; }
 
         public SiteGeneratorService MapGenerator { get; private set; }
-        public SitePathfindingService Pathfinder { get; private set; }
+        public SitePathfindingComponent Pathfinder { get; private set; }
 
         public SiteDrawComponent DrawComponent { get; private set; }
         public LightComponent LightControl { get; private set; }
@@ -132,7 +132,7 @@ namespace Origin.Source.Model.Site
 
         public void PostInit()
         {
-            Pathfinder = new SitePathfindingService(this, Size, ArchWorld);
+            Pathfinder = new SitePathfindingComponent(this, Size, ArchWorld);
             Trace.WriteLine("End pathfinder init");
 
             DrawComponent = new SiteDrawComponent(this);

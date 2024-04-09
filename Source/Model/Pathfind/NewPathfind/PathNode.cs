@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.Model.Pathfind.NewPathfind
 {
-    public class PathNode : FastPriorityQueueNode
+    internal class PathNode : FastPriorityQueueNode
     {
         public Point3 position;
         public Node node;

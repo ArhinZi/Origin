@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.Model.Pathfind.NewPathfind
 {
-    public class PathfinderJob
+    internal class PathfinderJob
     {
         public FastPriorityQueue<PathNode> interesting;
         private Pathfinder Pathfinder;
@@ -79,40 +79,45 @@ namespace Origin.Source.Model.Pathfind.NewPathfind
                 var nCurrent = current.node;
 
                 //current.entity.GetRelationships<RelWalkTo>();
-                for (int ti = 0; ti < AllowedTypes.Length; ti++)
+                for (int i = 0; i < nCurrent.Edges.Length; i++)
                 {
-                    for (int i = 0; i < nCurrent.Edges[ti].Length; i++)
+                    var nEdge = nCurrent.Edges[i];
+                    var nNode = Pathfinder.Nodes[nEdge.Position];
+
+                    var nextCost = current.costSoFar + GetCost(nCurrent, nNode) * nEdge.Cost;
+
+                    bool bvis = visited.TryGetValue(nEdge.Position, out PathNode pNode);
+                    if (!bvis || pNode.costSoFar > nextCost)
                     {
-                        var nEdge = nCurrent.Edges[ti][i];
-                        var nNode = Pathfinder.Nodes[nEdge.Position];
-
-                        var nextCost = current.costSoFar + GetCost(nCurrent, nNode) * nEdge.Cost;
-
-                        bool bvis = visited.TryGetValue(nEdge.Position, out PathNode pNode);
-                        if (!bvis || pNode.costSoFar > nextCost)
+                        PathNode node;
+                        if (bvis)
                         {
-                            var node = new PathNode()
+                            node = pNode;
+                            pNode.costSoFar = nextCost;
+                            pNode.heuristic = Heuristic(nEdge.Position, Goal);
+                            interesting.UpdatePriority(pNode, pNode.Expection);
+                        }
+                        else
+                        {
+                            node = new PathNode()
                             {
                                 position = nEdge.Position,
                                 node = nNode,
                                 costSoFar = nextCost,
                                 heuristic = Heuristic(nEdge.Position, Goal)
                             };
-                            //if (bvis)
-                            //    interesting.UpdatePriority(node, node.Expection);
-                            //else
-                            {
-                                EnsureInterestingCapacity();
-                                interesting.Enqueue(node, node.Expection);
-                            }
+                            EnsureInterestingCapacity();
+                            interesting.Enqueue(node, node.Expection);
 
                             visited[nEdge.Position] = node;
-                            path[node] = current;
                         }
-                        else
-                        { }
+
+                        path[node] = current;
                     }
+                    else
+                    { }
                 }
+
                 VisitedCount++;
             }
 
@@ -148,31 +153,31 @@ namespace Origin.Source.Model.Pathfind.NewPathfind
             return (a.Difficulty + b.Difficulty) / 2;
         }
 
-        private int Heuristic(Point3 a, Point3 b)
+        private static int Heuristic(Point3 a, Point3 b)
         {
             return Euclidean(a, b);
 
-            int Manhatten(Point3 a, Point3 b)
-            {
-                int dx = Math.Abs(a.X - b.X);
-                int dy = Math.Abs(a.Y - b.Y);
-                int dz = Math.Abs(a.Z - b.Z);
-                return dx + dy + dz;
-            }
-            int Euclidean(Point3 a, Point3 b)
+            static int Euclidean(Point3 a, Point3 b)
             {
                 int dx = a.X - b.X;
                 int dy = a.Y - b.Y;
                 int dz = a.Z - b.Z;
                 return (int)(Math.Sqrt(dx * dx + dy * dy) * 141 + Math.Abs(dz) * 300);
             }
-            int Diagonal(Point3 a, Point3 b)
-            {
-                int dx = Math.Abs(a.X - b.X);
-                int dy = Math.Abs(a.Y - b.Y);
-                int dz = Math.Abs(a.Z - b.Z);
-                return Math.Max(dx, Math.Max(dy, dz));
-            }
+            //int Manhatten(Point3 a, Point3 b)
+            //{
+            //    int dx = Math.Abs(a.X - b.X);
+            //    int dy = Math.Abs(a.Y - b.Y);
+            //    int dz = Math.Abs(a.Z - b.Z);
+            //    return dx + dy + dz;
+            //}
+            //int Diagonal(Point3 a, Point3 b)
+            //{
+            //    int dx = Math.Abs(a.X - b.X);
+            //    int dy = Math.Abs(a.Y - b.Y);
+            //    int dz = Math.Abs(a.Z - b.Z);
+            //    return Math.Max(dx, Math.Max(dy, dz));
+            //}
         }
     }
 }
