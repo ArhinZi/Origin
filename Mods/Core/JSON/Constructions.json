@@ -2,7 +2,7 @@
   "Constructions": [
     {
       "ID": "SoilWallFloor",
-      "Name": "Soil",
+      "Name": "Soil block",
       "ConstructAble": false,
       "RotateAble": false,
       "HasMaterialColor": true,

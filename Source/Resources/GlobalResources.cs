@@ -63,7 +63,7 @@ namespace Origin.Source.Resources
             var tok = obj.ToObject<Dictionary<string, JToken>>();
 
             Sprites = JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings);
-            var selection = GetResourceBy(Sprites, "ID", "SelectionWall");
+            var selection = GetResourceBy(Sprites, "ID", "Borders");
             Sprites.Add(new Sprite(
                 id: "RightBorder",
                 GetResourceBy(Textures, "Name", "default"),

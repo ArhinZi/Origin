@@ -1,13 +1,14 @@
 from PIL import Image
 import os
 import json
+from pprint import pprint
 
 def create_sprite_atlas(input_folder, atlas_name, w_gap=0, h_gap=0):
     # Get a list of all image files in the input folder
     image_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
 
     # Sort the image files based on their names
-    image_files.sort()
+    image_files.sort(key=lambda x: (int(x.split('_')[0]), int(x.split('_')[1])))
 
     # Dictionary to store maximum column height for each row
     max_row_heights = {}
@@ -30,16 +31,19 @@ def create_sprite_atlas(input_folder, atlas_name, w_gap=0, h_gap=0):
         except (ValueError, IOError) as e:
             print(f"Ignoring file '{file}' due to error in processing: {e}")
 
+    pprint(image_files)
     # Determine the number of columns
     max_cols = max(int(col.split('_')[1]) for col in image_files if len(col.split('_')) == 3 and col.split('_')[1].isdigit())
 
+    print("cols:",max_cols)
     # Calculate total width and height of the atlas
     # Calculate total width of the atlas
     total_width = 0
     for col in range(max_cols + 1):
-        col_images = [f for f in image_files if f.split('_')[1] == str(col)]
+        col_images = [f for f in image_files if f.split('_')[0] == str(col)]
         col_width = sum(Image.open(os.path.join(input_folder, img)).width for img in col_images) + w_gap * (len(col_images) - 1)
         total_width = max(total_width, col_width)
+        print(col_images, col_width, total_width)
     total_height = max(sum(max_row_heights.values()) + h_gap * (len(max_row_heights) - 1), max(max_row_heights.values()))
 
         
