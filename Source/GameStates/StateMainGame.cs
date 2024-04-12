@@ -64,19 +64,22 @@ namespace Origin.Source.GameStates
             //World = new();
 
             //World.Initialize();
+
             if (SaveGameEntity.Saves.Count > 0)
             {
                 LoadWorld(SaveGameEntity.Saves.First().Value);
+                Global.World = World;
+                Global.ActiveCamera = World.ActiveSite.Camera;
             }
             else
             {
                 World = new Model.World();
                 World.NewInitialize();
+                Global.World = World;
+                Global.ActiveCamera = World.ActiveSite.Camera;
+
                 World.PostInitialize();
             }
-
-            Global.World = World;
-            Global.ActiveCamera = World.ActiveSite.Camera;
 
             _inputControl = new InputController(this);
         }
@@ -89,8 +92,6 @@ namespace Origin.Source.GameStates
         public void LoadWorld(SaveGameEntity sge)
         {
             World = sge.Load();
-            Global.World = World;
-            Global.ActiveCamera = World.ActiveSite.Camera;
         }
 
         public override void Update(GameTime gameTime)

@@ -16,6 +16,7 @@ using System.Linq;
 
 namespace Origin.Source.Resources
 {
+    // TODO Start using Arch Resources
     public static class GlobalResources
     {
         private static JsonSerializerSettings settings;
@@ -23,6 +24,8 @@ namespace Origin.Source.Resources
         public static List<Texture2D> Textures = [];
 
         public static List<Sprite> Sprites = [];
+        public static List<TextureInfo> TexturesInfo = [];
+
         public static List<Material> Materials = [];
         public static List<Item> Items = [];
         public static List<Construction> Constructions = [];
@@ -63,16 +66,17 @@ namespace Origin.Source.Resources
             var tok = obj.ToObject<Dictionary<string, JToken>>();
 
             Sprites = JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings);
+            Sprites.AddRange(JsonConvert.DeserializeObject<List<Sprite>>(tok["RotationSprites"].ToString(), settings));
             var selection = GetResourceBy(Sprites, "ID", "Borders");
             Sprites.Add(new Sprite(
                 id: "RightBorder",
                 GetResourceBy(Textures, "Name", "default"),
                 new Rectangle()
                 {
-                    X = selection.RectPos.Width / 2,
+                    X = selection.RectPos.X + selection.RectPos.Width / 2,
                     Y = selection.RectPos.Y,
                     Width = selection.RectPos.Width / 2,
-                    Height = selection.RectPos.Height / 4
+                    Height = selection.RectPos.Height / 4 + 1
                 }));
             Sprites.Add(new Sprite(
                 id: "LeftBorder",
@@ -82,13 +86,14 @@ namespace Origin.Source.Resources
                     X = selection.RectPos.X,
                     Y = selection.RectPos.Y,
                     Width = selection.RectPos.Width / 2,
-                    Height = selection.RectPos.Height / 4
+                    Height = selection.RectPos.Height / 4 + 1
                 }));
 
             Materials = JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings);
             Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);
             Constructions = JsonConvert.DeserializeObject<List<Construction>>(tok["Constructions"].ToString(), settings);
             Vegetations = JsonConvert.DeserializeObject<List<Vegetation>>(tok["Vegetations"].ToString(), settings);
+            TexturesInfo = JsonConvert.DeserializeObject<List<TextureInfo>>(tok["Textures"].ToString(), settings);
 
             Settings = JsonConvert.DeserializeObject<Settings>(tok["Settings"].ToString(), settings);
 

@@ -5,6 +5,7 @@ using Origin.Source.ECS.BaseSystems;
 using Origin.Source.ECS.Fluid;
 using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
+using Origin.Source.ECS.Render;
 using Origin.Source.ECS.Vegetation;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
@@ -87,6 +88,8 @@ namespace Origin.Source.Model
             SystemManager.Systems.Add(new UpdateSitePathSystem(ActiveSite));
 
             SystemManager.Systems.Add(new ClearEventsSystem(ActiveSite));
+
+            SystemManager.Systems.Add(new RenderUpdateTilesSystem(ActiveSite));
 
             if (!load)
             {

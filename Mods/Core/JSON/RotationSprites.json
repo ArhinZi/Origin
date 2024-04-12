@@ -1,0 +1,22 @@
+{
+  "RotationSprites": [
+    {
+      "ID": "FloorRampSoil",
+      "Rotations": {
+        "BL": [ "FloorRampSoilBL" ],
+        "BR": [ "FloorRampSoilBR" ],
+        "TL": [ "FloorRampSoilTL" ],
+        "RT": [ "FloorRampSoilBR" ]
+      }
+    },
+    {
+      "ID": "WallRampSoil",
+      "Rotations": {
+        "BL": [ "WallRampSoilBL" ],
+        "BR": [ "WallRampSoilBR" ],
+        "TL": [ "WallRampSoilTL" ],
+        "RT": [ "WallRampSoilBR" ]
+      }
+    }
+  ]
+}

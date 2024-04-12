@@ -75,8 +75,8 @@ namespace Origin.Source
         /// </summary>
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferHeight = 1024;
-            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 1200;
+            graphics.PreferredBackBufferWidth = 1920;
             graphics.IsFullScreen = false;
             graphics.SynchronizeWithVerticalRetrace = true; //Vsync
             IsFixedTimeStep = true;

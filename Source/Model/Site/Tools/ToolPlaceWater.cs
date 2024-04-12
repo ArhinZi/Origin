@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.Controller.IO;
-using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Fluid;
+using Origin.Source.ECS.Render;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 

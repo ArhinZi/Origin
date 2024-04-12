@@ -8,6 +8,12 @@ namespace Origin.Source.Resources
         public int Amount { get; set; }
     }
 
+    public class ConstructionShape
+    {
+        public string Name { get; set; }
+        public Dictionary<string, List<string>> RotationSprites { get; set; }
+    }
+
     public class Construction
     {
         public string ID { get; set; }
@@ -21,7 +27,10 @@ namespace Origin.Source.Resources
         public string Type { get; set; }
         public string WallRemovedConstruction { get; set; }
         public string Category { get; set; }
+
+        public List<ConstructionShape> Shapes { get; set; }
         public Dictionary<string, List<string>> Sprites { get; set; }
+
         public List<Component> Components { get; set; }
 
         public override string ToString()

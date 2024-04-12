@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -24,39 +25,50 @@ namespace Origin.Source.Resources.Converters
                 var jsonObject = JObject.Load(reader);
 
                 string id = jsonObject["ID"].Value<string>();
-                string textureName = jsonObject["TextureName"].Value<string>();
-                string sourceRect = jsonObject["SourceRect"].Value<string>();
+                string textureName = jsonObject["TextureName"]?.Value<string>();
+                string sourceRect = jsonObject["SourceRect"]?.Value<string>();
 
-                Texture2D texture = GlobalResources.GetResourceBy(GlobalResources.Textures, "Name", textureName);
-                if (texture == null)
-                {
-                    Debug.WriteLine(string.Format("ERROR: No texture with name {}", textureName));
-                    return null;
-                }
+                Texture2D texture = textureName != null ? GlobalResources.GetResourceBy(GlobalResources.Textures, "Name", textureName) : null;
+                //if (texture == null)
+                //{
+                //    Debug.WriteLine(string.Format("ERROR: No texture with name {}", textureName));
+                //    return null;
+                //}
 
-                Rectangle rectangle = Parser.RectangleFromString(sourceRect);
+                Rectangle rectangle = sourceRect != null ? Parser.RectangleFromString(sourceRect) : Rectangle.Empty;
 
-                // Create your Texture2D and Rectangle objects here based on textureName and sourceRect.
-                // You'll need to implement this part according to your application's logic.
-
-                IsometricDirection direction = IsometricDirection.NONE; // You can set a default value.
+                IsometricDirection direction = IsometricDirection.NONE;
                 if (jsonObject["SpriteDir"] != null)
                 {
                     direction = (IsometricDirection)Enum.Parse(typeof(IsometricDirection), jsonObject["SpriteDir"].Value<string>());
                 }
 
-                MySpriteEffect effect = MySpriteEffect.None; // You can set a default value.
+                MySpriteEffect effect = MySpriteEffect.None;
                 if (jsonObject["SpriteEffect"] != null)
                 {
                     string[] flagNames = jsonObject["SpriteEffect"].Value<string>().Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
                     effect = flagNames.Select(flagName => Enum.Parse<MySpriteEffect>(flagName.Trim())).Aggregate((e1, e2) => e1 | e2);
                 }
 
-                // Create and return a new Sprite object
-                var sprite = new Sprite(id, texture, rectangle, direction, effect);
+                Dictionary<string, List<Sprite>> rot = null;
+                if (jsonObject["Rotations"] != null)
+                {
+                    var data = JObject.Parse(jsonObject["Rotations"].ToString());
+                    rot = [];
 
-                // Add the sprite to your SpriteSet if needed
-                //GlobalResources.Sprites[id] = sprite;
+                    foreach (var rotation in data)
+                    {
+                        string name = rotation.Key;
+                        var l = new List<Sprite>();
+                        foreach (var item in rotation.Value)
+                        {
+                            l.Add(GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", item.Value<string>()));
+                        }
+                        rot.Add(name, l);
+                    }
+                }
+
+                var sprite = new Sprite(id, texture, rectangle, direction, effect, rot);
 
                 return sprite;
             }

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Origin.Source.Render
 {
+    // TODO Do it using BitAray
     [StructLayout(LayoutKind.Sequential)]
     public struct Float4
     {

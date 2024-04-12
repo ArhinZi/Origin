@@ -9,6 +9,7 @@ using Origin.Source.Model;
 
 using System.Collections.Generic;
 using Origin.Source.ECS.BaseComponents;
+using Origin.Source.ECS.Render;
 
 namespace Origin.Source.Model.Generators
 {

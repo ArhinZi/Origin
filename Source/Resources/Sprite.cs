@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 
 using System;
+using System.Collections.Generic;
 
 namespace Origin.Source.Resources
 {
@@ -64,15 +65,23 @@ namespace Origin.Source.Resources
         public IsometricDirection Direction { get; }
         public MySpriteEffect Effect { get; }
 
+        public Dictionary<string, List<Sprite>> Rotations { get; }
+
         public Sprite(string id, Texture2D texture, Rectangle pos,
             IsometricDirection dir = IsometricDirection.NONE,
-            MySpriteEffect effs = MySpriteEffect.None)
+            MySpriteEffect effs = MySpriteEffect.None, Dictionary<string, List<Sprite>> rotations = null)
         {
             ID = id;
             Texture = texture;
             RectPos = pos;
             Direction = dir;
             Effect = effs;
+            Rotations = rotations;
+        }
+
+        public override string ToString()
+        {
+            return $"{ID}, {Direction.ToString()}";
         }
     }
 }

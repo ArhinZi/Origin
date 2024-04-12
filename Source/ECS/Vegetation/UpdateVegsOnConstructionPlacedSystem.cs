@@ -1,9 +1,8 @@
 ﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
-
-using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Render;
 using Origin.Source.ECS.Vegetation.Components;
 using Origin.Source.Model.Site;
 using Origin.Source.Utils;

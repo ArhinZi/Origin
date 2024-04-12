@@ -21,8 +21,8 @@ namespace Origin.Source.Resources
             BackInteractives = 5,
             HiddenFront = 10,
             Front = 11,
-            FrontNoLight = 12,
-            FrontOver = 14,
+            FrontOver = 12,
+            FrontNoLight = 14,
             FrontInteractives = 15,
         }
 

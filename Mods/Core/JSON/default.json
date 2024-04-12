@@ -1,184 +1,200 @@
 {
-    "Sprites": [
-        {
-            "TextureName": "default",
-            "ID": "SelectionFloor",
-            "SourceRect": "0 0 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "SolidFloor",
-            "SourceRect": "66 0 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "SolidSelectionFloor",
-            "SourceRect": "132 0 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "Water",
-            "SourceRect": "198 0 62 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "SelectionWall",
-            "SourceRect": "0 66 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "SolidWall",
-            "SourceRect": "66 66 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "SolidSelectionWall",
-            "SourceRect": "132 66 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "Borders",
-            "SourceRect": "198 66 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "DirtFloor",
-            "SourceRect": "0 132 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "DirtWall",
-            "SourceRect": "0 198 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "EmbeddedGrassFloor1",
-            "SourceRect": "0 264 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "EmbeddedGrassFloor2",
-            "SourceRect": "66 264 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorExRampLdirt",
-            "SourceRect": "0 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorExRampBdirt",
-            "SourceRect": "66 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorExRampTdirt",
-            "SourceRect": "132 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorExRampRdirt",
-            "SourceRect": "198 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorInRampLdirt",
-            "SourceRect": "264 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorInRampBdirt",
-            "SourceRect": "330 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorInRampTdirt",
-            "SourceRect": "396 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorInRampRdirt",
-            "SourceRect": "462 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorRampBLdirt",
-            "SourceRect": "528 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorRampBRdirt",
-            "SourceRect": "594 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorRampTLdirt",
-            "SourceRect": "660 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "FloorRampTRdirt",
-            "SourceRect": "726 330 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallExRampLdirt",
-            "SourceRect": "0 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallExRampBdirt",
-            "SourceRect": "66 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallExRampTdirt",
-            "SourceRect": "132 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallExRampRdirt",
-            "SourceRect": "198 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallInRampLdirt",
-            "SourceRect": "264 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallInRampBdirt",
-            "SourceRect": "330 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallInRampTdirt",
-            "SourceRect": "396 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallInRampRdirt",
-            "SourceRect": "462 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallRampBLdirt",
-            "SourceRect": "528 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallRampBRdirt",
-            "SourceRect": "594 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallRampTLdirt",
-            "SourceRect": "660 396 64 64"
-        },
-        {
-            "TextureName": "default",
-            "ID": "WallRampTRdirt",
-            "SourceRect": "726 396 64 64"
-        }
-    ]
+  "Sprites": [
+    {
+      "TextureName": "default",
+      "ID": "SelectionFloor",
+      "SourceRect": "0 0 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "SolidFloor",
+      "SourceRect": "66 0 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "SolidSelectionFloor",
+      "SourceRect": "132 0 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "Water",
+      "SourceRect": "198 0 62 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "SelectionWall",
+      "SourceRect": "0 66 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "SolidWall",
+      "SourceRect": "66 66 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "SolidSelectionWall",
+      "SourceRect": "132 66 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "Borders",
+      "SourceRect": "198 66 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "DirtFloor",
+      "SourceRect": "0 132 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "DirtWall",
+      "SourceRect": "0 198 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "EmbeddedGrassFloor1",
+      "SourceRect": "0 264 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "EmbeddedGrassFloor2",
+      "SourceRect": "66 264 64 64"
+    },
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorExRampLsoil",
+    //  "SourceRect": "0 330 64 64",
+    //  "SpriteDir": "L"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorExRampBsoil",
+    //  "SourceRect": "66 330 64 64",
+    //  "SpriteDir": "B"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorExRampTsoil",
+    //  "SourceRect": "132 330 64 64",
+    //  "SpriteDir": "T"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorExRampRsoil",
+    //  "SourceRect": "198 330 64 64",
+    //  "SpriteDir": "R"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorInRampLsoil",
+    //  "SourceRect": "264 330 64 64",
+    //  "SpriteDir": "L"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorInRampBsoil",
+    //  "SourceRect": "330 330 64 64",
+    //  "SpriteDir": "B"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorInRampTsoil",
+    //  "SourceRect": "396 330 64 64",
+    //  "SpriteDir": "T"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "FloorInRampRsoil",
+    //  "SourceRect": "462 330 64 64",
+    //  "SpriteDir": "R"
+    //},
+    {
+      "TextureName": "default",
+      "ID": "FloorRampSoilBL",
+      "SourceRect": "528 330 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "FloorRampSoilBR",
+      "SourceRect": "594 330 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "FloorRampSoilTL",
+      "SourceRect": "660 330 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "FloorRampSoilTR",
+      "SourceRect": "726 330 64 64"
+    },
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallExRampLsoil",
+    //  "SourceRect": "0 396 64 64",
+    //  "SpriteDir": "L"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallExRampBsoil",
+    //  "SourceRect": "66 396 64 64",
+    //  "SpriteDir": "B"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallExRampTsoil",
+    //  "SourceRect": "132 396 64 64",
+    //  "SpriteDir": "T"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallExRampRsoil",
+    //  "SourceRect": "198 396 64 64",
+    //  "SpriteDir": "R"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallInRampLsoil",
+    //  "SourceRect": "264 396 64 64",
+    //  "SpriteDir": "L"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallInRampBsoil",
+    //  "SourceRect": "330 396 64 64",
+    //  "SpriteDir": "B"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallInRampTsoil",
+    //  "SourceRect": "396 396 64 64",
+    //  "SpriteDir": "T"
+    //},
+    //{
+    //  "TextureName": "default",
+    //  "ID": "WallInRampRsoil",
+    //  "SourceRect": "462 396 64 64",
+    //  "SpriteDir": "R"
+    //},
+    {
+      "TextureName": "default",
+      "ID": "WallRampSoilBL",
+      "SourceRect": "528 396 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "WallRampSoilBR",
+      "SourceRect": "594 396 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "WallRampSoilTL",
+      "SourceRect": "660 396 64 64"
+    },
+    {
+      "TextureName": "default",
+      "ID": "WallRampSoilTR",
+      "SourceRect": "726 396 64 64"
+    }
+  ]
 }

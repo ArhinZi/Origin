@@ -68,6 +68,7 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="mods\core\info.ini" />
 	  <None Remove="Mods\Core\JSON\animals.xml" />
 	  <None Remove="Mods\Core\JSON\BasicSprites.json" />
 	  <None Remove="Mods\Core\JSON\Buildings.json" />
@@ -77,9 +78,11 @@
 	  <None Remove="Mods\Core\JSON\Items.json" />
 	  <None Remove="Mods\Core\JSON\Materials.json" />
 	  <None Remove="Mods\Core\JSON\pawnSprites.json" />
+	  <None Remove="Mods\Core\JSON\RotationSprites.json" />
 	  <None Remove="Mods\Core\JSON\Settings.json" />
 	  <None Remove="Mods\Core\JSON\spritesAnimals.json" />
 	  <None Remove="Mods\Core\JSON\TerrainSettings.json" />
+	  <None Remove="mods\core\json\textures.json" />
 	  <None Remove="Mods\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>

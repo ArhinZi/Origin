@@ -9,6 +9,7 @@ using MonoGame.Extended;
 
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
+using Origin.Source.ECS.Render;
 using Origin.Source.GameStates;
 using Origin.Source.Model;
 using Origin.Source.Model.Generators;
@@ -87,6 +88,14 @@ namespace Origin.Source.Model.Site
             LightControl = new LightComponent(this);
             Trace.WriteLine("End light init");
             ID = iD;
+
+            Pathfinder = new SitePathfindingComponent(this, Size, ArchWorld);
+            Trace.WriteLine("End pathfinder init");
+
+            DrawComponent = new SiteDrawComponent(this);
+            Trace.WriteLine("End creating render");
+
+            Tools = new SiteToolsComponent(this);
         }
 
         public Site(World world, SaveSiteDump dump, ArchWorld arch)
@@ -116,6 +125,14 @@ namespace Origin.Source.Model.Site
 
             LightControl = new LightComponent(this);
             Trace.WriteLine("End light init");
+
+            Pathfinder = new SitePathfindingComponent(this, Size, ArchWorld);
+            Trace.WriteLine("End pathfinder init");
+
+            DrawComponent = new SiteDrawComponent(this);
+            Trace.WriteLine("End creating render");
+
+            Tools = new SiteToolsComponent(this);
         }
 
         public SaveSiteDump Dump()
@@ -132,13 +149,6 @@ namespace Origin.Source.Model.Site
 
         public void PostInit()
         {
-            Pathfinder = new SitePathfindingComponent(this, Size, ArchWorld);
-            Trace.WriteLine("End pathfinder init");
-
-            DrawComponent = new SiteDrawComponent(this);
-            Trace.WriteLine("End creating render");
-
-            Tools = new SiteToolsComponent(this);
         }
 
         public void Update(GameTime gameTime)

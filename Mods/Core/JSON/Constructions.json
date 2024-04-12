@@ -96,10 +96,30 @@
       "Type": "Ramp",
       "Category": "Soil",
 
-      "Sprites": {
-        "Wall": [ "RoughStoneWall" ],
-        "Floor": [ "RoughStoneFloor" ]
-      },
+      "Shapes": [
+        {
+          "Name": "Slope",
+          "RotationSprites": {
+            "Wall": [ "WallRampSoil" ],
+            "Floor": [ "FloorRampSoil" ]
+          }
+        },
+        {
+          "Name": "CornerIn",
+          "RotationSprites": {
+            "Wall": [ "WallRampSoil" ],
+            "Floor": [ "FloorRampSoil" ]
+          }
+        },
+        {
+          "Name": "CornerOut",
+          "RotationSprites": {
+            "Wall": [ "WallRampSoil" ],
+            "Floor": [ "FloorRampSoil" ]
+          }
+        }
+      ],
+
       "Components": [
         {
           "ItemID": "RawSoil",

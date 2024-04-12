@@ -1,4 +1,5 @@
-﻿using Arch.System;
+﻿using Arch.Core;
+using Arch.System;
 
 using Microsoft.Xna.Framework;
 
@@ -14,37 +15,18 @@ using System.Threading.Tasks;
 
 namespace Origin.Source.ECS
 {
-    public class TickSystem : ISystem<ulong>
+    public class TickSystem : BaseSystem<World, ulong>
     {
         public int Interval { get; private set; } = 1;
 
         protected Site _site;
 
-        public TickSystem(Site site)
+        public TickSystem(Site site) : base(site.ArchWorld)
         {
             _site = site;
         }
 
-        public virtual void Initialize()
-        { }
-
         public virtual void LoadInit()
-        {
-        }
-
-        public virtual void BeforeUpdate(in ulong t)
-        {
-        }
-
-        public virtual void Update(in ulong t)
-        {
-        }
-
-        public virtual void AfterUpdate(in ulong t)
-        {
-        }
-
-        public virtual void Dispose()
         {
         }
     }

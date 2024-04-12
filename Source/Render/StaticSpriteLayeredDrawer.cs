@@ -7,8 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 
 using Arch.Bus;
-
-using Origin.Source.ECS;
 using Origin.Source.Events;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
@@ -26,6 +24,7 @@ using static Origin.Source.Resources.Global;
 
 using Sprite = Origin.Source.Resources.Sprite;
 using MonoGame.Extended.Timers;
+using Origin.Source.ECS.Render;
 
 namespace Origin.Source.Render
 {
@@ -90,46 +89,46 @@ namespace Origin.Source.Render
             return chunk;
         }
 
-        public SpriteLocator AddTileSprite(byte nlayer, Point3 tilePos, Sprite sprite, Color color, Vector3 spriteOffset = new())
+        public SpriteLocator AddTileSprite(RenderData data)
         {
-            var chunk = GetChunkByPos(tilePos);
+            var chunk = GetChunkByPos(data.tilePos);
 
-            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
-            SpriteLayer layer = chunk.GetLayer(sprite.Texture, nlayer);
+            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos);
+            SpriteLayer layer = chunk.GetLayer(data.sprite.Texture, data.nlayer);
 
             SpriteMainData smd = new()
             {
-                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
-                CellPosition = tilePos,
+                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos).ToVector2(), vertexZ) + data.spriteOffset,
+                CellPosition = data.tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
             SpriteExtraData sed = new()
             {
-                Color = color.ToVector4(),
-                TextureRect = new Vector4(sprite.RectPos.X, sprite.RectPos.Y, sprite.RectPos.Width, sprite.RectPos.Height)
+                Color = data.color.ToVector4(),
+                TextureRect = new Vector4(data.sprite.RectPos.X, data.sprite.RectPos.Y, data.sprite.RectPos.Width, data.sprite.RectPos.Height)
             };
             return chunk.AppendDataDirectly(layer, smd, sed);
         }
 
-        public SpriteLocator ScheduleUpdate(byte nlayer, Point3 tilePos, Sprite sprite, Color color, Vector3 spriteOffset = new())
+        public SpriteLocator ScheduleUpdate(RenderData data)
         {
-            var chunk = GetChunkByPos(tilePos);
+            var chunk = GetChunkByPos(data.tilePos);
 
-            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(tilePos);
-            SpriteLayer layer = chunk.GetLayer(sprite.Texture, nlayer);
+            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos);
+            SpriteLayer layer = chunk.GetLayer(data.sprite.Texture, data.nlayer);
 
             SpriteMainData smd = new()
             {
-                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(tilePos).ToVector2(), vertexZ) + spriteOffset,
-                CellPosition = tilePos,
+                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos).ToVector2(), vertexZ) + data.spriteOffset,
+                CellPosition = data.tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
             SpriteExtraData sed = new()
             {
-                Color = color.ToVector4(),
-                TextureRect = new Vector4(sprite.RectPos.X, sprite.RectPos.Y, sprite.RectPos.Width, sprite.RectPos.Height)
+                Color = data.color.ToVector4(),
+                TextureRect = new Vector4(data.sprite.RectPos.X, data.sprite.RectPos.Y, data.sprite.RectPos.Width, data.sprite.RectPos.Height)
             };
-            return ScheduleAdd(layer, smd, sed, tilePos);
+            return ScheduleAdd(layer, smd, sed, data.tilePos);
         }
 
         public void ClearLayer(DrawBufferLayer layer)
@@ -143,9 +142,9 @@ namespace Origin.Source.Render
                     }
         }
 
-        public void ScheduleRemove(SpriteLocatorsStatic locators, Point3 pos)
+        public void ScheduleRemove(List<SpriteLocator> list, Point3 pos)
         {
-            foreach (var locator in locators.list)
+            foreach (var locator in list)
             {
                 spriteChunks[0, 0, pos.Z].ScheduleRemove(locator);
             }
@@ -177,6 +176,7 @@ namespace Origin.Source.Render
                 site.LightControl.SetBuffers();
 
                 SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(site.World.TimeManager.GetSunLightIntensity());
+                SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(1);
                 if (sublayer == Global.LightFrontStart)
                 {
                     if (layer + 1 < site.Size.Z && site.LightControl.buffers[layer + 1].ElementCount > 0)
