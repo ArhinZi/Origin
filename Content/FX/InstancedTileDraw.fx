@@ -47,7 +47,7 @@ float2 GetSpritePositionByCellPosition(float3 cellPos)
 }
 float GetSpriteZOffsetByCellPos(float3 cellPos)
 {
-    float VertexZ = (cellPos.x + cellPos.y) * ZDiagOffset;
+    float VertexZ = (cellPos.x + cellPos.y) * ZDiagOffset -100;
     return VertexZ;
 }
 float4 ShadeColor(float4 color, uint3 pos)

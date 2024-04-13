@@ -99,14 +99,15 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 SiteRenderer.StaticDrawer.SetChunks();
             }
 
-            Global.GraphicsDevice.SetRenderTarget(RenderTarget2D);
+            //RenderTarget2D.
+            //Global.GraphicsDevice.SetRenderTarget(RenderTarget2D);
             Global.GraphicsDevice.Clear(Color.CornflowerBlue);
             SiteRenderer.Draw(gameTime);
-            Global.GraphicsDevice.SetRenderTarget(null);
+            //Global.GraphicsDevice.SetRenderTarget(null);
 
-            spriteBatch.Begin();
-            spriteBatch.Draw(RenderTarget2D, Vector2.Zero, Color.White);
-            spriteBatch.End();
+            //spriteBatch.Begin();
+            //spriteBatch.Draw(RenderTarget2D, Vector2.Zero, Color.White);
+            //spriteBatch.End();
         }
     }
 }

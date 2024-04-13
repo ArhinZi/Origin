@@ -91,7 +91,7 @@ namespace Origin.Source.Utils
 
         public static float GetSpriteZOffsetByCellPos(Point3 cellPos)
         {
-            var VertexZ = (cellPos.X + cellPos.Y) * Global.Z_DIAGONAL_OFFSET;
+            var VertexZ = (cellPos.X + cellPos.Y) * Global.Z_DIAGONAL_OFFSET - 100;
             return (float)VertexZ;
         }
 
