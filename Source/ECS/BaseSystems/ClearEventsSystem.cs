@@ -3,12 +3,6 @@
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Site;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Origin.Source.ECS.BaseSystems
 {
     public class ClearEventsSystem : TickSystem

@@ -10,21 +10,15 @@ using MonoGame.Extended.Screens;
 
 using Origin.Source.Controller.IO;
 using Origin.Source.Controller.UI;
-using Origin.Source.ECS;
 using Origin.Source.ECS.Construction;
-using Origin.Source.ECS.Light;
-using Origin.Source.ECS.Pathfinding;
-using Origin.Source.ECS.Vegetation;
 using Origin.Source.Events;
 using Origin.Source.Model;
-using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Save;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Unicode;
 
 using Vector2 = System.Numerics.Vector2;
 

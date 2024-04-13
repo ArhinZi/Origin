@@ -8,12 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
 using Origin.Source.Events;
-using Origin.Source.Model;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 using Vector2 = System.Numerics.Vector2;
 

@@ -26,57 +26,16 @@ using Origin.Source.ECS.Render;
 
 namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
 {
-    public partial class SiteDrawComponent
+    public class SiteDrawComponent
     {
-        private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
-        private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
-        private Color borderColor = new(0, 0, 0, 255);
-
         private Site site;
-        private Random random;
-        private SpriteBatch spriteBatch = new(Global.GraphicsDevice);
 
-        public RenderTarget2D RenderTarget2D { get; private set; }
         public SiteRenderer SiteRenderer { get; private set; }
 
         public SiteDrawComponent(Site site)
         {
             this.site = site;
             SiteRenderer = new(site, Global.GraphicsDevice);
-
-            RenderTarget2D = new RenderTarget2D(Global.GraphicsDevice,
-                Global.Game.Window.ClientBounds.Width, Global.Game.Window.ClientBounds.Height,
-                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 8, RenderTargetUsage.PreserveContents);
-
-            random = site.World.Random;
-
-            InitTerrainHiddence();
-            Hook();
-        }
-
-        [Event]
-        public void OnScreenBoundsChanged(ScreenBoundsChanged bounds)
-        {
-            RenderTarget2D = new RenderTarget2D(Global.GraphicsDevice,
-                bounds.screenBounds.Width, bounds.screenBounds.Height,
-                false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8, 8, RenderTargetUsage.PreserveContents);
-        }
-
-        public void InitTerrainHiddence()
-        {
-            for (int z = 0; z < site.Size.Z; z++)
-                for (int x = 0; x < site.Size.X; x++)
-                    for (int y = 0; y < site.Size.Y; y++)
-                    {
-                        Point3 tilePos = new(x, y, z);
-                        Entity tile = site.Map[tilePos];
-
-                        if (tile == Entity.Null)
-                        {
-                            SiteRenderer.HiddenDrawer.MakeHidden(tilePos);
-                        }
-                    }
-            SiteRenderer.HiddenDrawer.Set();
         }
 
         public void Update(GameTime gameTime)
@@ -99,15 +58,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
                 SiteRenderer.StaticDrawer.SetChunks();
             }
 
-            //RenderTarget2D.
-            //Global.GraphicsDevice.SetRenderTarget(RenderTarget2D);
             Global.GraphicsDevice.Clear(Color.CornflowerBlue);
             SiteRenderer.Draw(gameTime);
-            //Global.GraphicsDevice.SetRenderTarget(null);
-
-            //spriteBatch.Begin();
-            //spriteBatch.Draw(RenderTarget2D, Vector2.Zero, Color.White);
-            //spriteBatch.End();
         }
     }
 }

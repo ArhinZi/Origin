@@ -3,6 +3,7 @@
 // https://stackoverflow.com/questions/2755750/diamond-square-algorithm?newreg=ee2a40d2fe9f49b9b938151e933860d2
 
 using Microsoft.Xna.Framework;
+
 using System;
 using System.Collections.Generic;
 
@@ -42,8 +43,8 @@ namespace Origin.Source.Model.Generators
 
             double h = _roughness;//the range (-h -> +h) for the average offset - affects roughness
             Random r = new();//for the new value in range of h
-                                    //side length is distance of a single square side
-                                    //or distance of diagonal in diamond
+                             //side length is distance of a single square side
+                             //or distance of diagonal in diamond
 
             for (int sideLength = DATA_SIZE - 1;
                 //side length must be >= 2 so we always have

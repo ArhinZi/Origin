@@ -1,7 +1,5 @@
 ﻿//using Arch.Relationships;
 
-using Microsoft.Xna.Framework;
-
 namespace Origin.Source.Utils
 {
     public static class Extensions

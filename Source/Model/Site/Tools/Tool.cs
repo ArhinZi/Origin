@@ -4,7 +4,6 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 
 using System;

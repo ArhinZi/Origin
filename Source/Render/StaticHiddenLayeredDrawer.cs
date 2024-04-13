@@ -1,27 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework.Graphics;
 
-using Arch.Core;
-using Arch.Core.Extensions;
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Origin.Source.ECS;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
-using Origin.Source.Utils;
 
-using static Origin.Source.Render.SpriteChunk;
+using System;
 
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
-using Vector4 = Microsoft.Xna.Framework.Vector4;
 
 namespace Origin.Source.Render
 {

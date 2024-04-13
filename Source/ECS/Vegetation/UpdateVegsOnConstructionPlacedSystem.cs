@@ -1,6 +1,7 @@
 ﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
+
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Render;
 using Origin.Source.ECS.Vegetation.Components;
@@ -47,7 +48,7 @@ namespace Origin.Source.ECS.Vegetation
                         foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
                         {
                             var pos2 = pos + item;
-                            if ((_site.Map.TryGet(item, out Entity nent) && nent!=Entity.Null && nent.Has<BaseVegetation>()))
+                            if ((_site.Map.TryGet(item, out Entity nent) && nent != Entity.Null && nent.Has<BaseVegetation>()))
                             {
                                 ref BaseVegetation nvbc = ref nent.Get<BaseVegetation>();
                                 nvbc.VegetationNeighbours--;

@@ -2,14 +2,14 @@
 using Arch.Core.Extensions;
 
 using MonoGame.Extended;
+
+using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Pathfinding;
+using Origin.Source.ECS.Render;
 using Origin.Source.Utils;
-using Origin.Source.Model;
 
 using System.Collections.Generic;
-using Origin.Source.ECS.BaseComponents;
-using Origin.Source.ECS.Render;
 
 namespace Origin.Source.Model.Generators
 {

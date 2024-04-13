@@ -1,6 +1,4 @@
-﻿using Arch.Core;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.Model.Site;

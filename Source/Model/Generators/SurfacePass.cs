@@ -2,6 +2,7 @@
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
+
 using Origin.Source.ECS.Construction;
 using Origin.Source.Resources;
 

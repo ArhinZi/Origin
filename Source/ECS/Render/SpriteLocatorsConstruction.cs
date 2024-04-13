@@ -7,18 +7,10 @@ using System.Collections.Generic;
 namespace Origin.Source.ECS.Render
 {
     [MessagePackObject]
-    public struct SpriteLocatorsConstruction
+    public class SpriteLocatorsConstruction : BaseSpriteLocatorsContainer
     {
-        [IgnoreMember]
-        public List<SpriteLocator> List { get; set; } = [];
-
         public SpriteLocatorsConstruction()
         {
-        }
-
-        public void Clear()
-        {
-            List = null;
         }
     }
 }

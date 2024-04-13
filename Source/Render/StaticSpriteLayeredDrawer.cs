@@ -1,12 +1,8 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
+﻿using Arch.Bus;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using MonoGame.Extended.Sprites;
-
-using Arch.Bus;
 using Origin.Source.Events;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
@@ -15,16 +11,9 @@ using Origin.Source.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 using static Origin.Source.Render.SpriteChunk;
 using static Origin.Source.Resources.Global;
-
-using Sprite = Origin.Source.Resources.Sprite;
-using MonoGame.Extended.Timers;
-using Origin.Source.ECS.Render;
 
 namespace Origin.Source.Render
 {

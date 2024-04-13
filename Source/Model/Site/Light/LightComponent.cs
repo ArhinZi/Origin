@@ -1,19 +1,8 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Graphics.PackedVector;
+﻿using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.Resources;
 
-using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Origin.Source.Model.Site.Light
 {

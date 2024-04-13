@@ -8,8 +8,6 @@ using Origin.Source.Model.Pathfind.NewPathfind;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
-using System.Collections.Generic;
-
 using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.Model.Site.Tools

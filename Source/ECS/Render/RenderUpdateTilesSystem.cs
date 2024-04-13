@@ -1,6 +1,6 @@
-﻿using Arch.Core;
+﻿using Arch.Buffer;
+using Arch.Core;
 using Arch.Core.Extensions;
-using Arch.Bus;
 
 using Microsoft.Xna.Framework;
 
@@ -14,17 +14,11 @@ using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using static Origin.Source.Resources.Global;
-using Arch.Buffer;
-using System.Collections;
 
 namespace Origin.Source.ECS.Render
 {
-    // TODO Fix grass. Show when does not
     public class RenderUpdateTilesSystem : TickSystem
     {
         private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
@@ -42,6 +36,7 @@ namespace Origin.Source.ECS.Render
 
         public override void Initialize()
         {
+            // INIT MAIN SPRITES
             List<RenderData> list = new List<RenderData>();
             var commands = new CommandBuffer();
 
@@ -50,7 +45,7 @@ namespace Origin.Source.ECS.Render
             _site.ArchWorld.Query(in construction,
                 (Entity ent, ref IsTile tile, ref BaseConstruction bcc, ref SpriteLocatorsConstruction locators) =>
             {
-                locators = InitAddConstruction(GetConstructionRenderData(ent, ref tile, ref bcc));
+                locators = InitAdd<SpriteLocatorsConstruction>(GetConstructionRenderData(ent, ref tile, ref bcc));
             });
 
             var fluid = new QueryDescription().WithAll<IsTile, FluidParticle>();
@@ -58,10 +53,25 @@ namespace Origin.Source.ECS.Render
             _site.ArchWorld.Query(in fluid,
                 (Entity ent, ref IsTile tile, ref FluidParticle fluid, ref SpriteLocatorsFluid locators) =>
             {
-                locators = InitAddFluid(GetFluidRenderData(ent, ref tile, ref fluid));
+                locators = InitAdd<SpriteLocatorsFluid>(GetFluidRenderData(ent, ref tile, ref fluid));
             });
 
             renderer.StaticDrawer.SetChunks();
+
+            // INIT HIDDEN SPRITES
+            for (int z = 0; z < site.Size.Z; z++)
+                for (int x = 0; x < site.Size.X; x++)
+                    for (int y = 0; y < site.Size.Y; y++)
+                    {
+                        Point3 tilePos = new(x, y, z);
+                        Entity tile = site.Map[tilePos];
+
+                        if (tile == Entity.Null)
+                        {
+                            renderer.HiddenDrawer.MakeHidden(tilePos);
+                        }
+                    }
+            renderer.HiddenDrawer.Set();
         }
 
         public override void Update(in ulong t)
@@ -93,7 +103,7 @@ namespace Origin.Source.ECS.Render
 
             site.ArchWorld.Query(in construction, (Entity ent, ref IsTile tile, ref BaseConstruction bcc) =>
             {
-                var data = UpdateAddConstruction(GetConstructionRenderData(ent, ref tile, ref bcc));
+                var data = UpdateAdd<SpriteLocatorsConstruction>(GetConstructionRenderData(ent, ref tile, ref bcc));
                 if (ent.Has<SpriteLocatorsConstruction>())
                     commands.Set(ent, data);
                 else
@@ -101,7 +111,7 @@ namespace Origin.Source.ECS.Render
             });
             site.ArchWorld.Query(in fluid, (Entity ent, ref IsTile tile, ref FluidParticle fluid) =>
             {
-                var data = UpdateAddFluid(GetFluidRenderData(ent, ref tile, ref fluid));
+                var data = UpdateAdd<SpriteLocatorsFluid>(GetFluidRenderData(ent, ref tile, ref fluid));
                 if (ent.Has<SpriteLocatorsFluid>())
                     commands.Set(ent, data);
                 else
@@ -116,9 +126,9 @@ namespace Origin.Source.ECS.Render
             commands.Playback(site.ArchWorld);
         }
 
-        private SpriteLocatorsConstruction InitAddConstruction(List<RenderData> data)
+        private T InitAdd<T>(List<RenderData> data) where T : BaseSpriteLocatorsContainer, new()
         {
-            SpriteLocatorsConstruction locators = new SpriteLocatorsConstruction();
+            T locators = new();
             for (int i = 0; i < data.Count; i++)
             {
                 locators.List.Add(renderer.StaticDrawer.AddTileSprite(data[i]));
@@ -126,29 +136,9 @@ namespace Origin.Source.ECS.Render
             return locators;
         }
 
-        private SpriteLocatorsFluid InitAddFluid(List<RenderData> data)
+        private T UpdateAdd<T>(List<RenderData> data) where T : BaseSpriteLocatorsContainer, new()
         {
-            SpriteLocatorsFluid locators = new SpriteLocatorsFluid();
-            for (int i = 0; i < data.Count; i++)
-            {
-                locators.List.Add(renderer.StaticDrawer.AddTileSprite(data[i]));
-            }
-            return locators;
-        }
-
-        private SpriteLocatorsConstruction UpdateAddConstruction(List<RenderData> data)
-        {
-            SpriteLocatorsConstruction locators = new SpriteLocatorsConstruction();
-            for (int i = 0; i < data.Count; i++)
-            {
-                locators.List.Add(renderer.StaticDrawer.ScheduleUpdate(data[i]));
-            }
-            return locators;
-        }
-
-        private SpriteLocatorsFluid UpdateAddFluid(List<RenderData> data)
-        {
-            SpriteLocatorsFluid locators = new SpriteLocatorsFluid();
+            T locators = new();
             for (int i = 0; i < data.Count; i++)
             {
                 locators.List.Add(renderer.StaticDrawer.ScheduleUpdate(data[i]));

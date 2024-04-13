@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-using MonoGame.Extended;
-using Arch.System;
+using Origin.Source.Model;
 
 using System.Collections.Generic;
-using Origin.Source.Model;
 
 namespace Origin.Source.ECS
 {

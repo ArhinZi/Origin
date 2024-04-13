@@ -3,7 +3,6 @@ using Arch.Core;
 using Arch.Core.Extensions;
 
 using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Pathfind.old;
 using Origin.Source.Model.Site;
 using Origin.Source.Utils;
 

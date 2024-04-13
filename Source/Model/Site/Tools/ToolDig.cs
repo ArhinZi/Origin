@@ -1,13 +1,10 @@
-﻿using ImGuiNET;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Origin.Source.Controller.IO;
 using Origin.Source.Resources;
 
 using System;
-using System.Collections.Generic;
 
 namespace Origin.Source.Model.Site.Tools
 {

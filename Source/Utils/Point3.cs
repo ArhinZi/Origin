@@ -3,7 +3,6 @@
 using Microsoft.Xna.Framework;
 
 using System;
-using System.Text;
 
 using static Origin.Source.Resources.Global;
 

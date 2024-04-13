@@ -1,28 +1,12 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using MonoGame.Extended.Sprites;
-
-using Origin.Source.ECS;
 using Origin.Source.Model.Site;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using static Origin.Source.Render.SpriteChunk;
 using static Origin.Source.Resources.Global;
-using static System.Reflection.Metadata.BlobBuilder;
-
-using Sprite = Origin.Source.Resources.Sprite;
 
 namespace Origin.Source.Render
 {
