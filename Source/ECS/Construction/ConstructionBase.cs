@@ -5,7 +5,7 @@ using Origin.Source.Resources;
 namespace Origin.Source.ECS.Construction
 {
     [MessagePackObject]
-    public struct BaseConstruction
+    public struct ConstructionBase
     {
         [IgnoreMember]
         public int ConstructionMetaID;
@@ -19,7 +19,7 @@ namespace Origin.Source.ECS.Construction
             get => Construction.ID;
             set
             {
-                ConstructionMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, value);
+                ConstructionMetaID = GlobalResources.Constructions.IndexOf(value);
             }
         }
 
@@ -29,14 +29,14 @@ namespace Origin.Source.ECS.Construction
             get => Material.ID;
             set
             {
-                MaterialMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Materials, value);
+                MaterialMetaID = GlobalResources.Materials.IndexOf(value);
             }
         }
 
         [IgnoreMember]
-        public Resources.Construction Construction => GlobalResources.GetByMetaID(GlobalResources.Constructions, ConstructionMetaID);
+        public Resources.Construction Construction => GlobalResources.Constructions[ConstructionMetaID];
 
         [IgnoreMember]
-        public Material Material => GlobalResources.GetByMetaID(GlobalResources.Materials, MaterialMetaID);
+        public Material Material => GlobalResources.Materials[MaterialMetaID];
     }
 }

@@ -65,7 +65,7 @@ namespace Origin.Source.Model.Generators
             river = new RiverData(MapBorder.TopLeft, MapBorder.BottomLeft, 5);
 
             GenerateHeightMap(10);
-            //GenerateRiverOnHeightMap();
+            GenerateRiverOnHeightMap();
             SmoothHeightMap();
         }
 
@@ -73,32 +73,40 @@ namespace Origin.Source.Model.Generators
         {
             var dirtDepth = 5;
             var baseHeight = (int)(Size.Z * 0.7f);
-            int height = (int)(heightMap[pos.X, pos.Y].Height + baseHeight);
+
+            int GetH(Point3 pos)
+            {
+                return (int)(heightMap[pos.X, pos.Y].Height + baseHeight);
+            }
+
+            int height = GetH(pos);
 
             if (pos.Z <= height - dirtDepth)
             {
-                ent.Add(new BaseConstruction()
+                ent.Add(new ConstructionBase()
                 {
-                    ConstructionMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, "StoneWallFloor"),
-                    MaterialMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Materials, "Granite")
+                    ConstructionID = "StoneWallFloor",
+                    MaterialID = "Granite"
                 });
             }
             else if (pos.Z > height - dirtDepth && pos.Z <= height)
             {
-                ent.Add(new BaseConstruction()
+                ent.Add(new ConstructionBase()
                 {
-                    ConstructionMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, "SoilWallFloor"),
-                    MaterialMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Materials, "Dirt")
+                    ConstructionID = "SoilWallFloor",
+                    MaterialID = "DIRT"
                 });
-
-                /*if (pos.Z == height)
+            }
+            else if (pos.Z - 1 == height - dirtDepth)
+            {
+                if (GetH(pos + Point3.PointByDir(Global.Direction.NORTH)) == height - dirtDepth)
                 {
-                    ent.Add(new BaseVegetationComponent()
+                    ent.Add(new ConstructionBase()
                     {
-                        VegetationMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Vegetations, Vegetation.VegetationByConstruction["SoilWallFloor"].ID)
-                    },
-                    new GrownUpVegetationComponent());
-                }*/
+                        ConstructionID = "SoilRamp",
+                        MaterialID = "DIRT"
+                    });
+                }
             }
 
             return ent;

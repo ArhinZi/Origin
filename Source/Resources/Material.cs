@@ -3,12 +3,12 @@
 using Newtonsoft.Json;
 
 using Origin.Source.Resources.Converters;
+using Origin.Source.Utils;
 
 namespace Origin.Source.Resources
 {
-    public class Material
+    public class Material : IDKeeper
     {
-        public string ID { get; set; }
         public string Name { get; set; }
 
         [JsonConverter(typeof(ColorConverter))]

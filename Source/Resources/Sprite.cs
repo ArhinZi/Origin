@@ -1,6 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using Newtonsoft.Json;
+
+using Origin.Source.Resources.Converters;
+using Origin.Source.Utils;
+
 using System;
 using System.Collections.Generic;
 
@@ -57,9 +62,8 @@ namespace Origin.Source.Resources
         FlipTLBR = 0b1000
     }
 
-    public class Sprite
+    public class Sprite : IDKeeper
     {
-        public string ID { get; }
         public Texture2D Texture { get; }
         public Rectangle RectPos { get; }
         public IsometricDirection Direction { get; }
@@ -77,6 +81,17 @@ namespace Origin.Source.Resources
             Direction = dir;
             Effect = effs;
             Rotations = rotations;
+
+            //if (rotations != null)
+            //    foreach (var rot in rotations)
+            //    {
+            //        var list = new List<Sprite>();
+            //        Rotations.Add(rot.Key, list);
+            //        foreach (var strs in rot.Value)
+            //        {
+            //            list.Add(GlobalResources.Sprites[strs]);
+            //        }
+            //    }
         }
 
         public override string ToString()

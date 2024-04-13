@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Origin.Source.Resources.Converters;
+using Origin.Source.Utils;
 
 using System;
 using System.Collections.Concurrent;
@@ -23,13 +24,13 @@ namespace Origin.Source.Resources
 
         public static List<Texture2D> Textures = [];
 
-        public static List<Sprite> Sprites = [];
+        public static MarkedList<Sprite> Sprites = [];
         public static List<TextureInfo> TexturesInfo = [];
 
-        public static List<Material> Materials = [];
+        public static MarkedList<Material> Materials = [];
         public static List<Item> Items = [];
-        public static List<Construction> Constructions = [];
-        public static List<Vegetation> Vegetations = [];
+        public static MarkedList<Construction> Constructions = [];
+        public static MarkedList<Vegetation> Vegetations = [];
 
         public static Settings Settings = new();
 
@@ -44,10 +45,6 @@ namespace Origin.Source.Resources
         public static void Init()
         {
             //wrapper = new DataWrapper();
-            settings = new JsonSerializerSettings();
-            settings.Converters.Add(new PointConverter());
-            settings.Converters.Add(new ColorConverter());
-            settings.Converters.Add(new SpriteConverter());
 
             var io = ImGui.GetIO();
             GlobalResources.Fonts.Add("Bold", io.Fonts.AddFontFromFileTTF(
@@ -63,11 +60,15 @@ namespace Origin.Source.Resources
 
         public static void ReadFromJson(JObject obj)
         {
+            settings = new JsonSerializerSettings();
+            settings.Converters.Add(new PointConverter());
+            settings.Converters.Add(new ColorConverter());
+            settings.Converters.Add(new SpriteConverter());
             var tok = obj.ToObject<Dictionary<string, JToken>>();
 
-            Sprites = JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings);
-            Sprites.AddRange(JsonConvert.DeserializeObject<List<Sprite>>(tok["RotationSprites"].ToString(), settings));
-            var selection = GetResourceBy(Sprites, "ID", "Borders");
+            Sprites = new MarkedList<Sprite>(JsonConvert.DeserializeObject<List<Sprite>>(tok["Sprites"].ToString(), settings));
+            Sprites.AddRange(JsonConvert.DeserializeObject<MarkedList<Sprite>>(tok["RotationSprites"].ToString(), settings));
+            var selection = Sprites["Borders"];
             Sprites.Add(new Sprite(
                 id: "RightBorder",
                 GetResourceBy(Textures, "Name", "default"),
@@ -89,17 +90,21 @@ namespace Origin.Source.Resources
                     Height = selection.RectPos.Height / 4 + 1
                 }));
 
-            Materials = JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings);
+            settings.Converters.Clear();
+            settings.Converters.Add(new PointConverter());
+            settings.Converters.Add(new ColorConverter());
+            settings.Converters.Add(new ResourceSpriteConverter());
+            Materials = new MarkedList<Material>(JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings));
             Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);
-            Constructions = JsonConvert.DeserializeObject<List<Construction>>(tok["Constructions"].ToString(), settings);
-            Vegetations = JsonConvert.DeserializeObject<List<Vegetation>>(tok["Vegetations"].ToString(), settings);
+            Constructions = new MarkedList<Construction>(JsonConvert.DeserializeObject<List<Construction>>(tok["Constructions"].ToString(), settings));
+            Vegetations = new MarkedList<Vegetation>(JsonConvert.DeserializeObject<List<Vegetation>>(tok["Vegetations"].ToString(), settings));
             TexturesInfo = JsonConvert.DeserializeObject<List<TextureInfo>>(tok["Textures"].ToString(), settings);
 
             Settings = JsonConvert.DeserializeObject<Settings>(tok["Settings"].ToString(), settings);
 
-            HIDDEN_WALL_SPRITE = GetResourceBy(Sprites, "ID", Settings.HiddenWallSprite);
-            HIDDEN_FLOOR_SPRITE = GetResourceBy(Sprites, "ID", Settings.HiddenFloorSprite);
-            HIDDEN_COLOR = GetResourceBy(Materials, "ID", "HIDDEN").Color;
+            HIDDEN_WALL_SPRITE = Sprites[Settings.HiddenWallSprite];
+            HIDDEN_FLOOR_SPRITE = Sprites[Settings.HiddenFloorSprite];
+            HIDDEN_COLOR = Materials["HIDDEN"].Color;
 
             Vegetation.InitCache(Vegetations);
             return;
@@ -131,18 +136,18 @@ namespace Origin.Source.Resources
             return Tobj;
         }
 
-        public static int GetResourceMetaID<T>(List<T> src, string ID)
-        {
-            object obj;
-            if (ResourceByCache.TryGetValue((typeof(T), "ID", ID), out obj))
-            {
-                return src.IndexOf((T)obj);
-            }
-            else
-            {
-                return src.IndexOf((T)GetResourceBy<T>(src, "ID", ID));
-            }
-        }
+        //public static int GetResourceMetaID<T>(List<T> src, string ID)
+        //{
+        //    object obj;
+        //    if (ResourceByCache.TryGetValue((typeof(T), "ID", ID), out obj))
+        //    {
+        //        return src.IndexOf((T)obj);
+        //    }
+        //    else
+        //    {
+        //        return src.IndexOf((T)GetResourceBy<T>(src, "ID", ID));
+        //    }
+        //}
 
         public static int GetResourceMetaID<T>(List<T> src, object obj)
         {

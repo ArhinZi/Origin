@@ -69,7 +69,7 @@ namespace Origin.Source.Model.Generators
                 }
 
                 bool isAir = true;
-                if (tileEnt.Has<BaseConstruction>())
+                if (tileEnt.Has<ConstructionBase>())
                     isAir = false;
                 else
                 {
@@ -77,19 +77,19 @@ namespace Origin.Source.Model.Generators
                 }
                 //Checking Path Ability
                 Entity tmp;
-                if (isAir && _site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
+                if (isAir && _site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<ConstructionBase>())
                 {
                     tileEnt.Add<IsWalkAbleTile>();
                 }
-                if (tileEnt.Has<BaseConstruction>() &&
-                    _site.Map.TryGet(pos + new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>())
+                if (tileEnt.Has<ConstructionBase>() &&
+                    _site.Map.TryGet(pos + new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && !tmp.Has<ConstructionBase>())
                 {
                     tmp.Add<IsWalkAbleTile>();
                 }
 
                 if (upd)
                 {
-                    tileEnt.Add<UpdateTileRenderSelfRequest>();
+                    tileEnt.Add<SelfRequestUpdateTileRender>();
                 }
 
                 // Visit neighbours

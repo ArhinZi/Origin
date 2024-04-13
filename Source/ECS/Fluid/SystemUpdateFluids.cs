@@ -16,15 +16,15 @@ using System.Diagnostics;
 
 namespace Origin.Source.ECS.Fluid
 {
-    internal class UpdateFluidsSystem : TickSystem
+    internal class SystemUpdateFluids : TickSystem
     {
-        public UpdateFluidsSystem(Site site) : base(site)
+        public SystemUpdateFluids(Site site) : base(site)
         {
         }
 
         public override void Initialize()
         {
-            var query = new QueryDescription().WithAll<IsTile, BaseConstruction>();
+            var query = new QueryDescription().WithAll<IsTile, ConstructionBase>();
             _site.ArchWorld.Add(query, new IsFluidBlocker());
         }
 
@@ -69,8 +69,8 @@ namespace Origin.Source.ECS.Fluid
                             if (entDown.Has<IsFluidStatic>())
                                 commands.Remove<IsFluidStatic>(entDown);
 
-                            if (!entDown.Has<UpdateTileRenderSelfRequest>())
-                                commands.Add<UpdateTileRenderSelfRequest>(entDown);
+                            if (!entDown.Has<SelfRequestUpdateTileRender>())
+                                commands.Add<SelfRequestUpdateTileRender>(entDown);
                         }
                     }
                     //if cell not have fluid and not FluidBlocker
@@ -95,8 +95,8 @@ namespace Origin.Source.ECS.Fluid
 
                         step1 = true;
                         IsStatic = false;
-                        if (!entDown.Has<UpdateTileRenderSelfRequest>())
-                            commands.Add<UpdateTileRenderSelfRequest>(entDown);
+                        if (!entDown.Has<SelfRequestUpdateTileRender>())
+                            commands.Add<SelfRequestUpdateTileRender>(entDown);
                     }
                 }
                 if (/*!step1 && */(fluid.Volume > 1 || waterDown))
@@ -126,8 +126,8 @@ namespace Origin.Source.ECS.Fluid
 
                                     IsStatic = false;
 
-                                    if (!entn.Has<UpdateTileRenderSelfRequest>())
-                                        commands.Add<UpdateTileRenderSelfRequest>(entn);
+                                    if (!entn.Has<SelfRequestUpdateTileRender>())
+                                        commands.Add<SelfRequestUpdateTileRender>(entn);
                                 }
                             }
                             // if cell not have fluid and not FluidBlocker
@@ -136,8 +136,8 @@ namespace Origin.Source.ECS.Fluid
                                 Debug.Assert(!entn.Has<IsFluidStatic>());
 
                                 IsStatic = false;
-                                if (!entn.Has<UpdateTileRenderSelfRequest>())
-                                    commands.Add<UpdateTileRenderSelfRequest>(entn);
+                                if (!entn.Has<SelfRequestUpdateTileRender>())
+                                    commands.Add<SelfRequestUpdateTileRender>(entn);
 
                                 if (!newEntity.ContainsKey(entn))
                                 {
@@ -171,8 +171,8 @@ namespace Origin.Source.ECS.Fluid
                 // if not static -> remove static from neighbour cells
                 if (!IsStatic)
                 {
-                    if (!ent.Has<UpdateTileRenderSelfRequest>())
-                        commands.Add<UpdateTileRenderSelfRequest>(ent);
+                    if (!ent.Has<SelfRequestUpdateTileRender>())
+                        commands.Add<SelfRequestUpdateTileRender>(ent);
                     var posn = pos + Point3.Down;
                     if (_site.Map.TryGet(posn, out Entity entDown0) && entDown0 != Entity.Null && entDown0.Has<FluidParticle>() && entDown0.Has<IsFluidStatic>())
                     {

@@ -1,4 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Arch.LowLevel;
+
+using Origin.Source.Utils;
+
+using System;
+using System.Collections.Generic;
 
 namespace Origin.Source.Resources
 {
@@ -11,12 +16,11 @@ namespace Origin.Source.Resources
     public class ConstructionShape
     {
         public string Name { get; set; }
-        public Dictionary<string, List<string>> RotationSprites { get; set; }
+        public Dictionary<string, List<Sprite>> Sprites { get; set; }
     }
 
-    public class Construction
+    public class Construction : IDKeeper
     {
-        public string ID { get; set; }
         public string Name { get; set; }
         public bool ConstructAble { get; set; }
         public bool RotateAble { get; set; }
@@ -28,8 +32,9 @@ namespace Origin.Source.Resources
         public string WallRemovedConstruction { get; set; }
         public string Category { get; set; }
 
-        public List<ConstructionShape> Shapes { get; set; }
-        public Dictionary<string, List<string>> Sprites { get; set; }
+        public Dictionary<string, ConstructionShape> Shapes { get; set; }
+
+        public Dictionary<string, List<Sprite>> Sprites { get; set; }
 
         public List<Component> Components { get; set; }
 

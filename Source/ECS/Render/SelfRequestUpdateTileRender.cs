@@ -1,6 +1,6 @@
 ﻿namespace Origin.Source.ECS.Render
 {
-    internal struct UpdateTileRenderSelfRequest
+    internal struct SelfRequestUpdateTileRender
     {
     }
 }

@@ -106,10 +106,10 @@ namespace Origin.Source.Save
             ini.Write("Seed", world.Seed.ToString(), "General");
             ini.Write("Tick", world.TimeManager.Ticks.ToString(), "PRIVATE");
 
-            using (Stream stream = File.Create(Path.Combine(SavePath, "ico.png")))
-            {
-                Texture.SaveAsPng(stream, Texture.Width, Texture.Height);
-            }
+            //using (Stream stream = File.Create(Path.Combine(SavePath, "ico.png")))
+            //{
+            //    Texture.SaveAsPng(stream, Texture.Width, Texture.Height);
+            //}
 
             var types = ComponentRegistry.TypeToComponentType.ToArray();
             SaveComponentRegistry[] saveObjs = new SaveComponentRegistry[types.Length];

@@ -19,16 +19,16 @@ using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.ECS.Render
 {
-    public class RenderUpdateTilesSystem : TickSystem
+    public class SystemUpdateRenderTiles : TickSystem
     {
-        private Sprite lborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "LeftBorder");
-        private Sprite rborderSprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "RightBorder");
+        private Sprite lborderSprite = GlobalResources.Sprites["LeftBorder"];
+        private Sprite rborderSprite = GlobalResources.Sprites["RightBorder"];
         private Color borderColor = new(0, 0, 0, 100);
 
         private Site site;
         private SiteRenderer renderer;
 
-        public RenderUpdateTilesSystem(Site site) : base(site)
+        public SystemUpdateRenderTiles(Site site) : base(site)
         {
             this.site = site;
             renderer = site.DrawComponent.SiteRenderer;
@@ -40,10 +40,10 @@ namespace Origin.Source.ECS.Render
             List<RenderData> list = new List<RenderData>();
             var commands = new CommandBuffer();
 
-            var construction = new QueryDescription().WithAll<IsTile, BaseConstruction>();
+            var construction = new QueryDescription().WithAll<IsTile, ConstructionBase>();
             site.ArchWorld.Add<SpriteLocatorsConstruction>(construction);
             _site.ArchWorld.Query(in construction,
-                (Entity ent, ref IsTile tile, ref BaseConstruction bcc, ref SpriteLocatorsConstruction locators) =>
+                (Entity ent, ref IsTile tile, ref ConstructionBase bcc, ref SpriteLocatorsConstruction locators) =>
             {
                 locators = InitAdd<SpriteLocatorsConstruction>(GetConstructionRenderData(ent, ref tile, ref bcc));
             });
@@ -77,7 +77,7 @@ namespace Origin.Source.ECS.Render
         public override void Update(in ulong t)
         {
             // REMOVE
-            var clear = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile>();
+            var clear = new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile>();
             _site.ArchWorld.Query(in clear, (Entity ent, ref IsTile tile) =>
             {
                 var item = tile.Position;
@@ -98,10 +98,10 @@ namespace Origin.Source.ECS.Render
 
             // ADD
             var commands = new CommandBuffer();
-            var construction = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile, BaseConstruction>();
-            var fluid = new QueryDescription().WithAll<UpdateTileRenderSelfRequest, IsTile, FluidParticle>();
+            var construction = new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile, ConstructionBase>();
+            var fluid = new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile, FluidParticle>();
 
-            site.ArchWorld.Query(in construction, (Entity ent, ref IsTile tile, ref BaseConstruction bcc) =>
+            site.ArchWorld.Query(in construction, (Entity ent, ref IsTile tile, ref ConstructionBase bcc) =>
             {
                 var data = UpdateAdd<SpriteLocatorsConstruction>(GetConstructionRenderData(ent, ref tile, ref bcc));
                 if (ent.Has<SpriteLocatorsConstruction>())
@@ -121,8 +121,8 @@ namespace Origin.Source.ECS.Render
             renderer.StaticDrawer.AddSprites();
             renderer.HiddenDrawer.Set();
 
-            site.ArchWorld.Remove<UpdateTileRenderSelfRequest>(construction);
-            site.ArchWorld.Remove<UpdateTileRenderSelfRequest>(fluid);
+            site.ArchWorld.Remove<SelfRequestUpdateTileRender>(construction);
+            site.ArchWorld.Remove<SelfRequestUpdateTileRender>(fluid);
             commands.Playback(site.ArchWorld);
         }
 
@@ -146,7 +146,7 @@ namespace Origin.Source.ECS.Render
             return locators;
         }
 
-        private List<RenderData> GetConstructionRenderData(Entity ent, ref IsTile tile, ref BaseConstruction bcc)
+        private List<RenderData> GetConstructionRenderData(Entity ent, ref IsTile tile, ref ConstructionBase bcc)
         {
             var list = new List<RenderData>();
 
@@ -157,38 +157,36 @@ namespace Origin.Source.ECS.Render
             {
                 byte LAYER = (int)DrawBufferLayer.Back;
                 string spart = "Wall";
-                Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
-                                constr.Sprites[spart][rand % constr.Sprites[spart].Count]);
+                Sprite sprite = constr.Sprites[spart][rand % constr.Sprites[spart].Count];
                 Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                 list.Add(new RenderData(LAYER, tilePos, sprite, col, Vector3.Zero));
 
                 // Draw borders of Wall
                 LAYER = (int)DrawBufferLayer.BackNoLight;
                 if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
-                        !tmp.Has<BaseConstruction>())
+                        !tmp.Has<ConstructionBase>())
                     list.Add(new RenderData(LAYER, tilePos, lborderSprite, borderColor,
                         new Vector3(0, 0, 0)));
                 if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
-                        !tmp.Has<BaseConstruction>())
+                        !tmp.Has<ConstructionBase>())
                     list.Add(new RenderData(LAYER, tilePos, rborderSprite, borderColor,
                         new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
             }
             {
                 byte LAYER = (int)DrawBufferLayer.Front;
                 string spart = "Floor";
-                Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
-                        constr.Sprites[spart][rand % constr.Sprites[spart].Count]);
+                Sprite sprite = constr.Sprites[spart][rand % constr.Sprites[spart].Count];
                 Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                 list.Add(new RenderData(LAYER, tilePos, sprite, col, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
 
                 // Draw borders of Floor
                 LAYER = (int)DrawBufferLayer.FrontNoLight;
                 if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
-                            !tmp.Has<BaseConstruction>())
+                            !tmp.Has<ConstructionBase>())
                     list.Add(new RenderData(LAYER, tilePos, lborderSprite, borderColor,
                         new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
                 if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
-                        !tmp.Has<BaseConstruction>())
+                        !tmp.Has<ConstructionBase>())
                     list.Add(new RenderData(LAYER, tilePos, rborderSprite, borderColor,
                         new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset, 0)));
 
@@ -199,9 +197,9 @@ namespace Origin.Source.ECS.Render
                     var veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
                     List<string> spritesIDs;
                     if (Resources.Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
-                        sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
+                        sprite = GlobalResources.Sprites[spritesIDs[rand % spritesIDs.Count]];
                     else if (Resources.Vegetation.VegetationSpritesByConstruction.TryGetValue((veg, constr.ID), out spritesIDs))
-                        sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", spritesIDs[rand % spritesIDs.Count]);
+                        sprite = GlobalResources.Sprites[spritesIDs[rand % spritesIDs.Count]];
 
                     if (spritesIDs != null)
                         list.Add(new RenderData(LAYER, tilePos, sprite, Color.White,
@@ -222,8 +220,7 @@ namespace Origin.Source.ECS.Render
             if (fluid.Volume > 0)
             {
                 byte LAYER = (int)DrawBufferLayer.Water;
-                Sprite sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
-                                "Water");
+                Sprite sprite = GlobalResources.Sprites["Water"];
                 Color col = Color.Blue;
                 col.A = (byte)(255 - Math.Pow((FluidParticle.MaxVolume - fluid.Volume), 1.2));
                 list.Add(new RenderData(LAYER, tilePos, sprite, col,

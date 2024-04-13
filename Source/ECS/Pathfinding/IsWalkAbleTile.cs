@@ -16,11 +16,11 @@ namespace Origin.Source.ECS.Pathfinding
             get => ConstructionBelow.ID;
             set
             {
-                ConstructionBelowMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, value);
+                ConstructionBelowMetaID = GlobalResources.Constructions.IndexOf(value);
             }
         }
 
         [IgnoreMember]
-        public Resources.Construction ConstructionBelow => GlobalResources.GetByMetaID(GlobalResources.Constructions, ConstructionBelowMetaID);
+        public Resources.Construction ConstructionBelow => GlobalResources.Constructions[ConstructionBelowMetaID];
     }
 }

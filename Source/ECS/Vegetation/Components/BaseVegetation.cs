@@ -16,12 +16,12 @@ namespace Origin.Source.ECS.Vegetation.Components
             get => Vegetation.ID;
             set
             {
-                VegetationMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Vegetations, value);
+                VegetationMetaID = GlobalResources.Vegetations.IndexOf(value);
             }
         }
 
         [IgnoreMember]
-        public Resources.Vegetation Vegetation => GlobalResources.GetByMetaID(GlobalResources.Vegetations, VegetationMetaID);
+        public Resources.Vegetation Vegetation => GlobalResources.Vegetations[VegetationMetaID];
 
         [Key("VegetationNeighbours")]
         public short VegetationNeighbours;

@@ -61,7 +61,7 @@ namespace Origin.Source.Resources.Converters
                         var l = new List<Sprite>();
                         foreach (var item in rotation.Value)
                         {
-                            l.Add(GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", item.Value<string>()));
+                            l.Add(GlobalResources.Sprites[item.Value<string>()]);
                         }
                         rot.Add(name, l);
                     }

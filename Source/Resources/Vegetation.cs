@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Origin.Source.Utils;
+
+using System.Collections.Generic;
 
 namespace Origin.Source.Resources
 {
@@ -9,9 +11,8 @@ namespace Origin.Source.Resources
         public List<string> Sprites { get; set; }
     }
 
-    public class Vegetation
+    public class Vegetation : IDKeeper
     {
-        public string ID { get; set; }
         public List<Drawing> Drawing { get; set; }
 
         public override string ToString()

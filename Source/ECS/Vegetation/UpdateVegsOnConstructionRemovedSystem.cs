@@ -24,11 +24,11 @@ namespace Origin.Source.ECS.Vegetation
 
         public override void Update(in ulong t)
         {
-            var query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
+            var query = new QueryDescription().WithAll<EventConstructionRemoved>();
             var commands = new CommandBuffer();
             var visited = new HashSet<Point3>();
 
-            _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cre) =>
+            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cre) =>
             {
                 var pos = cre.Position;
 
@@ -55,19 +55,19 @@ namespace Origin.Source.ECS.Vegetation
                             }
                         }
                     }
-                    if (!ent.Has<UpdateTileRenderSelfRequest>())
-                        commands.Add<UpdateTileRenderSelfRequest>(ent);
+                    if (!ent.Has<SelfRequestUpdateTileRender>())
+                        commands.Add<SelfRequestUpdateTileRender>(ent);
                 }
             });
             commands.Playback(_site.ArchWorld);
 
-            _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cre) =>
+            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cre) =>
             {
                 var pos = cre.Position;
 
                 // Update Veg info for below tile
                 if (_site.Map.TryGet(pos + new Utils.Point3(0, 0, -1), out Entity ment) &&
-                    ment.Has<BaseConstruction>() && !ment.Has<BaseVegetation>())
+                    ment.Has<ConstructionBase>() && !ment.Has<BaseVegetation>())
                 {
                     // Increase Veg power from nearest tiles
                     short count = 0;

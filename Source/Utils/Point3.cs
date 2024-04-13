@@ -2,6 +2,8 @@
 
 using Microsoft.Xna.Framework;
 
+using Origin.Source.Resources;
+
 using System;
 
 using static Origin.Source.Resources.Global;
@@ -71,8 +73,12 @@ namespace Origin.Source.Utils
         public static Point3 South = new(0, 1, 0);
         public static Point3 West = new(-1, 0, 0);
         public static Point3 East = new(1, 0, 0);
+        public static Point3 NorthWest = new(-1, -1, 0);
+        public static Point3 NorthEast = new(1, -1, 0);
+        public static Point3 SouthWest = new(-1, 1, 0);
+        public static Point3 SouthEast = new(1, 1, 0);
 
-        public static Point3 Dir(Direction dir)
+        public static Point3 PointByDir(Direction dir)
         {
             switch (dir)
             {
@@ -88,9 +94,51 @@ namespace Origin.Source.Utils
                 case Direction.EAST:
                     return East;
 
+                case Direction.NORTHWEST:
+                    return NorthWest;
+
+                case Direction.NORTHEAST:
+                    return NorthEast;
+
+                case Direction.SOUTHWEST:
+                    return SouthWest;
+
+                case Direction.SOUTHEAST:
+                    return SouthEast;
+
                 default:
                     return Zero;
             }
+        }
+
+        public static Direction DirByPoint(Point3 point)
+        {
+            if (point == North)
+                return Direction.NORTH;
+
+            if (point == South)
+                return Direction.SOUTH;
+
+            if (point == West)
+                return Direction.WEST;
+
+            if (point == East)
+                return Direction.EAST;
+
+            if (point == NorthWest)
+                return Direction.NORTHWEST;
+
+            if (point == NorthEast)
+                return Direction.NORTHEAST;
+
+            if (point == SouthWest)
+                return Direction.SOUTHWEST;
+
+            if (point == SouthEast)
+                return Direction.SOUTHEAST;
+
+            // Handle other cases or return a default direction
+            return Direction.NONE;  // Assuming Direction.NONE is a default or invalid direction
         }
 
         public Point XY()
@@ -237,6 +285,14 @@ namespace Origin.Source.Utils
                 first.X + second.X,
                 first.Y + second.Y,
                 first.Z + second.Z);
+        }
+
+        public static Point3 operator *(Point3 first, Point3 second)
+        {
+            return new Point3(
+                first.X * second.X,
+                first.Y * second.Y,
+                first.Z * second.Z);
         }
 
         public static Point3 operator -(Point3 first, Point3 second)

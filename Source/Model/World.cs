@@ -75,17 +75,17 @@ namespace Origin.Source.Model
             SystemManager.Systems.Add(new UpdateVegsOnConstructionPlacedSystem(ActiveSite));
             SystemManager.Systems.Add(new VegatationControlSystem(ActiveSite));
 
-            SystemManager.Systems.Add(new UpdateLightSystem(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateLight(ActiveSite));
 
-            SystemManager.Systems.Add(new UpdateFluidsOnConstructionPlacedSystem(ActiveSite));
-            SystemManager.Systems.Add(new UpdateFluidsOnConstructionRemovedSystem(ActiveSite));
-            SystemManager.Systems.Add(new UpdateFluidsSystem(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateFluidsOnConstructionPlaced(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateFluidsOnConstructionRemoved(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateFluids(ActiveSite));
 
             SystemManager.Systems.Add(new UpdateSitePathSystem(ActiveSite));
 
-            SystemManager.Systems.Add(new ClearEventsSystem(ActiveSite));
+            SystemManager.Systems.Add(new SystemClearEvents(ActiveSite));
 
-            SystemManager.Systems.Add(new RenderUpdateTilesSystem(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateRenderTiles(ActiveSite));
 
             if (!load)
             {
@@ -102,7 +102,7 @@ namespace Origin.Source.Model
             //if (sge == null)
             {
                 sge.LastSaveTime = DateTime.Now;
-                sge.Texture = ActiveSite.DrawComponent.RenderTarget2D;
+                //sge.Texture = ActiveSite.DrawComponent.RenderTarget2D;
                 sge.Save(this);
             }
         }

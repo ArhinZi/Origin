@@ -91,10 +91,10 @@ namespace Origin.Source.Model.Site.Tools
                 site.Map[pos.X, pos.Y, pos.Z] == Entity.Null ||
                 //ignore air
                 site.Map[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                !site.Map[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() ||
+                !site.Map[pos.X, pos.Y, pos.Z].Has<ConstructionBase>() ||
                 //ignore blocks on current level
                 site.Map[pos.X, pos.Y, pos.Z] != Entity.Null &&
-                site.Map[pos.X, pos.Y, pos.Z].Has<BaseConstruction>() &&
+                site.Map[pos.X, pos.Y, pos.Z].Has<ConstructionBase>() &&
                 tlevel == site.CurrentLevel
                 )
                 {

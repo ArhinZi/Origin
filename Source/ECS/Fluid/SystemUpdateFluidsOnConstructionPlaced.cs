@@ -8,9 +8,9 @@ using Origin.Source.Model.Site;
 
 namespace Origin.Source.ECS.Vegetation
 {
-    internal class UpdateFluidsOnConstructionPlacedSystem : TickSystem
+    internal class SystemUpdateFluidsOnConstructionPlaced : TickSystem
     {
-        public UpdateFluidsOnConstructionPlacedSystem(Site site) : base(site)
+        public SystemUpdateFluidsOnConstructionPlaced(Site site) : base(site)
         {
         }
 
@@ -24,8 +24,8 @@ namespace Origin.Source.ECS.Vegetation
 
             var commands = new CommandBuffer();
 
-            var query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
-            _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cpe) =>
+            var query = new QueryDescription().WithAll<EventConstructionPlaced>();
+            _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cpe) =>
             {
                 // Update Vegs on tile below
                 var pos = cpe.Position;

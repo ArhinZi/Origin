@@ -55,7 +55,7 @@ namespace Origin.Source.Utils
                     return pos;
                 if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 &&
                     site.Map[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
-                    !site.Map[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
+                    !site.Map[pos.X, pos.Y, pos.Z - 1].Has<ConstructionBase>())
                 {
                     level--;
                     continue;
@@ -72,7 +72,7 @@ namespace Origin.Source.Utils
             {
                 return pos;
             }
-            while (pos.Z - 1 >= 0 && !site.Map[pos.X, pos.Y, pos.Z - 1].Has<BaseConstruction>())
+            while (pos.Z - 1 >= 0 && !site.Map[pos.X, pos.Y, pos.Z - 1].Has<ConstructionBase>())
             {
                 pos = pos - new Point3(1, 1, 1);
                 if (pos.X < 0 || pos.X >= site.Size.X || pos.Y < 0 || pos.Y >= site.Size.Y)
@@ -125,6 +125,21 @@ namespace Origin.Source.Utils
                 res.Y = size.X - pos.X - 1;
             }
             return res;
+        }
+
+        public IsometricDirection IsoDirByDir(Global.Direction dir)
+        {
+            if (dir == Global.Direction.NORTH)
+                return IsometricDirection.TR;
+
+            if (dir == Global.Direction.SOUTH)
+                return IsometricDirection.BL;
+            if (dir == Global.Direction.WEST)
+                return IsometricDirection.BR;
+            if (dir == Global.Direction.EAST)
+                return IsometricDirection.TL;
+
+            return IsometricDirection.NONE;
         }
 
         #region Neighbour Patterns

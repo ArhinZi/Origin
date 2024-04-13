@@ -122,7 +122,7 @@ namespace Origin.Source.Model.Site.Tools
                         DrawDirty = true;
                         sprites.Clear();
                         Construction construction = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", "SoilWallFloor");
-                        Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "Dirt");
+                        Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "DIRT");
                         for (int z = start.Z; z <= end.Z; z++)
                         {
                             for (int x = start.X; x <= end.X; x++)
@@ -216,8 +216,8 @@ namespace Origin.Source.Model.Site.Tools
 
                 Entity tmp;
                 if (pos.InBounds(Point3.Zero, site.Size) &&
-                    site.Map.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<BaseConstruction>() &&
-                    site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<BaseConstruction>())
+                    site.Map.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<ConstructionBase>() &&
+                    site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<ConstructionBase>())
                     return pos;
                 else if (site.Map.TryGet(pos, out tmp) && tmp == Entity.Null)
                     return Point3.Null;

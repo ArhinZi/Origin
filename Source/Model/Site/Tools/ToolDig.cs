@@ -17,7 +17,7 @@ namespace Origin.Source.Model.Site.Tools
 
         private SpritePositionColor template = new()
         {
-            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionFloor"),
+            sprite = GlobalResources.Sprites["SelectionFloor"],
             offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
             color = Color.Red
         };

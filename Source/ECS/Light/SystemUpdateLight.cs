@@ -11,9 +11,9 @@ using System.Collections.Generic;
 
 namespace Origin.Source.ECS.Light
 {
-    internal class UpdateLightSystem : TickSystem
+    internal class SystemUpdateLight : TickSystem
     {
-        public UpdateLightSystem(Site site) : base(site)
+        public SystemUpdateLight(Site site) : base(site)
         {
         }
 
@@ -44,7 +44,7 @@ namespace Origin.Source.ECS.Light
                     var pos = new Point3(x, y, _site.Size.Z - 1);
                     recastPlan[_site.Size.Z - 1].Add(pos);
                     Entity ent = _site.Map[pos];
-                    if (!ent.Has<BaseConstruction>())
+                    if (!ent.Has<ConstructionBase>())
                     {
                         PackedLight pl = new()
                         {
@@ -71,8 +71,8 @@ namespace Origin.Source.ECS.Light
             var visited = new HashSet<Point3>();
 
             // Update Sunlighted info on PlaceConstruction
-            var query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
-            _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cpe) =>
+            var query = new QueryDescription().WithAll<EventConstructionPlaced>();
+            _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cpe) =>
             {
                 var pos = cpe.Position;
                 Entity ent = _site.Map[pos];
@@ -96,8 +96,8 @@ namespace Origin.Source.ECS.Light
             });
 
             //Update Sunlighted info on RemoveConstruction
-            query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
-            _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cpe) =>
+            query = new QueryDescription().WithAll<EventConstructionRemoved>();
+            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cpe) =>
             {
                 var pos = cpe.Position;
                 Entity ent = _site.Map[pos];
@@ -167,7 +167,7 @@ namespace Origin.Source.ECS.Light
                         if (init)
                         {
                             Entity ent = _site.Map[npos];
-                            if (ent.Has<BaseConstruction>())
+                            if (ent.Has<ConstructionBase>())
                             {
                                 npl.IsLightBlocker = true;
                             }

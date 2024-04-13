@@ -1,6 +1,6 @@
 ﻿namespace Origin.Source.ECS.Construction
 {
-    internal struct ConstructionRemovedEvent
+    internal struct EventConstructionPlaced
     {
         public Point3 Position;
         public int ConstructionMetaID;

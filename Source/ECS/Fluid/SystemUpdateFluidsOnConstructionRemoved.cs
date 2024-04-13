@@ -11,9 +11,9 @@ using System.Collections.Generic;
 
 namespace Origin.Source.ECS.Vegetation
 {
-    internal class UpdateFluidsOnConstructionRemovedSystem : TickSystem
+    internal class SystemUpdateFluidsOnConstructionRemoved : TickSystem
     {
-        public UpdateFluidsOnConstructionRemovedSystem(Site site) : base(site)
+        public SystemUpdateFluidsOnConstructionRemoved(Site site) : base(site)
         {
         }
 
@@ -23,11 +23,11 @@ namespace Origin.Source.ECS.Vegetation
 
         public override void Update(in ulong t)
         {
-            var query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
+            var query = new QueryDescription().WithAll<EventConstructionRemoved>();
             var commands = new CommandBuffer();
             var visited = new HashSet<Point3>();
 
-            _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cre) =>
+            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cre) =>
             {
                 var pos = cre.Position;
 
@@ -38,7 +38,7 @@ namespace Origin.Source.ECS.Vegetation
                 foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
                 {
                     var pos2 = pos + item;
-                    if (_site.Map.TryGet(pos2, out Entity nent) && nent != Entity.Null && nent.Has<BaseConstruction>() && !nent.Has<IsFluidBlocker>())
+                    if (_site.Map.TryGet(pos2, out Entity nent) && nent != Entity.Null && nent.Has<ConstructionBase>() && !nent.Has<IsFluidBlocker>())
                     {
                         nent.Add<IsFluidBlocker>();
                     }

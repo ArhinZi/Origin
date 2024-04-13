@@ -23,10 +23,10 @@ namespace Origin.Source.ECS.Pathfinding
 
         public override void Update(in ulong t)
         {
-            var query = new QueryDescription().WithAll<ConstructionRemovedEvent>();
+            var query = new QueryDescription().WithAll<EventConstructionRemoved>();
             var commands = new CommandBuffer();
             var visited = new HashSet<Point3>();
-            _site.ArchWorld.Query(in query, (ref ConstructionRemovedEvent cre) =>
+            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cre) =>
             {
                 var pos = cre.Position;
 
@@ -41,7 +41,7 @@ namespace Origin.Source.ECS.Pathfinding
                         // Check a construction below the Tile
                         if (_site.Map.TryGet(Npos - new Point3(0, 0, 1), out Entity below) && below != Entity.Null)
                         {
-                            if (below.TryGet(out BaseConstruction belowbc))
+                            if (below.TryGet(out ConstructionBase belowbc))
                             {
                                 if (!Nent.Has<IsWalkAbleTile>())
                                 {
@@ -66,8 +66,8 @@ namespace Origin.Source.ECS.Pathfinding
             commands.Playback(_site.ArchWorld);
 
             commands = new CommandBuffer();
-            query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
-            _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cpe) =>
+            query = new QueryDescription().WithAll<EventConstructionPlaced>();
+            _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cpe) =>
             {
                 var pos = cpe.Position;
 
@@ -77,7 +77,7 @@ namespace Origin.Source.ECS.Pathfinding
                     if (_site.Map.TryGet(Npos, out Entity Nent))
                     {
                         // Remove path if Construction is on Tile
-                        if (Nent.Has<BaseConstruction>())
+                        if (Nent.Has<ConstructionBase>())
                         {
                             if (Nent.Has<IsWalkAbleTile>())
                             {
@@ -89,7 +89,7 @@ namespace Origin.Source.ECS.Pathfinding
                             // Check a construction below the Tile
                             if (_site.Map.TryGet(Npos - new Point3(0, 0, 1), out Entity below) && below != Entity.Null)
                             {
-                                if (below.TryGet(out BaseConstruction belowbc))
+                                if (below.TryGet(out ConstructionBase belowbc))
                                 {
                                     if (!Nent.Has<IsWalkAbleTile>())
                                     {

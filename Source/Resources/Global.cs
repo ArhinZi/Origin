@@ -47,7 +47,11 @@ namespace Origin.Source.Resources
             NORTH,
             EAST,
             WEST,
-            SOUTH
+            SOUTH,
+            NORTHEAST,
+            NORTHWEST,
+            SOUTHEAST,
+            SOUTHWEST
         }
 
         #region Camera

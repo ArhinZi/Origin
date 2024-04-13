@@ -29,9 +29,9 @@ namespace Origin.Source.ECS.Vegetation
             var commands = new CommandBuffer();
             var visited = new HashSet<Point3>();
 
-            var query = new QueryDescription().WithAll<ConstructionPlacedEvent>();
+            var query = new QueryDescription().WithAll<EventConstructionPlaced>();
 
-            _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cpe) =>
+            _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cpe) =>
             {
                 // Update Vegs on tile below
                 var pos = cpe.Position;
@@ -55,17 +55,17 @@ namespace Origin.Source.ECS.Vegetation
                             }
                         }
                     }
-                    if (!ent.Has<UpdateTileRenderSelfRequest>())
-                        commands.Add<UpdateTileRenderSelfRequest>(ent);
+                    if (!ent.Has<SelfRequestUpdateTileRender>())
+                        commands.Add<SelfRequestUpdateTileRender>(ent);
                 }
             });
             commands.Playback(_site.ArchWorld);
 
-            _site.ArchWorld.Query(in query, (ref ConstructionPlacedEvent cre) =>
+            _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cre) =>
             {
                 Point3 pos = cre.Position;
                 if (_site.Map.TryGet(pos, out Entity ent) &&
-                    ent.Has<BaseConstruction>() && !ent.Has<BaseVegetation>())
+                    ent.Has<ConstructionBase>() && !ent.Has<BaseVegetation>())
                 {
                     short count = 0;
                     foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())

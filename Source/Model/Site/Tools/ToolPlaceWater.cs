@@ -29,7 +29,7 @@ namespace Origin.Source.Model.Site.Tools
 
         private SpritePositionColor template = new()
         {
-            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
+            sprite = GlobalResources.Sprites["DirtWall"],
             offset = new Point(0, 0),
             color = Color.Blue
         };
@@ -53,7 +53,7 @@ namespace Origin.Source.Model.Site.Tools
         {
             Point m = Mouse.GetState().Position;
 
-            Wall = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SolidWall");
+            Wall = GlobalResources.Sprites["SolidWall"];
 
             if (!Active)
             {
@@ -78,9 +78,9 @@ namespace Origin.Source.Model.Site.Tools
                                     Volume = 64
                                 });
                             }
-                            if (!ent.Has<UpdateTileRenderSelfRequest>())
+                            if (!ent.Has<SelfRequestUpdateTileRender>())
                             {
-                                ent.Add<UpdateTileRenderSelfRequest>();
+                                ent.Add<SelfRequestUpdateTileRender>();
                             }
                         }
                     }
@@ -179,7 +179,7 @@ namespace Origin.Source.Model.Site.Tools
                 {
                     sprites.Add(new SpritePositionColor()
                     {
-                        sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionWall"),
+                        sprite = GlobalResources.Sprites["SelectionWall"],
                         color = new Color(25, 25, 25, 200),
                         position = new Point3(Position.X, Position.Y, i)
                     });

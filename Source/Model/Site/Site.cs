@@ -165,11 +165,11 @@ namespace Origin.Source.Model.Site
         {
             MapGenerator.Visit(pos, true, true);
 
-            if (Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out BaseConstruction bcc))
+            if (Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out ConstructionBase bcc))
             {
-                ent.Remove<BaseConstruction>();
+                ent.Remove<ConstructionBase>();
 
-                ArchWorld.Create(new ConstructionRemovedEvent()
+                ArchWorld.Create(new EventConstructionRemoved()
                 {
                     Position = pos,
                     ConstructionMetaID = bcc.ConstructionMetaID,
@@ -179,8 +179,8 @@ namespace Origin.Source.Model.Site
                 foreach (var item in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
                 {
                     var pos2 = item + pos;
-                    if (Map.TryGet(pos2, out Entity e) && !e.Has<UpdateTileRenderSelfRequest>())
-                        e.Add<UpdateTileRenderSelfRequest>();
+                    if (Map.TryGet(pos2, out Entity e) && !e.Has<SelfRequestUpdateTileRender>())
+                        e.Add<SelfRequestUpdateTileRender>();
                 }
             }
         }
@@ -188,32 +188,27 @@ namespace Origin.Source.Model.Site
         public void PlaceConstruction(Point3 pos, Construction constr, Material mat)
         {
             Entity ent = Map[pos];
-            BaseConstruction bcc = new()
+            ConstructionBase bcc = new()
             {
-                ConstructionMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, "SoilWallFloor"),
-                MaterialMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Materials, "Dirt")
+                ConstructionMetaID = GlobalResources.Constructions.IndexOf("SoilWallFloor"),
+                MaterialMetaID = GlobalResources.Materials.IndexOf("DIRT")
             };
 
-            if (ent.Has<BaseConstruction>() && !constr.OverAble || constr.OverAble && ent.Has<OverConstruction>())
+            if (ent.Has<ConstructionBase>() && !constr.OverAble || constr.OverAble && ent.Has<ConstructionOver>())
             {
                 Debug.WriteLine(string.Format("Cant place construction {0}", constr.ID));
                 return;
             }
-            if (!ent.Has<BaseConstruction>())
+            if (!ent.Has<ConstructionBase>())
             {
                 ent.Add(bcc);
             }
-            else if (!ent.Has<OverConstruction>() && constr.OverAble)
+            else if (!ent.Has<ConstructionOver>() && constr.OverAble)
             {
                 throw new Exception("Something went wrong");
-                ent.Add(new OverConstruction()
-                {
-                    ConstructionMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Constructions, "SoilWallFloor"),
-                    MaterialMetaID = GlobalResources.GetResourceMetaID(GlobalResources.Materials, "Dirt")
-                });
             }
 
-            ArchWorld.Create(new ConstructionPlacedEvent()
+            ArchWorld.Create(new EventConstructionPlaced()
             {
                 Position = pos,
                 ConstructionMetaID = bcc.ConstructionMetaID,
@@ -222,8 +217,8 @@ namespace Origin.Source.Model.Site
             foreach (var item in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
             {
                 var pos2 = item + pos;
-                if (Map.TryGet(pos2, out Entity e) && !e.Has<UpdateTileRenderSelfRequest>())
-                    e.Add<UpdateTileRenderSelfRequest>();
+                if (Map.TryGet(pos2, out Entity e) && !e.Has<SelfRequestUpdateTileRender>())
+                    e.Add<SelfRequestUpdateTileRender>();
             }
         }
 

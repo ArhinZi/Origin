@@ -26,7 +26,7 @@ namespace Origin.Source.ECS.Vegetation
         {
             base.Initialize();
 
-            var query = new QueryDescription().WithAll<BaseConstruction, IsTile>();
+            var query = new QueryDescription().WithAll<ConstructionBase, IsTile>();
 
             _site.ArchWorld.Add(query, new BaseVegetation(), new GrownUpVegetation());
 
@@ -54,10 +54,10 @@ namespace Origin.Source.ECS.Vegetation
             base.Update(in t);
             if (t % 60 != 0) return;
 
-            var query = new QueryDescription().WithAll<BaseConstruction, IsTile, /*IsSunLightedComponent,*/ BaseVegetation>()
+            var query = new QueryDescription().WithAll<ConstructionBase, IsTile, /*IsSunLightedComponent,*/ BaseVegetation>()
                                             .WithNone<GrownUpVegetation>();
             var commands = new CommandBuffer();
-            _site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref BaseConstruction bc, ref BaseVegetation bvc) =>
+            _site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref ConstructionBase bc, ref BaseVegetation bvc) =>
             {
                 float r = random.Next(0, 100);
                 if (r < 0 + bvc.VegetationNeighbours * 10)
@@ -72,8 +72,8 @@ namespace Origin.Source.ECS.Vegetation
                             nvbc.VegetationNeighbours++;
                         }
                     }
-                    if (!ent.Has<UpdateTileRenderSelfRequest>())
-                        commands.Add<UpdateTileRenderSelfRequest>(ent);
+                    if (!ent.Has<SelfRequestUpdateTileRender>())
+                        commands.Add<SelfRequestUpdateTileRender>(ent);
                 }
             });
             commands.Playback(_site.ArchWorld);

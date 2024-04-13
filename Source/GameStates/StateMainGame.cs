@@ -100,7 +100,7 @@ namespace Origin.Source.GameStates
                 //string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.ActiveSite.DrawControl.StaticDrawer.ChunkSize, 1)).ToString();
 
                 string blockMat = "NONE";
-                BaseConstruction bc;
+                ConstructionBase bc;
 
                 if (World.ActiveSite.Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out bc))
                 {
