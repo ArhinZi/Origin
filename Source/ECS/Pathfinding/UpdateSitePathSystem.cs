@@ -111,11 +111,11 @@ namespace Origin.Source.ECS.Pathfinding
             });
 
             commands.Playback(_site.ArchWorld);
-            foreach (var item in visited)
-            {
-                _site.Pathfinder.RemovePathNode(item);
-                _site.Pathfinder.SetPathNode(item);
-            }
+            //foreach (var item in visited)
+            //{
+            //    _site.Pathfinder.RemovePathNode(item);
+            //    _site.Pathfinder.SetPathNode(item);
+            //}
         }
     }
 }

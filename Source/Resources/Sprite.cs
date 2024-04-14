@@ -94,6 +94,42 @@ namespace Origin.Source.Resources
             //    }
         }
 
+        public IsometricDirection GetIsoDirByDir(Global.Direction dir)
+        {
+            switch (dir)
+            {
+                case Global.Direction.NORTH:
+                    return IsometricDirection.TR;
+
+                case Global.Direction.SOUTH:
+                    return IsometricDirection.BL;
+
+                case Global.Direction.WEST:
+                    return IsometricDirection.TL;
+
+                case Global.Direction.EAST:
+                    return IsometricDirection.BR;
+
+                case Global.Direction.NORTHEAST:
+                    return IsometricDirection.R;
+
+                case Global.Direction.NORTHWEST:
+                    return IsometricDirection.T;
+
+                case Global.Direction.SOUTHEAST:
+                    return IsometricDirection.B;
+
+                case Global.Direction.SOUTHWEST:
+                    return IsometricDirection.L;
+            }
+            return IsometricDirection.TR;
+        }
+
+        public List<Sprite> GetSpritesByDir(Global.Direction dir)
+        {
+            return Rotations[GetIsoDirByDir(dir).ToString()];
+        }
+
         public override string ToString()
         {
             return $"{ID}, {Direction.ToString()}";

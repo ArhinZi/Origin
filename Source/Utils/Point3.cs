@@ -303,6 +303,14 @@ namespace Origin.Source.Utils
                 first.Z - second.Z);
         }
 
+        public static Point3 operator *(Point3 first, int second)
+        {
+            return new Point3(
+                first.X * second,
+                first.Y * second,
+                first.Z * second);
+        }
+
         public override string ToString()
         {
             return $"({X}, {Y}, {Z})";

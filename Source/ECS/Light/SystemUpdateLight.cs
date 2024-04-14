@@ -167,7 +167,7 @@ namespace Origin.Source.ECS.Light
                         if (init)
                         {
                             Entity ent = _site.Map[npos];
-                            if (ent.Has<ConstructionBase>())
+                            if (ent.TryGet<ConstructionBase>(out var bcc) && bcc.Construction.Type != "Ramp")
                             {
                                 npl.IsLightBlocker = true;
                             }

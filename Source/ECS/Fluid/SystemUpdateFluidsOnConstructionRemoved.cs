@@ -33,7 +33,8 @@ namespace Origin.Source.ECS.Vegetation
 
                 // Update Related to current tile
                 Entity ent = _site.Map[pos];
-                ent.Remove<IsFluidBlocker>();
+                if (ent.Has<IsFluidBlocker>())
+                    ent.Remove<IsFluidBlocker>();
 
                 foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
                 {

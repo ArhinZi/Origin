@@ -157,38 +157,73 @@ namespace Origin.Source.ECS.Render
             {
                 byte LAYER = (int)DrawBufferLayer.Back;
                 string spart = "Wall";
-                Sprite sprite = constr.Sprites[spart][rand % constr.Sprites[spart].Count];
+                Sprite sprite;
+                if (ent.TryGet<Construction.ConstructionShape>(out var ccs))
+                {
+                    var sprs = constr.Shapes[ccs.Name].Sprites;
+                    sprite = sprs[spart][rand % sprs[spart].Count];
+                    if (ent.TryGet<ConstructionRotation>(out var rot))
+                    {
+                        var dlist = sprite.GetSpritesByDir(rot.Direction);
+                        sprite = dlist[rand % dlist.Count];
+                    }
+                }
+                else
+                {
+                    sprite = constr.Sprites[spart][rand % constr.Sprites[spart].Count];
+                }
+
                 Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                 list.Add(new RenderData(LAYER, tilePos, sprite, col, Vector3.Zero));
 
                 // Draw borders of Wall
-                LAYER = (int)DrawBufferLayer.BackNoLight;
-                if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
-                        !tmp.Has<ConstructionBase>())
-                    list.Add(new RenderData(LAYER, tilePos, lborderSprite, borderColor,
-                        new Vector3(0, 0, 0)));
-                if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
-                        !tmp.Has<ConstructionBase>())
-                    list.Add(new RenderData(LAYER, tilePos, rborderSprite, borderColor,
-                        new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
+                if (bcc.Construction.Type == "WallFloor")
+                {
+                    LAYER = (int)DrawBufferLayer.BackNoLight;
+                    if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
+                            (!tmp.TryGet<ConstructionBase>(out ConstructionBase tmpbcc) || tmpbcc.Construction.Type != "WallFloor"))
+                        list.Add(new RenderData(LAYER, tilePos, lborderSprite, borderColor,
+                            new Vector3(0, 0, 0)));
+                    if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
+                            (!tmp.TryGet<ConstructionBase>(out tmpbcc) || tmpbcc.Construction.Type != "WallFloor"))
+                        list.Add(new RenderData(LAYER, tilePos, rborderSprite, borderColor,
+                            new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
+                }
             }
             {
                 byte LAYER = (int)DrawBufferLayer.Front;
                 string spart = "Floor";
-                Sprite sprite = constr.Sprites[spart][rand % constr.Sprites[spart].Count];
+                Sprite sprite;
+                if (ent.TryGet<Construction.ConstructionShape>(out var ccs))
+                {
+                    var sprs = constr.Shapes[ccs.Name].Sprites;
+                    sprite = sprs[spart][rand % sprs[spart].Count];
+                    if (ent.TryGet<ConstructionRotation>(out var rot))
+                    {
+                        var dlist = sprite.GetSpritesByDir(rot.Direction);
+                        sprite = dlist[rand % dlist.Count];
+                    }
+                }
+                else
+                {
+                    sprite = constr.Sprites[spart][rand % constr.Sprites[spart].Count];
+                }
                 Color col = constr.HasMaterialColor ? mat.Color : Color.White;
                 list.Add(new RenderData(LAYER, tilePos, sprite, col, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
 
                 // Draw borders of Floor
-                LAYER = (int)DrawBufferLayer.FrontNoLight;
-                if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
-                            !tmp.Has<ConstructionBase>())
-                    list.Add(new RenderData(LAYER, tilePos, lborderSprite, borderColor,
-                        new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
-                if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
-                        !tmp.Has<ConstructionBase>())
-                    list.Add(new RenderData(LAYER, tilePos, rborderSprite, borderColor,
-                        new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset, 0)));
+                if (bcc.Construction.Type == "WallFloor")
+                {
+                    LAYER = (int)DrawBufferLayer.FrontNoLight;
+                    if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Entity tmp) && tmp != Entity.Null &&
+                                (!tmp.TryGet<ConstructionBase>(out ConstructionBase tmpbcc) || tmpbcc.Construction.Type != "WallFloor"))
+                        list.Add(new RenderData(LAYER, tilePos, lborderSprite, borderColor,
+                            new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
+                    if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp != Entity.Null &&
+                            (!tmp.TryGet<ConstructionBase>(out tmpbcc) || tmpbcc.Construction.Type != "WallFloor"))
+                        list.Add(new RenderData(LAYER, tilePos, rborderSprite, borderColor,
+                            new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset, 0)));
+                }
 
                 // Draw Vegetation
                 LAYER = (int)DrawBufferLayer.FrontOver;

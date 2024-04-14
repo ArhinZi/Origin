@@ -6,7 +6,7 @@
         "BL": [ "FloorRampSoilBL" ],
         "BR": [ "FloorRampSoilBR" ],
         "TL": [ "FloorRampSoilTL" ],
-        "RT": [ "FloorRampSoilBR" ]
+        "TR": [ "FloorRampSoilTR" ]
       }
     },
     {
@@ -15,7 +15,43 @@
         "BL": [ "WallRampSoilBL" ],
         "BR": [ "WallRampSoilBR" ],
         "TL": [ "WallRampSoilTL" ],
-        "RT": [ "WallRampSoilBR" ]
+        "TR": [ "WallRampSoilTR" ]
+      }
+    },
+    {
+      "ID": "FloorInRampSoil",
+      "Rotations": {
+        "L": [ "FloorInRampSoilL" ],
+        "B": [ "FloorInRampSoilB" ],
+        "T": [ "FloorInRampSoilT" ],
+        "R": [ "FloorInRampSoilR" ]
+      }
+    },
+    {
+      "ID": "FloorExRampSoil",
+      "Rotations": {
+        "L": [ "FloorExRampSoilL" ],
+        "B": [ "FloorExRampSoilB" ],
+        "T": [ "FloorExRampSoilT" ],
+        "R": [ "FloorExRampSoilR" ]
+      }
+    },
+    {
+      "ID": "WallInRampSoil",
+      "Rotations": {
+        "L": [ "WallInRampSoilL" ],
+        "B": [ "WallInRampSoilB" ],
+        "T": [ "WallInRampSoilT" ],
+        "R": [ "WallInRampSoilR" ]
+      }
+    },
+    {
+      "ID": "WallExRampSoil",
+      "Rotations": {
+        "L": [ "WallExRampSoilL" ],
+        "B": [ "WallExRampSoilB" ],
+        "T": [ "WallExRampSoilT" ],
+        "R": [ "WallExRampSoilR" ]
       }
     }
   ]

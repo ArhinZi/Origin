@@ -21,7 +21,7 @@ float2 SpriteSize = float2(64, 64);
 float2 HiddenSpriteTexturePos;
 float4 HiddenColor;
 
-float FloorYoffset = 4;
+float FloorYoffset = 7;
 float ZDiagOffset = 0.01;
 
 bool Unpack(uint packedFlags, int bitOffset)
@@ -61,7 +61,7 @@ float4 ShadeColor(float4 color, uint3 pos)
     // level shading
     float4 fogColor = float4(0.8, 0.8, 0.8, 1.0); // color of fog
     float hyperKS = 0.7;
-    float shadeFactor = hyperKS / (hyperKS + (LowHighLevel.y - pos.z) * 0.01);
+    float shadeFactor = hyperKS / (hyperKS + (LowHighLevel.y - pos.z) * 0.03);
     float hyperKF = 0.9;
     float fogFactor = hyperKF / (hyperKF + (LowHighLevel.y - pos.z) * 0.01);
     //color.rgb *= hyperK / (hyperK + (MinMaxLevel.y - input.BlockPosition.z) * 0.01);

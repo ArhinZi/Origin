@@ -68,6 +68,7 @@ namespace Origin.Source.Model.Site
             CurrentLevel = (int)(Size.Z * 0.8f);
 
             ArchWorld = ArchWorld.Create();
+            //ArchWorld.SharedJobScheduler = new Schedulers.JobScheduler(new Schedulers.JobScheduler.Config() { });
             Map = new SiteTileContainer(Size);
 
             Camera = new Camera2D();
@@ -224,6 +225,8 @@ namespace Origin.Source.Model.Site
 
         public void Dispose()
         {
+            //ArchWorld.SharedJobScheduler.Flush();
+            //ArchWorld.SharedJobScheduler.Dispose();
             GC.SuppressFinalize(this);
         }
 

@@ -105,14 +105,14 @@
         },
         "CornerIn": {
           "Sprites": {
-            "Wall": [ "WallRampSoil" ],
-            "Floor": [ "FloorRampSoil" ]
+            "Wall": [ "WallInRampSoil" ],
+            "Floor": [ "FloorInRampSoil" ]
           }
         },
         "CornerOut": {
           "Sprites": {
-            "Wall": [ "WallRampSoil" ],
-            "Floor": [ "FloorRampSoil" ]
+            "Wall": [ "WallExRampSoil" ],
+            "Floor": [ "FloorExRampSoil" ]
           }
         }
       },
@@ -143,14 +143,14 @@
         },
         "CornerIn": {
           "Sprites": {
-            "Wall": [ "WallRampSoil" ],
-            "Floor": [ "FloorRampSoil" ]
+            "Wall": [ "WallInRampSoil" ],
+            "Floor": [ "FloorInRampSoil" ]
           }
         },
         "CornerOut": {
           "Sprites": {
-            "Wall": [ "WallRampSoil" ],
-            "Floor": [ "FloorRampSoil" ]
+            "Wall": [ "WallExRampSoil" ],
+            "Floor": [ "FloorExRampSoil" ]
           }
         }
       },

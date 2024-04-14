@@ -39,9 +39,9 @@ namespace Origin.Source.Utils
         {
             base.AddRange(collection);
             var list = collection.ToArray();
-            for (int i = 0; i < collection.Count(); i++)
+            for (int i = 0; i < list.Count(); i++)
             {
-                cache.Add(list[i].ID, i);
+                cache.Add(list[i].ID, this.IndexOf(list[i]));
             }
         }
 

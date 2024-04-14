@@ -121,6 +121,7 @@ namespace Origin.Source
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+            Dispose();
         }
 
         /// <summary>
@@ -167,6 +168,12 @@ namespace Origin.Source
         private void LoadGameScreen()
         {
             _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+        }
+
+        public new void Dispose()
+        {
+            base.Dispose();
+            _screenManager.Dispose();
         }
     }
 }

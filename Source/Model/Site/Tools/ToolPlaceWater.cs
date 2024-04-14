@@ -62,7 +62,7 @@ namespace Origin.Source.Model.Site.Tools
                 {
                     if (InputManager.JustPressed("mouse.left"))
                     {
-                        if (Controller.Site.Map.TryGet(Position, out Entity ent))
+                        if (Controller.Site.Map.TryGet(Position, out Entity ent) && ent != Entity.Null)
                         {
                             if (ent.TryGet(out FluidParticle fluid))
                             {

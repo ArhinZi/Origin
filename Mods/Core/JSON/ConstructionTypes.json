@@ -1,6 +1,6 @@
 {
   "ConstructionTypes": [
-    "Block",
+    "WallFloor",
     "Floor",
     "Ramp",
     "Stairs"

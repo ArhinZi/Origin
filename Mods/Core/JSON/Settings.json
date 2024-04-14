@@ -8,6 +8,6 @@
 
     "TileSize": "64 32",
     "SpriteSize": "64 64",
-    "FloorYoffset": 4
+    "FloorYoffset": 7
   }
 }

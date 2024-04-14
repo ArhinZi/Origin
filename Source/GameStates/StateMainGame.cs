@@ -237,5 +237,11 @@ namespace Origin.Source.GameStates
                 ImGui.End();
             }
         }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            World.Dispose();
+        }
     }
 }
