@@ -149,16 +149,14 @@ namespace Origin.Source.Model.Generators
                 {
                     if (rddir == Global.Direction.NORTH || rddir == Global.Direction.SOUTH || rddir == Global.Direction.EAST || rddir == Global.Direction.WEST)
                     {
-                        current.Add(new ConstructionBase()
+                        current.Add(new IsRamp(), new ConstructionBase()
                         {
                             ConstructionID = "SoilRamp",
                             MaterialID = rmat.ID
-                        });
-                        current.Add(new ECS.Construction.ConstructionShape()
+                        }, new ECS.Construction.ConstructionShape()
                         {
                             Name = "Slope"
-                        });
-                        current.Add(new ConstructionRotation()
+                        }, new ConstructionRotation()
                         {
                             Direction = rddir
                         });
@@ -166,16 +164,14 @@ namespace Origin.Source.Model.Generators
                     else if (rddir == Global.Direction.NORTHEAST || rddir == Global.Direction.NORTHWEST ||
                         rddir == Global.Direction.SOUTHEAST || rddir == Global.Direction.SOUTHWEST)
                     {
-                        current.Add(new ConstructionBase()
+                        current.Add(new IsRamp(), new ConstructionBase()
                         {
                             ConstructionID = "SoilRamp",
                             MaterialID = rmat.ID
-                        });
-                        current.Add(new ECS.Construction.ConstructionShape()
+                        }, new ECS.Construction.ConstructionShape()
                         {
                             Name = "CornerIn"
-                        });
-                        current.Add(new ConstructionRotation()
+                        }, new ConstructionRotation()
                         {
                             Direction = rddir
                         });

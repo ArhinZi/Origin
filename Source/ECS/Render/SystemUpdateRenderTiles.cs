@@ -153,6 +153,7 @@ namespace Origin.Source.ECS.Render
             Point3 tilePos = tile.Position;
             var constr = bcc.Construction;
             Material mat = bcc.Material;
+            float zoff = 0;
             int rand = Global.World.Random.Next();
             {
                 byte LAYER = (int)DrawBufferLayer.Back;
@@ -174,7 +175,7 @@ namespace Origin.Source.ECS.Render
                 }
 
                 Color col = constr.HasMaterialColor ? mat.Color : Color.White;
-                list.Add(new RenderData(LAYER, tilePos, sprite, col, Vector3.Zero));
+                list.Add(new RenderData(LAYER, tilePos, sprite, col, new Vector3(0, 0, zoff)));
 
                 // Draw borders of Wall
                 if (bcc.Construction.Type == "WallFloor")
@@ -254,12 +255,17 @@ namespace Origin.Source.ECS.Render
             //ref SpriteLocatorsStatic locators = ref ent.Get<SpriteLocatorsStatic>();
             if (fluid.Volume > 0)
             {
+                float zoff = 0;
+                if ((site.Map.TryGet(tilePos + new Utils.Point3(0, 1, 0), out var n1ent) && n1ent.Has<FluidParticle>()) &&
+                    (site.Map.TryGet(tilePos + new Utils.Point3(1, 0, 0), out var n2ent) && n2ent.Has<FluidParticle>())) zoff = Global.Z_DIAGONAL_OFFSET;
+                //else if (site.Map.TryGet(tilePos + new Utils.Point3(1, 0, 0), out var n2ent) && n2ent.Has<IsRamp>()) zoff = Global.Z_DIAGONAL_OFFSET;
+
                 byte LAYER = (int)DrawBufferLayer.Water;
                 Sprite sprite = GlobalResources.Sprites["Water"];
                 Color col = Color.Blue;
                 col.A = (byte)(255 - Math.Pow((FluidParticle.MaxVolume - fluid.Volume), 1.2));
                 list.Add(new RenderData(LAYER, tilePos, sprite, col,
-                                new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, 0)));
+                                new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, zoff)));
 
                 //sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
                 //                "SolidWall");

@@ -24,7 +24,7 @@ namespace Origin.Source.ECS.Fluid
 
         public override void Initialize()
         {
-            var query = new QueryDescription().WithAll<IsTile, ConstructionBase>();
+            var query = new QueryDescription().WithAll<IsTile, ConstructionBase>().WithNone<IsRamp>();
             _site.ArchWorld.Add(query, new IsFluidBlocker());
         }
 
@@ -173,14 +173,14 @@ namespace Origin.Source.ECS.Fluid
                 {
                     if (!ent.Has<SelfRequestUpdateTileRender>())
                         commands.Add<SelfRequestUpdateTileRender>(ent);
-                    var posn = pos + Point3.Down;
-                    if (_site.Map.TryGet(posn, out Entity entDown0) && entDown0 != Entity.Null && entDown0.Has<FluidParticle>() && entDown0.Has<IsFluidStatic>())
+                    //var posn = pos + Point3.Down;
+                    //if (_site.Map.TryGet(posn, out Entity entDown0) && entDown0 != Entity.Null && entDown0.Has<FluidParticle>() && entDown0.Has<IsFluidStatic>())
+                    //{
+                    //    commands.Remove<IsFluidStatic>(entDown0);
+                    //}
+                    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_3L(false)/*.Shuffle(Global.World.Random)*/)
                     {
-                        commands.Remove<IsFluidStatic>(entDown0);
-                    }
-                    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false)/*.Shuffle(Global.World.Random)*/)
-                    {
-                        posn = pos + n;
+                        var posn = pos + n;
                         if (_site.Map.TryGet(posn, out Entity entn) && entn != Entity.Null && entn.Has<FluidParticle>() && entn.Has<IsFluidStatic>())
                         {
                             commands.Remove<IsFluidStatic>(entn);
