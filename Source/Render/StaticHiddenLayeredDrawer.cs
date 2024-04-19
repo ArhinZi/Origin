@@ -19,6 +19,9 @@ namespace Origin.Source.Render
         private StructuredBuffer[] bufferLayers;
         private StructuredBuffer[] bufferSides;
 
+        private long[] LayersSize;
+        private long[] SidesSize;
+
         private int RBIT_COUNT;
         private int LCHUNK_SIZE;
         private int SCHUNK_SIZE;
@@ -52,14 +55,18 @@ namespace Origin.Source.Render
             }
 
             bufferLayers = new StructuredBuffer[_site.Size.Z];
+            LayersSize = new long[_site.Size.Z];
             for (int i = 0; i < bufferLayers.Length; i++)
             {
                 bufferLayers[i] = new StructuredBuffer(device, typeof(Float4), LCHUNK_SIZE, BufferUsage.None, ShaderAccess.Read);
+                LayersSize[i] = 0;
             }
             bufferSides = new StructuredBuffer[_site.Size.Z];
+            SidesSize = new long[_site.Size.Z];
             for (int i = 0; i < bufferSides.Length; i++)
             {
                 bufferSides[i] = new StructuredBuffer(device, typeof(Float4), SCHUNK_SIZE, BufferUsage.None, ShaderAccess.Read);
+                SidesSize[i] = 0;
             }
         }
 

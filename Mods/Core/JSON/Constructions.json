@@ -12,8 +12,8 @@
       "Category": "Soil",
 
       "Sprites": {
-        "Wall": [ "DirtWall" ],
-        "Floor": [ "DirtFloor" ]
+        "Wall": [ "WallSoil" ],
+        "Floor": [ "FloorSoil" ]
       },
       "Components": [
         {
@@ -34,7 +34,7 @@
       "Category": "Soil",
 
       "Sprites": {
-        "Floor": [ "DirtFloor" ]
+        "Floor": [ "FloorSoil" ]
       },
       "Components": [
         {
@@ -55,8 +55,8 @@
       "Category": "Stone",
 
       "Sprites": {
-        "Wall": [ "DirtWall" ],
-        "Floor": [ "DirtFloor" ]
+        "Wall": [ "WallSoil" ],
+        "Floor": [ "FloorSoil" ]
       },
       "Components": [
         {
@@ -77,7 +77,7 @@
       "Category": "Stone",
 
       "Sprites": {
-        "Floor": [ "DirtFloor" ]
+        "Floor": [ "FloorSoil" ]
       },
       "Components": [
         {

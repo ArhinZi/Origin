@@ -196,7 +196,6 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     
     //int n = (main.CellPosition.x * WorldSize.x + main.CellPosition.y) % 4;
     uint sun = Unpack(LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)], 4, 3);
-        
     {
         uint s1 = (main.CellPosition.x + 1) < WorldSize.x ?
         Unpack(LightBuffer[((main.CellPosition.x + 1) * WorldSize.x + (main.CellPosition.y + 0))], 4, 3) : 0;

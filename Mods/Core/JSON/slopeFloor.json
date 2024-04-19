@@ -1,0 +1,64 @@
+{
+    "Sprites": [
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorExRampSoilL",
+            "SourceRect": "0 0 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorExRampSoilB",
+            "SourceRect": "66 0 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorExRampSoilT",
+            "SourceRect": "132 0 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorExRampSoilR",
+            "SourceRect": "198 0 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorInRampSoilL",
+            "SourceRect": "0 66 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorInRampSoilB",
+            "SourceRect": "66 66 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorInRampSoilT",
+            "SourceRect": "132 66 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorInRampSoilR",
+            "SourceRect": "198 66 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorRampSoilBL",
+            "SourceRect": "0 132 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorRampSoilBR",
+            "SourceRect": "66 132 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorRampSoilTL",
+            "SourceRect": "132 132 64 64"
+        },
+        {
+            "TextureName": "slopeFloor",
+            "ID": "FloorRampSoilTR",
+            "SourceRect": "198 132 64 64"
+        }
+    ]
+}

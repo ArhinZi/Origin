@@ -77,6 +77,7 @@ namespace Origin.Source.ECS.Render
         public override void Update(in ulong t)
         {
             // REMOVE
+            bool removeDirty = false;
             var clear = new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile>();
             _site.ArchWorld.Query(in clear, (Entity ent, ref IsTile tile) =>
             {
@@ -92,11 +93,15 @@ namespace Origin.Source.ECS.Render
                     locatorsf.List.Clear();
                 }
                 renderer.HiddenDrawer.ClearHidden(item);
+
+                removeDirty = true;
             });
 
-            renderer.StaticDrawer.RemoveSprites();
+            if (removeDirty)
+                renderer.StaticDrawer.RemoveSprites();
 
             // ADD
+            bool addDirty = false;
             var commands = new CommandBuffer();
             var construction = new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile, ConstructionBase>();
             var fluid = new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile, FluidParticle>();
@@ -108,6 +113,8 @@ namespace Origin.Source.ECS.Render
                     commands.Set(ent, data);
                 else
                     commands.Add(ent, data);
+
+                addDirty = true;
             });
             site.ArchWorld.Query(in fluid, (Entity ent, ref IsTile tile, ref FluidParticle fluid) =>
             {
@@ -116,10 +123,15 @@ namespace Origin.Source.ECS.Render
                     commands.Set(ent, data);
                 else
                     commands.Add(ent, data);
+
+                addDirty = true;
             });
 
-            renderer.StaticDrawer.AddSprites();
-            renderer.HiddenDrawer.Set();
+            if (addDirty)
+            {
+                renderer.StaticDrawer.AddSprites();
+                renderer.HiddenDrawer.Set();
+            }
 
             site.ArchWorld.Remove<SelfRequestUpdateTileRender>(construction);
             site.ArchWorld.Remove<SelfRequestUpdateTileRender>(fluid);
@@ -231,15 +243,35 @@ namespace Origin.Source.ECS.Render
                 if (ent.TryGet(out BaseVegetation hveg) && ent.Has<GrownUpVegetation>())
                 {
                     var veg = GlobalResources.Vegetations[hveg.VegetationMetaID];
-                    List<string> spritesIDs;
-                    if (Resources.Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
-                        sprite = GlobalResources.Sprites[spritesIDs[rand % spritesIDs.Count]];
-                    else if (Resources.Vegetation.VegetationSpritesByConstruction.TryGetValue((veg, constr.ID), out spritesIDs))
-                        sprite = GlobalResources.Sprites[spritesIDs[rand % spritesIDs.Count]];
+                    List<Sprite> spritesIDs = null;
+                    if (bcc.Construction.Type != "Ramp")
+                    {
+                        if (Resources.Vegetation.VegetationSpritesByConstrCategory.TryGetValue((veg, constr.ID), out spritesIDs))
+                            sprite = spritesIDs[rand % spritesIDs.Count];
+                        else if (Resources.Vegetation.VegetationSpritesByConstruction.TryGetValue((veg, constr.ID), out spritesIDs))
+                            sprite = spritesIDs[rand % spritesIDs.Count];
+                    }
+                    else if (ent.TryGet<Construction.ConstructionShape>(out var shape))
+                    {
+                        if (ent.TryGet<ConstructionRotation>(out var rot))
+                        {
+                            if (Resources.Vegetation.VegetationDrawingByConstruction.TryGetValue((veg, constr.ID), out var drawings))
+                            {
+                                if (drawings.Shapes.TryGetValue(shape.Name, out var vs))
+                                {
+                                    sprite = vs.Sprites[rand % vs.Sprites.Count];
+                                    var sprs = sprite.GetSpritesByDir(rot.Direction);
+                                    sprite = sprs[rand % sprs.Count];
+                                }
+                            }
+                        }
+                    }
 
-                    if (spritesIDs != null)
+                    if (sprite != null)
+                    {
                         list.Add(new RenderData(LAYER, tilePos, sprite, Color.White,
-                            new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
+                            new Vector3(0, -GlobalResources.Settings.FloorYoffset + (spritesIDs != null ? -8 : 0), 0)));
+                    }
                 }
             }
 

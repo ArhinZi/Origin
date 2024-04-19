@@ -30,8 +30,8 @@ namespace Origin.Source.ECS.Vegetation
             base.Initialize();
 
             //_site.ArchWorld.Add(query, new BaseVegetation(), new GrownUpVegetation());
-            var commands = new CommandBuffer();
             var query = new QueryDescription().WithAll<ConstructionBase, IsTile>();
+            var commands = new CommandBuffer(_site.ArchWorld.CountEntities(query));
             // TODO find way Why Parallels dont let Game exit completely
             //_site.ArchWorld.ParallelQuery(in query, (Entity ent, ref IsTile tile, ref ConstructionBase bcc) =>
             _site.ArchWorld.Query(in query, (Entity ent, ref IsTile tile, ref ConstructionBase bcc) =>

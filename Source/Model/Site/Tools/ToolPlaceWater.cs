@@ -29,7 +29,7 @@ namespace Origin.Source.Model.Site.Tools
 
         private SpritePositionColor template = new()
         {
-            sprite = GlobalResources.Sprites["DirtWall"],
+            sprite = GlobalResources.Sprites["WallSoil"],
             offset = new Point(0, 0),
             color = Color.Blue
         };

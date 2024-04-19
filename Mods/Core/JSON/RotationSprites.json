@@ -53,6 +53,34 @@
         "T": [ "WallExRampSoilT" ],
         "R": [ "WallExRampSoilR" ]
       }
+    },
+
+    {
+      "ID": "FloorRampGrass",
+      "Rotations": {
+        "BL": [ "FloorRampGrassBL" ],
+        "BR": [ "FloorRampGrassBR" ],
+        "TL": [ "FloorRampGrassTL" ],
+        "TR": [ "FloorRampGrassTR" ]
+      }
+    },
+    {
+      "ID": "FloorInRampGrass",
+      "Rotations": {
+        "L": [ "FloorInRampGrassL" ],
+        "B": [ "FloorInRampGrassB" ],
+        "T": [ "FloorInRampGrassT" ],
+        "R": [ "FloorInRampGrassR" ]
+      }
+    },
+    {
+      "ID": "FloorExRampGrass",
+      "Rotations": {
+        "L": [ "FloorExRampGrassL" ],
+        "B": [ "FloorExRampGrassB" ],
+        "T": [ "FloorExRampGrassT" ],
+        "R": [ "FloorExRampGrassR" ]
+      }
     }
   ]
 }

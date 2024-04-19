@@ -97,19 +97,14 @@ namespace Origin.Source.Render
             for (int z = _drawLowest; z < _drawHighest; z++)
             {
                 InstanceMainEffect.Parameters["CurrentLevel"].SetValue(z);
-                foreach (var key in texture2Ds)
-                {
-                    StaticDrawer.Draw(z);
-                    HiddenDrawer.DrawSides(z);
-                }
+
+                HiddenDrawer.DrawSides(z);
+                StaticDrawer.Draw(z);
             }
             InstanceMainEffect.Parameters["CurrentLevel"].SetValue(_drawHighest);
             // top
-            foreach (var key in texture2Ds)
-            {
-                HiddenDrawer.DrawLayer(_drawHighest);
-                StaticDrawer.Draw(_drawHighest, [(byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackNoLight, (byte)DrawBufferLayer.BackInteractives]);
-            }
+            //HiddenDrawer.DrawLayer(_drawHighest);
+            StaticDrawer.Draw(_drawHighest, [(byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackNoLight, (byte)DrawBufferLayer.BackInteractives]);
         }
     }
 }

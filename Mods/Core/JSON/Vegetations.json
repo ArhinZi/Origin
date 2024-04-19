@@ -7,6 +7,22 @@
           "OnConstructions": [ "SoilWallFloor", "SoilFloor" ],
           "OnConstructionsCategories": [],
           "Sprites": [ "EmbeddedGrassFloor1", "EmbeddedGrassFloor2" ]
+        },
+        {
+          "OnConstructions": [ "SoilRamp" ],
+          "OnConstructionsCategories": [],
+          "Sprites": [],
+          "Shapes": {
+            "Slope": {
+              "Sprites": [ "FloorRampGrass" ]
+            },
+            "CornerIn": {
+              "Sprites": [ "FloorInRampGrass" ]
+            },
+            "CornerOut": {
+              "Sprites": [ "FloorExRampGrass" ]
+            }
+          }
         }
       ]
     }

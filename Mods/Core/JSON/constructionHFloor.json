@@ -1,0 +1,9 @@
+{
+    "Sprites": [
+        {
+            "TextureName": "constructionHFloor",
+            "ID": "FloorSoil",
+            "SourceRect": "0 0 64 64"
+        }
+    ]
+}

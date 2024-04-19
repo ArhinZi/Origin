@@ -1,0 +1,74 @@
+{
+    "Sprites": [
+        {
+            "TextureName": "terrainGrass",
+            "ID": "EmbeddedGrassFloor1",
+            "SourceRect": "0 0 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "EmbeddedGrassFloor2",
+            "SourceRect": "66 0 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorExRampGrassL",
+            "SourceRect": "0 66 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorExRampGrassB",
+            "SourceRect": "66 66 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorExRampGrassT",
+            "SourceRect": "132 66 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorExRampGrassR",
+            "SourceRect": "198 66 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorInRampGrassL",
+            "SourceRect": "0 132 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorInRampGrassB",
+            "SourceRect": "66 132 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorInRampGrassT",
+            "SourceRect": "132 132 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorInRampGrassR",
+            "SourceRect": "198 132 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorRampGrassBL",
+            "SourceRect": "0 198 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorRampGrassBR",
+            "SourceRect": "66 198 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorRampGrassTL",
+            "SourceRect": "132 198 64 64"
+        },
+        {
+            "TextureName": "terrainGrass",
+            "ID": "FloorRampGrassTR",
+            "SourceRect": "198 198 64 64"
+        }
+    ]
+}

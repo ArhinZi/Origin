@@ -1,0 +1,64 @@
+{
+    "Sprites": [
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallExRampSoilL",
+            "SourceRect": "0 0 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallExRampSoilB",
+            "SourceRect": "66 0 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallExRampSoilT",
+            "SourceRect": "132 0 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallExRampSoilR",
+            "SourceRect": "198 0 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallInRampSoilL",
+            "SourceRect": "0 66 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallInRampSoilB",
+            "SourceRect": "66 66 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallInRampSoilT",
+            "SourceRect": "132 66 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallInRampSoilR",
+            "SourceRect": "198 66 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallRampSoilBL",
+            "SourceRect": "0 132 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallRampSoilBR",
+            "SourceRect": "66 132 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallRampSoilTL",
+            "SourceRect": "132 132 64 64"
+        },
+        {
+            "TextureName": "slopeWall",
+            "ID": "WallRampSoilTR",
+            "SourceRect": "198 132 64 64"
+        }
+    ]
+}

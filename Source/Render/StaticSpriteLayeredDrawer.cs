@@ -14,6 +14,7 @@ using System.Linq;
 
 using static Origin.Source.Render.SpriteChunk;
 using static Origin.Source.Resources.Global;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Origin.Source.Render
 {
@@ -241,15 +242,10 @@ namespace Origin.Source.Render
             }
 
             SiteRenderer.InstanceMainEffect.CurrentTechnique = SiteRenderer.InstanceMainEffect.Techniques["SpriteInstancing"];
-            foreach (var tex in texture2Ds)
+
+            drawableSubLayers ??= new List<byte>((IEnumerable<byte>)Enum.GetValues(typeof(DrawBufferLayer)));
+            foreach (var sublayer in drawableSubLayers)
             {
-                SiteRenderer.InstanceMainEffect.Parameters["SpriteTexture"].SetValue(tex);
-                SiteRenderer.InstanceMainEffect.Parameters["TextureSize"].SetValue(new Vector2(tex.Width, tex.Height));
-
-                device.SetVertexBuffer(SiteRenderer.GeometryBuffer);
-                device.DepthStencilState = DepthStencilState.Default;
-                device.BlendState = BlendState.AlphaBlend;
-
                 for (int x = 0; x < chunksCount.X; x++)
                     for (int y = 0; y < chunksCount.Y; y++)
                     {
@@ -259,22 +255,19 @@ namespace Origin.Source.Render
                             var layersBatches = chunk.layersBatches;
                             if (layersBatches != null)
                             {
-                                if (drawableSubLayers != null)
+                                foreach (var item in layersBatches)
                                 {
-                                    foreach (var sublayer in drawableSubLayers)
-                                        if (layersBatches[tex].TryGetValue(sublayer, out SpriteLayer dlayer))
-                                        {
-                                            CheckLayerLight(sublayer);
-                                            SubDraw(sublayer, dlayer);
-                                        }
-                                }
-                                else
-                                {
-                                    foreach (var pair in layersBatches[tex].OrderBy(x => x.Key))
-                                    {
-                                        CheckLayerLight((byte)pair.Key);
-                                        SubDraw((byte)pair.Key, pair.Value);
-                                    }
+                                    if (!item.Value.TryGetValue(sublayer, out var dlayer)) continue;
+                                    var tex = item.Key;
+                                    SiteRenderer.InstanceMainEffect.Parameters["SpriteTexture"].SetValue(tex);
+                                    SiteRenderer.InstanceMainEffect.Parameters["TextureSize"].SetValue(new Vector2(tex.Width, tex.Height));
+
+                                    device.SetVertexBuffer(SiteRenderer.GeometryBuffer);
+                                    device.DepthStencilState = DepthStencilState.Default;
+                                    device.BlendState = BlendState.AlphaBlend;
+
+                                    CheckLayerLight(sublayer);
+                                    SubDraw(sublayer, dlayer);
                                 }
                             }
                         }
