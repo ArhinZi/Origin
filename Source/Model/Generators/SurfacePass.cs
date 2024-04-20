@@ -86,7 +86,7 @@ namespace Origin.Source.Model.Generators
                 ent.Add(new ConstructionBase()
                 {
                     ConstructionID = "StoneWallFloor",
-                    MaterialID = "Granite"
+                    MaterialID = "GRANITE"
                 });
             }
             else if (pos.Z > height - dirtDepth && pos.Z <= height)

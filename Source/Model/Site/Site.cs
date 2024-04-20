@@ -170,6 +170,11 @@ namespace Origin.Source.Model.Site
             {
                 ent.Remove<ConstructionBase>();
 
+                if (ent.Has<IsRamp>()) ent.Remove<IsRamp>();
+                if (ent.Has<ConstructionOver>()) ent.Remove<ConstructionOver>();
+                if (ent.Has<ConstructionRotation>()) ent.Remove<ConstructionRotation>();
+                if (ent.Has<ECS.Construction.ConstructionShape>()) ent.Remove<ECS.Construction.ConstructionShape>();
+
                 ArchWorld.Create(new EventConstructionRemoved()
                 {
                     Position = pos,

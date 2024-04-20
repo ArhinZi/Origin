@@ -28,7 +28,7 @@ namespace Origin.Source.Model.Site.Tools
 
         private SpritePositionColor template = new()
         {
-            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall"),
+            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "WallSoil"),
             offset = new Point(0, 0),
             color = Color.Blue
         };
@@ -52,8 +52,8 @@ namespace Origin.Source.Model.Site.Tools
         {
             Point m = Mouse.GetState().Position;
 
-            Wall = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtWall");
-            Floor = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "DirtFloor");
+            Wall = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "WallSoil");
+            Floor = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "FloorSoil");
 
             if (!Active)
             {

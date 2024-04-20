@@ -62,7 +62,7 @@ namespace Origin.Source.GameStates
             if (SaveGameEntity.Saves.Count > 0)
             {
                 LoadWorld(SaveGameEntity.Saves.First().Value);
-                Global.World = World;
+                //Global.World = World;
                 Global.ActiveCamera = World.ActiveSite.Camera;
             }
             else
@@ -86,6 +86,7 @@ namespace Origin.Source.GameStates
         public void LoadWorld(SaveGameEntity sge)
         {
             World = sge.Load();
+            Global.ActiveCamera = World.ActiveSite.Camera;
         }
 
         public override void Update(GameTime gameTime)

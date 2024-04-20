@@ -34,11 +34,11 @@ namespace Origin.Source.Save
                     var Name = ini.Read("SaveName", "General");
 
                     var LastSaveTime = DateTime.Parse(ini.Read("Time", "General"));
-                    Texture2D Texture;
-                    using (FileStream stream = new(Path.Combine(dir, "ico.png"), FileMode.Open))
-                    {
-                        Texture = Texture2D.FromStream(Global.GraphicsDevice, stream);
-                    }
+                    Texture2D Texture = new Texture2D(Global.GraphicsDevice, 128, 128);
+                    //using (FileStream stream = new(Path.Combine(dir, "ico.png"), FileMode.Open))
+                    //{
+                    //    Texture = Texture2D.FromStream(Global.GraphicsDevice, stream);
+                    //}
 
                     save.LastSaveTime = LastSaveTime;
                     save.Texture = Texture;
@@ -178,6 +178,8 @@ namespace Origin.Source.Save
                 var dump = (SaveSiteDump)MessagePackSerializer.Deserialize(typeof(SaveSiteDump), bd);
                 sites.Add(new Site(world, dump, arch));
             }
+            Global.World = world;
+
             world.PostInitialize(true);
             world.TimeManager.Ticks = ulong.Parse(ticks);
             return world;

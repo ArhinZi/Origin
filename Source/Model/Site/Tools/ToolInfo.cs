@@ -82,7 +82,7 @@ namespace Origin.Source.Model.Site.Tools
         {
             if (!Active) return;
 
-            if (Controller.Site.Map.TryGet(selected, out Entity ent))
+            if (Controller.Site.Map.TryGet(selected, out Entity ent) && ent != Entity.Null)
             {
                 var a = ent.GetArchetype();
                 var types = a.Types;

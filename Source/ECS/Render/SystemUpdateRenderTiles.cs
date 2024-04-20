@@ -74,6 +74,12 @@ namespace Origin.Source.ECS.Render
             renderer.HiddenDrawer.Set();
         }
 
+        public override void LoadInit()
+        {
+            base.LoadInit();
+            Initialize();
+        }
+
         public override void Update(in ulong t)
         {
             // REMOVE
@@ -133,8 +139,8 @@ namespace Origin.Source.ECS.Render
                 renderer.HiddenDrawer.Set();
             }
 
-            site.ArchWorld.Remove<SelfRequestUpdateTileRender>(construction);
-            site.ArchWorld.Remove<SelfRequestUpdateTileRender>(fluid);
+            site.ArchWorld.Remove<SelfRequestUpdateTileRender>(new QueryDescription().WithAll<SelfRequestUpdateTileRender, IsTile>());
+            //site.ArchWorld.Remove<SelfRequestUpdateTileRender>(fluid);
             commands.Playback(site.ArchWorld);
         }
 

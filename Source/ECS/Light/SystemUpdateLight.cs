@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 namespace Origin.Source.ECS.Light
 {
+    // TODO fix light recast after block placed
     internal class SystemUpdateLight : TickSystem
     {
         public SystemUpdateLight(Site site) : base(site)
@@ -83,13 +84,20 @@ namespace Origin.Source.ECS.Light
 
                 if (recastPlan[pos.Z] == null)
                     recastPlan[pos.Z] = [];
+                if (recastPlan[pos.Z - 1] == null)
+                    recastPlan[pos.Z - 1] = [];
 
                 foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
                 {
                     var pos2 = pos + n;
                     if (pos2.InBounds(Point3.Zero, _site.Size))
                     {
-                        recastPlan[pos.Z].Add(pos2);
+                        recastPlan[pos2.Z].Add(pos2);
+                    }
+                    pos2 = pos + n + Point3.Down;
+                    if (pos2.InBounds(Point3.Zero, _site.Size))
+                    {
+                        recastPlan[pos2.Z].Add(pos2);
                     }
                 }
                 recastDirty = true;
@@ -113,7 +121,7 @@ namespace Origin.Source.ECS.Light
                     var pos2 = pos + n + Point3.Up;
                     if (pos2.InBounds(Point3.Zero, _site.Size))
                     {
-                        recastPlan[pos.Z + 1].Add(pos2);
+                        recastPlan[pos2.Z].Add(pos2);
                     }
                 }
                 recastDirty = true;
@@ -164,10 +172,10 @@ namespace Origin.Source.ECS.Light
                     {
                         var npos = pos + Point3.Down;
                         ref PackedLight npl = ref _site.LightControl.GetTile(npos);
-                        if (init)
+                        //if (init)
                         {
                             Entity ent = _site.Map[npos];
-                            if (ent.TryGet<ConstructionBase>(out var bcc) && bcc.Construction.Type != "Ramp")
+                            if (ent != Entity.Null && ent.Has<ConstructionBase>() && !ent.Has<IsRamp>())
                             {
                                 npl.IsLightBlocker = true;
                             }
