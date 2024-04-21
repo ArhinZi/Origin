@@ -32,6 +32,7 @@ namespace Origin.Source.Resources
         public static MarkedList<Construction> Constructions = [];
         public static MarkedList<Vegetation> Vegetations = [];
 
+        public static List<HalfWallDef> HalfWallDefs = [];
         public static Settings Settings = new();
 
         private static ConcurrentDictionary<string, int> spritesMetaIDs = new();
@@ -92,7 +93,9 @@ namespace Origin.Source.Resources
 
             settings.Converters.Clear();
             settings.Converters.Add(new PointConverter());
+            settings.Converters.Add(new Point3Converter());
             settings.Converters.Add(new ColorConverter());
+            settings.Converters.Add(new ResourceTexture2DConverter());
             settings.Converters.Add(new ResourceSpriteConverter());
             Materials = new MarkedList<Material>(JsonConvert.DeserializeObject<List<Material>>(tok["Materials"].ToString(), settings));
             Items = JsonConvert.DeserializeObject<List<Item>>(tok["Items"].ToString(), settings);
@@ -100,6 +103,7 @@ namespace Origin.Source.Resources
             Vegetations = new MarkedList<Vegetation>(JsonConvert.DeserializeObject<List<Vegetation>>(tok["Vegetations"].ToString(), settings));
             TexturesInfo = JsonConvert.DeserializeObject<List<TextureInfo>>(tok["Textures"].ToString(), settings);
 
+            HalfWallDefs = JsonConvert.DeserializeObject<List<HalfWallDef>>(tok["HalfWallDefs"].ToString(), settings);
             Settings = JsonConvert.DeserializeObject<Settings>(tok["Settings"].ToString(), settings);
 
             HIDDEN_WALL_SPRITE = Sprites[Settings.HiddenWallSprite];

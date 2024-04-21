@@ -30,6 +30,8 @@ namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
     {
         private Site site;
 
+        public bool HalfWallMode;
+
         public SiteRenderer SiteRenderer { get; private set; }
 
         public SiteDrawComponent(Site site)

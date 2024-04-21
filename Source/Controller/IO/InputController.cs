@@ -47,9 +47,9 @@ namespace Origin.Source.Controller.IO
             var io = ImGui.GetIO();
             if (io.WantCaptureMouse) return;
 
-            if (InputManager.JustPressed("game.halfwallswitch"))
+            if (ImGui.IsKeyPressed(ImGuiKey.F))
             {
-                //EventBus.Send(new HalfWallModeChanged());
+                ActiveSite.DrawComponent.HalfWallMode = !ActiveSite.DrawComponent.HalfWallMode;
             }
 
             Camera2D activeCamera = Global.ActiveCamera;

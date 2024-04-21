@@ -159,7 +159,7 @@ namespace Origin.Source.Render
                     spriteChunks[0, 0, z].AddScheduled();
         }
 
-        public void Draw(int layer, List<byte> drawableSubLayers = null)
+        public void Draw(int layer, List<byte> drawableSubLayers = null, bool HalfWall = false)
         {
             void CheckLayerLight(byte sublayer)
             {
@@ -259,6 +259,22 @@ namespace Origin.Source.Render
                                 {
                                     if (!item.Value.TryGetValue(sublayer, out var dlayer)) continue;
                                     var tex = item.Key;
+                                    var offset = new Vector3(0, 0, 0);
+                                    if (HalfWall)
+                                    {
+                                        //bool found = false;
+                                        foreach (var hwt in GlobalResources.HalfWallDefs)
+                                        {
+                                            if (hwt.Original == tex)
+                                            {
+                                                //found = true;
+                                                tex = hwt.HalfWall;
+                                                offset = hwt.TexOffset.ToVector3();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset);
                                     SiteRenderer.InstanceMainEffect.Parameters["SpriteTexture"].SetValue(tex);
                                     SiteRenderer.InstanceMainEffect.Parameters["TextureSize"].SetValue(new Vector2(tex.Width, tex.Height));
 

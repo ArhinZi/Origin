@@ -189,7 +189,7 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
     //endtest*/
 	//calculate position with camera
     
-    float4 pos = float4(main.SpritePosition.xy + vertPos, main.SpritePosition.z, 1);
+    float4 pos = float4(main.SpritePosition.xy + vertPos, main.SpritePosition.z, 1) + float4(PositionOffset, 0);
     //float4 pos = float4(spritePos.xy + vertPos, spritePos.z, 1);
     pos = mul(pos, WorldViewProjection);
     

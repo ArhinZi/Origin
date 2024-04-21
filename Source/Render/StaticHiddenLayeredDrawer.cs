@@ -121,11 +121,20 @@ namespace Origin.Source.Render
             device.BlendState = BlendState.AlphaBlend;
         }
 
-        public void DrawLayer(int layer)
+        public void DrawLayer(int layer, bool HalfWall = false)
         {
             DrawBasic(layer);
 
-            SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
+            if (HalfWall)
+            {
+                SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(new Vector3(0, 25, 0));
+                SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_FLOOR_SPRITE.RectPos.Location.ToVector2());
+            }
+            else
+            {
+                SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_WALL_SPRITE.RectPos.Location.ToVector2());
+            }
+
             SiteRenderer.InstanceMainEffect.Parameters["HiddenLBuffer"].SetValue(bufferLayers[layer]);
             SiteRenderer.InstanceMainEffect.CurrentTechnique = SiteRenderer.InstanceMainEffect.Techniques["HiddenLInstancing"];
 
@@ -145,7 +154,7 @@ namespace Origin.Source.Render
             SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);
 
-            SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(new Vector3(0, -4, 0));
+            SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(new Vector3(0, -7, 0));
             SiteRenderer.InstanceMainEffect.Parameters["HiddenSpriteTexturePos"].SetValue(GlobalResources.HIDDEN_FLOOR_SPRITE.RectPos.Location.ToVector2());
             SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);

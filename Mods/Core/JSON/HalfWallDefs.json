@@ -1,0 +1,9 @@
+{
+  "HalfWallDefs": [
+    {
+      "Original": "constructionHWall",
+      "HalfWall": "constructionHFloor",
+      "TexOffset": "0 25 0"
+    }
+  ]
+}
