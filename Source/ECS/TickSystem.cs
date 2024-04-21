@@ -1,6 +1,8 @@
 ﻿using Arch.Core;
 using Arch.System;
 
+using Microsoft.Xna.Framework;
+
 using Origin.Source.Model.Site;
 
 namespace Origin.Source.ECS
@@ -17,6 +19,10 @@ namespace Origin.Source.ECS
         }
 
         public virtual void LoadInit()
+        {
+        }
+
+        public virtual void Draw(GameTime gameTime)
         {
         }
     }

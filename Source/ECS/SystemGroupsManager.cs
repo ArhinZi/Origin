@@ -47,5 +47,13 @@ namespace Origin.Source.ECS
                 system.AfterUpdate(WorldTimeManager.Ticks);
             }
         }
+
+        public void Draw(GameTime gameTime)
+        {
+            foreach (var system in Systems)
+            {
+                system.Draw(gameTime);
+            }
+        }
     }
 }

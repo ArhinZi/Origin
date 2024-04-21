@@ -104,11 +104,18 @@ namespace Origin.Source.Model.Site
             ArchWorld = arch;
             Map = new SiteTileContainer(Size);
 
-            Camera = new Camera2D();
-            Camera.Position += new Vector2(0,
-                -(CurrentLevel * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset)
-                    - GlobalResources.Settings.TileSize.Y * (Size.X / 2)
-                 ));
+            if (dump.Camera != null)
+            {
+                Camera = dump.Camera;
+            }
+            else
+            {
+                Camera = new Camera2D();
+                Camera.Position += new Vector2(0,
+                    -(CurrentLevel * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset)
+                        - GlobalResources.Settings.TileSize.Y * (Size.X / 2)
+                     ));
+            }
 
             MapGenerator = new SiteGeneratorService(this, Size);
             var query = new QueryDescription().WithAll<IsTile>();
@@ -136,7 +143,7 @@ namespace Origin.Source.Model.Site
             SaveSiteDump ssd = new SaveSiteDump()
             {
                 ID = ID,
-                //Camera = Camera,
+                Camera = Camera,
                 CurrentLevel = CurrentLevel,
                 Size = Size
             };

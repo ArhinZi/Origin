@@ -150,6 +150,7 @@ namespace Origin.Source.Model
 
         public void Draw(GameTime gameTime)
         {
+            TimeManager.Draw(gameTime);
             ActiveSite.Draw(gameTime);
             //Renderer.Draw(gameTime);
         }

@@ -69,6 +69,11 @@ namespace Origin.Source.Model
             TickTricky(counter);
         }
 
+        public void Draw(GameTime gameTime)
+        {
+            SystemsManager.Draw(gameTime);
+        }
+
         private void BeforeTickSimple()
         {
             foreach (var item in World.Sites)

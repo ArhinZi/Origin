@@ -1,5 +1,7 @@
 ﻿using Arch.Bus;
 
+using MessagePack;
+
 using Microsoft.Xna.Framework;
 
 using Origin.Source.Events;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 
 namespace Origin.Source.Model.Site
 {
+    [MessagePackObject(true)]
     public class Camera2D
     {
         private float _zoom = 1f;
@@ -17,8 +20,8 @@ namespace Origin.Source.Model.Site
         private Vector2 _position;
         private Matrix _projection;
         private Matrix _transformation;
-        private float _localMinZoom;
-        private float _localMaxZoom;
+        private readonly float _localMinZoom;
+        private readonly float _localMaxZoom;
 
         #region Set Get
 

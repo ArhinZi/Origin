@@ -45,15 +45,7 @@ namespace Origin.Source.ECS.Vegetation
                         commands.Remove<GrownUpVegetation>(ent);
 
                         // Update nearest tiles
-                        foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
-                        {
-                            var pos2 = pos + item;
-                            if ((_site.Map.TryGet(pos2, out Entity nent) && nent != Entity.Null && nent.Has<BaseVegetation>()))
-                            {
-                                ref BaseVegetation nvbc = ref nent.Get<BaseVegetation>();
-                                nvbc.VegetationNeighbours--;
-                            }
-                        }
+                        VegUtilities.UpdateNeighboursOf(_site, pos, -1);
                     }
                     if (!ent.Has<SelfRequestUpdateTileRender>())
                         commands.Add<SelfRequestUpdateTileRender>(ent);
@@ -70,16 +62,7 @@ namespace Origin.Source.ECS.Vegetation
                     ment.Has<ConstructionBase>() && !ment.Has<BaseVegetation>())
                 {
                     // Increase Veg power from nearest tiles
-                    short count = 0;
-                    foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
-                    {
-                        var pos2 = pos + item + new Utils.Point3(0, 0, -1);
-                        if ((_site.Map.TryGet(pos2, out Entity mnent) && mnent != Entity.Null && mnent.Has<GrownUpVegetation>()) ||
-                                    !pos.InBounds(new Utils.Point3(0, 0, 0), _site.Size, true, false))
-                        {
-                            count++;
-                        }
-                    }
+                    short count = VegUtilities.GetNeighboursFor(_site, pos);
                     commands.Add(ment, new BaseVegetation() { VegetationNeighbours = count });
                 }
             });

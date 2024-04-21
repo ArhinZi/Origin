@@ -80,7 +80,7 @@ namespace Origin.Source.ECS.Render
             Initialize();
         }
 
-        public override void Update(in ulong t)
+        public override void Draw(GameTime gameTime)
         {
             // REMOVE
             bool removeDirty = false;
