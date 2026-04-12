@@ -3,7 +3,7 @@ using Arch.Core;
 using Arch.Core.Extensions;
 
 using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;

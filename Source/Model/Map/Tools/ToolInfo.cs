@@ -6,8 +6,7 @@ using ImGuiNET;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
-using Origin.Source.Model.Site.Light;
+using Origin.Source.Model.Map.Light;
 using Origin.Source.Resources;
 
 using System;
@@ -15,7 +14,7 @@ using System.Reflection;
 
 using Utf8Json;
 
-namespace Origin.Source.Model.Site.Tools
+namespace Origin.Source.Model.Map.Tools
 {
     public class ToolInfo : Tool
     {

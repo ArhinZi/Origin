@@ -1,7 +1,7 @@
 ﻿using Arch.Core;
 
 using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 
 namespace Origin.Source.ECS.BaseSystems
 {

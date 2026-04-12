@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
 using Origin.Source.Controller.IO;
 using Origin.Source.Resources;
 
 using System;
 
-namespace Origin.Source.Model.Site.Tools
+namespace Origin.Source.Model.Map.Tools
 {
     public class ToolDig : Tool
     {

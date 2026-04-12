@@ -107,7 +107,7 @@ namespace Origin.Source
 
             // Load Resources
             ResourceLoader.LoadResources();
-            SaveGameEntity.ReadAllSaves();
+            //SaveGameEntity.ReadAllSaves();
 
             GuiRenderer.RebuildFontAtlas();
             //LoadMenuMainScreen();

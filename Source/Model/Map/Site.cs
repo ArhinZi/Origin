@@ -4,15 +4,14 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
-
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Render;
 using Origin.Source.Model.Generators;
-using Origin.Source.Model.Site.Light;
-using Origin.Source.Model.Site.Tools;
-using Origin.Source.Pathfind;
-using Origin.Source.Render.GpuAcceleratedSpriteSystem;
+using Origin.Source.Model.Map.Light;
+using Origin.Source.Model.Map.Tools;
+using Origin.Source.Model.Pathfind;
+using Origin.Source.Render;
 using Origin.Source.Resources;
 using Origin.Source.Save;
 using Origin.Source.Utils;
@@ -20,7 +19,7 @@ using Origin.Source.Utils;
 using System;
 using System.Diagnostics;
 
-namespace Origin.Source.Model.Site
+namespace Origin.Source.Model.Map
 {
     public class Site : IDisposable, ITickKeeper
     {

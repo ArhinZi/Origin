@@ -18,13 +18,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 using static Origin.Source.Resources.Global;
-using Origin.Source.Model.Site;
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Vegetation.Components;
 using Origin.Source.ECS.Fluid;
 using Origin.Source.ECS.Render;
+using Origin.Source.Model.Map;
 
-namespace Origin.Source.Render.GpuAcceleratedSpriteSystem
+namespace Origin.Source.Render
 {
     public class SiteDrawComponent
     {

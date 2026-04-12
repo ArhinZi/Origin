@@ -7,7 +7,7 @@ using CommunityToolkit.HighPerformance;
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Render;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Utils;
 
 using System;
@@ -48,7 +48,7 @@ namespace Origin.Source.ECS.Fluid
                 bool step1 = false;
                 var posDown = pos + Point3.Down;
                 bool waterDown = false;
-                if (fluid.Volume > 0 && _site.Map.TryGet(posDown, out Entity entDown))
+                if (fluid.Volume > 0 && _site.Map.TryGet(posDown, out Entity entDown) && entDown != Entity.Null)
                 {
                     Debug.Assert(entDown != Entity.Null);
 

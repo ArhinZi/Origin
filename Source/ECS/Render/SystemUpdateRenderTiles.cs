@@ -8,7 +8,7 @@ using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Fluid;
 using Origin.Source.ECS.Vegetation.Components;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Render;
 using Origin.Source.Resources;
 
@@ -303,7 +303,7 @@ namespace Origin.Source.ECS.Render
                 Color col = Color.Blue;
                 col.A = (byte)(255 - Math.Pow((FluidParticle.MaxVolume - fluid.Volume), 1.2));
                 list.Add(new RenderData(LAYER, tilePos, sprite, col,
-                                new Vector3(0, (FluidParticle.MaxVolume - fluid.Volume) / 2, zoff)));
+                                new Vector3(0, ((FluidParticle.MaxVolume - fluid.Volume)/2), zoff)));
 
                 //sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID",
                 //                "SolidWall");

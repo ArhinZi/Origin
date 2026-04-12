@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<RollForward>Major</RollForward>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
@@ -88,15 +88,11 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="Arch.Extended\Arch.LowLevel\Arch.LowLevel.csproj" />
-	  <ProjectReference Include="Arch\src\Arch.SourceGen\Arch.SourceGen.csproj" />
 	  <ProjectReference Include="Arch\src\Arch\Arch.csproj" />
 	  <ProjectReference Include="Monogame.ImGuiNET\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj" />
 	  <ProjectReference Include="Roy-T.AStar\Roy-T.AStar.csproj" />
-	  <ProjectReference Include="Arch.Extended\Arch.AOT.SourceGenerator\Arch.AOT.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	  <ProjectReference Include="Arch.Extended\Arch.EventBus\Arch.EventBus.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-	  <ProjectReference Include="Arch.Extended\Arch.Relationships\Arch.Relationships.csproj" />
 	  <ProjectReference Include="Arch.Extended\Arch.Persistence\Arch.Persistence.csproj" />
-	  <ProjectReference Include="Arch.Extended\Arch.System.SourceGenerator\Arch.System.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	  <ProjectReference Include="Arch.Extended\Arch.System\Arch.System.csproj" />
 	</ItemGroup>
 	<ItemGroup>

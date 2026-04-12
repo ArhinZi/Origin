@@ -3,19 +3,17 @@ using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-
 using Origin.Source.Controller.IO;
-using Origin.Source.ECS.Fluid;
-using Origin.Source.ECS.Render;
+using Origin.Source.ECS.Construction;
 using Origin.Source.Resources;
 
 using System;
 
 using static Origin.Source.Resources.Global;
 
-namespace Origin.Source.Model.Site.Tools
+namespace Origin.Source.Model.Map.Tools
 {
-    public class ToolPlaceWater : Tool
+    public class ToolPlaceDirt : Tool
     {
         private Point3 prevPos;
         private Point3 startPos;
@@ -29,15 +27,15 @@ namespace Origin.Source.Model.Site.Tools
 
         private SpritePositionColor template = new()
         {
-            sprite = GlobalResources.Sprites["WallSoil"],
+            sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "WallSoil"),
             offset = new Point(0, 0),
             color = Color.Blue
         };
 
-        public ToolPlaceWater(SiteToolsComponent controller) :
+        public ToolPlaceDirt(SiteToolsComponent controller) :
             base(controller)
         {
-            Name = "ToolPlaceWater";
+            Name = "ToolPlaceDirt";
             sprites = [];
             RenderLayer = DrawBufferLayer.FrontInteractives;
         }
@@ -53,40 +51,25 @@ namespace Origin.Source.Model.Site.Tools
         {
             Point m = Mouse.GetState().Position;
 
-            Wall = GlobalResources.Sprites["SolidWall"];
+            Wall = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "WallSoil");
+            Floor = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "FloorSoil");
 
             if (!Active)
             {
-                Position = MouseScreenToMap(Camera, m, Controller.Site.CurrentLevel - 2, Controller.Site, true, true);
+                Position = MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site, true);
                 if (Position != Point3.Null)
                 {
                     if (InputManager.JustPressed("mouse.left"))
                     {
-                        if (Controller.Site.Map.TryGet(Position, out Entity ent) && ent != Entity.Null)
-                        {
-                            if (ent.TryGet(out FluidParticle fluid))
-                            {
-                                fluid.Volume = 64;
-                                if (ent.Has<IsFluidStatic>())
-                                    ent.Remove<IsFluidStatic>();
-                            }
-                            else
-                            {
-                                ent.Add<FluidParticle>(new FluidParticle()
-                                {
-                                    Type = FluidType.WATER,
-                                    Volume = 64
-                                });
-                            }
-                            if (!ent.Has<SelfRequestUpdateTileRender>())
-                            {
-                                ent.Add<SelfRequestUpdateTileRender>();
-                            }
-                        }
+                        Active = true;
+                        startPos = Position;
+
+                        currentLevel = startPos.Z;
+                        CurrSiteLevel = Controller.Site.CurrentLevel;
                     }
                 }
             }
-            /*else if (Active)
+            else if (Active)
             {
                 if (CurrSiteLevel != Controller.Site.CurrentLevel)
                 {
@@ -138,7 +121,7 @@ namespace Origin.Source.Model.Site.Tools
                         DrawDirty = true;
                         sprites.Clear();
                         Construction construction = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", "SoilWallFloor");
-                        Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "Dirt");
+                        Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "DIRT");
                         for (int z = start.Z; z <= end.Z; z++)
                         {
                             for (int x = start.X; x <= end.X; x++)
@@ -160,7 +143,7 @@ namespace Origin.Source.Model.Site.Tools
                         Reset();
                     }
                 }
-            }*/
+            }
             if (Position != Point3.Null && (DrawDirty || !Active))
             {
                 if (!DrawDirty)
@@ -175,11 +158,18 @@ namespace Origin.Source.Model.Site.Tools
                     offset = new Point(0, 0),
                     position = Position
                 });
+                sprites.Add(new SpritePositionColor()
+                {
+                    sprite = Floor,
+                    color = Color.White * 0.5f,
+                    offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
+                    position = Position
+                });
                 for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)
                 {
                     sprites.Add(new SpritePositionColor()
                     {
-                        sprite = GlobalResources.Sprites["SelectionWall"],
+                        sprite = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "SelectionWall"),
                         color = new Color(25, 25, 25, 200),
                         position = new Point3(Position.X, Position.Y, i)
                     });
@@ -190,6 +180,54 @@ namespace Origin.Source.Model.Site.Tools
                 sprites.Clear();
                 DrawDirty = true;
             }
+        }
+
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
+                bool onFloor = false,
+                bool clip = false)
+        {
+            Vector3 worldPos = GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
+            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
+                (onFloor ? GlobalResources.Settings.FloorYoffset : 0)
+                , 0);
+
+            var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
+            var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
+
+            Point3 cellPos = new()
+            {
+                X = (int)Math.Round(cellPosX + cellPosY),
+                Y = (int)Math.Round(cellPosY - cellPosX),
+                Z = level
+            };
+            if (clip && (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size)))
+                return Point3.Null;
+            return cellPos;
+        }
+
+        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site,
+            bool onFloor = false)
+        {
+            int tlevel = level;
+            for (int i = 0; i < ONE_MOMENT_DRAW_LEVELS; i++)
+            {
+                Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, site, onFloor);
+
+                Entity tmp;
+                if (pos.InBounds(Point3.Zero, site.Size) &&
+                    site.Map.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<ConstructionBase>() &&
+                    site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<ConstructionBase>())
+                    return pos;
+                else if (site.Map.TryGet(pos, out tmp) && tmp == Entity.Null)
+                    return Point3.Null;
+                else
+                {
+                    tlevel--;
+                    continue;
+                }
+            }
+
+            return Point3.Null;
         }
     }
 }

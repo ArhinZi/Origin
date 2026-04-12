@@ -6,6 +6,7 @@ using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Render;
 using Origin.Source.ECS.Vegetation;
+using Origin.Source.Model.Map;
 using Origin.Source.Save;
 
 using System;
@@ -19,7 +20,7 @@ namespace Origin.Source.Model
 
         private SaveGameEntity sge = null;
 
-        public static void Load(World world, string name, int seed, SaveGameEntity sge, List<Site.Site> sites)
+        public static void Load(World world, string name, int seed, SaveGameEntity sge, List<Map.Site> sites)
         {
             world.Name = name;
             world.sge = sge;
@@ -31,8 +32,8 @@ namespace Origin.Source.Model
         public int Seed { get; private set; } = 1234;
         public Random Random { get; private set; }
 
-        public Site.Site ActiveSite { get; private set; }
-        public List<Site.Site> Sites { get; private set; } = [];
+        public Map.Site ActiveSite { get; private set; }
+        public List<Map.Site> Sites { get; private set; } = [];
 
         public World()
         {
@@ -48,7 +49,7 @@ namespace Origin.Source.Model
                 sge = new SaveGameEntity(this.Name);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site.Site(this, new Point3(256, 256, 128), Sites.Count);
+            ActiveSite = new Site(this, new Point3(64, 64, 128), Sites.Count);
             Sites.Add(ActiveSite);
         }
 

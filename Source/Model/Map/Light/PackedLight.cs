@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Origin.Source.Model.Site.Light
+namespace Origin.Source.Model.Map.Light
 {
     [StructLayout(LayoutKind.Explicit)]
     public struct PackedLight

@@ -7,7 +7,7 @@ using MonoGame.Extended;
 
 using Origin.Source.GameStates;
 using Origin.Source.Model;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Resources;
 
 namespace Origin.Source.Controller.IO

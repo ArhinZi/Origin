@@ -1,6 +1,5 @@
 ﻿using MessagePack;
-
-using Origin.Source.Model.Site.Light;
+using Origin.Source.Model.Map.Light;
 
 namespace Origin.Source.ECS.BaseComponents
 {

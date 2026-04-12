@@ -1,6 +1,5 @@
 ﻿using MessagePack;
-
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 
 namespace Origin.Source.Save
 {

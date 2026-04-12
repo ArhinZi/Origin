@@ -4,17 +4,15 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
-
 using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Pathfinding;
+using Origin.Source.Model.Map;
 using Origin.Source.Model.Pathfind.NewPathfind;
-using Origin.Source.Model.Site;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Origin.Source.Pathfind
+namespace Origin.Source.Model.Pathfind
 {
     public class SitePathfindingComponent : IUpdate
     {

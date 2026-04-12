@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 

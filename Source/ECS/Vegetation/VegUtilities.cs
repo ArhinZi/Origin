@@ -4,7 +4,6 @@ using Arch.Buffer;
 using Arch.Core.Extensions;
 
 using Origin.Source.ECS.Vegetation.Components;
-using Origin.Source.Model.Site;
 using Origin.Source.Utils;
 
 using System;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Origin.Source.Model.Map;
 
 namespace Origin.Source.ECS.Vegetation
 {

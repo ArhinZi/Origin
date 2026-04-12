@@ -8,8 +8,8 @@ using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
 using Origin.Source.ECS.Render;
 using Origin.Source.ECS.Vegetation.Components;
-using Origin.Source.Model.Site;
-using Origin.Source.Model.Site.Light;
+using Origin.Source.Model.Map;
+using Origin.Source.Model.Map.Light;
 using Origin.Source.Utils;
 
 using Schedulers;

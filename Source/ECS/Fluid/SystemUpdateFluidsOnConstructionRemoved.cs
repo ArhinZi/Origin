@@ -1,15 +1,13 @@
 ﻿using Arch.Buffer;
 using Arch.Core;
 using Arch.Core.Extensions;
-
 using Origin.Source.ECS.Construction;
-using Origin.Source.ECS.Fluid;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
 
-namespace Origin.Source.ECS.Vegetation
+namespace Origin.Source.ECS.Fluid
 {
     internal class SystemUpdateFluidsOnConstructionRemoved : TickSystem
     {

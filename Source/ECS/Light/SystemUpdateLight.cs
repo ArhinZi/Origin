@@ -3,8 +3,8 @@ using Arch.Core;
 using Arch.Core.Extensions;
 
 using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Site;
-using Origin.Source.Model.Site.Light;
+using Origin.Source.Model.Map;
+using Origin.Source.Model.Map.Light;
 using Origin.Source.Utils;
 
 using System.Collections.Generic;
@@ -204,7 +204,7 @@ namespace Origin.Source.ECS.Light
                                             _site.LightControl.TryGetTile(nnpos, out PackedLight nnpl) &&
                                             !nnpl.IsLightBlocker)
                                         {
-                                            sl += tnpl.SunLighted / 2;
+                                            sl += tnpl.SunLighted / 2f;
                                         }
                                     }
                                     if (sl >= 7) break;

@@ -2,8 +2,7 @@
 using Arch.System;
 
 using Microsoft.Xna.Framework;
-
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 
 namespace Origin.Source.ECS
 {

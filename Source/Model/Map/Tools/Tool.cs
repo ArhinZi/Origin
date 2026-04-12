@@ -2,14 +2,14 @@
 using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
-
 using Origin.Source.ECS.Construction;
+using Origin.Source.Model.Map;
 using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.Model.Site.Tools
+namespace Origin.Source.Model.Map.Tools
 {
     public abstract class Tool : MonoGame.Extended.IUpdate
     {

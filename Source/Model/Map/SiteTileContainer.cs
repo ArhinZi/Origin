@@ -1,8 +1,7 @@
 ﻿using Arch.Core;
-
 using System.Collections.Generic;
 
-namespace Origin.Source.Model.Site
+namespace Origin.Source.Model.Map
 {
     public class SiteTileContainer
     {

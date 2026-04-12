@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using Origin.Source.Events;
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -274,7 +274,12 @@ namespace Origin.Source.Render
                                             }
                                         }
                                     }
-                                    SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset);
+                                    //if(sublayer == (int)DrawBufferLayer.Water)
+                                    //{
+                                    //    SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset+new Vector3(0,0, 0.01f));
+                                    //} 
+                                    //else
+                                        SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset);
                                     SiteRenderer.InstanceMainEffect.Parameters["SpriteTexture"].SetValue(tex);
                                     SiteRenderer.InstanceMainEffect.Parameters["TextureSize"].SetValue(new Vector2(tex.Width, tex.Height));
 

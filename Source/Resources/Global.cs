@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
-using Origin.Source.Model.Site;
+using Origin.Source.Model.Map;
 
 using System;
 using System.IO;
@@ -84,7 +83,7 @@ namespace Origin.Source.Resources
         /// </summary>
         public static readonly float Z_LEVEL_OFFSET = 0.01f;
 
-        public static readonly Point BASE_CHUNK_SIZE = new(512, 512);
+        public static readonly Point BASE_CHUNK_SIZE = new(64, 64);
         public static readonly int ONE_MOMENT_DRAW_LEVELS = 32;
 
         //public static int GPU_LAYER_PACK_COUNT = 65536;

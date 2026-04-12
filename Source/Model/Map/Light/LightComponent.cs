@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-
 using Origin.Source.Resources;
 
 using System.Collections.Generic;
 
-namespace Origin.Source.Model.Site.Light
+namespace Origin.Source.Model.Map.Light
 {
     public class LightComponent
     {

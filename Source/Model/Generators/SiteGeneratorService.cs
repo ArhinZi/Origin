@@ -18,12 +18,12 @@ namespace Origin.Source.Model.Generators
     {
         private List<AbstractPass> passes;
 
-        private Site.Site _site;
+        private Map.Site _site;
         private int _seed = 553;
 
         public Point3 Size { get; private set; }
 
-        public SiteGeneratorService(Site.Site site, Point3 size)
+        public SiteGeneratorService(Map.Site site, Point3 size)
         {
             _site = site;
             Size = size;

@@ -3,13 +3,12 @@
 using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
-
 using Origin.Source.Resources;
 
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Origin.Source.Model.Site.Tools
+namespace Origin.Source.Model.Map.Tools
 {
     public class SiteToolsComponent : IUpdate
     {

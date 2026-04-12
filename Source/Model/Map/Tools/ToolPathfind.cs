@@ -1,7 +1,6 @@
 ﻿using Arch.Core.Extensions;
 
 using Microsoft.Xna.Framework;
-
 using Origin.Source.Controller.IO;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.Model.Pathfind.NewPathfind;
@@ -10,7 +9,7 @@ using Origin.Source.Utils;
 
 using static Origin.Source.Resources.Global;
 
-namespace Origin.Source.Model.Site.Tools
+namespace Origin.Source.Model.Map.Tools
 {
     public class ToolPathfind : Tool
     {

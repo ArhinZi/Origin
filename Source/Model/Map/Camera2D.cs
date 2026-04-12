@@ -3,14 +3,13 @@
 using MessagePack;
 
 using Microsoft.Xna.Framework;
-
 using Origin.Source.Events;
 using Origin.Source.Resources;
 
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.Model.Site
+namespace Origin.Source.Model.Map
 {
     [MessagePackObject(true)]
     public class Camera2D
