@@ -91,6 +91,7 @@ namespace Origin.Source.Render
             InstanceMainEffect.Parameters["WorldViewProjection"].SetValue(WVP);
             InstanceMainEffect.Parameters["LowHighLevel"].SetValue(new Vector2(_drawLowest, _drawHighest));
             InstanceMainEffect.Parameters["WorldSize"].SetValue(new Vector2(site.Size.X, site.Size.Y));
+            InstanceMainEffect.Parameters["WorldRotation"].SetValue((int)site.Rotation);
             InstanceMainEffect.Parameters["HiddenColor"].SetValue(GlobalResources.HIDDEN_COLOR.ToVector4());
 
             for (int z = _drawLowest; z < _drawHighest; z++)

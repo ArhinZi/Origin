@@ -1,12 +1,11 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
-
 using Microsoft.Xna.Framework;
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Map;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
-
+using Origin.Source.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -82,49 +81,13 @@ namespace Origin.Source.Model.Map.Tools
             bool onFloor = false,
             bool clip = false)
         {
-            Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
-            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
-                (onFloor ? GlobalResources.Settings.FloorYoffset : 0)
-                , 0);
-
-            var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
-            var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
-
-            Point3 cellPos = new()
-            {
-                X = (int)Math.Round(cellPosX + cellPosY),
-                Y = (int)Math.Round(cellPosY - cellPosX),
-                Z = level
-            };
-            if (clip && (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size)))
-                return Point3.Null;
-            return cellPos;
+            return WorldUtils.MouseScreenToMap(cam, mousePos, level, site, onFloor, clip);
         }
 
         public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site,
             bool onFloor = false)
         {
-            int tlevel = level;
-            for (int i = 0; i < Global.ONE_MOMENT_DRAW_LEVELS; i++)
-            {
-                Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, site, onFloor);
-                if (pos.LessOr(Point3.Zero))
-                    return Point3.Null;
-
-                Tile tile = site.Map[pos];
-                if (pos.GraterEqualOr(site.Size) ||
-                    !tile.Exists ||
-                    !tile.HasConstruction ||
-                    tile.HasConstruction && tlevel == site.CurrentLevel)
-                {
-                    tlevel--;
-                    continue;
-                }
-
-                return pos;
-            }
-
-            return Point3.Null;
+            return WorldUtils.MouseScreenToMapSurface(cam, mousePos, level, site, onFloor);
         }
     }
 }

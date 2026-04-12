@@ -1,13 +1,10 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
-
 using Microsoft.Xna.Framework;
-
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Map;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
-
 using System;
 
 namespace Origin.Source.Utils
@@ -27,42 +24,72 @@ namespace Origin.Source.Utils
             return heightMap;
         }
 
-        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level)
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site)
+        {
+            return MouseScreenToMap(cam, mousePos, level, site, false, false);
+        }
+
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site,
+            bool onFloor, bool clip)
         {
             Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
-            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset), 0);
+            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
+                (onFloor ? GlobalResources.Settings.FloorYoffset : 0), 0);
 
-            var cellPosX = (worldPos.X / GlobalResources.Settings.TileSize.X) - 0.5;
-            var cellPosY = (worldPos.Y / GlobalResources.Settings.TileSize.Y) - 0.5;
+            var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
+            var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
 
-            Point3 cellPos = new()
+            Point3 rotatedCellPos = new()
             {
-                X = (int)Math.Round((cellPosX + cellPosY)),
-                Y = (int)Math.Round((cellPosY - cellPosX)),
+                X = (int)Math.Round(cellPosX + cellPosY),
+                Y = (int)Math.Round(cellPosY - cellPosX),
                 Z = level
             };
+
+            Point3 cellPos = InverseRotatePosition(rotatedCellPos, site.Size, site.Rotation);
+            if (clip && (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size)))
+                return Point3.Null;
+
             return cellPos;
         }
 
         public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site)
         {
+            return MouseScreenToMapSurface(cam, mousePos, level, site, false);
+        }
+
+        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site,
+            bool onFloor)
+        {
+            Span<int> probeOffsets = stackalloc int[]
+            {
+                0,
+                -GlobalResources.Settings.FloorYoffset,
+                -(GlobalResources.Settings.TileSize.Y / 2),
+                -GlobalResources.Settings.TileSize.Y
+            };
+
+            int tlevel = level;
             for (int i = 0; i < Global.ONE_MOMENT_DRAW_LEVELS; i++)
             {
-                Point3 pos = MouseScreenToMap(cam, mousePos, level);
-                if (pos.LessOr(Point3.Zero))
-                    return pos;
-
-                Tile tile = site.Map[pos];
-                Tile below = pos.Z - 1 >= 0 ? site.Map[pos.X, pos.Y, pos.Z - 1] : default;
-                if (pos.GraterEqualOr(site.Size) ||
-                    below.Exists && !below.HasConstruction)
+                for (int p = 0; p < probeOffsets.Length; p++)
                 {
-                    level--;
-                    continue;
+                    Point probeMousePos = new(mousePos.X, mousePos.Y + probeOffsets[p]);
+                    Point3 pos = MouseScreenToMap(cam, probeMousePos, tlevel, site, onFloor, false);
+                    if (pos.LessOr(Point3.Zero) || pos.GraterEqualOr(site.Size))
+                        continue;
+
+                    Tile tile = site.Map[pos];
+                    if (!tile.Exists || !tile.HasConstruction)
+                        continue;
+
+                    return pos;
                 }
-                else return pos;
+
+                tlevel--;
             }
-            return new Point3(-1, -1, -1);
+
+            return Point3.Null;
         }
 
         public static Point3 ProjectToSurface(Point3 position, Origin.Source.Model.Map.Site site)
@@ -85,18 +112,20 @@ namespace Origin.Source.Utils
             return pos;
         }
 
-        public static Point GetSpritePositionByCellPosition(Point3 cellPos)
+        public static Point GetSpritePositionByCellPosition(Point3 cellPos, Site site)
         {
-            var VertexX = (cellPos.X - cellPos.Y) * GlobalResources.Settings.TileSize.X / 2;
-            var VertexY = ((cellPos.X + cellPos.Y) * GlobalResources.Settings.TileSize.Y / 2)
-                    - cellPos.Z * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset);
-            return new Point(VertexX, VertexY);
+            Point3 rotated = RotatePosition(cellPos, site.Size, site.Rotation);
+            var vertexX = (rotated.X - rotated.Y) * GlobalResources.Settings.TileSize.X / 2;
+            var vertexY = ((rotated.X + rotated.Y) * GlobalResources.Settings.TileSize.Y / 2)
+                    - rotated.Z * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset);
+            return new Point(vertexX, vertexY);
         }
 
-        public static float GetSpriteZOffsetByCellPos(Point3 cellPos)
+        public static float GetSpriteZOffsetByCellPos(Point3 cellPos, Site site)
         {
-            var VertexZ = (cellPos.X + cellPos.Y) * Global.Z_DIAGONAL_OFFSET - 100;
-            return (float)VertexZ;
+            Point3 rotated = RotatePosition(cellPos, site.Size, site.Rotation);
+            var vertexZ = (rotated.X + rotated.Y) * Global.Z_DIAGONAL_OFFSET - 100;
+            return (float)vertexZ;
         }
 
         public static Point3 GetChunkByCell(Point3 cellPos, Point3 chunkSize)
@@ -110,40 +139,56 @@ namespace Origin.Source.Utils
 
         public static Point3 RotatePosition(Point3 pos, Point3 size, WorldRotation rotation)
         {
-            Point3 res = new(0, 0, pos.Z);
-            if (rotation == WorldRotation.TR)
-                res = pos;
-            else if (rotation == WorldRotation.TL)
+            return rotation switch
             {
-                res.X = size.Y - pos.X - 1;
-                res.Y = pos.X;
-            }
-            else if (rotation == WorldRotation.BL)
-            {
-                res.X = size.X - pos.X - 1;
-                res.Y = size.Y - pos.Y - 1;
-            }
-            else if (rotation == WorldRotation.BR)
-            {
-                res.X = pos.Y;
-                res.Y = size.X - pos.X - 1;
-            }
-            return res;
+                WorldRotation.TR => pos,
+                WorldRotation.TL => new Point3(pos.Y, size.X - pos.X - 1, pos.Z),
+                WorldRotation.BL => new Point3(size.X - pos.X - 1, size.Y - pos.Y - 1, pos.Z),
+                WorldRotation.BR => new Point3(size.Y - pos.Y - 1, pos.X, pos.Z),
+                _ => pos
+            };
         }
 
-        public IsometricDirection IsoDirByDir(Global.Direction dir)
+        public static Point3 InverseRotatePosition(Point3 pos, Point3 size, WorldRotation rotation)
         {
-            if (dir == Global.Direction.NORTH)
-                return IsometricDirection.TR;
+            return rotation switch
+            {
+                WorldRotation.TR => pos,
+                WorldRotation.TL => new Point3(size.X - pos.Y - 1, pos.X, pos.Z),
+                WorldRotation.BL => new Point3(size.X - pos.X - 1, size.Y - pos.Y - 1, pos.Z),
+                WorldRotation.BR => new Point3(pos.Y, size.Y - pos.X - 1, pos.Z),
+                _ => pos
+            };
+        }
 
-            if (dir == Global.Direction.SOUTH)
-                return IsometricDirection.BL;
-            if (dir == Global.Direction.WEST)
-                return IsometricDirection.BR;
-            if (dir == Global.Direction.EAST)
-                return IsometricDirection.TL;
+        public static WorldRotation InverseRotation(WorldRotation rotation)
+        {
+            return rotation switch
+            {
+                WorldRotation.TR => WorldRotation.TR,
+                WorldRotation.TL => WorldRotation.BR,
+                WorldRotation.BL => WorldRotation.BL,
+                WorldRotation.BR => WorldRotation.TL,
+                _ => WorldRotation.TR
+            };
+        }
 
-            return IsometricDirection.NONE;
+        public static Global.Direction RotateDirection(Global.Direction dir, WorldRotation rotation)
+        {
+            if (dir == Global.Direction.NONE)
+                return dir;
+
+            Point3 delta = Point3.PointByDir(dir);
+            Point3 rotated = rotation switch
+            {
+                WorldRotation.TR => delta,
+                WorldRotation.TL => new Point3(delta.Y, -delta.X, delta.Z),
+                WorldRotation.BL => new Point3(-delta.X, -delta.Y, delta.Z),
+                WorldRotation.BR => new Point3(-delta.Y, delta.X, delta.Z),
+                _ => delta
+            };
+
+            return Point3.DirByPoint(rotated);
         }
 
         #region Neighbour Patterns
@@ -396,5 +441,81 @@ namespace Origin.Source.Utils
         }
 
         #endregion Neighbour Patterns
+
+        public static bool TryGetFrontLeftSideIndex(Point3 pos, Point3 size, WorldRotation rotation, out int sideIndex)
+        {
+            sideIndex = -1;
+            switch (rotation)
+            {
+                case WorldRotation.TR:
+                    if (pos.Y == size.Y - 1)
+                    {
+                        sideIndex = pos.X;
+                        return true;
+                    }
+                    break;
+                case WorldRotation.TL:
+                    if (pos.X == 0)
+                    {
+                        sideIndex = pos.Y;
+                        return true;
+                    }
+                    break;
+                case WorldRotation.BL:
+                    if (pos.Y == 0)
+                    {
+                        sideIndex = size.X - 1 - pos.X;
+                        return true;
+                    }
+                    break;
+                case WorldRotation.BR:
+                    if (pos.X == size.X - 1)
+                    {
+                        sideIndex = size.Y - 1 - pos.Y;
+                        return true;
+                    }
+                    break;
+            }
+
+            return false;
+        }
+
+        public static bool TryGetFrontRightSideIndex(Point3 pos, Point3 size, WorldRotation rotation, out int sideIndex)
+        {
+            sideIndex = -1;
+            switch (rotation)
+            {
+                case WorldRotation.TR:
+                    if (pos.X == size.X - 1)
+                    {
+                        sideIndex = size.Y - 1 - pos.Y;
+                        return true;
+                    }
+                    break;
+                case WorldRotation.TL:
+                    if (pos.Y == size.Y - 1)
+                    {
+                        sideIndex = pos.X;
+                        return true;
+                    }
+                    break;
+                case WorldRotation.BL:
+                    if (pos.X == 0)
+                    {
+                        sideIndex = pos.Y;
+                        return true;
+                    }
+                    break;
+                case WorldRotation.BR:
+                    if (pos.Y == 0)
+                    {
+                        sideIndex = size.X - 1 - pos.X;
+                        return true;
+                    }
+                    break;
+            }
+
+            return false;
+        }
     }
 }

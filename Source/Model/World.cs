@@ -47,7 +47,7 @@ namespace Origin.Source.Model
                 sge = new SaveGameEntity(this.Name);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Point3(256, 256, 128), Sites.Count);
+            ActiveSite = new Site(this, new Point3(64, 64, 128), Sites.Count);
             Sites.Add(ActiveSite);
         }
 

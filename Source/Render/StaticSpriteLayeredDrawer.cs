@@ -83,12 +83,12 @@ namespace Origin.Source.Render
         {
             var chunk = GetChunkByPos(data.tilePos);
 
-            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos);
+            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos, site);
             SpriteLayer layer = chunk.GetLayer(data.sprite.Texture, data.nlayer);
 
             SpriteMainData smd = new()
             {
-                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos).ToVector2(), vertexZ) + data.spriteOffset,
+                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos, site).ToVector2(), vertexZ) + data.spriteOffset,
                 CellPosition = data.tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };
@@ -104,12 +104,12 @@ namespace Origin.Source.Render
         {
             var chunk = GetChunkByPos(data.tilePos);
 
-            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos);
+            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos, site);
             SpriteLayer layer = chunk.GetLayer(data.sprite.Texture, data.nlayer);
 
             SpriteMainData smd = new()
             {
-                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos).ToVector2(), vertexZ) + data.spriteOffset,
+                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos, site).ToVector2(), vertexZ) + data.spriteOffset,
                 CellPosition = data.tilePos,
                 //SpriteSize = new Vector2(32, 32)
             };

@@ -1,5 +1,6 @@
 ﻿using MessagePack;
 using Origin.Source.Model.Map;
+using Origin.Source.Utils;
 
 namespace Origin.Source.Save
 {
@@ -10,5 +11,6 @@ namespace Origin.Source.Save
         public int CurrentLevel;
         public Point3 Size;
         public Camera2D Camera;
+        public WorldRotation Rotation;
     }
 }

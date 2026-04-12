@@ -30,6 +30,7 @@ namespace Origin.Source.Model.Map
 
         public Camera2D Camera { get; private set; }
         public Point3 Size { get; private set; }
+        public WorldRotation Rotation { get; private set; } = WorldRotation.TR;
 
         public SiteGeneratorService MapGenerator { get; private set; }
         public SitePathfindingComponent Pathfinder { get; private set; }
@@ -64,6 +65,7 @@ namespace Origin.Source.Model.Map
         {
             World = world;
             Size = size;
+            Rotation = WorldRotation.TR;
 
             CurrentLevel = (int)(Size.Z * 0.8f);
 
@@ -100,6 +102,7 @@ namespace Origin.Source.Model.Map
             Size = dump.Size;
             ID = dump.ID;
             CurrentLevel = dump.CurrentLevel;
+            Rotation = dump.Rotation;
 
             ArchWorld = arch ?? ArchWorld.Create();
             Map = new TileContainer(Size);
@@ -134,6 +137,30 @@ namespace Origin.Source.Model.Map
             Tools = new SiteToolsComponent(this);
         }
 
+        public void RotateLeft()
+        {
+            Rotation = Rotation switch
+            {
+                WorldRotation.TR => WorldRotation.TL,
+                WorldRotation.TL => WorldRotation.BL,
+                WorldRotation.BL => WorldRotation.BR,
+                _ => WorldRotation.TR
+            };
+            InvalidateRender();
+        }
+
+        public void RotateRight()
+        {
+            Rotation = Rotation switch
+            {
+                WorldRotation.TR => WorldRotation.BR,
+                WorldRotation.BR => WorldRotation.BL,
+                WorldRotation.BL => WorldRotation.TL,
+                _ => WorldRotation.TR
+            };
+            InvalidateRender();
+        }
+
         public void InvalidateRender()
         {
             _renderDirty = true;
@@ -162,7 +189,8 @@ namespace Origin.Source.Model.Map
                 ID = ID,
                 Camera = Camera,
                 CurrentLevel = CurrentLevel,
-                Size = Size
+                Size = Size,
+                Rotation = Rotation
             };
             return ssd;
         }

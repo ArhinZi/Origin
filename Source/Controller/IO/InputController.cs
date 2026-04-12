@@ -82,6 +82,11 @@ namespace Origin.Source.Controller.IO
             if (InputManager.JustPressedAndHoldDelayed("world.level.plus") || LCtrl && InputManager.MouseScrollNotchesY > 0)
                 ActiveSite.CurrentLevel += 1;
 
+            if (InputManager.JustPressed("world.rotate.left"))
+                ActiveSite.RotateLeft();
+            if (InputManager.JustPressed("world.rotate.right"))
+                ActiveSite.RotateRight();
+
             if (InputManager.JustPressed("num.1"))
                 ActiveSite.Tools.SetToolByName("ToolDig");
             if (InputManager.JustPressed("num.2"))

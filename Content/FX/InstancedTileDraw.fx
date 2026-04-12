@@ -1,7 +1,7 @@
 #define VS_SHADERMODEL vs_5_0
 #define PS_SHADERMODEL ps_5_0
 #define CS_SHADERMODEL cs_5_0 
-	
+
 #pragma enable_d3d11_debug_symbols
 
 // common
@@ -10,11 +10,12 @@ float2 TextureSize;
 float2 WorldSize;
 float CurrentLevel;
 float2 LowHighLevel;
-float3 PositionOffset = float3(0,0,0);
+float3 PositionOffset = float3(0, 0, 0);
 bool nolight = false;
 float SunLightIntensity = 1;
+int WorldRotation = 0;
 
-float2 TileSize = float2(64,32);
+float2 TileSize = float2(64, 32);
 float2 SpriteSize = float2(64, 64);
 
 // hidden
@@ -24,32 +25,54 @@ float4 HiddenColor;
 float FloorYoffset = 7;
 float ZDiagOffset = 0.01;
 
+float3 RotateCellPosition(float3 cellPos)
+{
+    if (WorldRotation == 1)
+    {
+        return float3(cellPos.y, WorldSize.x - cellPos.x - 1, cellPos.z);
+    }
+    if (WorldRotation == 2)
+    {
+        return float3(WorldSize.x - cellPos.x - 1, WorldSize.y - cellPos.y - 1, cellPos.z);
+    }
+    if (WorldRotation == 3)
+    {
+        return float3(WorldSize.y - cellPos.y - 1, cellPos.x, cellPos.z);
+    }
+
+    return cellPos;
+}
+
 bool Unpack(uint packedFlags, int bitOffset)
 {
-    return ((int) (packedFlags) & (1 << bitOffset)) != 0;
+    return ((int)packedFlags & (1 << bitOffset)) != 0;
 }
+
 uint Unpack(uint packedValue, uint shift, uint count)
 {
     // Create a mask with the specified count of bits shifted to the left
     uint mask = ((1 << count) - 1);
     // Extract the bits by shifting and applying the mask
-    uint result = ((packedValue >> shift) & mask);
-    return result;
+    return (packedValue >> shift) & mask;
 }
 
-float2 GetSpritePositionByCellPosition(float3 cellPos)
+float3 GetSpriteWorldPosition(float3 cellPos)
 {
-    float VertexX = (cellPos.x - cellPos.y) * TileSize.x / 2;
-    float VertexY = ((cellPos.x + cellPos.y) * TileSize.y / 2)
-                  - cellPos.z * (TileSize.y + FloorYoffset);
-    
-    return float2(VertexX, VertexY);
+    cellPos = RotateCellPosition(cellPos);
+    return float3(
+        (cellPos.x - cellPos.y) * TileSize.x / 2,
+        ((cellPos.x + cellPos.y) * TileSize.y / 2) - cellPos.z * (TileSize.y + FloorYoffset),
+        (cellPos.x + cellPos.y) * ZDiagOffset - 100);
 }
-float GetSpriteZOffsetByCellPos(float3 cellPos)
+
+float3 GetSpriteWorldPositionNoRotation(float3 cellPos)
 {
-    float VertexZ = (cellPos.x + cellPos.y) * ZDiagOffset -100;
-    return VertexZ;
+    return float3(
+        (cellPos.x - cellPos.y) * TileSize.x / 2,
+        ((cellPos.x + cellPos.y) * TileSize.y / 2) - cellPos.z * (TileSize.y + FloorYoffset),
+        (cellPos.x + cellPos.y) * ZDiagOffset - 100);
 }
+
 float4 ShadeColor(float4 color, uint3 pos)
 {
     float light = 1;
@@ -57,7 +80,7 @@ float4 ShadeColor(float4 color, uint3 pos)
     float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
     float3 grayScale = float3(luminance, luminance, luminance) / 2;
     color.rgb = lerp(grayScale, color.rgb, float3(light, light, light));
-    
+
     // level shading
     float4 fogColor = float4(0.8, 0.8, 0.8, 1.0); // color of fog
     float hyperKS = 0.7;
@@ -71,8 +94,7 @@ float4 ShadeColor(float4 color, uint3 pos)
 float RemapSunLight(float sunLightIntensity)
 {
     float t = saturate(sunLightIntensity);
-    t = smoothstep(0.0, 1.0, t);
-    return t;
+    return smoothstep(0.0, 1.0, t);
 }
 
 float3 GetTwilightTint(float sunLightIntensity)
@@ -98,7 +120,6 @@ sampler SpriteTextureSampler = sampler_state
     AddressW = CLAMP; // Clamp addressing mode for W coordinate (for 3D textures)
 };
 
-
 // 32 bits
 struct SpriteMain
 {
@@ -119,11 +140,8 @@ struct SpriteExtra
 RWStructuredBuffer<SpriteExtra> RWExtraBuffer;
 StructuredBuffer<SpriteExtra> ExtraBuffer;
 
-
 StructuredBuffer<uint4> HiddenLBuffer;
 StructuredBuffer<uint4> HiddenSBuffer;
-
-
 StructuredBuffer<uint> LightBuffer;
 
 struct UpdateSpriteData
@@ -136,19 +154,19 @@ struct UpdateSpriteData
     SpriteExtra extraData;
 };
 StructuredBuffer<UpdateSpriteData> UpdateData;
-
 StructuredBuffer<uint> Remove;
 
 uint count;
 #define GroupSize 64
 [numthreads(GroupSize, 1, 1)]
 void RemoveSpriteCS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
-        uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+    uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
 {
     if (globalID.x >= count)
     {
         return;
     }
+
     int index = Remove[globalID.x];
     RWMainBuffer[index].SpritePosition = float3(0, 0, 0);
     RWExtraBuffer[index].TextureRect = float4(0, 0, 0, 0);
@@ -156,18 +174,17 @@ void RemoveSpriteCS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID
 
 [numthreads(GroupSize, 1, 1)]
 void UpdateSpriteCS(uint3 localID : SV_GroupThreadID, uint3 groupID : SV_GroupID,
-        uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
+    uint localIndex : SV_GroupIndex, uint3 globalID : SV_DispatchThreadID)
 {
     if (globalID.x >= count)
     {
         return;
     }
+
     int index = UpdateData[globalID.x].index;
     RWMainBuffer[index] = UpdateData[globalID.x].mainData;
     RWExtraBuffer[index] = UpdateData[globalID.x].extraData;
-
 }
-
 
 //8 bytes in total
 struct StaticVSinput
@@ -181,78 +198,70 @@ struct InstancingVSoutput
     float4 Position : SV_POSITION;
     float2 TexCoord : TEXCOORD0;
     float4 ColorD : COLOR0; // only xyz are needed
-    bool dolight: COLOR1;
+    bool dolight : COLOR1;
     float light : COLOR2;
 };
 
 InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
 {
     InstancingVSoutput output;
-    
-    uint spriteID = input.VertexID/6;
+
+    uint spriteID = input.VertexID / 6;
     SpriteMain main = MainBuffer[spriteID];
     SpriteExtra extra = ExtraBuffer[spriteID];
-    
 
     float2 vertPos = float2(input.Position.x * extra.TextureRect.z,
-                        input.Position.y * extra.TextureRect.w);
+        input.Position.y * extra.TextureRect.w);
     /*//text
     uint2 ppos = uint2(spriteID % worldSize.x,
                         spriteID / worldSize.x);
-    float3 spritePos = float3(GetSpritePositionByCellPosition(uint3(ppos, CurrentLevel)), GetSpriteZOffsetByCellPos(uint3(ppos, CurrentLevel)));
+    float3 spritePos = float3(GetSpriteWorldPosition(uint3(ppos, CurrentLevel)));
     //endtest*/
 	//calculate position with camera
-    
+
     float4 pos = float4(main.SpritePosition.xy + vertPos, main.SpritePosition.z, 1) + float4(PositionOffset, 0);
     //float4 pos = float4(spritePos.xy + vertPos, spritePos.z, 1);
     pos = mul(pos, WorldViewProjection);
-    
-    
+
     //int n = (main.CellPosition.x * WorldSize.x + main.CellPosition.y) % 4;
     uint sun = Unpack(LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)], 4, 3);
     {
         uint s1 = (main.CellPosition.x + 1) < WorldSize.x ?
-        Unpack(LightBuffer[((main.CellPosition.x + 1) * WorldSize.x + (main.CellPosition.y + 0))], 4, 3) : 0;
+            Unpack(LightBuffer[((main.CellPosition.x + 1) * WorldSize.x + (main.CellPosition.y + 0))], 4, 3) : 0;
         uint s2 = (main.CellPosition.y + 1) < WorldSize.y ?
-        Unpack(LightBuffer[((main.CellPosition.x + 0) * WorldSize.x + (main.CellPosition.y + 1))], 4, 3) : 0;
+            Unpack(LightBuffer[((main.CellPosition.x + 0) * WorldSize.x + (main.CellPosition.y + 1))], 4, 3) : 0;
         uint s3 = (main.CellPosition.x - 1) >= 0 ?
-        Unpack(LightBuffer[((main.CellPosition.x - 1) * WorldSize.x + (main.CellPosition.y - 0))], 4, 3) : 0;
+            Unpack(LightBuffer[((main.CellPosition.x - 1) * WorldSize.x + (main.CellPosition.y - 0))], 4, 3) : 0;
         uint s4 = (main.CellPosition.y - 1) >= 0 ?
-        Unpack(LightBuffer[((main.CellPosition.x - 0) * WorldSize.x + (main.CellPosition.y - 1))], 4, 3) : 0;
-    
+            Unpack(LightBuffer[((main.CellPosition.x - 0) * WorldSize.x + (main.CellPosition.y - 1))], 4, 3) : 0;
+
         sun = max(sun, max(s1, max(s2, max(s3, s4))));
     }
-    
+
     output.Position = pos;
-	
     output.TexCoord = float2((extra.TextureRect.x + vertPos.x) / TextureSize.x,
-                             (extra.TextureRect.y + vertPos.y) / TextureSize.y);
-    
-    output.ColorD = extra.Color;
+        (extra.TextureRect.y + vertPos.y) / TextureSize.y);
     output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
     output.dolight = true;
     output.light = max(sun / 7.0f, 0.1) * SunLightIntensity;
     //if(sun == 7)
-        //output.ColorD.r = 1;
-    
+    //output.ColorD.r = 1;
+
     return output;
 }
 
 InstancingVSoutput HiddenLInstancingVS(in StaticVSinput input)
 {
     InstancingVSoutput output;
-    
+
     uint spriteID = input.VertexID / 6;
-    
-    uint3 pos = uint3(spriteID % WorldSize.x,
-                        spriteID / WorldSize.x,
-                        CurrentLevel);
-    
-    float3 spritePos = float3(GetSpritePositionByCellPosition(pos), GetSpriteZOffsetByCellPos(pos));
+    uint3 pos = uint3(spriteID % WorldSize.x, spriteID / WorldSize.x, CurrentLevel);
+
+    float3 spritePos = GetSpriteWorldPosition(pos);
     float2 localVertexPos = float2(input.Position.x * SpriteSize.x, input.Position.y * SpriteSize.y);
     float4 globalVertexPos = float4(spritePos.xy + localVertexPos, spritePos.z, 1) + float4(PositionOffset, 0);
     float4 worldVertexPos = mul(globalVertexPos, WorldViewProjection);
-    
+
     float xy = (WorldSize.x / RBIT_COUNT) * pos.y + pos.x / RBIT_COUNT;
     if (Unpack(HiddenLBuffer[xy][pos.x % RBIT_COUNT / 32], pos.x % RBIT_COUNT))
     {
@@ -262,42 +271,41 @@ InstancingVSoutput HiddenLInstancingVS(in StaticVSinput input)
     {
         worldVertexPos.w = 0;
     }
-        
+
     output.Position = worldVertexPos;
     output.TexCoord = float2((HiddenSpriteTexturePos.x + input.Position.x * SpriteSize.x) / TextureSize.x,
-                             (HiddenSpriteTexturePos.y + input.Position.y * SpriteSize.y) / TextureSize.y);
+        (HiddenSpriteTexturePos.y + input.Position.y * SpriteSize.y) / TextureSize.y);
     output.ColorD = ShadeColor(HiddenColor, uint3(uint2(0, 0), CurrentLevel));
-    
+
     return output;
 }
 
 InstancingVSoutput HiddenSInstancingVS(in StaticVSinput input)
 {
     InstancingVSoutput output;
-    
+
     uint spriteID = input.VertexID / 6;
-    
+
     uint3 pos = uint3(spriteID, WorldSize.y - 1, CurrentLevel);
     if (spriteID >= WorldSize.x)
-        pos.xy = uint2(WorldSize.x-1, WorldSize.x+WorldSize.y-1-spriteID);
-    
-    float3 spritePos = float3(GetSpritePositionByCellPosition(pos), GetSpriteZOffsetByCellPos(pos));
+        pos.xy = uint2(WorldSize.x - 1, WorldSize.x + WorldSize.y - 1 - spriteID);
+
+    float3 spritePos = GetSpriteWorldPositionNoRotation(pos);
     float2 localVertexPos = float2(input.Position.x * SpriteSize.x, input.Position.y * SpriteSize.y);
     float4 globalVertexPos = float4(spritePos.xy + localVertexPos, spritePos.z, 1) + float4(PositionOffset, 0);
     float4 worldVertexPos = mul(globalVertexPos, WorldViewProjection);
-    
-    float xy = spriteID/RBIT_COUNT;
+
+    float xy = spriteID / RBIT_COUNT;
     if (Unpack(HiddenSBuffer[xy][spriteID % RBIT_COUNT / 32], spriteID % RBIT_COUNT))
         worldVertexPos.w = 1;
     else
         worldVertexPos.w = 0;
-    
-        
+
     output.Position = worldVertexPos;
     output.TexCoord = float2((HiddenSpriteTexturePos.x + input.Position.x * SpriteSize.x) / TextureSize.x,
-                             (HiddenSpriteTexturePos.y + input.Position.y * SpriteSize.y) / TextureSize.y);
+        (HiddenSpriteTexturePos.y + input.Position.y * SpriteSize.y) / TextureSize.y);
     output.ColorD.rgba = ShadeColor(HiddenColor, uint3(uint2(0, 0), CurrentLevel));
-    
+
     return output;
 }
 
@@ -305,7 +313,7 @@ float4 InstancingPS(InstancingVSoutput input) : SV_TARGET
 {
     float4 color = SpriteTexture.Sample(SpriteTextureSampler, input.TexCoord);
     color = color * input.ColorD;
-    
+
     if (input.dolight && !nolight)
     {
         float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
@@ -315,11 +323,10 @@ float4 InstancingPS(InstancingVSoutput input) : SV_TARGET
         color.rgb = lerp(float3(luminance, luminance, luminance) / 2, color.rgb, float3(localLight, localLight, localLight));
         color.rgb *= twilightTint;
     }
-    
+
     clip((color.a < 0.1) ? -1 : 1);
     return color;
 }
-
 
 //===============================================================================
 // Techniques
@@ -338,7 +345,6 @@ technique HiddenLInstancing
 {
     pass Main
     {
-        //ComputeShader = compile CS_SHADERMODEL InstancingCS();
         VertexShader = compile VS_SHADERMODEL HiddenLInstancingVS();
         PixelShader = compile PS_SHADERMODEL InstancingPS();
     }
@@ -348,7 +354,6 @@ technique HiddenSInstancing
 {
     pass Main
     {
-        //ComputeShader = compile CS_SHADERMODEL InstancingCS();
         VertexShader = compile VS_SHADERMODEL HiddenSInstancingVS();
         PixelShader = compile PS_SHADERMODEL InstancingPS();
     }

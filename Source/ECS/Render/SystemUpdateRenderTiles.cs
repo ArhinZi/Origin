@@ -229,7 +229,7 @@ namespace Origin.Source.ECS.Render
                     sprite = sprs[spart][rand % sprs[spart].Count];
                     if (tile.HasConstructionRotation)
                     {
-                        var dlist = sprite.GetSpritesByDir(tile.ConstructionRotation.Direction);
+                        var dlist = sprite.GetSpritesByDir(WorldUtils.RotateDirection(tile.ConstructionRotation.Direction, site.Rotation));
                         sprite = dlist[rand % dlist.Count];
                     }
                 }
@@ -260,7 +260,7 @@ namespace Origin.Source.ECS.Render
                     sprite = sprs[spart][rand % sprs[spart].Count];
                     if (tile.HasConstructionRotation)
                     {
-                        var dlist = sprite.GetSpritesByDir(tile.ConstructionRotation.Direction);
+                        var dlist = sprite.GetSpritesByDir(WorldUtils.RotateDirection(tile.ConstructionRotation.Direction, site.Rotation));
                         sprite = dlist[rand % dlist.Count];
                     }
                 }
@@ -309,7 +309,8 @@ namespace Origin.Source.ECS.Render
             {
                 sprite = shape.Sprites[rand % shape.Sprites.Count];
                 var directional = sprite.GetSpritesByDir(tile.ConstructionRotation.Direction);
-                sprite = directional[rand % directional.Count];
+                directional = sprite.GetSpritesByDir(WorldUtils.RotateDirection(tile.ConstructionRotation.Direction, site.Rotation));
+                 sprite = directional[rand % directional.Count];
             }
 
             if (sprite != null)
