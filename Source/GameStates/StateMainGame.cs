@@ -101,10 +101,10 @@ namespace Origin.Source.GameStates
                 //string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.ActiveSite.DrawControl.StaticDrawer.ChunkSize, 1)).ToString();
 
                 string blockMat = "NONE";
-                ConstructionBase bc;
 
-                if (World.ActiveSite.Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out bc))
+                if (World.ActiveSite.Map.TryGet(pos, out var tile) && tile.Exists && tile.HasConstruction)
                 {
+                    var bc = tile.Construction;
                     blockMat = string.Format("{0} of {1}", bc.Construction.ID, bc.Material.ID);
                 }
 

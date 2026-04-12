@@ -1,88 +1,105 @@
-﻿using MonoGame.Extended;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Origin.Source.Model.NewWorld;
+using Origin.Source.Utils;
 
 namespace Origin.Source.Model.NewWorld.Map
 {
-    internal class TileContainer
+    public class TileContainer
     {
-        private readonly int _blocksX = 0;
-        private readonly int _blocksY = 0;
-        private readonly int _blocksZ = 0;
+        private readonly BlockBase[,,] _blocks;
+        private readonly Point3 _size;
+        private readonly int _blocksX;
+        private readonly int _blocksY;
+        private readonly int _blocksZ;
 
-        // Layers: each Z level contains a 2D array of blocks [blocksX, blocksY]
-        private readonly List<BlockBase[,]> _layers;
+        private const int LocalBlockSize = BlockBase.BLOCK_SIZE;
 
-        // Block size in tiles (must match BlockBase implementation)
-        private const int LOCAL_BLOCK_SIZE = BlockBase.BLOCK_SIZE;
-
-        // Construct from world size in tiles. World size must be multiple of block size.
         public TileContainer(Point3 mapSize)
         {
-            // ensure world dimensions are divisible by block size
-            System.Diagnostics.Debug.Assert(mapSize.X % LOCAL_BLOCK_SIZE == 0, "World size X must be multiple of block size");
-            System.Diagnostics.Debug.Assert(mapSize.Y % LOCAL_BLOCK_SIZE == 0, "World size Y must be multiple of block size");
-
-            _blocksX = mapSize.X / LOCAL_BLOCK_SIZE;
-            _blocksY = mapSize.Y / LOCAL_BLOCK_SIZE;
+            _size = mapSize;
+            _blocksX = (mapSize.X + LocalBlockSize - 1) / LocalBlockSize;
+            _blocksY = (mapSize.Y + LocalBlockSize - 1) / LocalBlockSize;
             _blocksZ = mapSize.Z;
-
-            _layers = new List<BlockBase[,]>(_blocksZ);
-            for (int z = 0; z < _blocksZ; z++)
-            {
-                _layers.Add(new BlockBase[_blocksX, _blocksY]);
-            }
+            _blocks = new BlockBase[_blocksX, _blocksY, _blocksZ];
         }
 
-        private bool InBoundsBlock(int bx, int by, int bz)
+        public bool InBounds(Point3 position)
         {
-            return bx >= 0 && by >= 0 && bz >= 0 && bx < _blocksX && by < _blocksY && bz < _blocksZ;
+            return position.InBounds(Point3.Zero, _size);
         }
 
-        public Tile GetTile(Point3 sitePosition)
+        private void SplitPosition(Point3 position, out int bx, out int by, out int lx, out int ly)
         {
-            int bx = sitePosition.X / LOCAL_BLOCK_SIZE;
-            int by = sitePosition.Y / LOCAL_BLOCK_SIZE;
-            int bz = sitePosition.Z;
-            if (!InBoundsBlock(bx, by, bz)) return default;
-
-            var layer = _layers[bz];
-            var block = layer[bx, by];
-            if (block == null) return default;
-
-            int lx = sitePosition.X - bx * LOCAL_BLOCK_SIZE;
-            int ly = sitePosition.Y - by * LOCAL_BLOCK_SIZE;
-            return block.GetTile(new Point3(lx, ly, sitePosition.Z));
+            bx = position.X / LocalBlockSize;
+            by = position.Y / LocalBlockSize;
+            lx = position.X % LocalBlockSize;
+            ly = position.Y % LocalBlockSize;
         }
 
-        public void SetTile(Point3 sitePosition, Tile tile)
+        public ref Tile GetRef(Point3 position)
         {
-            int bx = sitePosition.X / LOCAL_BLOCK_SIZE;
-            int by = sitePosition.Y / LOCAL_BLOCK_SIZE;
-            int bz = sitePosition.Z;
-            if (!InBoundsBlock(bx, by, bz)) return;
-
-            var layer = _layers[bz];
-            var block = layer[bx, by];
-
-            int lx = sitePosition.X - bx * LOCAL_BLOCK_SIZE;
-            int ly = sitePosition.Y - by * LOCAL_BLOCK_SIZE;
-
+            SplitPosition(position, out int bx, out int by, out int lx, out int ly);
+            var block = _blocks[bx, by, position.Z];
             if (block == null)
             {
-                // create a similar (uniform) block first
-                block = new BlockSimilar();
-                layer[bx, by] = block;
+                block = new BlockSimple();
+                _blocks[bx, by, position.Z] = block;
+            }
+            else if (block is not BlockSimple simpleBlock)
+            {
+                simpleBlock = block.ToSimple();
+                _blocks[bx, by, position.Z] = simpleBlock;
+                block = simpleBlock;
             }
 
-            var newBlock = block.SetTile(new Point3(lx, ly, sitePosition.Z), tile);
-            if (!ReferenceEquals(newBlock, block))
+            return ref ((BlockSimple)block).GetRef(lx, ly);
+        }
+
+        public Tile this[int x, int y, int z]
+        {
+            get => this[new Point3(x, y, z)];
+            set => this[new Point3(x, y, z)] = value;
+        }
+
+        public Tile this[Point3 p]
+        {
+            get
             {
-                layer[bx, by] = newBlock;
+                if (!InBounds(p))
+                    return default;
+
+                SplitPosition(p, out int bx, out int by, out int lx, out int ly);
+                var block = _blocks[bx, by, p.Z];
+                return block?.GetTile(lx, ly) ?? default;
             }
+            set
+            {
+                if (!InBounds(p))
+                    return;
+
+                SplitPosition(p, out int bx, out int by, out int lx, out int ly);
+                var block = _blocks[bx, by, p.Z];
+                if (block == null)
+                {
+                    if (value.Equals(default(Tile)))
+                        return;
+
+                    block = new BlockSimilar(default);
+                }
+
+                _blocks[bx, by, p.Z] = block.SetTile(lx, ly, value);
+            }
+        }
+
+        public bool TryGet(Point3 position, out Tile tile)
+        {
+            if (InBounds(position))
+            {
+                tile = this[position];
+                return true;
+            }
+
+            tile = default;
+            return false;
         }
     }
 }

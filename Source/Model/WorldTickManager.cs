@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-
 using MonoGame.Extended;
-
 using Origin.Source.ECS;
-
 using System;
 
 namespace Origin.Source.Model
@@ -18,8 +15,10 @@ namespace Origin.Source.Model
         public static readonly ulong SEASON = 1209600;
         public static readonly ulong YEAR = 4838400;
 
+        private const int SunTransitionDurationMinutes = 240;
+
         public TimeOnly SunRiseTime { get; private set; } = new TimeOnly(6, 0);
-        public TimeOnly SunSetTime { get; private set; } = new TimeOnly(17, 0);
+        public TimeOnly SunSetTime { get; private set; } = new TimeOnly(19, 0);
 
         public ulong Ticks { get; set; } = DAY / 4;
 
@@ -64,7 +63,6 @@ namespace Origin.Source.Model
                 _htick--;
                 Ticks++;
                 counter++;
-                //do smth
             }
             TickTricky(counter);
         }
@@ -100,36 +98,29 @@ namespace Origin.Source.Model
 
         public float GetSunLightIntensity()
         {
-            const int transitionDurationMinutes = 60; // Duration of sunrise/sunset transition in minutes
-
-            // Convert times to total minutes from midnight
             int totalMinutes = DayTime.Hour * 60 + DayTime.Minute;
             int sunriseMinutes = SunRiseTime.Hour * 60 + SunRiseTime.Minute;
             int sunsetMinutes = SunSetTime.Hour * 60 + SunSetTime.Minute;
 
-            // Calculate the difference in minutes between the current time and sunrise/sunset
             int sunriseDiff = totalMinutes - sunriseMinutes;
             int sunsetDiff = sunsetMinutes - totalMinutes;
 
-            // Check if it's before sunrise or after sunset
             if (sunriseDiff < 0 || sunsetDiff < 0)
             {
-                return 0f; // It's night, so SunLightIntensity is 0
+                return 0f;
             }
 
-            // Check if it's during the sunrise transition
-            if (sunriseDiff <= transitionDurationMinutes)
+            if (sunriseDiff <= SunTransitionDurationMinutes)
             {
-                return sunriseDiff / (float)transitionDurationMinutes; // SunLightIntensity increases
+                return sunriseDiff / (float)SunTransitionDurationMinutes;
             }
 
-            // Check if it's during the sunset transition
-            if (sunsetDiff <= transitionDurationMinutes)
+            if (sunsetDiff <= SunTransitionDurationMinutes)
             {
-                return sunsetDiff / (float)transitionDurationMinutes; // SunLightIntensity decreases
+                return sunsetDiff / (float)SunTransitionDurationMinutes;
             }
 
-            return 1f; // It's daytime, so SunLightIntensity is 1
+            return 1f;
         }
 
         public bool TogglePause()

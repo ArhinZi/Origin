@@ -7,12 +7,10 @@ using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Origin.Source.Model.Map.Light;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
-
 using System;
-using System.Reflection;
-
-using Utf8Json;
+using System.Collections.Generic;
 
 namespace Origin.Source.Model.Map.Tools
 {
@@ -44,22 +42,18 @@ namespace Origin.Source.Model.Map.Tools
 
         public override void Update(GameTime gameTime)
         {
-            var io = ImGui.GetIO();
             Point m = Mouse.GetState().Position;
             Position = MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site, true);
             if (!Active)
             {
-                if (Position != Point3.Null)
+                if (Position != Point3.Null && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                 {
-                    if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-                    {
-                        Active = true;
-                        DrawDirty = true;
-                        selected = Position;
-                    }
+                    Active = true;
+                    DrawDirty = true;
+                    selected = Position;
                 }
             }
-            else if (Active)
+            else
             {
                 if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
                 {
@@ -74,77 +68,152 @@ namespace Origin.Source.Model.Map.Tools
             }
         }
 
-        private ComponentType selectedType;
         private int selectedOther = 0;
+
+        private static void DrawBool(string name, bool value)
+        {
+            ImGui.TextWrapped($"{name}: {(value ? "true" : "false")}");
+        }
+
+        private static void DrawText(string name, object value)
+        {
+            ImGui.TextWrapped($"{name}: {value}");
+        }
+
+        private static void DrawConstruction(string title, TileConstruction construction)
+        {
+            DrawText(title, construction.ConstructionID);
+            DrawText("Material", construction.MaterialID);
+            DrawText("ConstructionMetaID", construction.ConstructionMetaID);
+            DrawText("MaterialMetaID", construction.MaterialMetaID);
+            DrawText("ConstructionType", construction.Construction.Type);
+            DrawText("ConstructionCategory", construction.Construction.Category);
+        }
+
+        private static void DrawConstructionOver(string title, TileConstructionOver construction)
+        {
+            DrawText(title, construction.Construction.ID);
+            DrawText("Material", construction.Material.ID);
+            DrawText("ConstructionMetaID", construction.ConstructionMetaID);
+            DrawText("MaterialMetaID", construction.MaterialMetaID);
+        }
+
+        private static void DrawFluid(TileFluid fluid)
+        {
+            DrawText("Type", fluid.Type);
+            DrawText("Volume", fluid.Volume);
+            DrawText("Direction", fluid.Direction);
+        }
+
+        private static void DrawVegetation(TileVegetation vegetation)
+        {
+            DrawText("Vegetation", vegetation.VegetationID);
+            DrawText("VegetationMetaID", vegetation.VegetationMetaID);
+            DrawText("VegetationNeighbours", vegetation.VegetationNeighbours);
+            DrawBool("IsGrown", vegetation.IsGrown);
+        }
+
+        private static void DrawTile(Tile tile)
+        {
+            DrawBool("Exists", tile.Exists);
+            DrawBool("HasConstruction", tile.HasConstruction);
+            if (tile.HasConstruction)
+            {
+                ImGui.SeparatorText("Construction");
+                DrawConstruction("Construction", tile.Construction);
+            }
+
+            DrawBool("HasConstructionOver", tile.HasConstructionOver);
+            if (tile.HasConstructionOver)
+            {
+                ImGui.SeparatorText("ConstructionOver");
+                DrawConstructionOver("Over", tile.ConstructionOver);
+            }
+
+            DrawBool("IsRamp", tile.IsRamp);
+            DrawBool("HasConstructionShape", tile.HasConstructionShape);
+            if (tile.HasConstructionShape)
+                DrawText("ConstructionShape", tile.ConstructionShape.Name);
+
+            DrawBool("HasConstructionRotation", tile.HasConstructionRotation);
+            if (tile.HasConstructionRotation)
+                DrawText("ConstructionRotation", tile.ConstructionRotation.Direction);
+
+            DrawBool("HasFluid", tile.HasFluid);
+            if (tile.HasFluid)
+            {
+                ImGui.SeparatorText("Fluid");
+                DrawFluid(tile.Fluid);
+                DrawBool("IsFluidStatic", tile.IsFluidStatic);
+                DrawBool("IsFluidBlocker", tile.IsFluidBlocker);
+            }
+            else
+            {
+                DrawBool("IsFluidStatic", tile.IsFluidStatic);
+                DrawBool("IsFluidBlocker", tile.IsFluidBlocker);
+            }
+
+            DrawBool("HasVegetation", tile.HasVegetation);
+            if (tile.HasVegetation)
+            {
+                ImGui.SeparatorText("Vegetation");
+                DrawVegetation(tile.Vegetation);
+            }
+
+            DrawBool("IsWalkable", tile.IsWalkable);
+            DrawText("WalkableConstructionBelowMetaID", tile.WalkableConstructionBelowMetaID);
+            DrawBool("IsAir", tile.IsAir);
+        }
+
+        private static void DrawPackedLight(PackedLight light)
+        {
+            DrawText("SunLighted", light.SunLighted);
+            DrawBool("IsLightBlocker", light.IsLightBlocker);
+        }
 
         public override void Draw(GameTime gameTime)
         {
             if (!Active) return;
 
-            if (Controller.Site.Map.TryGet(selected, out Entity ent) && ent != Entity.Null)
+            if (Controller.Site.Map.TryGet(selected, out Tile tile) && tile.Exists)
             {
-                var a = ent.GetArchetype();
-                var types = a.Types;
-
                 ImGui.SetNextWindowSize(new System.Numerics.Vector2(500, 440), ImGuiCond.FirstUseEver);
                 if (ImGui.Begin($"Tile explorer {selected}###TileExplorer"))
                 {
-                    // Left
-                    {
-                        ImGui.BeginChild("left pane", new System.Numerics.Vector2(150, 0),
-                            ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX);
-                        foreach (ref var type in types.AsSpan())
-                        {
-                            if (ImGui.Selectable(type.Type.Name, selectedType == type && selectedOther == 0))
-                            {
-                                selectedType = type;
-                                selectedOther = 0;
-                            }
-                        }
-                        if (ImGui.Selectable("Light", selectedOther == 1))
-                        {
-                            selectedOther = 1;
-                        }
+                    ImGui.BeginChild("left pane", new System.Numerics.Vector2(150, 0),
+                        ImGuiChildFlags.Border | ImGuiChildFlags.ResizeX);
+                    if (ImGui.Selectable("Tile", selectedOther == 0))
+                        selectedOther = 0;
+                    if (ImGui.Selectable("Light", selectedOther == 1))
+                        selectedOther = 1;
+                    if (ImGui.Selectable("Vegetation", selectedOther == 2))
+                        selectedOther = 2;
+                    ImGui.EndChild();
 
-                        /*for (int i = 0; i < 100; i++)
-                        {
-                            // FIXME: Good candidate to use ImGuiSelectableFlags_SelectOnNav
-                            char label[128];
-                            sprintf(label, "MyObject %d", i);
-                            if (ImGui::Selectable(label, selected == i))
-                                selected = i;
-                        }*/
-                        ImGui.EndChild();
-                    }
                     ImGui.SameLine();
-
-                    // Right
+                    ImGui.BeginGroup();
+                    ImGui.BeginChild("item view", new System.Numerics.Vector2(0, -ImGui.GetFrameHeightWithSpacing()));
+                    ImGui.Text(selectedOther == 0 ? "Tile" : selectedOther == 1 ? "Light" : "Vegetation");
+                    ImGui.Separator();
+                    if (ImGui.BeginTabBar("##Tabs", ImGuiTabBarFlags.None))
                     {
-                        string name = selectedType.Type != null ? selectedType.Type.Name : "NONE";
-                        if (selectedOther != 0) { name = "Other"; }
-                        ImGui.BeginGroup();
-                        ImGui.BeginChild("item view", new System.Numerics.Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-                        ImGui.Text(name);
-                        ImGui.Separator();
-                        if (ImGui.BeginTabBar("##Tabs", ImGuiTabBarFlags.None))
+                        if (ImGui.BeginTabItem("Info"))
                         {
-                            if (ImGui.BeginTabItem("Info"))
+                            if (selectedOther == 0)
                             {
-                                if (selectedOther == 0 && selectedType.Type != null && ent.TryGet(selectedType, out object obj))
-                                {
-                                    foreach (var f in selectedType.Type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public))
-                                    {
-                                        ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(obj))}");
-                                    }
-                                }
-                                if (selectedOther == 1)
-                                {
-                                    if (Controller.Site.LightControl.TryGetTile(selected, out PackedLight pl))
-                                        foreach (var f in typeof(PackedLight).GetProperties(BindingFlags.Public | BindingFlags.Instance))
-                                        {
-                                            ImGui.TextWrapped($"{f.Name}: {JsonSerializer.NonGeneric.ToJsonString(f.GetValue(pl))}");
-                                        }
-                                }
+                                DrawTile(tile);
+                            }
+                            else if (selectedOther == 1)
+                            {
+                                if (Controller.Site.LightControl.TryGetTile(selected, out PackedLight pl))
+                                    DrawPackedLight(pl);
+                            }
+                            else
+                            {
+                                if (tile.HasVegetation)
+                                    DrawVegetation(tile.Vegetation);
+                                else
+                                    ImGui.TextWrapped("No vegetation on this tile.");
                             }
                             ImGui.EndTabItem();
                         }
@@ -163,6 +232,8 @@ namespace Origin.Source.Model.Map.Tools
                         sprites.Clear();
                         DrawDirty = true;
                     }
+                    ImGui.EndChild();
+                    ImGui.EndGroup();
                 }
                 ImGui.End();
             }
@@ -176,8 +247,7 @@ namespace Origin.Source.Model.Map.Tools
                 }
                 sprites.Add(template);
                 sprites[^1].position = selected;
-                if (Active) sprites[^1].color = Color.Blue;
-                else sprites[^1].color = Color.Red;
+                sprites[^1].color = Active ? Color.Blue : Color.Red;
                 for (int i = Math.Min(selected.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)
                 {
                     sprites.Add(new SpritePositionColor()

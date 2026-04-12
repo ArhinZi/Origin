@@ -134,29 +134,40 @@ namespace Origin.Source.Render
 
         public void ScheduleRemove(List<SpriteLocator> list, Point3 pos)
         {
+            var chunk = GetChunkByPos(pos);
             foreach (var locator in list)
             {
-                spriteChunks[0, 0, pos.Z].ScheduleRemove(locator);
+                chunk.ScheduleRemove(locator);
             }
         }
 
         public SpriteLocator ScheduleAdd(SpriteLayer layer, SpriteMainData dataMain, SpriteExtraData dataExtra, Point3 pos)
         {
-            return spriteChunks[0, 0, pos.Z].ScheduleAdd(layer, dataMain, dataExtra);
+            var chunk = GetChunkByPos(pos);
+            return chunk.ScheduleAdd(layer, dataMain, dataExtra);
         }
 
         public void RemoveSprites()
         {
             for (int z = 0; z < chunksCount.Z; z++)
-                if (spriteChunks[0, 0, z] != null)
-                    spriteChunks[0, 0, z].RemoveScheduled();
+                for (int x = 0; x < chunksCount.X; x++)
+                    for (int y = 0; y < chunksCount.Y; y++)
+                        if (spriteChunks[x, y, z] != null)
+                            spriteChunks[x, y, z].RemoveScheduled();
         }
 
         public void AddSprites()
         {
             for (int z = 0; z < chunksCount.Z; z++)
-                if (spriteChunks[0, 0, z] != null)
-                    spriteChunks[0, 0, z].AddScheduled();
+                for (int x = 0; x < chunksCount.X; x++)
+                    for (int y = 0; y < chunksCount.Y; y++)
+                        if (spriteChunks[x, y, z] != null)
+                            spriteChunks[x, y, z].AddScheduled();
+        }
+
+        public void ResetAll()
+        {
+            spriteChunks = new SpriteChunk[chunksCount.X, chunksCount.Y, chunksCount.Z];
         }
 
         public void Draw(int layer, List<byte> drawableSubLayers = null, bool HalfWall = false)
@@ -166,7 +177,7 @@ namespace Origin.Source.Render
                 site.LightControl.SetBuffers();
 
                 SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(site.World.TimeManager.GetSunLightIntensity());
-                SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(1);
+                //SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(1);
                 if (sublayer == Global.LightFrontStart)
                 {
                     if (layer + 1 < site.Size.Z && site.LightControl.buffers[layer + 1].ElementCount > 0)

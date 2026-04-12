@@ -1,42 +1,25 @@
 ﻿using MessagePack;
-
 using Microsoft.Xna.Framework;
-
 using Origin.Source.Resources;
-
 using System;
-
 using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.Utils
 {
+    /// <summary>
+    /// Lightweight integer 3D point used across map, tile and render code.
+    /// </summary>
     [MessagePackObject]
-    public struct Point3 : IComparable
+    public struct Point3 : IComparable, IEquatable<Point3>
     {
-        //[IgnoreMember]
         [Key(0)]
         public int X;
 
-        //[IgnoreMember]
         [Key(1)]
         public int Y;
 
-        //[IgnoreMember]
         [Key(3)]
         public int Z;
-
-        //[Key("data")]
-        //public string Data
-        //{
-        //    get { return $"{X},{Y},{Z}"; }
-        //    set
-        //    {
-        //        var vals = value.Split(',');
-        //        X = int.Parse(vals[0]);
-        //        Y = int.Parse(vals[1]);
-        //        Z = int.Parse(vals[2]);
-        //    }
-        //}
 
         public Point3(int x, int y, int z)
         {
@@ -44,11 +27,6 @@ namespace Origin.Source.Utils
             Y = y;
             Z = z;
         }
-
-        //public Point3(string data)
-        //{
-        //    Data = data;
-        //}
 
         public Point3(Point xy, int z)
         {
@@ -84,28 +62,20 @@ namespace Origin.Source.Utils
             {
                 case Direction.NORTH:
                     return North;
-
                 case Direction.SOUTH:
                     return South;
-
                 case Direction.WEST:
                     return West;
-
                 case Direction.EAST:
                     return East;
-
                 case Direction.NORTHWEST:
                     return NorthWest;
-
                 case Direction.NORTHEAST:
                     return NorthEast;
-
                 case Direction.SOUTHWEST:
                     return SouthWest;
-
                 case Direction.SOUTHEAST:
                     return SouthEast;
-
                 default:
                     return Zero;
             }
@@ -115,224 +85,168 @@ namespace Origin.Source.Utils
         {
             if (point == North)
                 return Direction.NORTH;
-
             if (point == South)
                 return Direction.SOUTH;
-
             if (point == West)
                 return Direction.WEST;
-
             if (point == East)
                 return Direction.EAST;
-
             if (point == NorthWest)
                 return Direction.NORTHWEST;
-
             if (point == NorthEast)
                 return Direction.NORTHEAST;
-
             if (point == SouthWest)
                 return Direction.SOUTHWEST;
-
             if (point == SouthEast)
                 return Direction.SOUTHEAST;
 
-            // Handle other cases or return a default direction
-            return Direction.NONE;  // Assuming Direction.NONE is a default or invalid direction
+            return Direction.NONE;
         }
 
-        public Point XY()
+        public readonly Point XY()
         {
             return new Point(X, Y);
         }
 
-        public Point3 XYdiv(int PackSize)
+        public readonly Point3 XYdiv(int packSize)
         {
-            var val = this;
-            val.X /= PackSize;
-            val.Y /= PackSize;
-            return val;
+            return new Point3(X / packSize, Y / packSize, Z);
         }
 
-        public Point3 XYmod(int PackSize)
+        public readonly Point3 XYmod(int packSize)
         {
-            var val = this;
-            val.X %= PackSize;
-            val.Y %= PackSize;
-            return val;
+            return new Point3(X % packSize, Y % packSize, Z);
         }
 
-        public bool InBounds(Point3 lower, Point3 higher, bool includeLower = true, bool includeHigher = false)
+        /// <summary>
+        /// Checks whether the point is inside the given bounds.
+        /// </summary>
+        public readonly bool InBounds(Point3 lower, Point3 higher, bool includeLower = true, bool includeHigher = false)
         {
-            bool res = true;
-            if (includeLower)
-            {
-                if (X < lower.X || Y < lower.Y || Z < lower.Z) res = res && false;
-            }
-            else
-            {
-                if (X <= lower.X || Y <= lower.Y || Z <= lower.Z) res = res && false;
-            }
-            if (includeHigher)
-            {
-                if (X > higher.X || Y > higher.Y || Z > higher.Z) res = res && false;
-            }
-            else
-            {
-                if (X >= higher.X || Y >= higher.Y || Z >= higher.Z) res = res && false;
-            }
-            return res;
+            bool lowerOk = includeLower
+                ? X >= lower.X && Y >= lower.Y && Z >= lower.Z
+                : X > lower.X && Y > lower.Y && Z > lower.Z;
+
+            bool higherOk = includeHigher
+                ? X <= higher.X && Y <= higher.Y && Z <= higher.Z
+                : X < higher.X && Y < higher.Y && Z < higher.Z;
+
+            return lowerOk && higherOk;
         }
 
         public static bool operator ==(Point3 first, Point3 second)
         {
-            return first.Equals(ref second);
+            return first.Equals(second);
         }
 
-        public bool Equals(Point3 point)
+        public readonly bool Equals(Point3 point)
         {
-            return Equals(ref point);
+            return X == point.X && Y == point.Y && Z == point.Z;
         }
 
-        public bool Equals(ref Point3 point)
+        public readonly bool Equals(ref Point3 point)
         {
-            if (point.X == X && point.Y == Y)
-            {
-                return point.Z == Z;
-            }
-
-            return false;
+            return X == point.X && Y == point.Y && Z == point.Z;
         }
 
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object obj)
         {
-            if (obj is Point3)
-            {
-                return Equals((Point3)obj);
-            }
-
-            return false;
+            return obj is Point3 point && Equals(point);
         }
 
-        public bool GraterOr(Point3 other)
+        public readonly bool GraterOr(Point3 other)
         {
-            if (X > other.X || Y > other.Y || Z > other.Z) return true;
-            return false;
+            return X > other.X || Y > other.Y || Z > other.Z;
         }
 
-        public bool LessOr(Point3 other)
+        public readonly bool LessOr(Point3 other)
         {
-            if (X < other.X || Y < other.Y || Z < other.Z) return true;
-            return false;
+            return X < other.X || Y < other.Y || Z < other.Z;
         }
 
-        public bool GraterEqualOr(Point3 other)
+        public readonly bool GraterEqualOr(Point3 other)
         {
-            if (X >= other.X || Y >= other.Y || Z >= other.Z) return true;
-            return false;
+            return X >= other.X || Y >= other.Y || Z >= other.Z;
         }
 
-        public bool LessEqualOr(Point3 other)
+        public readonly bool LessEqualOr(Point3 other)
         {
-            if (X <= other.X || Y <= other.Y || Z <= other.Z) return true;
-            return false;
+            return X <= other.X || Y <= other.Y || Z <= other.Z;
         }
 
         public static bool operator !=(Point3 first, Point3 second)
         {
-            return !(first == second);
+            return !first.Equals(second);
         }
 
         public static bool operator <(Point3 first, Point3 second)
         {
-            if (first.X < second.X &&
+            return first.X < second.X &&
                 first.Y < second.Y &&
-                first.Z < second.Z)
-                return true;
-            return false;
+                first.Z < second.Z;
         }
 
         public static bool operator <=(Point3 first, Point3 second)
         {
-            if (first.X <= second.X &&
+            return first.X <= second.X &&
                 first.Y <= second.Y &&
-                first.Z <= second.Z)
-                return true;
-            return false;
+                first.Z <= second.Z;
         }
 
         public static bool operator >(Point3 first, Point3 second)
         {
-            if (first.X > second.X &&
+            return first.X > second.X &&
                 first.Y > second.Y &&
-                first.Z > second.Z)
-                return true;
-            return false;
+                first.Z > second.Z;
         }
 
         public static bool operator >=(Point3 first, Point3 second)
         {
-            if (first.X >= second.X &&
+            return first.X >= second.X &&
                 first.Y >= second.Y &&
-                first.Z >= second.Z)
-                return true;
-            return false;
+                first.Z >= second.Z;
         }
 
         public static Point3 operator +(Point3 first, Point3 second)
         {
-            return new Point3(
-                first.X + second.X,
-                first.Y + second.Y,
-                first.Z + second.Z);
+            return new Point3(first.X + second.X, first.Y + second.Y, first.Z + second.Z);
         }
 
         public static Point3 operator *(Point3 first, Point3 second)
         {
-            return new Point3(
-                first.X * second.X,
-                first.Y * second.Y,
-                first.Z * second.Z);
+            return new Point3(first.X * second.X, first.Y * second.Y, first.Z * second.Z);
         }
 
         public static Point3 operator -(Point3 first, Point3 second)
         {
-            return new Point3(
-                first.X - second.X,
-                first.Y - second.Y,
-                first.Z - second.Z);
+            return new Point3(first.X - second.X, first.Y - second.Y, first.Z - second.Z);
         }
 
         public static Point3 operator *(Point3 first, int second)
         {
-            return new Point3(
-                first.X * second,
-                first.Y * second,
-                first.Z * second);
+            return new Point3(first.X * second, first.Y * second, first.Z * second);
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return $"({X}, {Y}, {Z})";
         }
 
-        public Vector3 ToVector3()
+        public readonly Vector3 ToVector3()
         {
             return new Vector3(X, Y, Z);
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
-            int hash = 17;
-            hash = hash * 31 + X;
-            hash = hash * 31 + Y;
-            hash = hash * 31 + Z;
-            return hash;
+            return HashCode.Combine(X, Y, Z);
         }
 
-        public int CompareTo(object obj)
+        public readonly int CompareTo(object obj)
         {
-            Point3 p2 = (Point3)obj;
+            if (obj is not Point3 p2)
+                throw new ArgumentException($"Object must be of type {nameof(Point3)}", nameof(obj));
+
             return (X + Y + Z).CompareTo(p2.X + p2.Y + p2.Z);
         }
     }

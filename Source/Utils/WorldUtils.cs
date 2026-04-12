@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 
 using System;
@@ -30,9 +31,6 @@ namespace Origin.Source.Utils
         {
             Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
             worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset), 0);
-            // Also works
-            //int tileX = (int)Math.Round((worldPos.X / GlobalResources.Settings.TileSize.X + worldPos.Y / GlobalResources.Settings.TileSize.Y - 1));
-            //int tileY = (int)Math.Round((worldPos.Y / GlobalResources.Settings.TileSize.Y - worldPos.X / GlobalResources.Settings.TileSize.X));
 
             var cellPosX = (worldPos.X / GlobalResources.Settings.TileSize.X) - 0.5;
             var cellPosY = (worldPos.Y / GlobalResources.Settings.TileSize.Y) - 0.5;
@@ -46,16 +44,18 @@ namespace Origin.Source.Utils
             return cellPos;
         }
 
-        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site)
+        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site)
         {
             for (int i = 0; i < Global.ONE_MOMENT_DRAW_LEVELS; i++)
             {
                 Point3 pos = MouseScreenToMap(cam, mousePos, level);
                 if (pos.LessOr(Point3.Zero))
                     return pos;
-                if (pos.GraterEqualOr(site.Size) || pos.Z - 1 >= 0 &&
-                    site.Map[pos.X, pos.Y, pos.Z - 1] != Entity.Null &&
-                    !site.Map[pos.X, pos.Y, pos.Z - 1].Has<ConstructionBase>())
+
+                Tile tile = site.Map[pos];
+                Tile below = pos.Z - 1 >= 0 ? site.Map[pos.X, pos.Y, pos.Z - 1] : default;
+                if (pos.GraterEqualOr(site.Size) ||
+                    below.Exists && !below.HasConstruction)
                 {
                     level--;
                     continue;
@@ -65,15 +65,19 @@ namespace Origin.Source.Utils
             return new Point3(-1, -1, -1);
         }
 
-        public static Point3 ProjectToSurface(Point3 position, Site site)
+        public static Point3 ProjectToSurface(Point3 position, Origin.Source.Model.Map.Site site)
         {
             Point3 pos = position;
             if (position.LessOr(Point3.Zero) || position.GraterEqualOr(site.Size))
             {
                 return pos;
             }
-            while (pos.Z - 1 >= 0 && !site.Map[pos.X, pos.Y, pos.Z - 1].Has<ConstructionBase>())
+            while (pos.Z - 1 >= 0)
             {
+                Tile below = site.Map[pos.X, pos.Y, pos.Z - 1];
+                if (!below.Exists || below.HasConstruction)
+                    break;
+
                 pos = pos - new Point3(1, 1, 1);
                 if (pos.X < 0 || pos.X >= site.Size.X || pos.Y < 0 || pos.Y >= site.Size.Y)
                     return pos;

@@ -1,17 +1,10 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
-
-using Microsoft.Xna.Framework;
-
-using Origin.Source.ECS.Construction;
+﻿using Microsoft.Xna.Framework;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
-
 using Roy_T.AStar.Paths;
 using Roy_T.AStar.Primitives;
-
 using System;
 using System.Collections.Generic;
-
 using Node = Roy_T.AStar.Graphs.Node;
 
 namespace Origin.Source.Model.Generators
@@ -69,47 +62,51 @@ namespace Origin.Source.Model.Generators
             SmoothHeightMap();
         }
 
-        public override Entity Pass(Entity ent, Point3 pos)
+        public override Tile Pass(Tile tile, Point3 pos)
         {
             var dirtDepth = 5;
             var baseHeight = (int)(Size.Z * 0.7f);
 
-            int GetH(Point3 pos)
+            int GetH(Point3 hpos)
             {
-                return (int)(heightMap[pos.X, pos.Y].Height + baseHeight);
+                return (int)(heightMap[hpos.X, hpos.Y].Height + baseHeight);
             }
 
             int height = GetH(pos);
 
             if (pos.Z <= height - dirtDepth)
             {
-                ent.Add(new ConstructionBase()
+                tile.HasConstruction = true;
+                tile.Construction = new TileConstruction
                 {
                     ConstructionID = "StoneWallFloor",
                     MaterialID = "GRANITE"
-                });
+                };
             }
             else if (pos.Z > height - dirtDepth && pos.Z <= height)
             {
-                ent.Add(new ConstructionBase()
+                tile.HasConstruction = true;
+                tile.Construction = new TileConstruction
                 {
                     ConstructionID = "SoilWallFloor",
                     MaterialID = "DIRT"
-                });
+                };
             }
             else if (pos.Z - 1 == height - dirtDepth)
             {
                 if (GetH(pos + Point3.PointByDir(Global.Direction.NORTH)) == height - dirtDepth)
                 {
-                    ent.Add(new ConstructionBase()
+                    tile.HasConstruction = true;
+                    tile.IsRamp = true;
+                    tile.Construction = new TileConstruction
                     {
                         ConstructionID = "SoilRamp",
                         MaterialID = "DIRT"
-                    });
+                    };
                 }
             }
 
-            return ent;
+            return tile;
         }
 
         public void GenerateHeightMap(float scale, float freq = 0.003f)
@@ -187,14 +184,11 @@ namespace Origin.Source.Model.Generators
             foreach (var edge in path.Edges)
             {
                 Point3 pos = new((int)edge.Start.Position.X, (int)edge.Start.Position.Y, (int)edge.Start.Position.Z);
-                // Calculate the boundaries of the square area
                 int radius = river.Strength * 5;
                 int minX = Math.Max(pos.X - radius, 0);
                 int maxX = Math.Min(pos.X + radius, width - 1);
                 int minY = Math.Max(pos.Y - radius, 0);
                 int maxY = Math.Min(pos.Y + radius, height - 1);
-
-                // Iterate through the square area
 
                 for (int x = minX; x <= maxX; x++)
                 {
@@ -214,6 +208,7 @@ namespace Origin.Source.Model.Generators
                     }
                 }
             }
+
             void GenPathNodes()
             {
                 for (int i = 0; i < width; i++)
@@ -248,27 +243,6 @@ namespace Origin.Source.Model.Generators
                                     node.Connect(nodes[x, y], v);
                                 }
                             }
-                        }
-                    }
-                }
-            }
-            void FillStrength(Point pos, int radius)
-            {
-                // Calculate the boundaries of the square area
-                int minX = Math.Max(pos.X - radius, 0);
-                int maxX = Math.Min(pos.X + radius, width - 1);
-                int minY = Math.Max(pos.Y - radius, 0);
-                int maxY = Math.Min(pos.Y + radius, height - 1);
-
-                // Iterate through the square area
-                for (int x = minX; x <= maxX; x++)
-                {
-                    for (int y = minY; y <= maxY; y++)
-                    {
-                        // Check if the tile (x, y) is within the circular radius
-                        if (IsWithinRadius(x, y, pos.X, pos.Y, radius) != -1)
-                        {
-                            heightMap[x, y].WaterLevel = 1;
                         }
                     }
                 }

@@ -1,62 +1,62 @@
-﻿using System;
+using Origin.Source.Model.NewWorld;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Origin.Source.Model.NewWorld.Map
 {
     internal sealed class BlockPartial : BlockBase
     {
-        const int MAX_PARTIAL_TILES = 32; // Maximum number of different tiles allowed in a partial block before converting to a BlockSimple.
-        // Palette of unique tiles used inside this block.
-        private readonly List<Tile> _palette = new(MAX_PARTIAL_TILES);
+        private const int MaxPaletteSize = 32;
 
-        // 16x16 = 256 cells, one byte per cell referencing palette index.
-        private readonly byte[] _indices = new byte[256];
+        private readonly List<Tile> _palette;
+        private readonly Dictionary<Tile, byte> _paletteLookup;
+        private readonly byte[] _indices;
 
-        // Map tile -> palette index for O(1) lookups when inserting.
-        private readonly Dictionary<Tile, byte> _tileToIndex = new(MAX_PARTIAL_TILES);
-
-        // Construct from a uniform block (BlockSimilar) — fill palette with uniform tile and point all indices to 0.
-        public BlockPartial(BlockSimilar same)
+        public BlockPartial(Tile uniformTile)
         {
-            _palette.Add(same.UniformTile);
-            _tileToIndex[same.UniformTile] = 0;
-            Array.Fill(_indices, (byte)0);
+            _palette = [uniformTile];
+            _paletteLookup = new Dictionary<Tile, byte>
+            {
+                [uniformTile] = 0
+            };
+            _indices = new byte[TILE_COUNT];
         }
 
-        public override Tile GetTile(Point3 tilePosition)
+        public override Tile GetTile(int x, int y)
         {
-            int flat = GetFlatIndex(tilePosition.X, tilePosition.Y);
-            byte idx = _indices[flat];
-            if (idx >= _palette.Count) return default;
-            return _palette[idx];
+            return _palette[_indices[GetIndex(x, y)]];
         }
 
-        public override BlockBase SetTile(Point3 tilePosition, Tile tile)
+        public override BlockBase SetTile(int x, int y, Tile tile)
         {
-            int flat = GetFlatIndex(tilePosition.X, tilePosition.Y);
-            byte currentIdx = _indices[flat];
-
-            if (currentIdx < _palette.Count && EqualityComparer<Tile>.Default.Equals(_palette[currentIdx], tile))
+            int index = GetIndex(x, y);
+            byte currentIndex = _indices[index];
+            if (_palette[currentIndex].Equals(tile))
                 return this;
 
-            if (!_tileToIndex.TryGetValue(tile, out byte newIdx))
+            if (!_paletteLookup.TryGetValue(tile, out byte paletteIndex))
             {
-                newIdx = (byte)_palette.Count;
-                _palette.Add(tile);
-                _tileToIndex[tile] = newIdx;
-
-                if (_palette.Count > MAX_PARTIAL_TILES)
+                if (_palette.Count >= MaxPaletteSize)
                 {
-                    // Convert to BlockSimple: provide copies of palette and indices so BlockSimple can expand to full storage.
-                    return new BlockSimple(_palette, (byte[])_indices.Clone());
+                    var simple = ToSimple();
+                    simple.SetTile(x, y, tile);
+                    return simple;
                 }
+
+                paletteIndex = (byte)_palette.Count;
+                _palette.Add(tile);
+                _paletteLookup[tile] = paletteIndex;
             }
 
-            _indices[flat] = newIdx;
+            _indices[index] = paletteIndex;
             return this;
+        }
+
+        public override BlockSimple ToSimple()
+        {
+            var tiles = new Tile[TILE_COUNT];
+            for (int i = 0; i < tiles.Length; i++)
+                tiles[i] = _palette[_indices[i]];
+            return new BlockSimple(tiles);
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using Arch.Core.Extensions;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Origin.Source.Controller.IO;
-using Origin.Source.ECS.Pathfinding;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Model.Pathfind.NewPathfind;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
-
 using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.Model.Map.Tools
@@ -55,11 +52,8 @@ namespace Origin.Source.Model.Map.Tools
             }
             else
             {
-                var SelectedBlock = Controller.Site.Map[pos.X, pos.Y, pos.Z];
-                if (SelectedBlock != Arch.Core.Entity.Null && SelectedBlock.Has<IsWalkAbleTile>())
-                    Position = pos;
-                else
-                    Position = Point3.Null;
+                Tile selectedTile = Controller.Site.Map[pos.X, pos.Y, pos.Z];
+                Position = selectedTile.Exists && selectedTile.IsWalkable ? pos : Point3.Null;
             }
             if (InputManager.JustPressed("mouse.right") && Position != Point3.Null)
             {
@@ -79,33 +73,26 @@ namespace Origin.Source.Model.Map.Tools
                 if (LastPath != null)
                 {
                     LastPath.path.Sort();
-                    //LastPath.path.Reverse();
                     LastPath.visited.Sort();
                 }
             }
 
-            /*if (Position != Point3.Null)
-            {
-                sprites.Add(template.Clone() as SpritePositionColor);
-                sprites[^1].position = Position;
-                sprites[^1].color = baseColor;
-            }*/
             if (LastPath != null && !DrawDirty)
             {
                 DrawDirty = true;
                 sprites.Clear();
-                foreach (var Pos in LastPath.visited)
+                foreach (var pathPos in LastPath.visited)
                 {
                     SpritePositionColor spc = template.Clone() as SpritePositionColor;
                     sprites.Add(spc);
-                    sprites[^1].position = Pos;
+                    sprites[^1].position = pathPos;
                     sprites[^1].color = debugColor;
                 }
-                foreach (var Pos in LastPath.path)
+                foreach (var pathPos in LastPath.path)
                 {
                     SpritePositionColor spc = template.Clone() as SpritePositionColor;
                     sprites.Add(spc);
-                    sprites[^1].position = Pos;
+                    sprites[^1].position = pathPos;
                     sprites[^1].color = pathColor;
                 }
             }

@@ -3,34 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Origin.Source.Model.NewWorld;
 
 namespace Origin.Source.Model.NewWorld.Map
 {
     internal sealed class BlockSimple : BlockBase
     {
-        private Tile[] _tiles = new Tile[BLOCK_SIZE * BLOCK_SIZE];
+        private readonly Tile[] _tiles;
 
-        // Construct from partial data (palette + indices)
-        public BlockSimple(List<Tile> palette, byte[] indices)
+        public BlockSimple()
         {
-            // Expand indices to full tile array
-            for (int i = 0; i < BLOCK_SIZE * BLOCK_SIZE; i++)
-            {
-                var idx = indices[i];
-                _tiles[i] = idx < palette.Count ? palette[idx] : default;
-            }
+            _tiles = new Tile[TILE_COUNT];
         }
 
-        public override Tile GetTile(Point3 tilePosition)
+        public BlockSimple(Tile[] tiles)
         {
-            int flat = GetFlatIndex(tilePosition.X, tilePosition.Y);
-            return _tiles[flat];
+            _tiles = tiles;
         }
 
-        public override BlockBase SetTile(Point3 tilePosition, Tile tile)
+        public ref Tile GetRef(int x, int y)
         {
-            int flat = GetFlatIndex(tilePosition.X, tilePosition.Y);
-            _tiles[flat] = tile;
+            return ref _tiles[GetIndex(x, y)];
+        }
+
+        public override Tile GetTile(int x, int y)
+        {
+            return _tiles[GetIndex(x, y)];
+        }
+
+        public override BlockBase SetTile(int x, int y, Tile tile)
+        {
+            _tiles[GetIndex(x, y)] = tile;
+            return this;
+        }
+
+        public override BlockSimple ToSimple()
+        {
             return this;
         }
     }

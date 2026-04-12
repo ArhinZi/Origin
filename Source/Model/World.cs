@@ -1,14 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
-
 using Origin.Source.ECS.BaseSystems;
 using Origin.Source.ECS.Fluid;
 using Origin.Source.ECS.Light;
 using Origin.Source.ECS.Pathfinding;
 using Origin.Source.ECS.Render;
-using Origin.Source.ECS.Vegetation;
 using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld.Systems.Vegetation;
 using Origin.Source.Save;
-
 using System;
 using System.Collections.Generic;
 
@@ -49,7 +47,7 @@ namespace Origin.Source.Model
                 sge = new SaveGameEntity(this.Name);
 
             // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Point3(64, 64, 128), Sites.Count);
+            ActiveSite = new Site(this, new Point3(256, 256, 128), Sites.Count);
             Sites.Add(ActiveSite);
         }
 

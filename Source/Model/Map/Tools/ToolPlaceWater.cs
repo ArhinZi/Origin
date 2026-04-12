@@ -1,15 +1,11 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
-
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Origin.Source.Controller.IO;
-using Origin.Source.ECS.Fluid;
-using Origin.Source.ECS.Render;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
-
 using System;
-
 using static Origin.Source.Resources.Global;
 
 namespace Origin.Source.Model.Map.Tools
@@ -61,29 +57,22 @@ namespace Origin.Source.Model.Map.Tools
                 Position = MouseScreenToMap(Camera, m, Controller.Site.CurrentLevel - 2, Controller.Site, true, true);
                 if (Position != Point3.Null)
                 {
-                    if (InputManager.IsPressed("mouse.left"))
+                    if (InputManager.IsPressed("mouse.left") && Controller.Site.Map.InBounds(Position))
                     {
-                        if (Controller.Site.Map.TryGet(Position, out Entity ent) && ent != Entity.Null)
+                        ref var tile = ref Controller.Site.Map.GetRef(Position);
+                        if (tile.Exists)
                         {
-                            if (ent.TryGet(out FluidParticle fluid))
+                            tile.HasFluid = true;
+                            tile.Fluid = new TileFluid
                             {
-                                fluid.Volume = 64;
-                                if (ent.Has<IsFluidStatic>())
-                                    ent.Remove<IsFluidStatic>();
-                            }
-                            else
-                            {
-                                ent.Add<FluidParticle>(new FluidParticle()
-                                {
-                                    Type = FluidType.WATER,
-                                    Volume = 64
-                                });
-                            }
-                            if (!ent.Has<SelfRequestUpdateTileRender>())
-                            {
-                                ent.Add<SelfRequestUpdateTileRender>();
-                            }
+                                Type = FluidType.WATER,
+                                Volume = TileFluid.MaxVolume
+                            };
+                            tile.IsFluidStatic = false;
+                            Controller.Site.InvalidateRender(Position);
+
                         }
+
                         if (InputManager.JustReleased("mouse.left"))
                         {
                             Reset();
@@ -107,24 +96,8 @@ namespace Origin.Source.Model.Map.Tools
                     position = Position
                 });
                 //for (int i = Math.Min(GroundPosition.Z + 1, Controller.Site.CurrentLevel); i <= Position.Z; i++)
-                int startZ = Position.Z -5;
-                int endZ = Position.Z - 1;
-                //if (GroundPosition != Point3.Null)
-                //{
-                //    startZ = GroundPosition.Z + 1;
-                //    endZ = Position.Z;
-                //}
-                //else
-                //{
-                //    startZ = Position.Z;
-                //    endZ = Position.Z;
-                //}
-
-                //if (startZ > endZ)
-                //    (startZ, endZ) = (endZ, startZ);
-
-                //startZ = Math.Max(0, startZ);
-                endZ = Math.Min(Controller.Site.Size.Z - 1, endZ);
+                int startZ = Position.Z - 5;
+                int endZ = Math.Min(Controller.Site.Size.Z - 1, Position.Z - 1);
 
                 for (int i = startZ; i <= endZ; i++)
                 {

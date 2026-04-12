@@ -46,11 +46,10 @@ namespace Origin.Source.Render
 
         public void Draw(GameTime gameTime)
         {
-            if (site.Tools.CurrentTool != null && site.Tools.CurrentTool.DrawDirty)
+            SiteRenderer.StaticDrawer.ClearLayer(DrawBufferLayer.BackInteractives);
+            SiteRenderer.StaticDrawer.ClearLayer(DrawBufferLayer.FrontInteractives);
+            if (site.Tools.CurrentTool != null)
             {
-                site.Tools.CurrentTool.DrawDirty = false;
-                SiteRenderer.StaticDrawer.ClearLayer(DrawBufferLayer.BackInteractives);
-                SiteRenderer.StaticDrawer.ClearLayer(DrawBufferLayer.FrontInteractives);
                 foreach (var sprite in site.Tools.CurrentTool.sprites)
                 {
                     byte LAYER = (byte)site.Tools.CurrentTool.RenderLayer;
@@ -58,6 +57,7 @@ namespace Origin.Source.Render
                         LAYER, sprite.position, sprite.sprite, sprite.color, new Vector3(sprite.offset.ToVector2(), 0)));
                 }
                 SiteRenderer.StaticDrawer.SetChunks();
+                site.Tools.CurrentTool.DrawDirty = false;
             }
 
             Global.GraphicsDevice.Clear(Color.CornflowerBlue);

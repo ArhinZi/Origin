@@ -158,5 +158,16 @@ namespace Origin.Source.Render
             SiteRenderer.InstanceMainEffect.CurrentTechnique.Passes[0].Apply();
             device.DrawPrimitives(PrimitiveType.TriangleList, 0, (_site.Size.X + _site.Size.Y) * 2);
         }
+
+        public void ResetAll()
+        {
+            for (int z = 0; z < _lData.Length; z++)
+            {
+                for (int i = 0; i < _lData[z].Length; i++)
+                    _lData[z][i] = new Float4();
+                for (int i = 0; i < _sData[z].Length; i++)
+                    _sData[z][i] = new Float4();
+            }
+        }
     }
 }

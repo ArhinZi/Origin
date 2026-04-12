@@ -1,17 +1,13 @@
-﻿using Arch.Buffer;
-using Arch.Core;
-using Arch.Core.Extensions;
-
+﻿using Arch.Core;
 using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Map;
 using Origin.Source.Model.Map.Light;
 using Origin.Source.Utils;
-
 using System.Collections.Generic;
+using Tile = Origin.Source.Model.NewWorld.Tile;
 
 namespace Origin.Source.ECS.Light
 {
-    // TODO fix light recast after block placed
     internal class SystemUpdateLight : TickSystem
     {
         public SystemUpdateLight(Site site) : base(site)
@@ -19,14 +15,6 @@ namespace Origin.Source.ECS.Light
         }
 
         private List<HashSet<Point3>> recastPlan = [];
-        //private HashSet<Point3> recastPlanFirst = [];
-
-        //private HashSet<Point3> recastPlanSecond = [];
-
-        //private bool recastPlanReverse = false;
-        //private HashSet<Point3> recastPlanCurrent => recastPlanReverse ? recastPlanFirst : recastPlanSecond;
-        //private HashSet<Point3> recastPlanNext => !recastPlanReverse ? recastPlanFirst : recastPlanSecond;
-
         private bool recastDirty = false;
 
         public override void Initialize()
@@ -44,19 +32,15 @@ namespace Origin.Source.ECS.Light
                 {
                     var pos = new Point3(x, y, _site.Size.Z - 1);
                     recastPlan[_site.Size.Z - 1].Add(pos);
-                    Entity ent = _site.Map[pos];
-                    if (!ent.Has<ConstructionBase>())
+                    Tile tile = _site.Map[pos];
+                    if (!tile.HasConstruction)
                     {
-                        PackedLight pl = new()
-                        {
-                            SunLighted = 7
-                        };
+                        PackedLight pl = new() { SunLighted = 7 };
                         _site.LightControl.SetTile(pos, pl);
                     }
                 }
             RecursiveReCastSunlight(true);
             ClearRecastPlan();
-
             _site.LightControl.bufferDirty = true;
         }
 
@@ -68,61 +52,46 @@ namespace Origin.Source.ECS.Light
 
         public override void Update(in ulong t)
         {
-            var commands = new CommandBuffer();
-            var visited = new HashSet<Point3>();
-
-            // Update Sunlighted info on PlaceConstruction
             var query = new QueryDescription().WithAll<EventConstructionPlaced>();
             _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cpe) =>
             {
                 var pos = cpe.Position;
-                Entity ent = _site.Map[pos];
-
                 ref PackedLight pl = ref _site.LightControl.GetTile(pos);
                 pl.SunLighted = 0;
                 pl.IsLightBlocker = true;
 
                 if (recastPlan[pos.Z] == null)
                     recastPlan[pos.Z] = [];
-                if (recastPlan[pos.Z - 1] == null)
+                if (pos.Z > 0 && recastPlan[pos.Z - 1] == null)
                     recastPlan[pos.Z - 1] = [];
 
                 foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
                 {
                     var pos2 = pos + n;
                     if (pos2.InBounds(Point3.Zero, _site.Size))
-                    {
                         recastPlan[pos2.Z].Add(pos2);
-                    }
+
                     pos2 = pos + n + Point3.Down;
                     if (pos2.InBounds(Point3.Zero, _site.Size))
-                    {
                         recastPlan[pos2.Z].Add(pos2);
-                    }
                 }
                 recastDirty = true;
             });
 
-            //Update Sunlighted info on RemoveConstruction
             query = new QueryDescription().WithAll<EventConstructionRemoved>();
             _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cpe) =>
             {
                 var pos = cpe.Position;
-                Entity ent = _site.Map[pos];
-
                 _site.LightControl.SetTile(pos, new PackedLight());
 
-                if (recastPlan[pos.Z + 1] == null)
+                if (pos.Z + 1 < _site.Size.Z && recastPlan[pos.Z + 1] == null)
                     recastPlan[pos.Z + 1] = [];
 
-                //recastPlan[pos.Z + 1].Add(pos + Point3.Up);
                 foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
                 {
                     var pos2 = pos + n + Point3.Up;
                     if (pos2.InBounds(Point3.Zero, _site.Size))
-                    {
                         recastPlan[pos2.Z].Add(pos2);
-                    }
                 }
                 recastDirty = true;
             });
@@ -138,85 +107,58 @@ namespace Origin.Source.ECS.Light
 
         private void ClearRecastPlan()
         {
-            //recastPlan.Clear();
             for (int i = 0; i < _site.Size.Z; i++)
-            {
                 recastPlan[i] = null;
-            }
         }
-
-        //private void CastLightFrom(Point3 pos, PackedLight pl)
-        //{
-        //    if (pl.SunLighted == 0) return;
-
-        //    ref PackedLight bpl = ref _site.LightControl.GetTile(pos + Point3.Down);
-        //    bpl.SunLighted = Math.Max(pl.SunLighted, bpl.SunLighted);
-        //    foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
-        //    {
-        //        var npos = pos + Point3.Down + n;
-        //        if (bpl.SunLighted >= 3 && npos.InBounds(Point3.Zero, _site.Size))
-        //        {
-        //            ref PackedLight bnpl = ref _site.LightControl.GetTile(npos);
-        //            bnpl.SunLighted += 1;
-        //        }
-        //    }
-        //}
 
         private void RecursiveReCastSunlight(bool init = false)
         {
             for (int i = _site.Size.Z - 1; i > 0; i--)
             {
                 var hs = recastPlan[i];
-                if (hs != null)
-                    foreach (var pos in hs)
+                if (hs == null)
+                    continue;
+
+                foreach (var pos in hs)
+                {
+                    var npos = pos + Point3.Down;
+                    ref PackedLight npl = ref _site.LightControl.GetTile(npos);
+                    Tile tile = _site.Map[npos];
+                    if (tile.Exists && tile.HasConstruction && !tile.IsRamp)
                     {
-                        var npos = pos + Point3.Down;
-                        ref PackedLight npl = ref _site.LightControl.GetTile(npos);
-                        //if (init)
-                        {
-                            Entity ent = _site.Map[npos];
-                            if (ent != Entity.Null && ent.Has<ConstructionBase>() && !ent.Has<IsRamp>())
-                            {
-                                npl.IsLightBlocker = true;
-                            }
-                        }
-                        if (!npl.IsLightBlocker)
-                        {
-                            // Collect available tiles below and clean them
-                            if (recastPlan[i - 1] == null)
-                                recastPlan[i - 1] = [];
+                        npl.IsLightBlocker = true;
+                    }
+                    if (!npl.IsLightBlocker)
+                    {
+                        if (recastPlan[i - 1] == null)
+                            recastPlan[i - 1] = [];
 
-                            recastPlan[i - 1].Add(npos);
-
-                            // After clean the tile recalc its Sunlight using tiles Above
-                            ref PackedLight unpl = ref _site.LightControl.GetTile(npos + Point3.Up);
-                            npl.SunLighted = unpl.SunLighted;
-                            if (npl.SunLighted < 7)
+                        recastPlan[i - 1].Add(npos);
+                        ref PackedLight unpl = ref _site.LightControl.GetTile(npos + Point3.Up);
+                        npl.SunLighted = unpl.SunLighted;
+                        if (npl.SunLighted < 7)
+                        {
+                            float sl = npl.SunLighted;
+                            foreach (var tn in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
                             {
-                                float sl = npl.SunLighted;
-                                foreach (var tn in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
+                                var tnpos = npos + tn + Point3.Up;
+                                if (tnpos.InBounds(Point3.Zero, _site.Size) && _site.LightControl.TryGetTile(tnpos, out PackedLight tnpl))
                                 {
-                                    var tnpos = npos + tn + Point3.Up;
-                                    if (tnpos.InBounds(Point3.Zero, _site.Size) && _site.LightControl.TryGetTile(tnpos, out PackedLight tnpl))
+                                    var nnpos = tnpos + Point3.Down;
+                                    if (nnpos.InBounds(Point3.Zero, _site.Size) &&
+                                        _site.LightControl.TryGetTile(nnpos, out PackedLight nnpl) &&
+                                        !nnpl.IsLightBlocker)
                                     {
-                                        var nnpos = tnpos + Point3.Down;
-                                        if (nnpos.InBounds(Point3.Zero, _site.Size) &&
-                                            _site.LightControl.TryGetTile(nnpos, out PackedLight nnpl) &&
-                                            !nnpl.IsLightBlocker)
-                                        {
-                                            sl += tnpl.SunLighted / 2f;
-                                        }
+                                        sl += tnpl.SunLighted / 2f;
                                     }
-                                    if (sl >= 7) break;
                                 }
-
-                                npl.SunLighted = (byte)sl;
+                                if (sl >= 7) break;
                             }
-                        }
-                        else
-                        {
+
+                            npl.SunLighted = (byte)sl;
                         }
                     }
+                }
             }
         }
     }

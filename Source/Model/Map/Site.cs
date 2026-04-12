@@ -1,22 +1,20 @@
 ﻿using Arch.Core;
-using Arch.Core.Extensions;
-
 using Microsoft.Xna.Framework;
-
 using MonoGame.Extended;
-using Origin.Source.ECS.BaseComponents;
 using Origin.Source.ECS.Construction;
-using Origin.Source.ECS.Render;
 using Origin.Source.Model.Generators;
 using Origin.Source.Model.Map.Light;
 using Origin.Source.Model.Map.Tools;
+using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Map;
 using Origin.Source.Model.Pathfind;
 using Origin.Source.Render;
+using Origin.Source.Render.State;
 using Origin.Source.Resources;
 using Origin.Source.Save;
 using Origin.Source.Utils;
-
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Origin.Source.Model.Map
@@ -26,7 +24,8 @@ namespace Origin.Source.Model.Map
         public World World { get; private set; }
         public readonly int ID;
 
-        public SiteTileContainer Map { get; set; }
+        public TileContainer Map { get; set; }
+        public SiteRenderState RenderState { get; private set; }
         public ArchWorld ArchWorld { get; set; }
 
         public Camera2D Camera { get; private set; }
@@ -41,6 +40,7 @@ namespace Origin.Source.Model.Map
         public SiteToolsComponent Tools { get; private set; }
 
         private int _currentLevel;
+        private bool _renderDirty = true;
 
         public int CurrentLevel
         {
@@ -58,6 +58,7 @@ namespace Origin.Source.Model.Map
         }
 
         public int PreviousLevel { get; private set; }
+        public bool RenderDirty => _renderDirty;
 
         public Site(World world, Point3 size, int iD)
         {
@@ -67,8 +68,8 @@ namespace Origin.Source.Model.Map
             CurrentLevel = (int)(Size.Z * 0.8f);
 
             ArchWorld = ArchWorld.Create();
-            //ArchWorld.SharedJobScheduler = new Schedulers.JobScheduler(new Schedulers.JobScheduler.Config() { });
-            Map = new SiteTileContainer(Size);
+            Map = new TileContainer(Size);
+            RenderState = new SiteRenderState(Size);
 
             Camera = new Camera2D();
             Camera.Position += new Vector2(0,
@@ -84,7 +85,7 @@ namespace Origin.Source.Model.Map
             Trace.WriteLine("End light init");
             ID = iD;
 
-            Pathfinder = new SitePathfindingComponent(this, Size, ArchWorld);
+            Pathfinder = new SitePathfindingComponent(this, Size);
             Trace.WriteLine("End pathfinder init");
 
             DrawComponent = new SiteDrawComponent(this);
@@ -100,8 +101,9 @@ namespace Origin.Source.Model.Map
             ID = dump.ID;
             CurrentLevel = dump.CurrentLevel;
 
-            ArchWorld = arch;
-            Map = new SiteTileContainer(Size);
+            ArchWorld = arch ?? ArchWorld.Create();
+            Map = new TileContainer(Size);
+            RenderState = new SiteRenderState(Size);
 
             if (dump.Camera != null)
             {
@@ -117,24 +119,40 @@ namespace Origin.Source.Model.Map
             }
 
             MapGenerator = new SiteGeneratorService(this, Size);
-            var query = new QueryDescription().WithAll<IsTile>();
-            ArchWorld.Query(in query, (Entity entity, ref IsTile tile) =>
-            {
-                Point3 pos = tile.Position;
-                Map[pos] = entity;
-            });
+            MapGenerator.Visit(new Point3(0, 0, Size.Z - 1));
             Trace.WriteLine("End map gen");
 
             LightControl = new LightComponent(this);
             Trace.WriteLine("End light init");
 
-            Pathfinder = new SitePathfindingComponent(this, Size, ArchWorld);
+            Pathfinder = new SitePathfindingComponent(this, Size);
             Trace.WriteLine("End pathfinder init");
 
             DrawComponent = new SiteDrawComponent(this);
             Trace.WriteLine("End creating render");
 
             Tools = new SiteToolsComponent(this);
+        }
+
+        public void InvalidateRender()
+        {
+            _renderDirty = true;
+        }
+
+        public void InvalidateRender(Point3 pos)
+        {
+            RenderState.MarkDirtyAround(pos);
+        }
+
+        public void InvalidateRender(IEnumerable<Point3> positions, bool includeNeighbours = false)
+        {
+            RenderState.MarkDirty(positions, includeNeighbours);
+        }
+
+        public void ClearRenderDirty()
+        {
+            _renderDirty = false;
+            RenderState.ClearDirty();
         }
 
         public SaveSiteDump Dump()
@@ -156,9 +174,6 @@ namespace Origin.Source.Model.Map
         public void Update(GameTime gameTime)
         {
             Tools.Update(gameTime);
-
-            //Pathfinder.Update(gameTime);
-
             DrawComponent.Update(gameTime);
         }
 
@@ -168,57 +183,124 @@ namespace Origin.Source.Model.Map
             DrawComponent.Draw(gameTime);
         }
 
-        public void RemoveConstruction(Point3 pos)
+        public void UpdateWalkabilityAt(Point3 pos)
         {
-            MapGenerator.Visit(pos, true, true);
+            if (!Map.InBounds(pos))
+                return;
 
-            if (Map.TryGet(pos, out Entity ent) && ent != Entity.Null && ent.TryGet(out ConstructionBase bcc))
+            ref Tile tile = ref Map.GetRef(pos);
+            if (!tile.Exists)
+                return;
+
+            tile.IsWalkable = false;
+            tile.WalkableConstructionBelowMetaID = 0;
+
+            if (!tile.HasConstruction && Map.InBounds(pos + Point3.Down))
             {
-                ent.Remove<ConstructionBase>();
-
-                if (ent.Has<IsRamp>()) ent.Remove<IsRamp>();
-                if (ent.Has<ConstructionOver>()) ent.Remove<ConstructionOver>();
-                if (ent.Has<ConstructionRotation>()) ent.Remove<ConstructionRotation>();
-                if (ent.Has<ECS.Construction.ConstructionShape>()) ent.Remove<ECS.Construction.ConstructionShape>();
-
-                ArchWorld.Create(new EventConstructionRemoved()
+                Tile below = Map[pos + Point3.Down];
+                if (below.Exists && below.HasConstruction)
                 {
-                    Position = pos,
-                    ConstructionMetaID = bcc.ConstructionMetaID,
-                    MaterialMetaID = bcc.MaterialMetaID
-                });
-
-                foreach (var item in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
-                {
-                    var pos2 = item + pos;
-                    if (Map.TryGet(pos2, out Entity e) && !e.Has<SelfRequestUpdateTileRender>())
-                        e.Add<SelfRequestUpdateTileRender>();
+                    tile.IsWalkable = true;
+                    tile.WalkableConstructionBelowMetaID = below.Construction.ConstructionMetaID;
                 }
             }
         }
 
+        public void UpdateWalkabilityAround(Point3 pos)
+        {
+            foreach (var offset in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
+            {
+                UpdateWalkabilityAt(pos + offset);
+            }
+        }
+
+        private void UpdatePathAround(Point3 pos)
+        {
+            if (Pathfinder == null)
+                return;
+
+            foreach (var offset in WorldUtils.TOP_BOTTOM_NEIGHBOUR_PATTERN())
+            {
+                var nodePos = pos + offset;
+                if (nodePos.InBounds(Point3.Zero, Size))
+                {
+                    Pathfinder.UpdatePathNode(nodePos);
+                }
+            }
+        }
+
+        public void RemoveConstruction(Point3 pos)
+        {
+            MapGenerator.Visit(pos, true, true);
+
+            if (!Map.InBounds(pos))
+                return;
+
+            ref Tile tile = ref Map.GetRef(pos);
+            if (!tile.Exists || !tile.HasConstruction)
+                return;
+
+            TileConstruction bcc = tile.Construction;
+            tile.HasConstruction = false;
+            tile.IsRamp = false;
+            tile.HasConstructionOver = false;
+            tile.HasConstructionRotation = false;
+            tile.HasConstructionShape = false;
+            tile.IsFluidBlocker = false;
+
+            UpdateWalkabilityAround(pos);
+            UpdatePathAround(pos);
+            InvalidateRender(pos);
+
+            ArchWorld.Create(new EventConstructionRemoved()
+            {
+                Position = pos,
+                ConstructionMetaID = bcc.ConstructionMetaID,
+                MaterialMetaID = bcc.MaterialMetaID
+            });
+        }
+
         public void PlaceConstruction(Point3 pos, Construction constr, Material mat)
         {
-            Entity ent = Map[pos];
-            ConstructionBase bcc = new()
+            if (!Map.InBounds(pos))
+                return;
+
+            ref Tile tile = ref Map.GetRef(pos);
+            if (!tile.Exists)
+                return;
+
+            TileConstruction bcc = new()
             {
-                ConstructionMetaID = GlobalResources.Constructions.IndexOf("SoilWallFloor"),
-                MaterialMetaID = GlobalResources.Materials.IndexOf("DIRT")
+                ConstructionMetaID = GlobalResources.Constructions.IndexOf(constr.ID),
+                MaterialMetaID = GlobalResources.Materials.IndexOf(mat.ID)
             };
 
-            if (ent.Has<ConstructionBase>() && !constr.OverAble || constr.OverAble && ent.Has<ConstructionOver>())
+            if (tile.HasConstruction && !constr.OverAble || constr.OverAble && tile.HasConstructionOver)
             {
-                Debug.WriteLine(string.Format("Cant place construction {0}", constr.ID));
+                Debug.WriteLine($"Cant place construction {constr.ID}");
                 return;
             }
-            if (!ent.Has<ConstructionBase>())
+
+            if (!tile.HasConstruction)
             {
-                ent.Add(bcc);
+                tile.HasConstruction = true;
+                tile.Construction = bcc;
+                tile.IsRamp = constr.Type == "Ramp";
+                tile.IsFluidBlocker = !tile.IsRamp;
             }
-            else if (!ent.Has<ConstructionOver>() && constr.OverAble)
+            else if (!tile.HasConstructionOver && constr.OverAble)
             {
-                throw new Exception("Something went wrong");
+                tile.HasConstructionOver = true;
+                tile.ConstructionOver = new TileConstructionOver
+                {
+                    ConstructionMetaID = bcc.ConstructionMetaID,
+                    MaterialMetaID = bcc.MaterialMetaID
+                };
             }
+
+            UpdateWalkabilityAround(pos);
+            UpdatePathAround(pos);
+            InvalidateRender(pos);
 
             ArchWorld.Create(new EventConstructionPlaced()
             {
@@ -226,34 +308,23 @@ namespace Origin.Source.Model.Map
                 ConstructionMetaID = bcc.ConstructionMetaID,
                 MaterialMetaID = bcc.MaterialMetaID
             });
-            foreach (var item in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
-            {
-                var pos2 = item + pos;
-                if (Map.TryGet(pos2, out Entity e) && !e.Has<SelfRequestUpdateTileRender>())
-                    e.Add<SelfRequestUpdateTileRender>();
-            }
         }
 
         public void Dispose()
         {
-            //ArchWorld.SharedJobScheduler.Flush();
-            //ArchWorld.SharedJobScheduler.Dispose();
             GC.SuppressFinalize(this);
         }
 
         public void BeforeTick()
         {
-            //throw new NotImplementedException();
         }
 
         public void AfterTick()
         {
-            //throw new NotImplementedException();
         }
 
         public void TickTricky(int mult)
         {
-            //throw new NotImplementedException();
         }
     }
 }

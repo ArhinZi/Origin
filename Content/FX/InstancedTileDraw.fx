@@ -68,9 +68,23 @@ float4 ShadeColor(float4 color, uint3 pos)
     return float4(lerp(color.rgb, fogColor.rgb, 1 - fogFactor) * shadeFactor, color.a);
 }
 
+float RemapSunLight(float sunLightIntensity)
+{
+    float t = saturate(sunLightIntensity);
+    t = smoothstep(0.0, 1.0, t);
+    return t;
+}
 
+float3 GetTwilightTint(float sunLightIntensity)
+{
+    float t = saturate(sunLightIntensity);
+    float twilight = 1.0 - abs(t * 2.0 - 1.0);
+    twilight = smoothstep(0.05, 0.95, twilight);
 
-
+    float3 sunriseSunsetTint = float3(1.12, 0.92, 0.78);
+    float3 dayTint = float3(1.0, 1.0, 1.0);
+    return lerp(dayTint, sunriseSunsetTint, twilight * 0.35);
+}
 
 int RBIT_COUNT; // count of bitsreally using by hidden tit storage
 
@@ -295,7 +309,11 @@ float4 InstancingPS(InstancingVSoutput input) : SV_TARGET
     if (input.dolight && !nolight)
     {
         float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
-        color.rgb = lerp(float3(luminance, luminance, luminance)/2, color.rgb, float3(input.light, input.light, input.light));
+        float sunLight = RemapSunLight(SunLightIntensity);
+        float localLight = saturate(input.light * sunLight);
+        float3 twilightTint = GetTwilightTint(sunLight);
+        color.rgb = lerp(float3(luminance, luminance, luminance) / 2, color.rgb, float3(localLight, localLight, localLight));
+        color.rgb *= twilightTint;
     }
     
     clip((color.a < 0.1) ? -1 : 1);
