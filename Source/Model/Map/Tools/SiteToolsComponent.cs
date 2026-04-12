@@ -15,6 +15,7 @@ namespace Origin.Source.Model.Map.Tools
         public Site Site;
         private List<Tool> toolList;
         public Tool CurrentTool;
+        private readonly Stack<IToolCommand> _commandHistory = new();
 
         public SiteToolsComponent(Site site)
         {
@@ -28,6 +29,12 @@ namespace Origin.Source.Model.Map.Tools
                 new ToolInfo(this),
             ];
             //SetToolByName("ToolDig");
+        }
+
+        public void Execute(IToolCommand command)
+        {
+            command.Execute(Site);
+            _commandHistory.Push(command);
         }
 
         public void SetToolByName(string name)

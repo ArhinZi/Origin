@@ -1,7 +1,4 @@
-﻿using Arch.Core;
-using Arch.Core.Extensions;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Origin.Source.Controller.IO;
 using Origin.Source.ECS.Construction;
@@ -42,9 +39,63 @@ namespace Origin.Source.Model.Map.Tools
 
         public override void Reset()
         {
-            Active = false;
+            SetState(ToolState.Idle);
             DrawDirty = true;
             sprites.Clear();
+        }
+
+        private void NormalizeSelection()
+        {
+            start = startPos;
+            end = prevPos;
+            if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
+            if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
+        }
+
+        private void RebuildSelectionPreview()
+        {
+            DrawDirty = true;
+            sprites.Clear();
+            NormalizeSelection();
+
+            for (int z = start.Z; z <= end.Z; z++)
+            {
+                for (int x = start.X; x <= end.X; x++)
+                {
+                    for (int y = start.Y; y <= end.Y; y++)
+                    {
+                        Point3 pos = new(x, y, z);
+                        if (pos != Position)
+                        {
+                            sprites.Add(new SpritePositionColor()
+                            {
+                                sprite = Wall,
+                                color = Color.White * 0.5f,
+                                offset = new Point(0, 0),
+                                position = pos
+                            });
+                            sprites.Add(new SpritePositionColor()
+                            {
+                                sprite = Floor,
+                                color = Color.White * 0.5f,
+                                offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
+                                position = pos
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool TryMoveAboveGround(ref Point3 pos)
+        {
+            if (pos == Point3.Null) return false;
+            int z = pos.Z + 1;
+            if (z >= Controller.Site.Size.Z)
+                return false;
+
+            pos = new Point3(pos.X, pos.Y, z);
+            return true;
         }
 
         public override void Update(GameTime gameTime)
@@ -54,22 +105,23 @@ namespace Origin.Source.Model.Map.Tools
             Wall = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "WallSoil");
             Floor = GlobalResources.GetResourceBy(GlobalResources.Sprites, "ID", "FloorSoil");
 
-            if (!Active)
+            if (State == ToolState.Idle)
             {
                 Position = MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site, true);
-                if (Position != Point3.Null)
-                {
-                    if (InputManager.JustPressed("mouse.left"))
-                    {
-                        Active = true;
-                        startPos = Position;
+                if (!TryMoveAboveGround(ref Position))
+                    Position = Point3.Null;
 
-                        currentLevel = startPos.Z;
-                        CurrSiteLevel = Controller.Site.CurrentLevel;
-                    }
+                if (Position != Point3.Null && InputManager.JustPressed("mouse.left"))
+                {
+                    SetState(ToolState.Selecting);
+                    startPos = Position;
+                    prevPos = Position;
+
+                    currentLevel = startPos.Z;
+                    CurrSiteLevel = Controller.Site.CurrentLevel;
                 }
             }
-            else if (Active)
+            else if (State == ToolState.Selecting)
             {
                 if (CurrSiteLevel != Controller.Site.CurrentLevel)
                 {
@@ -77,66 +129,28 @@ namespace Origin.Source.Model.Map.Tools
                     CurrSiteLevel = Controller.Site.CurrentLevel;
                     currentLevel += mod;
                 }
+
                 Position = MouseScreenToMap(Camera, m, currentLevel, Controller.Site, onFloor: true, clip: true);
                 if (Position != Point3.Null)
                 {
                     if (prevPos != Position)
                     {
-                        DrawDirty = true;
-                        sprites.Clear();
-                        start = startPos;
-                        end = prevPos = Position;
-                        if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
-                        if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
-                        for (int z = start.Z; z <= end.Z; z++)
-                        {
-                            for (int x = start.X; x <= end.X; x++)
-                            {
-                                for (int y = start.Y; y <= end.Y; y++)
-                                {
-                                    Point3 Pos = new(x, y, z);
-                                    if (Pos != Position)
-                                    {
-                                        sprites.Add(new SpritePositionColor()
-                                        {
-                                            sprite = Wall,
-                                            color = Color.White * 0.5f,
-                                            offset = new Point(0, 0),
-                                            position = Pos
-                                        });
-                                        sprites.Add(new SpritePositionColor()
-                                        {
-                                            sprite = Floor,
-                                            color = Color.White * 0.5f,
-                                            offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
-                                            position = Pos
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                        prevPos = Position;
+                        RebuildSelectionPreview();
                     }
+
                     if (InputManager.JustPressed("mouse.left"))
                     {
                         DrawDirty = true;
                         sprites.Clear();
+                        NormalizeSelection();
+
                         Construction construction = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", "SoilWallFloor");
                         Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "DIRT");
-                        for (int z = start.Z; z <= end.Z; z++)
-                        {
-                            for (int x = start.X; x <= end.X; x++)
-                            {
-                                for (int y = start.Y; y <= end.Y; y++)
-                                {
-                                    Point3 pos = new(x, y, z);
+                        ExecuteCommand(new PlaceConstructionAreaCommand(start, end, construction, mat));
 
-                                    Controller.Site.PlaceConstruction(pos, construction, mat);
-                                }
-
-                                Active = false;
-                                startPos = Position;
-                            }
-                        }
+                        SetState(ToolState.Idle);
+                        startPos = Position;
                     }
                     if (InputManager.JustPressed("mouse.right"))
                     {
@@ -144,13 +158,15 @@ namespace Origin.Source.Model.Map.Tools
                     }
                 }
             }
-            if (Position != Point3.Null && (DrawDirty || !Active))
+
+            if (Position != Point3.Null && (DrawDirty || State == ToolState.Idle))
             {
                 if (!DrawDirty)
                 {
                     sprites.Clear();
                     DrawDirty = true;
                 }
+
                 sprites.Add(new SpritePositionColor()
                 {
                     sprite = Wall,
@@ -175,59 +191,11 @@ namespace Origin.Source.Model.Map.Tools
                     });
                 }
             }
-            else if (!Active)
+            else if (State == ToolState.Idle)
             {
                 sprites.Clear();
                 DrawDirty = true;
             }
-        }
-
-        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
-                bool onFloor = false,
-                bool clip = false)
-        {
-            Vector3 worldPos = GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
-            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
-                (onFloor ? GlobalResources.Settings.FloorYoffset : 0)
-                , 0);
-
-            var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
-            var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
-
-            Point3 cellPos = new()
-            {
-                X = (int)Math.Round(cellPosX + cellPosY),
-                Y = (int)Math.Round(cellPosY - cellPosX),
-                Z = level
-            };
-            if (clip && (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size)))
-                return Point3.Null;
-            return cellPos;
-        }
-
-        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site,
-            bool onFloor = false)
-        {
-            int tlevel = level;
-            for (int i = 0; i < ONE_MOMENT_DRAW_LEVELS; i++)
-            {
-                Point3 pos = MouseScreenToMap(cam, mousePos, tlevel, site, onFloor);
-
-                Entity tmp;
-                if (pos.InBounds(Point3.Zero, site.Size) &&
-                    site.Map.TryGet(pos, out tmp) && tmp != Entity.Null && !tmp.Has<ConstructionBase>() &&
-                    site.Map.TryGet(pos - new Point3(0, 0, 1), out tmp) && tmp != Entity.Null && tmp.Has<ConstructionBase>())
-                    return pos;
-                else if (site.Map.TryGet(pos, out tmp) && tmp == Entity.Null)
-                    return Point3.Null;
-                else
-                {
-                    tlevel--;
-                    continue;
-                }
-            }
-
-            return Point3.Null;
         }
     }
 }

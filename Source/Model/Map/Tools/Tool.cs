@@ -11,6 +11,17 @@ using System.Collections.Generic;
 
 namespace Origin.Source.Model.Map.Tools
 {
+    public enum ToolState
+    {
+        Idle,
+        Selecting,
+    }
+
+    public interface IToolCommand
+    {
+        void Execute(Site site);
+    }
+
     public abstract class Tool : MonoGame.Extended.IUpdate
     {
         public class SpritePositionColor : ICloneable
@@ -39,11 +50,23 @@ namespace Origin.Source.Model.Map.Tools
         public Point3 PrevPosition = Point3.Null;
         public bool DrawDirty = false;
         public bool Active = false;
+        public ToolState State { get; protected set; } = ToolState.Idle;
 
         public Tool(SiteToolsComponent controller)
         {
             Controller = controller;
             RenderLayer = Global.DrawBufferLayer.FrontInteractives;
+        }
+
+        protected void SetState(ToolState state)
+        {
+            State = state;
+            Active = state != ToolState.Idle;
+        }
+
+        protected void ExecuteCommand(IToolCommand command)
+        {
+            Controller.Execute(command);
         }
 
         public abstract void Update(GameTime gameTime);
@@ -54,26 +77,56 @@ namespace Origin.Source.Model.Map.Tools
         {
         }
 
+        /// <summary>
+        /// Converts a mouse position in screen space to a map cell coordinate on an isometric grid.
+        /// </summary>
+        /// <param name="cam">Camera used to unproject screen coordinates into world space.</param>
+        /// <param name="mousePos">Mouse position in screen pixels.</param>
+        /// <param name="level">Target Z level to project onto.</param>
+        /// <param name="site">Current site used for optional bounds clipping.</param>
+        /// <param name="onFloor">
+        /// Adds floor vertical offset when <see langword="true"/>, so selection aligns with floor surface.
+        /// </param>
+        /// <param name="clip">
+        /// When <see langword="true"/>, returns <see cref="Point3.Null"/> if the resulting cell is outside site bounds.
+        /// </param>
+        /// <returns>
+        /// A map cell position at the requested level, or <see cref="Point3.Null"/> when clipping rejects the result.
+        /// </returns>
         public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
             bool onFloor = false,
             bool clip = false)
         {
-            Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
-            worldPos += new Vector3(0, level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
-                (onFloor ? GlobalResources.Settings.FloorYoffset : 0)
-                , 0);
+            // Convert screen-space mouse coordinates to world-space position.
+            Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(
+                new Vector3(mousePos.X, mousePos.Y, 1),
+                cam.Projection,
+                cam.Transformation,
+                cam.WorldMatrix);
 
+            // Shift world Y to the requested map level (and optionally to floor surface height).
+            worldPos += new Vector3(
+                0,
+                level * (GlobalResources.Settings.TileSize.Y + GlobalResources.Settings.FloorYoffset) +
+                (onFloor ? GlobalResources.Settings.FloorYoffset : 0),
+                0);
+
+            // Convert world coordinates into intermediate isometric cell-space values.
             var cellPosX = worldPos.X / GlobalResources.Settings.TileSize.X - 0.5;
             var cellPosY = worldPos.Y / GlobalResources.Settings.TileSize.Y - 0.5;
 
+            // Resolve intermediate values to integer map cell coordinates.
             Point3 cellPos = new()
             {
                 X = (int)Math.Round(cellPosX + cellPosY),
                 Y = (int)Math.Round(cellPosY - cellPosX),
                 Z = level
             };
+
+            // Optionally reject out-of-bounds cells.
             if (clip && (cellPos.LessOr(Point3.Zero) || cellPos.GraterEqualOr(site.Size)))
                 return Point3.Null;
+
             return cellPos;
         }
 

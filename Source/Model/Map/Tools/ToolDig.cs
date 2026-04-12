@@ -31,69 +31,77 @@ namespace Origin.Source.Model.Map.Tools
 
         public override void Reset()
         {
-            Active = false;
+            SetState(ToolState.Idle);
             DrawDirty = true;
             sprites.Clear();
+            prevPos = Point3.Null;
+            startPos = Point3.Null;
+        }
+
+        private void NormalizeSelection()
+        {
+            start = startPos;
+            end = prevPos;
+            if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
+            if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
+        }
+
+        private void RebuildSelectionPreview()
+        {
+            DrawDirty = true;
+            sprites.Clear();
+            NormalizeSelection();
+
+            for (int x = start.X; x <= end.X; x++)
+            {
+                for (int y = start.Y; y <= end.Y; y++)
+                {
+                    Point3 pos = new(x, y, start.Z);
+                    if (pos != Position)
+                    {
+                        SpritePositionColor spc = template.Clone() as SpritePositionColor;
+                        sprites.Add(spc);
+                        sprites[^1].position = pos;
+                    }
+                }
+            }
         }
 
         public override void Update(GameTime gameTime)
         {
             Point m = Mouse.GetState().Position;
 
-            //sprites.Clear();
-            if (!Active)
+            if (State == ToolState.Idle)
             {
                 Position = MouseScreenToMapSurface(Camera, m, Controller.Site.CurrentLevel, Controller.Site, true);
-                if (Position != Point3.Null)
+                if (Position != Point3.Null && InputManager.JustPressed("mouse.left"))
                 {
-                    if (InputManager.JustPressed("mouse.left"))
-                    {
-                        Active = true;
-                        startPos = Position;
-                    }
+                    startPos = Position;
+                    prevPos = Position;
+                    SetState(ToolState.Selecting);
                 }
             }
-            else if (Active)
+            else if (State == ToolState.Selecting)
             {
                 Position = MouseScreenToMap(Camera, m, startPos.Z, Controller.Site, onFloor: true, clip: true);
                 if (Position != Point3.Null)
                 {
                     if (prevPos != Position)
                     {
-                        DrawDirty = true;
-                        start = startPos;
-                        end = prevPos = Position;
-                        if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
-                        if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
-                        sprites.Clear();
-                        for (int i = start.X; i <= end.X; i++)
-                        {
-                            for (int j = start.Y; j <= end.Y; j++)
-                            {
-                                Point3 Pos = new(i, j, start.Z);
-                                if (Pos != Position)
-                                {
-                                    SpritePositionColor spc = template.Clone() as SpritePositionColor;
-                                    sprites.Add(spc);
-                                    sprites[^1].position = Pos;
-                                }
-                            }
-                        }
+                        prevPos = Position;
+                        RebuildSelectionPreview();
                     }
+
                     if (InputManager.JustPressed("mouse.left"))
                     {
-                        sprites.Clear();
-                        for (int i = start.X; i <= end.X; i++)
-                        {
-                            for (int j = start.Y; j <= end.Y; j++)
-                            {
-                                Controller.Site.RemoveConstruction(new Point3(i, j, start.Z));
-                            }
-                        }
-
-                        Active = false;
+                        NormalizeSelection();
+                        ExecuteCommand(new RemoveConstructionAreaCommand(start, end));
+                        SetState(ToolState.Idle);
                         startPos = Position;
+                        DrawDirty = true;
+                        sprites.Clear();
                     }
+
                     if (InputManager.JustPressed("mouse.right"))
                     {
                         Reset();
@@ -101,7 +109,7 @@ namespace Origin.Source.Model.Map.Tools
                 }
             }
 
-            if (Position != Point3.Null && (DrawDirty || !Active))
+            if (Position != Point3.Null && (DrawDirty || State == ToolState.Idle))
             {
                 if (!DrawDirty)
                 {
@@ -110,8 +118,8 @@ namespace Origin.Source.Model.Map.Tools
                 }
                 sprites.Add(template);
                 sprites[^1].position = Position;
-                if (Active) sprites[^1].color = Color.Blue;
-                else sprites[^1].color = Color.Red;
+                sprites[^1].color = State == ToolState.Selecting ? Color.Blue : Color.Red;
+
                 for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)
                 {
                     sprites.Add(new SpritePositionColor()
@@ -122,7 +130,7 @@ namespace Origin.Source.Model.Map.Tools
                     });
                 }
             }
-            else if (!Active)
+            else if (State == ToolState.Idle)
             {
                 sprites.Clear();
                 DrawDirty = true;

@@ -25,6 +25,7 @@ namespace Origin.Source.Model.Map.Tools
 
         private Sprite Wall;
         private Sprite Floor;
+        //private Point3 GroundPosition = Point3.Null;
 
         private SpritePositionColor template = new()
         {
@@ -53,6 +54,7 @@ namespace Origin.Source.Model.Map.Tools
             Point m = Mouse.GetState().Position;
 
             Wall = GlobalResources.Sprites["SolidWall"];
+            //GroundPosition = MouseScreenToMap(Camera, m, Controller.Site.CurrentLevel, Controller.Site, true, true);
 
             if (!Active)
             {
@@ -82,88 +84,14 @@ namespace Origin.Source.Model.Map.Tools
                                 ent.Add<SelfRequestUpdateTileRender>();
                             }
                         }
-                        if(InputManager.JustReleased("mouse.left"))
+                        if (InputManager.JustReleased("mouse.left"))
                         {
                             Reset();
                         }
                     }
                 }
             }
-            /*else if (Active)
-            {
-                if (CurrSiteLevel != Controller.Site.CurrentLevel)
-                {
-                    int mod = Controller.Site.CurrentLevel - CurrSiteLevel;
-                    CurrSiteLevel = Controller.Site.CurrentLevel;
-                    currentLevel += mod;
-                }
-                Position = MouseScreenToMap(Camera, m, currentLevel, Controller.Site, onFloor: true, clip: true);
-                if (Position != Point3.Null)
-                {
-                    if (prevPos != Position)
-                    {
-                        DrawDirty = true;
-                        sprites.Clear();
-                        start = startPos;
-                        end = prevPos = Position;
-                        if (end.X < start.X) (start.X, end.X) = (end.X, start.X);
-                        if (end.Y < start.Y) (start.Y, end.Y) = (end.Y, start.Y);
-                        for (int z = start.Z; z <= end.Z; z++)
-                        {
-                            for (int x = start.X; x <= end.X; x++)
-                            {
-                                for (int y = start.Y; y <= end.Y; y++)
-                                {
-                                    Point3 Pos = new(x, y, z);
-                                    if (Pos != Position)
-                                    {
-                                        sprites.Add(new SpritePositionColor()
-                                        {
-                                            sprite = Wall,
-                                            color = Color.White * 0.5f,
-                                            offset = new Point(0, 0),
-                                            position = Pos
-                                        });
-                                        sprites.Add(new SpritePositionColor()
-                                        {
-                                            sprite = Floor,
-                                            color = Color.White * 0.5f,
-                                            offset = new Point(0, -GlobalResources.Settings.FloorYoffset),
-                                            position = Pos
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (InputManager.JustPressed("mouse.left"))
-                    {
-                        DrawDirty = true;
-                        sprites.Clear();
-                        Construction construction = GlobalResources.GetResourceBy(GlobalResources.Constructions, "ID", "SoilWallFloor");
-                        Material mat = GlobalResources.GetResourceBy(GlobalResources.Materials, "ID", "Dirt");
-                        for (int z = start.Z; z <= end.Z; z++)
-                        {
-                            for (int x = start.X; x <= end.X; x++)
-                            {
-                                for (int y = start.Y; y <= end.Y; y++)
-                                {
-                                    Point3 pos = new(x, y, z);
 
-                                    Controller.Site.PlaceConstruction(pos, construction, mat);
-                                }
-
-                                Active = false;
-                                startPos = Position;
-                            }
-                        }
-                    }
-                    if (InputManager.JustPressed("mouse.right"))
-                    {
-                        Reset();
-                    }
-                }
-            }*/
             if (Position != Point3.Null && (DrawDirty || !Active))
             {
                 if (!DrawDirty)
@@ -178,7 +106,27 @@ namespace Origin.Source.Model.Map.Tools
                     offset = new Point(0, 0),
                     position = Position
                 });
-                for (int i = Math.Min(Position.Z + 1, Controller.Site.CurrentLevel); i <= Controller.Site.CurrentLevel; i++)
+                //for (int i = Math.Min(GroundPosition.Z + 1, Controller.Site.CurrentLevel); i <= Position.Z; i++)
+                int startZ = Position.Z -5;
+                int endZ = Position.Z - 1;
+                //if (GroundPosition != Point3.Null)
+                //{
+                //    startZ = GroundPosition.Z + 1;
+                //    endZ = Position.Z;
+                //}
+                //else
+                //{
+                //    startZ = Position.Z;
+                //    endZ = Position.Z;
+                //}
+
+                //if (startZ > endZ)
+                //    (startZ, endZ) = (endZ, startZ);
+
+                //startZ = Math.Max(0, startZ);
+                endZ = Math.Min(Controller.Site.Size.Z - 1, endZ);
+
+                for (int i = startZ; i <= endZ; i++)
                 {
                     sprites.Add(new SpritePositionColor()
                     {
