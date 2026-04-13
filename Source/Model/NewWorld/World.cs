@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Origin.Source.Model.Generators;
 using Origin.Source.Model.NewWorld.Systems.Fluid;
 using Origin.Source.Model.NewWorld.Systems.Light;
 using Origin.Source.Model.NewWorld.Systems.Pathfinding;
@@ -16,12 +17,15 @@ namespace Origin.Source.Model.NewWorld
 
         private SaveGameEntity sge = null;
 
+        public SiteGenerationSettings GenerationSettings { get; private set; } = new SiteGenerationSettings();
+
         public static void Load(World world, string name, int seed, SaveGameEntity sge, List<Site> sites)
         {
             world.Name = name;
             world.sge = sge;
             world.Sites = sites;
             world.Random = new Random(seed);
+            world.GenerationSettings = new SiteGenerationSettings();
         }
 
         public string Name { get; private set; } = "Lost fields";
@@ -35,28 +39,44 @@ namespace Origin.Source.Model.NewWorld
         {
         }
 
-        public void NewInitialize()
+        public void NewInitialize(bool createRenderAndTools = true, Action<float, string> progress = null, Point3? siteSize = null, int? generationSeed = null, SiteGenerationSettings generationSettings = null)
         {
-            Random = new Random(1234);
+            Seed = generationSeed ?? Seed;
+            Random = new Random(Seed);
+            GenerationSettings = generationSettings ?? new SiteGenerationSettings();
 
             if (SaveGameEntity.Saves.ContainsKey(Name))
                 sge = SaveGameEntity.Saves[Name];
             else
                 sge = new SaveGameEntity(this.Name);
 
-            // 64 128 192 256 320 384
-            ActiveSite = new Site(this, new Point3(64, 64, 128), Sites.Count);
+            Point3 size = siteSize ?? new Point3(64, 64, 128);
+            ActiveSite = new Site(this, size, Sites.Count, createRenderAndTools, progress, Seed, GenerationSettings);
             Sites.Add(ActiveSite);
         }
 
         public void PostInitialize(bool load = false)
+        {
+            PreparePostInitialize(load);
+
+            if (!load)
+            {
+                TimeManager.SystemsManager.Init();
+            }
+            else
+            {
+                TimeManager.SystemsManager.LoadInit();
+            }
+        }
+
+        public void PreparePostInitialize(bool load = false)
         {
             if (ActiveSite == null)
                 ActiveSite = Sites[0];
 
             TimeManager = new WorldTickManager(this);
 
-            InitSystemManager(load);
+            InitSystemManager(load, false);
 
             foreach (var site in Sites)
             {
@@ -64,7 +84,16 @@ namespace Origin.Source.Model.NewWorld
             }
         }
 
-        private void InitSystemManager(bool load = false)
+        public bool InitializeNextSystem(bool load = false)
+        {
+            return TimeManager.SystemsManager.InitNext(load);
+        }
+
+        public int InitializedSystemsCount => TimeManager?.SystemsManager.InitializedCount ?? 0;
+        public int SystemsCount => TimeManager?.SystemsManager.Systems.Count ?? 0;
+        public string PendingInitSystemName => TimeManager?.SystemsManager.PendingInitSystemName ?? string.Empty;
+
+        private void InitSystemManager(bool load = false, bool initNow = true)
         {
             var SystemManager = TimeManager.SystemsManager;
 
@@ -80,13 +109,16 @@ namespace Origin.Source.Model.NewWorld
 
             SystemManager.Systems.Add(new SystemUpdateRenderTiles(ActiveSite));
 
-            if (!load)
+            if (initNow)
             {
-                SystemManager.Init();
-            }
-            else
-            {
-                SystemManager.LoadInit();
+                if (!load)
+                {
+                    SystemManager.Init();
+                }
+                else
+                {
+                    SystemManager.LoadInit();
+                }
             }
         }
 

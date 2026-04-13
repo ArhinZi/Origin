@@ -33,7 +33,19 @@ namespace Origin.Source.Controller.IO
 
             if (InputManager.JustPressed("game.exit"))
             {
-                StateMainGame.EscMenu = !StateMainGame.EscMenu;
+                if (StateMainGame.EscMenu)
+                {
+                    if (StateMainGame.OptionsMenu)
+                        StateMainGame.OptionsMenu = false;
+                    else if (StateMainGame.LoadMenu)
+                        StateMainGame.LoadMenu = false;
+                    else
+                        StateMainGame.EscMenu = false;
+                }
+                else
+                {
+                    StateMainGame.EscMenu = true;
+                }
             }
             if (InputManager.JustPressed("game.pause"))
             {

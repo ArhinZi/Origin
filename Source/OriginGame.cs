@@ -17,6 +17,7 @@ using MonoGame.ImGuiNet;
 using Origin.Source.Controller.IO;
 using Origin.Source.Events;
 using Origin.Source.GameStates;
+using Origin.Source.Model.Generators;
 using Origin.Source.Resources;
 using Origin.Source.Save;
 
@@ -125,9 +126,9 @@ namespace Origin.Source
             _screenManager.LoadScreen(new StateMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
 
-        public void StartNewSite()
+        public void StartNewSite(Point3? siteSize = null, int? generationSeed = null, SiteGenerationSettings generationSettings = null)
         {
-            _screenManager.LoadScreen(new StateMainGame(this, true), new FadeTransition(GraphicsDevice, Color.Black, 0));
+            _screenManager.LoadScreen(new StateMainGame(this, true, siteSize, generationSeed, generationSettings), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
 
         public void LoadGameScreen()

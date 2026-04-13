@@ -50,22 +50,38 @@ namespace Origin.Source.Model.Generators
         private RiverData river;
         private Point3 Size;
         private int Seed;
+        private readonly SiteGenerationSettings _settings;
 
-        public SurfacePass(Point3 size, int seed)
+        public SurfacePass(Point3 size, int seed, SiteGenerationSettings settings = null)
         {
             Size = size;
             Seed = seed;
-            river = new RiverData(MapBorder.TopLeft, MapBorder.BottomLeft, 5);
+            _settings = settings ?? new SiteGenerationSettings();
+            _settings.HeightScale = Math.Clamp(_settings.HeightScale, 1f, 40f);
+            _settings.NoiseFrequency = Math.Clamp(_settings.NoiseFrequency, 0.0001f, 0.05f);
+            _settings.NoiseOctaves = Math.Clamp(_settings.NoiseOctaves, 1, 16);
+            _settings.NoiseGain = Math.Clamp(_settings.NoiseGain, 0.01f, 1f);
+            _settings.BaseHeightRatio = Math.Clamp(_settings.BaseHeightRatio, 0.05f, 0.95f);
+            _settings.SoilDepth = Math.Clamp(_settings.SoilDepth, 1, 64);
+            _settings.SmoothIterations = Math.Clamp(_settings.SmoothIterations, 0, 16);
+            _settings.RiverStrength = Math.Clamp(_settings.RiverStrength, 1, 64);
+            _settings.RiverRadiusMultiplier = Math.Clamp(_settings.RiverRadiusMultiplier, 0.5f, 20f);
+            _settings.RiverErosionPower = Math.Clamp(_settings.RiverErosionPower, 0.1f, 3f);
+            _settings.RiverMinHeight = Math.Clamp(_settings.RiverMinHeight, -64f, 10f);
 
-            GenerateHeightMap(10);
-            GenerateRiverOnHeightMap();
-            SmoothHeightMap();
+            river = new RiverData(MapBorder.TopLeft, MapBorder.BottomLeft, _settings.RiverStrength);
+
+            GenerateHeightMap(_settings.HeightScale, _settings.NoiseFrequency);
+            if (_settings.EnableRiver)
+                GenerateRiverOnHeightMap();
+            for (int i = 0; i < _settings.SmoothIterations; i++)
+                SmoothHeightMap();
         }
 
         public override Tile Pass(Tile tile, Point3 pos)
         {
-            var dirtDepth = 5;
-            var baseHeight = (int)(Size.Z * 0.7f);
+            var dirtDepth = _settings.SoilDepth;
+            var baseHeight = (int)(Size.Z * _settings.BaseHeightRatio);
 
             int GetH(Point3 hpos)
             {
@@ -115,9 +131,9 @@ namespace Origin.Source.Model.Generators
             FastNoiseLite fnl = new(Seed);
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
             fnl.SetFractalType(FastNoiseLite.FractalType.FBm);
-            fnl.SetFractalOctaves(8);
+            fnl.SetFractalOctaves(_settings.NoiseOctaves);
             fnl.SetFrequency(freq);
-            fnl.SetFractalGain(0.3f);
+            fnl.SetFractalGain(_settings.NoiseGain);
             for (int i = 0; i < Size.X; i++)
             {
                 for (int j = 0; j < Size.Y; j++)
@@ -174,8 +190,9 @@ namespace Origin.Source.Model.Generators
             Node end;
 
             GenPathNodes();
-            start = nodes[0, Random.Shared.Next() % height];
-            end = nodes[width - 1, Random.Shared.Next() % height];
+            var rnd = new Random(Seed);
+            start = nodes[0, rnd.Next(0, height)];
+            end = nodes[width - 1, rnd.Next(0, height)];
 
             PathFinder pf = new();
             Path path = pf.FindPath(start, end, Velocity.FromMetersPerSecond(2));
@@ -184,7 +201,7 @@ namespace Origin.Source.Model.Generators
             foreach (var edge in path.Edges)
             {
                 Point3 pos = new((int)edge.Start.Position.X, (int)edge.Start.Position.Y, (int)edge.Start.Position.Z);
-                int radius = river.Strength * 5;
+                int radius = (int)river.Strength * (int)_settings.RiverRadiusMultiplier;
                 int minX = Math.Max(pos.X - radius, 0);
                 int maxX = Math.Min(pos.X + radius, width - 1);
                 int minY = Math.Max(pos.Y - radius, 0);
@@ -197,9 +214,10 @@ namespace Origin.Source.Model.Generators
                         int r = IsWithinRadius(x, y, pos.X, pos.Y, radius);
                         if (r != -1 && !visited.Contains(new Point(x, y)))
                         {
-                            float erosionAmount = (float)Math.Pow(r, 0.9) - 3;
+                            float erosionAmount = (float)Math.Pow(r, _settings.RiverErosionPower) - 3;
                             heightMap[x, y].Height = Math.Min(heightMap[x, y].Height, erosionAmount);
-                            if (heightMap[x, y].Height < -5) heightMap[x, y].Height = -5;
+                            if (heightMap[x, y].Height < _settings.RiverMinHeight)
+                                heightMap[x, y].Height = _settings.RiverMinHeight;
                         }
                         if (r != -1 && r <= river.Strength)
                         {

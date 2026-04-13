@@ -63,7 +63,7 @@ namespace Origin.Source.Model.NewWorld
         public int PreviousLevel { get; private set; }
         public bool RenderDirty => _renderDirty;
 
-        public Site(World world, Point3 size, int iD)
+        public Site(World world, Point3 size, int iD, bool createRenderAndTools = true, System.Action<float, string> progress = null, int generationSeed = 553, SiteGenerationSettings generationSettings = null)
         {
             World = world;
             Size = size;
@@ -81,21 +81,38 @@ namespace Origin.Source.Model.NewWorld
                     - GlobalResources.Settings.TileSize.Y * (Size.X / 2)
                  ));
 
-            MapGenerator = new SiteGeneratorService(this, Size);
+            progress?.Invoke(0.1f, "Generating tiles");
+            MapGenerator = new SiteGeneratorService(this, Size, generationSeed, generationSettings);
             MapGenerator.Visit(new Point3(0, 0, Size.Z - 1));
             Trace.WriteLine("End map gen");
 
+            progress?.Invoke(0.45f, "Preparing light data");
             LightControl = new LightComponent(this);
             Trace.WriteLine("End light init");
             ID = iD;
 
+            progress?.Invoke(0.6f, "Building pathfinding data");
             Pathfinder = new SitePathfindingComponent(this, Size);
             Trace.WriteLine("End pathfinder init");
 
-            DrawComponent = new SiteDrawComponent(this);
-            Trace.WriteLine("End creating render");
+            if (createRenderAndTools)
+            {
+                InitializeRenderAndTools();
+            }
+        }
 
-            Tools = new SiteToolsComponent(this);
+        public void InitializeRenderAndTools()
+        {
+            if (DrawComponent == null)
+            {
+                DrawComponent = new SiteDrawComponent(this);
+                Trace.WriteLine("End creating render");
+            }
+
+            if (Tools == null)
+            {
+                Tools = new SiteToolsComponent(this);
+            }
         }
 
         public Site(World world, SaveSiteDump dump, ArchWorld arch)
@@ -123,7 +140,7 @@ namespace Origin.Source.Model.NewWorld
                      ));
             }
 
-            MapGenerator = new SiteGeneratorService(this, Size);
+            MapGenerator = new SiteGeneratorService(this, Size, world.Seed, world.GenerationSettings);
             MapGenerator.Visit(new Point3(0, 0, Size.Z - 1));
             Trace.WriteLine("End map gen");
 
@@ -203,14 +220,14 @@ namespace Origin.Source.Model.NewWorld
 
         public void Update(GameTime gameTime)
         {
-            Tools.Update(gameTime);
-            DrawComponent.Update(gameTime);
+            Tools?.Update(gameTime);
+            DrawComponent?.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            Tools.Draw(gameTime);
-            DrawComponent.Draw(gameTime);
+            Tools?.Draw(gameTime);
+            DrawComponent?.Draw(gameTime);
         }
 
         public void UpdateWalkabilityAt(Point3 pos)

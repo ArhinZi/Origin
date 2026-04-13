@@ -16,18 +16,21 @@ namespace Origin.Source.Model.Generators
         private List<AbstractPass> passes;
 
         private Site _site;
-        private int _seed = 553;
+        private readonly int _seed;
+        private readonly SiteGenerationSettings _settings;
 
         public Point3 Size { get; private set; }
 
-        public SiteGeneratorService(Site site, Point3 size)
+        public SiteGeneratorService(Site site, Point3 size, int seed = 553, SiteGenerationSettings settings = null)
         {
             _site = site;
             Size = size;
+            _seed = seed;
+            _settings = settings ?? new SiteGenerationSettings();
 
             passes =
             [
-                new SurfacePass(Size, _seed)
+                new SurfacePass(Size, _seed, _settings)
             ];
         }
 

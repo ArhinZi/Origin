@@ -8,6 +8,10 @@ namespace Origin.Source.Model.NewWorld.Systems
     {
         public List<TickSystem> Systems = [];
         private WorldTickManager WorldTimeManager;
+        private int _initializedCount;
+
+        public int InitializedCount => _initializedCount;
+        public string PendingInitSystemName => _initializedCount < Systems.Count ? Systems[_initializedCount].GetType().Name : string.Empty;
 
         public SystemGroupsManager(WorldTickManager wtm)
         {
@@ -16,18 +20,33 @@ namespace Origin.Source.Model.NewWorld.Systems
 
         public void Init()
         {
-            foreach (var system in Systems)
+            _initializedCount = 0;
+            while (!InitNext(false))
             {
-                system.Initialize();
             }
         }
 
         public void LoadInit()
         {
-            foreach (var system in Systems)
+            _initializedCount = 0;
+            while (!InitNext(true))
             {
-                system.LoadInit();
             }
+        }
+
+        public bool InitNext(bool load)
+        {
+            if (_initializedCount >= Systems.Count)
+                return true;
+
+            var system = Systems[_initializedCount];
+            if (load)
+                system.LoadInit();
+            else
+                system.Initialize();
+
+            _initializedCount++;
+            return _initializedCount >= Systems.Count;
         }
 
         public void Tick(GameTime gameTime)

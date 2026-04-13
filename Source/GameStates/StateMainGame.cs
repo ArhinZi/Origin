@@ -12,6 +12,7 @@ using Origin.Source;
 using Origin.Source.Controller.IO;
 using Origin.Source.Controller.UI;
 using Origin.Source.Events;
+using Origin.Source.Model.Generators;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 using Origin.Source.Save;
@@ -19,6 +20,7 @@ using Origin.Source.Utils;
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Vector2 = System.Numerics.Vector2;
 
@@ -28,6 +30,12 @@ namespace Origin.Source.GameStates
     {
         private static readonly float[] TimeScaleButtons = [0.5f, 1f, 2f, 4f];
         private bool _exitingToMainMenu;
+
+        private bool _loadingNewSite;
+        private Task<Model.NewWorld.World> _newSiteBuildTask;
+        private bool _postInitPrepared;
+        private float _loadingProgress;
+        private string _loadingOperation = "Preparing";
 
         public static int GameSpeed { get; private set; } = 1;
 
@@ -58,11 +66,34 @@ namespace Origin.Source.GameStates
 
         private InputController _inputControl;
 
-        public StateMainGame(Game game, bool forceNewSite = false) : base(game)
+        private Point3? _requestedSiteSize;
+        private int? _requestedSiteSeed;
+        private SiteGenerationSettings _requestedGenerationSettings;
+
+        public StateMainGame(Game game, bool forceNewSite = false, Point3? requestedSiteSize = null, int? requestedSiteSeed = null, SiteGenerationSettings requestedGenerationSettings = null) : base(game)
         {
             optionsModule = new OptionsModule((OriginGame)game);
+            _requestedSiteSize = requestedSiteSize;
+            _requestedSiteSeed = requestedSiteSeed;
+            _requestedGenerationSettings = requestedGenerationSettings;
 
-            if (!forceNewSite && SaveGameEntity.Saves.Count > 0)
+            if (forceNewSite)
+            {
+                _loadingNewSite = true;
+                _loadingProgress = 0.02f;
+                _loadingOperation = "Preparing world";
+                _newSiteBuildTask = Task.Run(() =>
+                {
+                    var world = new Model.NewWorld.World();
+                    world.NewInitialize(false, (p, op) =>
+                    {
+                        _loadingProgress = p * 0.7f;
+                        _loadingOperation = op;
+                    }, _requestedSiteSize, _requestedSiteSeed, _requestedGenerationSettings);
+                    return world;
+                });
+            }
+            else if (SaveGameEntity.Saves.Count > 0)
             {
                 LoadWorld(SaveGameEntity.Saves.First().Value);
                 Global.ActiveCamera = World.ActiveSite.Camera;
@@ -112,9 +143,63 @@ namespace Origin.Source.GameStates
             Global.ActiveCamera = World.ActiveSite.Camera;
         }
 
+        private void UpdateLoading()
+        {
+            if (_newSiteBuildTask == null)
+                return;
+
+            if (_newSiteBuildTask.IsFaulted)
+            {
+                _loadingOperation = "Loading failed";
+                _loadingProgress = 0;
+                return;
+            }
+
+            if (!_newSiteBuildTask.IsCompleted)
+                return;
+
+            if (World == null)
+            {
+                World = _newSiteBuildTask.Result;
+                World.ActiveSite.InitializeRenderAndTools();
+                Global.World = World;
+                Global.ActiveCamera = World.ActiveSite.Camera;
+                World.PreparePostInitialize();
+                _postInitPrepared = true;
+                _loadingProgress = 0.75f;
+            }
+
+            if (_postInitPrepared)
+            {
+                _loadingOperation = string.IsNullOrEmpty(World.PendingInitSystemName)
+                    ? "Finalizing"
+                    : $"Initializing {World.PendingInitSystemName}";
+
+                bool done = World.InitializeNextSystem();
+                int total = World.SystemsCount <= 0 ? 1 : World.SystemsCount;
+                _loadingProgress = 0.75f + 0.25f * (World.InitializedSystemsCount / (float)total);
+
+                if (done)
+                {
+                    _loadingProgress = 1f;
+                    _loadingOperation = "Done";
+                    _loadingNewSite = false;
+                }
+            }
+        }
+
         public override void Update(GameTime gameTime)
         {
-            if (_exitingToMainMenu || World == null)
+            if (_exitingToMainMenu)
+                return;
+
+            if (_loadingNewSite)
+            {
+                UpdateLoading();
+                return;
+            }
+
+            if (World == null)
                 return;
 
             _inputControl.Update(gameTime);
@@ -124,8 +209,6 @@ namespace Origin.Source.GameStates
             if (World.ActiveSite.Tools.CurrentTool != null)
             {
                 Point3 pos = World.ActiveSite.Tools.CurrentTool.Position;
-                //string chunk = WorldUtils.GetChunkByCell(pos, new Point3(World.ActiveSite.DrawControl.StaticDrawer.ChunkSize, 1)).ToString();
-
                 string blockMat = "NONE";
 
                 if (World.ActiveSite.Map.TryGet(pos, out var tile) && tile.Exists && tile.HasConstruction)
@@ -150,7 +233,16 @@ namespace Origin.Source.GameStates
 
         public override void Draw(GameTime gameTime)
         {
-            if (_exitingToMainMenu || World == null)
+            if (_exitingToMainMenu)
+                return;
+
+            if (_loadingNewSite)
+            {
+                DrawLoadingOverlay();
+                return;
+            }
+
+            if (World == null)
                 return;
 
             World.Draw(gameTime);
@@ -166,8 +258,6 @@ namespace Origin.Source.GameStates
                 bool use_work_area = true;
                 flags = (int)(ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
 
-                // We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
-                // Based on your use case you may want one or the other.
                 ImGuiViewportPtr viewport = ImGui.GetMainViewport();
                 ImGui.SetNextWindowPos(use_work_area ? viewport.WorkPos : viewport.Pos);
                 ImGui.SetNextWindowSize(use_work_area ? viewport.WorkSize : viewport.Size);
@@ -258,6 +348,32 @@ namespace Origin.Source.GameStates
                 if (!OptionsMenu && !LoadMenu)
                     ImGui.End();
             }
+        }
+
+        private void DrawLoadingOverlay()
+        {
+            bool useWorkArea = true;
+            int overlayFlags = (int)(ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
+
+            ImGuiViewportPtr viewport = ImGui.GetMainViewport();
+            ImGui.SetNextWindowPos(useWorkArea ? viewport.WorkPos : viewport.Pos);
+            ImGui.SetNextWindowSize(useWorkArea ? viewport.WorkSize : viewport.Size);
+
+            if (ImGui.Begin("LoadingOverlay", (ImGuiWindowFlags)overlayFlags))
+            {
+                Vector2 panelSize = new(520, 140);
+                Vector2 center = new((ImGui.GetWindowWidth() - panelSize.X) * 0.5f, (ImGui.GetWindowHeight() - panelSize.Y) * 0.5f);
+                ImGui.SetCursorPos(center);
+
+                ImGui.BeginChild("LoadingPanel", panelSize, ImGuiChildFlags.Border);
+                ImGui.Text("Loading site...");
+                ImGui.Spacing();
+                ImGui.TextWrapped(_loadingOperation);
+                ImGui.Spacing();
+                ImGui.ProgressBar(System.Math.Clamp(_loadingProgress, 0f, 1f), new Vector2(-1, 20));
+                ImGui.EndChild();
+            }
+            ImGui.End();
         }
 
         private void DrawTimeScaleOverlay()
