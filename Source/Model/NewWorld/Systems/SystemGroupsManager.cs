@@ -1,10 +1,8 @@
-﻿using Microsoft.Xna.Framework;
-
-using Origin.Source.Model;
-
+using Microsoft.Xna.Framework;
+using Origin.Source.Model.NewWorld;
 using System.Collections.Generic;
 
-namespace Origin.Source.ECS
+namespace Origin.Source.Model.NewWorld.Systems
 {
     public class SystemGroupsManager
     {

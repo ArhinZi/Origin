@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Origin.Source.Controller.IO;
-using Origin.Source.ECS.Construction;
 using Origin.Source.Resources;
 
 using System;

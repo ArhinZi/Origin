@@ -1,4 +1,4 @@
-﻿namespace Origin.Source.ECS.Render
+namespace Origin.Source.Model.NewWorld.Systems.Render
 {
     internal struct SelfRequestUpdateTileRender
     {

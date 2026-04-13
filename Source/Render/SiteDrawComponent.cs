@@ -5,7 +5,6 @@ using Arch.Bus;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Origin.Source.ECS.Construction;
 using Origin.Source.Events;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
@@ -18,11 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using static Origin.Source.Resources.Global;
-using Origin.Source.ECS.BaseComponents;
-using Origin.Source.ECS.Vegetation.Components;
-using Origin.Source.ECS.Fluid;
-using Origin.Source.ECS.Render;
-using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld;
 
 namespace Origin.Source.Render
 {

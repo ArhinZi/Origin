@@ -6,8 +6,8 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 
 using Origin.Source.GameStates;
-using Origin.Source.Model;
 using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 
 namespace Origin.Source.Controller.IO

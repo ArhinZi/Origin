@@ -10,9 +10,8 @@ using MonoGame.Extended.Screens;
 
 using Origin.Source.Controller.IO;
 using Origin.Source.Controller.UI;
-using Origin.Source.ECS.Construction;
 using Origin.Source.Events;
-using Origin.Source.Model;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 using Origin.Source.Save;
 using Origin.Source.Utils;
@@ -49,7 +48,7 @@ namespace Origin.Source.GameStates
         public bool LoadMenu = false;
         private int flags;
 
-        public Model.World World;
+        public Model.NewWorld.World World;
 
         private InputController _inputControl;
 
@@ -67,7 +66,7 @@ namespace Origin.Source.GameStates
             }
             else
             {
-                World = new Model.World();
+                World = new Model.NewWorld.World();
                 World.NewInitialize();
                 Global.World = World;
                 Global.ActiveCamera = World.ActiveSite.Camera;

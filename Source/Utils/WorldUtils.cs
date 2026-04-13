@@ -1,7 +1,6 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
-using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Map;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
@@ -24,12 +23,12 @@ namespace Origin.Source.Utils
             return heightMap;
         }
 
-        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site)
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site)
         {
             return MouseScreenToMap(cam, mousePos, level, site, false, false);
         }
 
-        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site,
+        public static Point3 MouseScreenToMap(Camera2D cam, Point mousePos, int level, Site site,
             bool onFloor, bool clip)
         {
             Vector3 worldPos = Global.GraphicsDevice.Viewport.Unproject(new Vector3(mousePos.X, mousePos.Y, 1), cam.Projection, cam.Transformation, cam.WorldMatrix);
@@ -53,12 +52,12 @@ namespace Origin.Source.Utils
             return cellPos;
         }
 
-        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site)
+        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site)
         {
             return MouseScreenToMapSurface(cam, mousePos, level, site, false);
         }
 
-        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Origin.Source.Model.Map.Site site,
+        public static Point3 MouseScreenToMapSurface(Camera2D cam, Point mousePos, int level, Site site,
             bool onFloor)
         {
             Span<int> probeOffsets = stackalloc int[]
@@ -92,7 +91,7 @@ namespace Origin.Source.Utils
             return Point3.Null;
         }
 
-        public static Point3 ProjectToSurface(Point3 position, Origin.Source.Model.Map.Site site)
+        public static Point3 ProjectToSurface(Point3 position, Site site)
         {
             Point3 pos = position;
             if (position.LessOr(Point3.Zero) || position.GraterEqualOr(site.Size))

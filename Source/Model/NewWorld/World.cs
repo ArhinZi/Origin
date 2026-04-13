@@ -1,16 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Origin.Source.ECS.BaseSystems;
-using Origin.Source.ECS.Fluid;
-using Origin.Source.ECS.Light;
-using Origin.Source.ECS.Pathfinding;
-using Origin.Source.ECS.Render;
-using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld.Systems.Fluid;
+using Origin.Source.Model.NewWorld.Systems.Light;
+using Origin.Source.Model.NewWorld.Systems.Pathfinding;
+using Origin.Source.Model.NewWorld.Systems.Render;
 using Origin.Source.Model.NewWorld.Systems.Vegetation;
 using Origin.Source.Save;
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.Model
+namespace Origin.Source.Model.NewWorld
 {
     public class World : IDisposable
     {
@@ -18,7 +16,7 @@ namespace Origin.Source.Model
 
         private SaveGameEntity sge = null;
 
-        public static void Load(World world, string name, int seed, SaveGameEntity sge, List<Map.Site> sites)
+        public static void Load(World world, string name, int seed, SaveGameEntity sge, List<Site> sites)
         {
             world.Name = name;
             world.sge = sge;
@@ -30,8 +28,8 @@ namespace Origin.Source.Model
         public int Seed { get; private set; } = 1234;
         public Random Random { get; private set; }
 
-        public Map.Site ActiveSite { get; private set; }
-        public List<Map.Site> Sites { get; private set; } = [];
+        public Site ActiveSite { get; private set; }
+        public List<Site> Sites { get; private set; } = [];
 
         public World()
         {
@@ -76,13 +74,9 @@ namespace Origin.Source.Model
 
             SystemManager.Systems.Add(new SystemUpdateLight(ActiveSite));
 
-            SystemManager.Systems.Add(new SystemUpdateFluidsOnConstructionPlaced(ActiveSite));
-            SystemManager.Systems.Add(new SystemUpdateFluidsOnConstructionRemoved(ActiveSite));
             SystemManager.Systems.Add(new SystemUpdateFluids(ActiveSite));
 
             SystemManager.Systems.Add(new UpdateSitePathSystem(ActiveSite));
-
-            SystemManager.Systems.Add(new SystemClearEvents(ActiveSite));
 
             SystemManager.Systems.Add(new SystemUpdateRenderTiles(ActiveSite));
 

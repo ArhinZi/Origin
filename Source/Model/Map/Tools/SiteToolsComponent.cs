@@ -3,6 +3,7 @@
 using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 
 using System.Collections.Generic;

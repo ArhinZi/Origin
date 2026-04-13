@@ -1,4 +1,4 @@
-﻿namespace Origin.Source.Model
+﻿namespace Origin.Source.Model.NewWorld
 {
     internal interface ITickKeeper
     {

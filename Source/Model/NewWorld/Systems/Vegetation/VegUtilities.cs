@@ -1,5 +1,3 @@
-using Origin.Source.Model.Map;
-using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 

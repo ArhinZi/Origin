@@ -1,17 +1,18 @@
-﻿using Arch.Core;
-using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Map;
+using Arch.Core;
 using Origin.Source.Model.Map.Light;
+using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Systems;
 using Origin.Source.Utils;
 using System.Collections.Generic;
 using Tile = Origin.Source.Model.NewWorld.Tile;
 
-namespace Origin.Source.ECS.Light
+namespace Origin.Source.Model.NewWorld.Systems.Light
 {
     internal class SystemUpdateLight : TickSystem
     {
         public SystemUpdateLight(Site site) : base(site)
         {
+            site.LightSystem = this;
         }
 
         private List<HashSet<Point3>> recastPlan = [];
@@ -50,52 +51,48 @@ namespace Origin.Source.ECS.Light
             Initialize();
         }
 
+        public void OnConstructionPlaced(Point3 pos)
+        {
+            ref PackedLight pl = ref _site.LightControl.GetTile(pos);
+            pl.SunLighted = 0;
+            pl.IsLightBlocker = true;
+
+            if (recastPlan[pos.Z] == null)
+                recastPlan[pos.Z] = [];
+            if (pos.Z > 0 && recastPlan[pos.Z - 1] == null)
+                recastPlan[pos.Z - 1] = [];
+
+            foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
+            {
+                var pos2 = pos + n;
+                if (pos2.InBounds(Point3.Zero, _site.Size))
+                    recastPlan[pos2.Z].Add(pos2);
+
+                pos2 = pos + n + Point3.Down;
+                if (pos2.InBounds(Point3.Zero, _site.Size))
+                    recastPlan[pos2.Z].Add(pos2);
+            }
+            recastDirty = true;
+        }
+
+        public void OnConstructionRemoved(Point3 pos)
+        {
+            _site.LightControl.SetTile(pos, new PackedLight());
+
+            if (pos.Z + 1 < _site.Size.Z && recastPlan[pos.Z + 1] == null)
+                recastPlan[pos.Z + 1] = [];
+
+            foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
+            {
+                var pos2 = pos + n + Point3.Up;
+                if (pos2.InBounds(Point3.Zero, _site.Size))
+                    recastPlan[pos2.Z].Add(pos2);
+            }
+            recastDirty = true;
+        }
+
         public override void Update(in ulong t)
         {
-            var query = new QueryDescription().WithAll<EventConstructionPlaced>();
-            _site.ArchWorld.Query(in query, (ref EventConstructionPlaced cpe) =>
-            {
-                var pos = cpe.Position;
-                ref PackedLight pl = ref _site.LightControl.GetTile(pos);
-                pl.SunLighted = 0;
-                pl.IsLightBlocker = true;
-
-                if (recastPlan[pos.Z] == null)
-                    recastPlan[pos.Z] = [];
-                if (pos.Z > 0 && recastPlan[pos.Z - 1] == null)
-                    recastPlan[pos.Z - 1] = [];
-
-                foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
-                {
-                    var pos2 = pos + n;
-                    if (pos2.InBounds(Point3.Zero, _site.Size))
-                        recastPlan[pos2.Z].Add(pos2);
-
-                    pos2 = pos + n + Point3.Down;
-                    if (pos2.InBounds(Point3.Zero, _site.Size))
-                        recastPlan[pos2.Z].Add(pos2);
-                }
-                recastDirty = true;
-            });
-
-            query = new QueryDescription().WithAll<EventConstructionRemoved>();
-            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cpe) =>
-            {
-                var pos = cpe.Position;
-                _site.LightControl.SetTile(pos, new PackedLight());
-
-                if (pos.Z + 1 < _site.Size.Z && recastPlan[pos.Z + 1] == null)
-                    recastPlan[pos.Z + 1] = [];
-
-                foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
-                {
-                    var pos2 = pos + n + Point3.Up;
-                    if (pos2.InBounds(Point3.Zero, _site.Size))
-                        recastPlan[pos2.Z].Add(pos2);
-                }
-                recastDirty = true;
-            });
-
             if (recastDirty)
             {
                 RecursiveReCastSunlight();

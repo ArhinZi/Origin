@@ -4,9 +4,7 @@ using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 
 using MonoGame.Extended;
-using Origin.Source.ECS.BaseComponents;
-using Origin.Source.ECS.Pathfinding;
-using Origin.Source.Model.Map;
+
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Model.NewWorld.Map;
 using Origin.Source.Model.Pathfind.NewPathfind;

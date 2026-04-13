@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Origin.Source.ECS;
-using Origin.Source.Model.Map;
+using Microsoft.Xna.Framework;
 using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Systems;
 using Tile = Origin.Source.Model.NewWorld.Tile;
 using Origin.Source.Render;
 using Origin.Source.Resources;
@@ -9,7 +8,7 @@ using Origin.Source.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.ECS.Render
+namespace Origin.Source.Model.NewWorld.Systems.Render
 {
     public class SystemUpdateRenderTiles : TickSystem
     {
@@ -17,10 +16,10 @@ namespace Origin.Source.ECS.Render
         private Sprite rborderSprite = GlobalResources.Sprites["RightBorder"];
         private Color borderColor = new(0, 0, 0, 100);
 
-        private Origin.Source.Model.Map.Site site;
+        private Site site;
         private SiteRenderer renderer;
 
-        public SystemUpdateRenderTiles(Origin.Source.Model.Map.Site site) : base(site)
+        public SystemUpdateRenderTiles(Site site) : base(site)
         {
             this.site = site;
             renderer = site.DrawComponent.SiteRenderer;
@@ -212,6 +211,18 @@ namespace Origin.Source.ECS.Render
             }
         }
 
+        private bool HasWallFloorNeighbourForBorder(Point3 tilePos, Point3 rotatedOffset)
+        {
+            Point3 rotatedPos = WorldUtils.RotatePosition(tilePos, site.Size, site.Rotation);
+            Point3 neighbourRotatedPos = rotatedPos + rotatedOffset;
+            Point3 neighbourWorldPos = WorldUtils.InverseRotatePosition(neighbourRotatedPos, site.Size, site.Rotation);
+
+            return site.Map.TryGet(neighbourWorldPos, out Tile neighbour)
+                   && neighbour.Exists
+                   && neighbour.HasConstruction
+                   && neighbour.Construction.Construction.Type == "WallFloor";
+        }
+
         private List<RenderData> GetConstructionRenderData(Point3 tilePos, Tile tile)
         {
             var list = new List<RenderData>();
@@ -244,9 +255,9 @@ namespace Origin.Source.ECS.Render
                 if (tile.Construction.Construction.Type == "WallFloor")
                 {
                     layer = (int)Global.DrawBufferLayer.BackNoLight;
-                    if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Tile tmp) && tmp.Exists && (!tmp.HasConstruction || tmp.Construction.Construction.Type != "WallFloor"))
+                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(-1, 0, 0)))
                         list.Add(new RenderData(layer, tilePos, lborderSprite, borderColor, Vector3.Zero));
-                    if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp.Exists && (!tmp.HasConstruction || tmp.Construction.Construction.Type != "WallFloor"))
+                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(0, -1, 0)))
                         list.Add(new RenderData(layer, tilePos, rborderSprite, borderColor, new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
                 }
             }
@@ -274,9 +285,9 @@ namespace Origin.Source.ECS.Render
                 if (tile.Construction.Construction.Type == "WallFloor")
                 {
                     layer = (int)Global.DrawBufferLayer.FrontNoLight;
-                    if (site.Map.TryGet(tilePos - new Point3(1, 0, 0), out Tile tmp) && tmp.Exists && (!tmp.HasConstruction || tmp.Construction.Construction.Type != "WallFloor"))
+                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(-1, 0, 0)))
                         list.Add(new RenderData(layer, tilePos, lborderSprite, borderColor, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
-                    if (site.Map.TryGet(tilePos - new Point3(0, 1, 0), out tmp) && tmp.Exists && (!tmp.HasConstruction || tmp.Construction.Construction.Type != "WallFloor"))
+                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(0, -1, 0)))
                         list.Add(new RenderData(layer, tilePos, rborderSprite, borderColor, new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset, 0)));
                 }
             }
@@ -310,7 +321,7 @@ namespace Origin.Source.ECS.Render
                 sprite = shape.Sprites[rand % shape.Sprites.Count];
                 var directional = sprite.GetSpritesByDir(tile.ConstructionRotation.Direction);
                 directional = sprite.GetSpritesByDir(WorldUtils.RotateDirection(tile.ConstructionRotation.Direction, site.Rotation));
-                 sprite = directional[rand % directional.Count];
+                sprite = directional[rand % directional.Count];
             }
 
             if (sprite != null)

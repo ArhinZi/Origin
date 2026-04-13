@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Origin.Source.Model.Map;
-
+using Origin.Source.Model.NewWorld;
 using System;
 using System.IO;
 
@@ -68,7 +68,7 @@ namespace Origin.Source.Resources
 
         public static GraphicsDevice GraphicsDevice;
         public static Game Game;
-        public static Model.World World;
+        public static World World;
         public static Camera2D ActiveCamera;
 
         /// <summary>

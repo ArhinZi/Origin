@@ -1,12 +1,13 @@
 ﻿using Arch.Core;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using Origin.Source.ECS.Construction;
 using Origin.Source.Model.Generators;
+using Origin.Source.Model.Map;
 using Origin.Source.Model.Map.Light;
 using Origin.Source.Model.Map.Tools;
-using Origin.Source.Model.NewWorld;
 using Origin.Source.Model.NewWorld.Map;
+using Origin.Source.Model.NewWorld.Systems.Light;
+using Origin.Source.Model.NewWorld.Systems.Vegetation;
 using Origin.Source.Model.Pathfind;
 using Origin.Source.Render;
 using Origin.Source.Render.State;
@@ -17,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Origin.Source.Model.Map
+namespace Origin.Source.Model.NewWorld
 {
     public class Site : IDisposable, ITickKeeper
     {
@@ -37,6 +38,7 @@ namespace Origin.Source.Model.Map
 
         public SiteDrawComponent DrawComponent { get; private set; }
         public LightComponent LightControl { get; private set; }
+        internal SystemUpdateLight LightSystem { get; set; }
 
         public SiteToolsComponent Tools { get; private set; }
 
@@ -268,7 +270,6 @@ namespace Origin.Source.Model.Map
             if (!tile.Exists || !tile.HasConstruction)
                 return;
 
-            TileConstruction bcc = tile.Construction;
             tile.HasConstruction = false;
             tile.IsRamp = false;
             tile.HasConstructionOver = false;
@@ -278,14 +279,9 @@ namespace Origin.Source.Model.Map
 
             UpdateWalkabilityAround(pos);
             UpdatePathAround(pos);
+            UpdateVegsOnConstructionRemovedSystem.Apply(this, pos);
+            LightSystem?.OnConstructionRemoved(pos);
             InvalidateRender(pos);
-
-            ArchWorld.Create(new EventConstructionRemoved()
-            {
-                Position = pos,
-                ConstructionMetaID = bcc.ConstructionMetaID,
-                MaterialMetaID = bcc.MaterialMetaID
-            });
         }
 
         public void PlaceConstruction(Point3 pos, Construction constr, Material mat)
@@ -328,14 +324,9 @@ namespace Origin.Source.Model.Map
 
             UpdateWalkabilityAround(pos);
             UpdatePathAround(pos);
+            UpdateVegsOnConstructionPlacedSystem.Apply(this, pos);
+            LightSystem?.OnConstructionPlaced(pos);
             InvalidateRender(pos);
-
-            ArchWorld.Create(new EventConstructionPlaced()
-            {
-                Position = pos,
-                ConstructionMetaID = bcc.ConstructionMetaID,
-                MaterialMetaID = bcc.MaterialMetaID
-            });
         }
 
         public void Dispose()

@@ -1,8 +1,6 @@
 ﻿using Arch.Core;
 using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
-using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Map;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 using Origin.Source.Utils;

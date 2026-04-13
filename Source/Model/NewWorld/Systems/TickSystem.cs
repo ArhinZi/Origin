@@ -1,12 +1,12 @@
-﻿using Arch.Core;
+using Arch.Core;
 using Arch.System;
 
 using Microsoft.Xna.Framework;
-using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld;
 
-namespace Origin.Source.ECS
+namespace Origin.Source.Model.NewWorld.Systems
 {
-    public class TickSystem : BaseSystem<World, ulong>
+    public class TickSystem : BaseSystem<Arch.Core.World, ulong>
     {
         public int Interval { get; private set; } = 1;
 

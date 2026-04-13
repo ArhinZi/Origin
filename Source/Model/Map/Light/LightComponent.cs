@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 
 using System.Collections.Generic;

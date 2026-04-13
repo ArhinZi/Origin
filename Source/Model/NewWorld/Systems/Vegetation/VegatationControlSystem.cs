@@ -1,5 +1,4 @@
-using Origin.Source.ECS;
-using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld.Systems;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 using System;

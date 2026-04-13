@@ -1,21 +1,18 @@
-﻿using Arch.Core;
+using Arch.Core;
 using Arch.Core.Extensions;
 using CommunityToolkit.HighPerformance;
-using Origin.Source.ECS.BaseComponents;
-using Origin.Source.ECS.Construction;
-using Origin.Source.ECS.Render;
-using Origin.Source.Model.Map;
 using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Systems;
 using Tile = Origin.Source.Model.NewWorld.Tile;
 using Origin.Source.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace Origin.Source.ECS.Fluid
+namespace Origin.Source.Model.NewWorld.Systems.Fluid
 {
     internal class SystemUpdateFluids : TickSystem
     {
-        public SystemUpdateFluids(Origin.Source.Model.Map.Site site) : base(site)
+        public SystemUpdateFluids(Site site) : base(site)
         {
         }
 

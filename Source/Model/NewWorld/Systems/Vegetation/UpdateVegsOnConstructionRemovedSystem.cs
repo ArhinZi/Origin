@@ -1,7 +1,4 @@
-using Arch.Core;
-using Origin.Source.ECS;
-using Origin.Source.ECS.Construction;
-using Origin.Source.Model.Map;
+using Origin.Source.Model.NewWorld.Systems;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
 
@@ -19,36 +16,35 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
 
         public override void Update(in ulong t)
         {
-            var query = new QueryDescription().WithAll<EventConstructionRemoved>();
-            _site.ArchWorld.Query(in query, (ref EventConstructionRemoved cre) =>
+        }
+
+        public static void Apply(Site site, Point3 pos)
+        {
+            if (site.Map.TryGet(pos, out Tile tile) && tile.Exists && tile.HasVegetation)
             {
-                var pos = cre.Position;
-                if (_site.Map.TryGet(pos, out Tile tile) && tile.Exists && tile.HasVegetation)
-                {
-                    if (tile.Vegetation.IsGrown)
-                        VegUtilities.UpdateNeighboursOf(_site, pos, -1);
+                if (tile.Vegetation.IsGrown)
+                    VegUtilities.UpdateNeighboursOf(site, pos, -1);
 
-                    tile.HasVegetation = false;
-                    tile.Vegetation = default;
-                    _site.Map[pos] = tile;
-                    _site.InvalidateRender(pos);
-                }
+                tile.HasVegetation = false;
+                tile.Vegetation = default;
+                site.Map[pos] = tile;
+                site.InvalidateRender(pos);
+            }
 
-                var belowPos = pos + Point3.Down;
-                if (_site.Map.TryGet(belowPos, out Tile belowTile) && belowTile.Exists && belowTile.HasConstruction && !belowTile.HasVegetation &&
-                    VegUtilities.IsExposedTop(_site, belowPos) && VegUtilities.TryGetVegetationFor(belowTile.Construction, out var vegetation))
+            var belowPos = pos + Point3.Down;
+            if (site.Map.TryGet(belowPos, out Tile belowTile) && belowTile.Exists && belowTile.HasConstruction && !belowTile.HasVegetation &&
+                VegUtilities.IsExposedTop(site, belowPos) && VegUtilities.TryGetVegetationFor(belowTile.Construction, out var vegetation))
+            {
+                belowTile.HasVegetation = true;
+                belowTile.Vegetation = new TileVegetation
                 {
-                    belowTile.HasVegetation = true;
-                    belowTile.Vegetation = new TileVegetation
-                    {
-                        VegetationMetaID = GlobalResources.Vegetations.IndexOf(vegetation.ID),
-                        VegetationNeighbours = VegUtilities.GetNeighboursFor(_site, belowPos),
-                        IsGrown = false
-                    };
-                    _site.Map[belowPos] = belowTile;
-                    _site.InvalidateRender(belowPos);
-                }
-            });
+                    VegetationMetaID = GlobalResources.Vegetations.IndexOf(vegetation.ID),
+                    VegetationNeighbours = VegUtilities.GetNeighboursFor(site, belowPos),
+                    IsGrown = false
+                };
+                site.Map[belowPos] = belowTile;
+                site.InvalidateRender(belowPos);
+            }
         }
     }
 }

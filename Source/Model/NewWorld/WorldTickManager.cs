@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using Origin.Source.ECS;
+using Origin.Source.Model.NewWorld.Systems;
 using System;
 
-namespace Origin.Source.Model
+namespace Origin.Source.Model.NewWorld
 {
     public class WorldTickManager : IUpdate
     {

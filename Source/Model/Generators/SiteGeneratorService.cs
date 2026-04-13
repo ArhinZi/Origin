@@ -3,8 +3,6 @@ using Arch.Core.Extensions;
 
 using MonoGame.Extended;
 
-using Origin.Source.ECS.BaseComponents;
-using Origin.Source.ECS.Construction;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Resources;
 using Origin.Source.Utils;
@@ -17,12 +15,12 @@ namespace Origin.Source.Model.Generators
     {
         private List<AbstractPass> passes;
 
-        private Map.Site _site;
+        private Site _site;
         private int _seed = 553;
 
         public Point3 Size { get; private set; }
 
-        public SiteGeneratorService(Map.Site site, Point3 size)
+        public SiteGeneratorService(Site site, Point3 size)
         {
             _site = site;
             Size = size;
