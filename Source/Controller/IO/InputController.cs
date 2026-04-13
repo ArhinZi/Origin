@@ -90,13 +90,13 @@ namespace Origin.Source.Controller.IO
             if (InputManager.JustPressed("num.1"))
                 ActiveSite.Tools.SetToolByName("ToolDig");
             if (InputManager.JustPressed("num.2"))
-                ActiveSite.Tools.SetToolByName("ToolPlaceDirt");
-            if (InputManager.JustPressed("num.3"))
                 ActiveSite.Tools.SetToolByName("ToolPathfind");
-            if (InputManager.JustPressed("num.4"))
+            if (InputManager.JustPressed("num.3"))
                 ActiveSite.Tools.SetToolByName("ToolPlaceDirt");
-            if (InputManager.JustPressed("num.5"))
+            if (InputManager.JustPressed("num.4"))
                 ActiveSite.Tools.SetToolByName("ToolPlaceWater");
+            if (InputManager.JustPressed("num.5"))
+                ActiveSite.Tools.SetToolByName("ToolInfo");
             if (InputManager.JustPressed("num.6"))
                 ActiveSite.Tools.SetToolByName(null);
             if (InputManager.JustPressed("num.7"))
@@ -106,7 +106,7 @@ namespace Origin.Source.Controller.IO
             if (InputManager.JustPressed("num.9"))
                 ActiveSite.Tools.SetToolByName(null);
             if (InputManager.JustPressed("num.0"))
-                ActiveSite.Tools.SetToolByName("ToolInfo");
+                ActiveSite.Tools.SetToolByName(null);
 
             /*if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {

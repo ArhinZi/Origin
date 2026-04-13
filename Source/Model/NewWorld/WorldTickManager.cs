@@ -24,6 +24,7 @@ namespace Origin.Source.Model.NewWorld
 
         public float TimeMod { get; private set; } = 1f;
         public float PrePauseTimeMod { get; private set; } = 1f;
+        public float ActiveTimeScale => Pause ? PrePauseTimeMod : TimeMod;
 
         public ulong DayTick => Ticks % DAY;
 
@@ -121,6 +122,22 @@ namespace Origin.Source.Model.NewWorld
             }
 
             return 1f;
+        }
+
+        public void SetTimeScale(float scale)
+        {
+            if (scale <= 0)
+                scale = 1f;
+
+            if (Pause)
+            {
+                PrePauseTimeMod = scale;
+            }
+            else
+            {
+                TimeMod = scale;
+                PrePauseTimeMod = scale;
+            }
         }
 
         public bool TogglePause()

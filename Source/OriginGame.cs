@@ -6,7 +6,9 @@ using Arch.Bus;
 using ImGuiNET;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
@@ -19,6 +21,8 @@ using Origin.Source.Resources;
 using Origin.Source.Save;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 
@@ -74,13 +78,16 @@ namespace Origin.Source
         /// </summary>
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferHeight = 1200;
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.IsFullScreen = false;
-            graphics.SynchronizeWithVerticalRetrace = false; //Vsync
-            IsFixedTimeStep = false;
-            //TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0f / 60);
+            var settings = GlobalSettings.Load();
+
+            graphics.PreferredBackBufferHeight = settings.ResolutionHeight;
+            graphics.PreferredBackBufferWidth = settings.ResolutionWidth;
+            graphics.IsFullScreen = settings.Fullscreen;
+            graphics.SynchronizeWithVerticalRetrace = settings.VSync; //Vsync
+            ApplyFpsLimit(settings.FpsLimit);
             graphics.ApplyChanges();
+
+            ApplyAudioSettings(settings.MasterVolume, settings.MusicVolume, settings.SfxVolume);
 
             Global.GraphicsDevice = GraphicsDevice;
 
@@ -168,6 +175,48 @@ namespace Origin.Source
         private void LoadGameScreen()
         {
             _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+        }
+
+        public void ApplyGraphicsSettings(int width, int height, bool fullscreen, bool vsync, int fpsLimit)
+        {
+            graphics.PreferredBackBufferWidth = width;
+            graphics.PreferredBackBufferHeight = height;
+            graphics.IsFullScreen = fullscreen;
+            graphics.SynchronizeWithVerticalRetrace = vsync;
+            ApplyFpsLimit(fpsLimit);
+            graphics.ApplyChanges();
+        }
+
+        public void ApplyAudioSettings(float masterVolume, float musicVolume, float sfxVolume)
+        {
+            masterVolume = MathHelper.Clamp(masterVolume, 0f, 1f);
+            musicVolume = MathHelper.Clamp(musicVolume, 0f, 1f);
+            sfxVolume = MathHelper.Clamp(sfxVolume, 0f, 1f);
+
+            SoundEffect.MasterVolume = masterVolume * sfxVolume;
+            MediaPlayer.Volume = masterVolume * musicVolume;
+        }
+
+        private void ApplyFpsLimit(int fpsLimit)
+        {
+            if (fpsLimit <= 0)
+            {
+                IsFixedTimeStep = false;
+                return;
+            }
+
+            IsFixedTimeStep = true;
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / fpsLimit);
+        }
+
+        public IReadOnlyList<(int Width, int Height)> GetSupportedResolutions()
+        {
+            return GraphicsAdapter.DefaultAdapter.SupportedDisplayModes
+                .Select(m => (m.Width, m.Height))
+                .Distinct()
+                .OrderBy(r => r.Width)
+                .ThenBy(r => r.Height)
+                .ToList();
         }
 
         public new void Dispose()

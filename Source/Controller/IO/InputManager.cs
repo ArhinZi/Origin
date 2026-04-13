@@ -185,6 +185,24 @@ namespace Origin.Source.Controller.IO
             }
         }
 
+        public static void RebindKeyboardKey(string name, Keys key)
+        {
+            if (keybinds.ContainsKey(name.ToLower()))
+            {
+                Keybind toBind = keybinds[name.ToLower()];
+                toBind.keyboardBinding = key;
+                keybinds[name.ToLower()] = toBind;
+            }
+        }
+
+        public static Keys GetKeyboardBinding(string name)
+        {
+            if (keybinds.TryGetValue(name.ToLower(), out var keybind))
+                return keybind.keyboardBinding;
+
+            return Keys.None;
+        }
+
         /// <summary>
         /// Returns a keybind representing the currently pressed key
         /// </summary>
@@ -330,7 +348,7 @@ namespace Origin.Source.Controller.IO
 
         private static MouseButton GetMouseButtons()
         {
-            MouseButton mouse = new();
+            MouseButton mouse = MouseButton.None;
 
             //Check the button
             if (CurrentMouse.LeftButton == ButtonState.Pressed)
@@ -449,7 +467,7 @@ namespace Origin.Source.Controller.IO
         {
             bool isPressed = false;
             //if (IsGamepadConnected && UseGamepad)
-            if (UseGamepad)
+            if (UseGamepad && keybind.gamepadBinding != Buttons.None)
             {
                 isPressed = CurrentGamepad.IsButtonDown(keybind.gamepadBinding);
             }
@@ -467,7 +485,8 @@ namespace Origin.Source.Controller.IO
                 }
 
                 //Keyboard binding
-                isPressed = isPressed || CurrentKeys.IsKeyDown(keybind.keyboardBinding);
+                if (keybind.keyboardBinding != Keys.None)
+                    isPressed = isPressed || CurrentKeys.IsKeyDown(keybind.keyboardBinding);
             }
             return isPressed;
         }
@@ -476,7 +495,7 @@ namespace Origin.Source.Controller.IO
         {
             bool isPressed = false;
             //if (IsGamepadConnected && UseGamepad)
-            if (UseGamepad)
+            if (UseGamepad && keybind.gamepadBinding != Buttons.None)
             {
                 isPressed = PreviousGamepad.IsButtonDown(keybind.gamepadBinding);
             }
@@ -494,7 +513,8 @@ namespace Origin.Source.Controller.IO
                 }
 
                 //Keyboard binding
-                isPressed = isPressed || PreviousKeys.IsKeyDown(keybind.keyboardBinding);
+                if (keybind.keyboardBinding != Keys.None)
+                    isPressed = isPressed || PreviousKeys.IsKeyDown(keybind.keyboardBinding);
             }
             return isPressed;
         }
@@ -626,8 +646,8 @@ namespace Origin.Source.Controller.IO
         public Keybind(Keys key)
         {
             keyboardBinding = key;
-            mouseBinding = new MouseButton();
-            gamepadBinding = new Buttons();
+            mouseBinding = MouseButton.None;
+            gamepadBinding = Buttons.None;
 
             GamepadOnly = false;
             PreferKeyboard = true;
@@ -636,8 +656,8 @@ namespace Origin.Source.Controller.IO
         public Keybind(Keys key, ushort initDelay, ushort repDelay)
         {
             keyboardBinding = key;
-            mouseBinding = new MouseButton();
-            gamepadBinding = new Buttons();
+            mouseBinding = MouseButton.None;
+            gamepadBinding = Buttons.None;
 
             initialDelay = initDelay;
             repeatDelay = repDelay;
@@ -649,7 +669,7 @@ namespace Origin.Source.Controller.IO
         public Keybind(Keys key, Buttons gamepad)
         {
             keyboardBinding = key;
-            mouseBinding = new MouseButton();
+            mouseBinding = MouseButton.None;
             gamepadBinding = gamepad;
 
             GamepadOnly = false;
@@ -658,8 +678,8 @@ namespace Origin.Source.Controller.IO
 
         public Keybind(Buttons gamepad)
         {
-            keyboardBinding = new Keys();
-            mouseBinding = new MouseButton();
+            keyboardBinding = Keys.None;
+            mouseBinding = MouseButton.None;
             gamepadBinding = gamepad;
 
             GamepadOnly = true;
@@ -668,7 +688,7 @@ namespace Origin.Source.Controller.IO
 
         public Keybind(MouseButton mouse, Buttons gamepad)
         {
-            keyboardBinding = new Keys();
+            keyboardBinding = Keys.None;
             mouseBinding = mouse;
             gamepadBinding = gamepad;
 
@@ -713,6 +733,8 @@ namespace Origin.Source.Controller.IO
     /// </summary>
     public enum MouseButton
     {
+        None = -1,
+
         /// <summary>
         /// Left Mouse Button
         /// </summary>

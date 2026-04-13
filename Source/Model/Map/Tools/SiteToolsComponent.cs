@@ -15,6 +15,7 @@ namespace Origin.Source.Model.Map.Tools
     {
         public Site Site;
         private List<Tool> toolList;
+        public IReadOnlyList<Tool> Tools => toolList;
         public Tool CurrentTool;
         private readonly Stack<IToolCommand> _commandHistory = new();
 
