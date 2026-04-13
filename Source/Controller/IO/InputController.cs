@@ -31,11 +31,11 @@ namespace Origin.Source.Controller.IO
             World = StateMainGame.World;
             //if (InputManager.JustPressed("game.exit")) OriginGame.Instance.Exit();
 
-            if (ImGui.IsKeyPressed(ImGuiKey.Escape))
+            if (InputManager.JustPressed("game.exit"))
             {
                 StateMainGame.EscMenu = !StateMainGame.EscMenu;
             }
-            if (ImGui.IsKeyPressed(ImGuiKey.Space))
+            if (InputManager.JustPressed("game.pause"))
             {
                 World.TimeManager.TogglePause();
             }
@@ -47,30 +47,30 @@ namespace Origin.Source.Controller.IO
             var io = ImGui.GetIO();
             if (io.WantCaptureMouse) return;
 
-            if (ImGui.IsKeyPressed(ImGuiKey.F))
+            if (InputManager.JustPressed("game.halfwallswitch"))
             {
                 ActiveSite.DrawComponent.HalfWallMode = !ActiveSite.DrawComponent.HalfWallMode;
             }
 
             Camera2D activeCamera = Global.ActiveCamera;
             float camMoveMode = (float)((LShift ? Global.CAM_SHIFT_SPEED_MULT : 1) * Global.CAM_SPEED * gameTime.ElapsedGameTime.TotalSeconds);
-            if (InputManager.IsPressed("Camera.left"))
+            if (InputManager.IsPressed("camera.left"))
                 activeCamera.Position += new Vector2(-1, 0) * camMoveMode / activeCamera.Zoom;
-            if (InputManager.IsPressed("Camera.right"))
+            if (InputManager.IsPressed("camera.right"))
                 activeCamera.Position += new Vector2(1, 0) * camMoveMode / activeCamera.Zoom;
-            if (InputManager.IsPressed("Camera.up"))
+            if (InputManager.IsPressed("camera.up"))
                 activeCamera.Position += new Vector2(0, -1) * camMoveMode / activeCamera.Zoom;
-            if (InputManager.IsPressed("Camera.down"))
+            if (InputManager.IsPressed("camera.down"))
                 activeCamera.Position += new Vector2(0, 1) * camMoveMode / activeCamera.Zoom;
 
-            if (InputManager.IsPressed("Camera.zoom.plus"))
+            if (InputManager.IsPressed("camera.zoom.plus"))
                 activeCamera.ZoomIn();
             //activeCamera.Zoom += Global.CAM_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (!LCtrl && InputManager.MouseScrollNotchesY > 0)
                 activeCamera.ZoomIn();
             //activeCamera.Zoom += Global.CAM_MOUSE_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (InputManager.IsPressed("Camera.zoom.minus"))
+            if (InputManager.IsPressed("camera.zoom.minus"))
                 activeCamera.ZoomOut();
             //activeCamera.Zoom -= Global.CAM_ZOOM_SPEED * activeCamera.Zoom * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (!LCtrl && InputManager.MouseScrollNotchesY < 0)

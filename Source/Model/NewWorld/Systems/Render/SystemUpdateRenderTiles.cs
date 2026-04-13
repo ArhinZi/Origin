@@ -223,6 +223,18 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                    && neighbour.Construction.Construction.Type == "WallFloor";
         }
 
+        private bool ShouldDrawBorderAgainstAir(Point3 tilePos, Point3 rotatedOffset)
+        {
+            Point3 rotatedPos = WorldUtils.RotatePosition(tilePos, site.Size, site.Rotation);
+            Point3 neighbourRotatedPos = rotatedPos + rotatedOffset;
+            Point3 neighbourWorldPos = WorldUtils.InverseRotatePosition(neighbourRotatedPos, site.Size, site.Rotation);
+
+            if (!site.Map.TryGet(neighbourWorldPos, out Tile neighbour))
+                return false;
+
+            return neighbour.Exists && (!neighbour.HasConstruction || neighbour.IsRamp);
+        }
+
         private List<RenderData> GetConstructionRenderData(Point3 tilePos, Tile tile)
         {
             var list = new List<RenderData>();
@@ -255,9 +267,9 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                 if (tile.Construction.Construction.Type == "WallFloor")
                 {
                     layer = (int)Global.DrawBufferLayer.BackNoLight;
-                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(-1, 0, 0)))
+                    if (ShouldDrawBorderAgainstAir(tilePos, new Point3(-1, 0, 0)))
                         list.Add(new RenderData(layer, tilePos, lborderSprite, borderColor, Vector3.Zero));
-                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(0, -1, 0)))
+                    if (ShouldDrawBorderAgainstAir(tilePos, new Point3(0, -1, 0)))
                         list.Add(new RenderData(layer, tilePos, rborderSprite, borderColor, new Vector3(GlobalResources.Settings.TileSize.X / 2, 0, 0)));
                 }
             }
@@ -285,9 +297,9 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                 if (tile.Construction.Construction.Type == "WallFloor")
                 {
                     layer = (int)Global.DrawBufferLayer.FrontNoLight;
-                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(-1, 0, 0)))
+                    if (ShouldDrawBorderAgainstAir(tilePos, new Point3(-1, 0, 0)))
                         list.Add(new RenderData(layer, tilePos, lborderSprite, borderColor, new Vector3(0, -GlobalResources.Settings.FloorYoffset, 0)));
-                    if (!HasWallFloorNeighbourForBorder(tilePos, new Point3(0, -1, 0)))
+                    if (ShouldDrawBorderAgainstAir(tilePos, new Point3(0, -1, 0)))
                         list.Add(new RenderData(layer, tilePos, rborderSprite, borderColor, new Vector3(GlobalResources.Settings.TileSize.X / 2, -GlobalResources.Settings.FloorYoffset, 0)));
                 }
             }

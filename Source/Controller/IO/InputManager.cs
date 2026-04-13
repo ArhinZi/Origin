@@ -122,11 +122,12 @@ namespace Origin.Source.Controller.IO
             //World
             BindKey("world.level.plus", new Keybind(Keys.OemCloseBrackets, 300, 50));
             BindKey("world.level.minus", new Keybind(Keys.OemOpenBrackets, 300, 50));
-            BindKey("world.rotate.left", new Keybind(Keys.OemComma));
-            BindKey("world.rotate.right", new Keybind(Keys.OemPeriod));
+            BindKey("world.rotate.left", new Keybind(Keys.Q));
+            BindKey("world.rotate.right", new Keybind(Keys.E));
 
             //Game
             BindKey("game.halfwallswitch", new Keybind(Keys.F));
+            BindKey("game.pause", new Keybind(Keys.Space));
             BindKey("game.exit", new Keybind(Keys.Escape));
 
             // Manual control
