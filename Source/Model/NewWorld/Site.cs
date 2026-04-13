@@ -331,6 +331,15 @@ namespace Origin.Source.Model.NewWorld
 
         public void Dispose()
         {
+            ArchWorld?.Dispose();
+            ArchWorld = null;
+            Map = null;
+            RenderState = null;
+            DrawComponent = null;
+            LightControl = null;
+            Pathfinder = null;
+            MapGenerator = null;
+            Tools = null;
             GC.SuppressFinalize(this);
         }
 

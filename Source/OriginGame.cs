@@ -117,8 +117,22 @@ namespace Origin.Source
             //SaveGameEntity.ReadAllSaves();
 
             GuiRenderer.RebuildFontAtlas();
-            //LoadMenuMainScreen();
-            LoadGameScreen();
+            LoadMenuMainScreen();
+        }
+
+        public void LoadMenuMainScreen()
+        {
+            _screenManager.LoadScreen(new StateMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
+        }
+
+        public void StartNewSite()
+        {
+            _screenManager.LoadScreen(new StateMainGame(this, true), new FadeTransition(GraphicsDevice, Color.Black, 0));
+        }
+
+        public void LoadGameScreen()
+        {
+            _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
 
         /// <summary>
@@ -165,16 +179,6 @@ namespace Origin.Source
             base.Draw(gameTime);
 
             GuiRenderer.EndLayout();
-        }
-
-        private void LoadMenuMainScreen()
-        {
-            _screenManager.LoadScreen(new StateMenuMain(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
-        }
-
-        private void LoadGameScreen()
-        {
-            _screenManager.LoadScreen(new StateMainGame(this), new FadeTransition(GraphicsDevice, Color.Black, 0));
         }
 
         public void ApplyGraphicsSettings(int width, int height, bool fullscreen, bool vsync, int fpsLimit)

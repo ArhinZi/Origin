@@ -150,7 +150,17 @@ namespace Origin.Source.Model.NewWorld
 
         public void Dispose()
         {
-            ActiveSite.Dispose();
+            if (Sites != null)
+            {
+                foreach (var site in Sites)
+                {
+                    site?.Dispose();
+                }
+                Sites.Clear();
+            }
+
+            ActiveSite = null;
+            TimeManager = null;
         }
     }
 }

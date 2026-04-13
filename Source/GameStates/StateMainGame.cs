@@ -5,7 +5,6 @@ using Arch.Core.Extensions;
 using ImGuiNET;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended.Screens;
 
@@ -28,6 +27,7 @@ namespace Origin.Source.GameStates
     public class StateMainGame : GameScreen
     {
         private static readonly float[] TimeScaleButtons = [0.5f, 1f, 2f, 4f];
+        private bool _exitingToMainMenu;
 
         public static int GameSpeed { get; private set; } = 1;
 
@@ -52,80 +52,19 @@ namespace Origin.Source.GameStates
         public bool LoadMenu = false;
         private int flags;
 
-        private GlobalSettings globalSettings;
-        private bool vsyncEnabled;
-        private bool fullscreenEnabled;
-        private List<(int Width, int Height)> supportedResolutions = [];
-        private int selectedResolutionIndex = 0;
-        private int fpsLimit;
-
-        private float masterVolume;
-        private float musicVolume;
-        private float sfxVolume;
-
-        private Keys cameraUpKey;
-        private Keys cameraDownKey;
-        private Keys cameraLeftKey;
-        private Keys cameraRightKey;
-        private Keys rotateLeftKey;
-        private Keys rotateRightKey;
-
-        private static readonly Keys[] ControlKeyOptions =
-        [
-            Keys.W, Keys.A, Keys.S, Keys.D,
-            Keys.Q, Keys.E, Keys.R, Keys.F,
-            Keys.Up, Keys.Down, Keys.Left, Keys.Right,
-            Keys.Space, Keys.LeftShift, Keys.LeftControl, Keys.Escape
-        ];
+        private readonly OptionsModule optionsModule;
 
         public Model.NewWorld.World World;
 
         private InputController _inputControl;
 
-        public StateMainGame(Game game) : base(game)
+        public StateMainGame(Game game, bool forceNewSite = false) : base(game)
         {
-            globalSettings = GlobalSettings.Load();
-            vsyncEnabled = globalSettings.VSync;
-            fullscreenEnabled = globalSettings.Fullscreen;
-            fpsLimit = globalSettings.FpsLimit;
+            optionsModule = new OptionsModule((OriginGame)game);
 
-            masterVolume = globalSettings.MasterVolume;
-            musicVolume = globalSettings.MusicVolume;
-            sfxVolume = globalSettings.SfxVolume;
-
-            cameraUpKey = globalSettings.CameraUpKey;
-            cameraDownKey = globalSettings.CameraDownKey;
-            cameraLeftKey = globalSettings.CameraLeftKey;
-            cameraRightKey = globalSettings.CameraRightKey;
-            rotateLeftKey = globalSettings.RotateLeftKey;
-            rotateRightKey = globalSettings.RotateRightKey;
-
-            if (Global.Game is OriginGame origin)
-            {
-                supportedResolutions = origin.GetSupportedResolutions().ToList();
-            }
-            if (supportedResolutions.Count == 0)
-            {
-                supportedResolutions.Add((globalSettings.ResolutionWidth, globalSettings.ResolutionHeight));
-            }
-
-            selectedResolutionIndex = supportedResolutions.FindIndex(r => r.Width == globalSettings.ResolutionWidth && r.Height == globalSettings.ResolutionHeight);
-            if (selectedResolutionIndex < 0)
-            {
-                supportedResolutions.Add((globalSettings.ResolutionWidth, globalSettings.ResolutionHeight));
-                selectedResolutionIndex = supportedResolutions.Count - 1;
-            }
-
-            ApplyControlsToInputManager();
-
-            //World = new();
-
-            //World.Initialize();
-
-            if (SaveGameEntity.Saves.Count > 0)
+            if (!forceNewSite && SaveGameEntity.Saves.Count > 0)
             {
                 LoadWorld(SaveGameEntity.Saves.First().Value);
-                //Global.World = World;
                 Global.ActiveCamera = World.ActiveSite.Camera;
             }
             else
@@ -134,11 +73,32 @@ namespace Origin.Source.GameStates
                 World.NewInitialize();
                 Global.World = World;
                 Global.ActiveCamera = World.ActiveSite.Camera;
-
                 World.PostInitialize();
             }
 
             _inputControl = new InputController(this);
+        }
+
+        private void ExitToMainMenu()
+        {
+            if (_exitingToMainMenu)
+                return;
+
+            _exitingToMainMenu = true;
+
+            if (World != null)
+            {
+                World.Dispose();
+                World = null;
+            }
+
+            Global.World = null;
+            Global.ActiveCamera = null;
+
+            if (Game is OriginGame origin)
+            {
+                origin.LoadMenuMainScreen();
+            }
         }
 
         public override void LoadContent()
@@ -152,39 +112,11 @@ namespace Origin.Source.GameStates
             Global.ActiveCamera = World.ActiveSite.Camera;
         }
 
-        private void ApplyControlsToInputManager()
-        {
-            InputManager.RebindKeyboardKey("camera.up", cameraUpKey);
-            InputManager.RebindKeyboardKey("camera.down", cameraDownKey);
-            InputManager.RebindKeyboardKey("camera.left", cameraLeftKey);
-            InputManager.RebindKeyboardKey("camera.right", cameraRightKey);
-            InputManager.RebindKeyboardKey("world.rotate.left", rotateLeftKey);
-            InputManager.RebindKeyboardKey("world.rotate.right", rotateRightKey);
-        }
-
-        private void DrawControlKeyCombo(string label, ref Keys selected)
-        {
-            if (ImGui.BeginCombo(label, selected.ToString()))
-            {
-                for (int i = 0; i < ControlKeyOptions.Length; i++)
-                {
-                    var key = ControlKeyOptions[i];
-                    bool isSelected = key == selected;
-                    if (ImGui.Selectable(key.ToString(), isSelected))
-                    {
-                        selected = key;
-                    }
-
-                    if (isSelected)
-                        ImGui.SetItemDefaultFocus();
-                }
-
-                ImGui.EndCombo();
-            }
-        }
-
         public override void Update(GameTime gameTime)
         {
+            if (_exitingToMainMenu || World == null)
+                return;
+
             _inputControl.Update(gameTime);
             if (!EscMenu)
                 World.Update(gameTime);
@@ -218,6 +150,9 @@ namespace Origin.Source.GameStates
 
         public override void Draw(GameTime gameTime)
         {
+            if (_exitingToMainMenu || World == null)
+                return;
+
             World.Draw(gameTime);
 
             if (!EscMenu)
@@ -244,119 +179,9 @@ namespace Origin.Source.GameStates
 
                 if (OptionsMenu)
                 {
-                    if (ImGui.Begin("Settings", (ImGuiWindowFlags)flags))
+                    if (optionsModule.DrawWindow(flags, bSize, 120, hMargin))
                     {
-                        ImGui.SetCursorPosY(120);
-
-                        ImGuiUtil.AlignForWidth(ImGui.CalcTextSize("Settings").X);
-                        ImGui.Text("Settings");
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-
-                        if (ImGui.BeginTabBar("SettingsTabs"))
-                        {
-                            if (ImGui.BeginTabItem("Gameplay"))
-                            {
-                                ImGui.EndTabItem();
-                            }
-
-                            if (ImGui.BeginTabItem("Graphics"))
-                            {
-                                ImGui.Checkbox("Fullscreen", ref fullscreenEnabled);
-                                ImGui.Checkbox("Vertical Sync", ref vsyncEnabled);
-
-                                bool uncapped = fpsLimit <= 0;
-                                if (ImGui.Checkbox("Uncapped FPS", ref uncapped))
-                                {
-                                    fpsLimit = uncapped ? 0 : 60;
-                                }
-                                if (!uncapped)
-                                {
-                                    ImGui.SliderInt("FPS Limit", ref fpsLimit, 30, 240);
-                                }
-
-                                var currentRes = supportedResolutions[selectedResolutionIndex];
-                                string preview = $"{currentRes.Width}x{currentRes.Height}";
-                                if (ImGui.BeginCombo("Resolution", preview))
-                                {
-                                    for (int i = 0; i < supportedResolutions.Count; i++)
-                                    {
-                                        bool isSelected = i == selectedResolutionIndex;
-                                        var res = supportedResolutions[i];
-                                        string label = $"{res.Width}x{res.Height}";
-                                        if (ImGui.Selectable(label, isSelected))
-                                            selectedResolutionIndex = i;
-
-                                        if (isSelected)
-                                            ImGui.SetItemDefaultFocus();
-                                    }
-
-                                    ImGui.EndCombo();
-                                }
-
-                                ImGui.EndTabItem();
-                            }
-
-                            if (ImGui.BeginTabItem("Sound"))
-                            {
-                                ImGui.SliderFloat("Master Volume", ref masterVolume, 0.0f, 1.0f);
-                                ImGui.SliderFloat("Music Volume", ref musicVolume, 0.0f, 1.0f);
-                                ImGui.SliderFloat("SFX Volume", ref sfxVolume, 0.0f, 1.0f);
-                                ImGui.EndTabItem();
-                            }
-
-                            if (ImGui.BeginTabItem("Controls"))
-                            {
-                                DrawControlKeyCombo("Camera Up", ref cameraUpKey);
-                                DrawControlKeyCombo("Camera Down", ref cameraDownKey);
-                                DrawControlKeyCombo("Camera Left", ref cameraLeftKey);
-                                DrawControlKeyCombo("Camera Right", ref cameraRightKey);
-                                DrawControlKeyCombo("Rotate Left", ref rotateLeftKey);
-                                DrawControlKeyCombo("Rotate Right", ref rotateRightKey);
-                                ImGui.EndTabItem();
-                            }
-
-                            ImGui.EndTabBar();
-                        }
-
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Apply", bSize))
-                        {
-                            var res = supportedResolutions[selectedResolutionIndex];
-                            globalSettings.ResolutionWidth = res.Width;
-                            globalSettings.ResolutionHeight = res.Height;
-                            globalSettings.Fullscreen = fullscreenEnabled;
-                            globalSettings.VSync = vsyncEnabled;
-                            globalSettings.FpsLimit = fpsLimit;
-
-                            globalSettings.MasterVolume = masterVolume;
-                            globalSettings.MusicVolume = musicVolume;
-                            globalSettings.SfxVolume = sfxVolume;
-
-                            globalSettings.CameraUpKey = cameraUpKey;
-                            globalSettings.CameraDownKey = cameraDownKey;
-                            globalSettings.CameraLeftKey = cameraLeftKey;
-                            globalSettings.CameraRightKey = cameraRightKey;
-                            globalSettings.RotateLeftKey = rotateLeftKey;
-                            globalSettings.RotateRightKey = rotateRightKey;
-
-                            globalSettings.Save();
-
-                            ApplyControlsToInputManager();
-
-                            if (Global.Game is OriginGame origin && World != null)
-                            {
-                                origin.ApplyGraphicsSettings(res.Width, res.Height, fullscreenEnabled, vsyncEnabled, fpsLimit);
-                                origin.ApplyAudioSettings(masterVolume, musicVolume, sfxVolume);
-                            }
-                        }
-
-                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
-                        ImGuiUtil.AlignForWidth(bSize.X);
-                        if (ImGui.Button("Back", bSize))
-                        {
-                            OptionsMenu = false;
-                        }
+                        OptionsMenu = false;
                     }
                 }
                 else if (LoadMenu)
@@ -415,6 +240,13 @@ namespace Origin.Source.GameStates
 
                         ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
                         ImGuiUtil.AlignForWidth(bSize.X);
+                        if (ImGui.Button("Exit to main menu", bSize))
+                        {
+                            ExitToMainMenu();
+                        }
+
+                        ImGui.SetCursorPos(ImGui.GetCursorPos() + Vector2.UnitY * hMargin);
+                        ImGuiUtil.AlignForWidth(bSize.X);
                         if (ImGui.Button("Exit", bSize))
                         {
                             Global.Game.Exit();
@@ -423,7 +255,8 @@ namespace Origin.Source.GameStates
                 }
 
                 ImGui.PushFont(GlobalResources.Fonts["Default"]);
-                ImGui.End();
+                if (!OptionsMenu && !LoadMenu)
+                    ImGui.End();
             }
         }
 
@@ -544,7 +377,8 @@ namespace Origin.Source.GameStates
         public override void Dispose()
         {
             base.Dispose();
-            World.Dispose();
+            World?.Dispose();
+            World = null;
         }
     }
 }
