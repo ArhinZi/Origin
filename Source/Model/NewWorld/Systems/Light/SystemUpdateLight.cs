@@ -33,12 +33,13 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 {
                     var pos = new Point3(x, y, _site.Size.Z - 1);
                     recastPlan[_site.Size.Z - 1].Add(pos);
+
                     Tile tile = _site.Map[pos];
-                    if (!tile.HasConstruction)
-                    {
-                        PackedLight pl = new() { SunLighted = 7 };
-                        _site.LightControl.SetTile(pos, pl);
-                    }
+                    PackedLight pl = new() { SunLighted = 7 };
+                    if (tile.Exists && tile.HasConstruction && tile.Construction.Construction != null && tile.Construction.Construction.IsLightBlocker)
+                        pl.IsLightBlocker = true;
+
+                    _site.LightControl.SetTile(pos, pl);
                 }
             RecursiveReCastSunlight(true);
             ClearRecastPlan();
@@ -53,41 +54,42 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         public void OnConstructionPlaced(Point3 pos)
         {
-            ref PackedLight pl = ref _site.LightControl.GetTile(pos);
-            pl.SunLighted = 0;
-            pl.IsLightBlocker = true;
-
-            if (recastPlan[pos.Z] == null)
-                recastPlan[pos.Z] = [];
-            if (pos.Z > 0 && recastPlan[pos.Z - 1] == null)
-                recastPlan[pos.Z - 1] = [];
-
-            foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
+            if (pos.InBounds(Point3.Zero, _site.Size))
             {
-                var pos2 = pos + n;
-                if (pos2.InBounds(Point3.Zero, _site.Size))
-                    recastPlan[pos2.Z].Add(pos2);
-
-                pos2 = pos + n + Point3.Down;
-                if (pos2.InBounds(Point3.Zero, _site.Size))
-                    recastPlan[pos2.Z].Add(pos2);
+                ref PackedLight pl = ref _site.LightControl.GetTile(pos);
+                Tile tile = _site.Map[pos];
+                pl.IsLightBlocker = tile.Exists && tile.HasConstruction && tile.Construction.Construction != null && tile.Construction.Construction.IsLightBlocker;
             }
+
+            foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(true))
+            {
+                var pos2 = pos + Point3.Down + n;
+                if (!pos2.InBounds(Point3.Zero, _site.Size))
+                    continue;
+
+                if (recastPlan[pos2.Z] == null)
+                    recastPlan[pos2.Z] = [];
+
+                recastPlan[pos2.Z].Add(pos2);
+            }
+
             recastDirty = true;
         }
 
         public void OnConstructionRemoved(Point3 pos)
         {
-            _site.LightControl.SetTile(pos, new PackedLight());
-
-            if (pos.Z + 1 < _site.Size.Z && recastPlan[pos.Z + 1] == null)
-                recastPlan[pos.Z + 1] = [];
-
-            foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(true))
+            foreach (var n in WorldUtils.FULL_NEIGHBOUR_PATTERN_1L(true))
             {
-                var pos2 = pos + n + Point3.Up;
-                if (pos2.InBounds(Point3.Zero, _site.Size))
-                    recastPlan[pos2.Z].Add(pos2);
+                var pos2 = pos + n;
+                if (!pos2.InBounds(Point3.Zero, _site.Size))
+                    continue;
+
+                if (recastPlan[pos2.Z] == null)
+                    recastPlan[pos2.Z] = [];
+
+                recastPlan[pos2.Z].Add(pos2);
             }
+
             recastDirty = true;
         }
 
@@ -110,7 +112,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         private void RecursiveReCastSunlight(bool init = false)
         {
-            for (int i = _site.Size.Z - 1; i > 0; i--)
+            for (int i = _site.Size.Z - 1; i >= 0; i--)
             {
                 var hs = recastPlan[i];
                 if (hs == null)
@@ -118,43 +120,71 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
                 foreach (var pos in hs)
                 {
-                    var npos = pos + Point3.Down;
-                    ref PackedLight npl = ref _site.LightControl.GetTile(npos);
-                    Tile tile = _site.Map[npos];
-                    if (tile.Exists && tile.HasConstruction && !tile.IsRamp)
-                    {
-                        npl.IsLightBlocker = true;
-                    }
-                    if (!npl.IsLightBlocker)
-                    {
-                        if (recastPlan[i - 1] == null)
-                            recastPlan[i - 1] = [];
+                    if (!pos.InBounds(Point3.Zero, _site.Size))
+                        continue;
 
-                        recastPlan[i - 1].Add(npos);
-                        ref PackedLight unpl = ref _site.LightControl.GetTile(npos + Point3.Up);
-                        npl.SunLighted = unpl.SunLighted;
-                        if (npl.SunLighted < 7)
+                    ref PackedLight pl = ref _site.LightControl.GetTile(pos);
+                    Tile tile = _site.Map[pos];
+                    pl.IsLightBlocker = tile.Exists && tile.HasConstruction && tile.Construction.Construction != null && tile.Construction.Construction.IsLightBlocker;
+
+                    byte newSun;
+                    if (pos.Z >= _site.Size.Z - 1)
+                    {
+                        newSun = 7;
+                    }
+                    else
+                    {
+                        ref PackedLight upl = ref _site.LightControl.GetTile(pos + Point3.Up);
+                        if (!upl.IsLightBlocker)
                         {
-                            float sl = npl.SunLighted;
-                            foreach (var tn in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
+                            newSun = upl.SunLighted;
+                        }
+                        else
+                        {
+                            newSun = 0;
+                        }
+
+                        if (newSun < 7)
+                        {
+                            float sl = newSun;
+                            foreach (var n in WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false))
                             {
-                                var tnpos = npos + tn + Point3.Up;
-                                if (tnpos.InBounds(Point3.Zero, _site.Size) && _site.LightControl.TryGetTile(tnpos, out PackedLight tnpl))
+                                var npos = pos + Point3.Up + n;
+                                if (!npos.InBounds(Point3.Zero, _site.Size))
+                                    continue;
+
+                                if (_site.LightControl.TryGetTile(npos, out PackedLight npl) && !npl.IsLightBlocker && npl.SunLighted > 0)
                                 {
-                                    var nnpos = tnpos + Point3.Down;
-                                    if (nnpos.InBounds(Point3.Zero, _site.Size) &&
-                                        _site.LightControl.TryGetTile(nnpos, out PackedLight nnpl) &&
-                                        !nnpl.IsLightBlocker)
+                                    sl += (npl.SunLighted>1?1:0);
+                                    if (sl >= 7)
                                     {
-                                        sl += tnpl.SunLighted / 2f;
+                                        sl = 7;
+                                        break;
                                     }
                                 }
-                                if (sl >= 7) break;
                             }
 
-                            npl.SunLighted = (byte)sl;
+                            newSun = (byte)sl;
                         }
                     }
+
+                    pl.SunLighted = newSun;
+
+                    Point3 below = pos + Point3.Down;
+                    if (!below.InBounds(Point3.Zero, _site.Size))
+                        continue;
+
+                    if (pl.IsLightBlocker)
+                    {
+                        ref PackedLight bpl = ref _site.LightControl.GetTile(below);
+                        bpl.SunLighted = 0;
+                        continue;
+                    }
+
+                    if (recastPlan[below.Z] == null)
+                        recastPlan[below.Z] = [];
+
+                    recastPlan[below.Z].Add(below);
                 }
             }
         }

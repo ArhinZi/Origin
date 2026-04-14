@@ -225,18 +225,6 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
 
     //int n = (main.CellPosition.x * WorldSize.x + main.CellPosition.y) % 4;
     uint sun = Unpack(LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)], 4, 3);
-    {
-        uint s1 = (main.CellPosition.x + 1) < WorldSize.x ?
-            Unpack(LightBuffer[((main.CellPosition.x + 1) * WorldSize.x + (main.CellPosition.y + 0))], 4, 3) : 0;
-        uint s2 = (main.CellPosition.y + 1) < WorldSize.y ?
-            Unpack(LightBuffer[((main.CellPosition.x + 0) * WorldSize.x + (main.CellPosition.y + 1))], 4, 3) : 0;
-        uint s3 = (main.CellPosition.x - 1) >= 0 ?
-            Unpack(LightBuffer[((main.CellPosition.x - 1) * WorldSize.x + (main.CellPosition.y - 0))], 4, 3) : 0;
-        uint s4 = (main.CellPosition.y - 1) >= 0 ?
-            Unpack(LightBuffer[((main.CellPosition.x - 0) * WorldSize.x + (main.CellPosition.y - 1))], 4, 3) : 0;
-
-        sun = max(sun, max(s1, max(s2, max(s3, s4))));
-    }
 
     output.Position = pos;
     output.TexCoord = float2((extra.TextureRect.x + vertPos.x) / TextureSize.x,

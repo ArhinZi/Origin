@@ -178,11 +178,9 @@ namespace Origin.Source.Render
 
                 SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(site.World.TimeManager.GetSunLightIntensity());
                 //SiteRenderer.InstanceMainEffect.Parameters["SunLightIntensity"].SetValue(1);
-                if (sublayer == Global.LightFrontStart)
-                {
-                    if (layer + 1 < site.Size.Z && site.LightControl.buffers[layer + 1].ElementCount > 0)
-                        SiteRenderer.InstanceMainEffect.Parameters["LightBuffer"].SetValue(site.LightControl.buffers[layer + 1]);
-                }
+                if (layer < site.Size.Z && site.LightControl.buffers[layer].ElementCount > 0)
+                    SiteRenderer.InstanceMainEffect.Parameters["LightBuffer"].SetValue(site.LightControl.buffers[layer]);
+
                 if (Global.NoLightLayers.Contains(sublayer))
                 {
                     SiteRenderer.InstanceMainEffect.Parameters["nolight"].SetValue(true);
