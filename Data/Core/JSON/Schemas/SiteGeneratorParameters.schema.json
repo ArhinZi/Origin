@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SiteGeneratorParameters.schema.json",
+  "type": "object",
+  "required": ["SiteGenParameters"],
+  "properties": {
+    "SiteGenParameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Type", "Name", "Min", "DefaultValue", "Max"],
+        "properties": {
+          "Type": { "type": "string", "enum": ["Int", "Float"] },
+          "Name": { "type": "string", "minLength": 1 },
+          "Min": { "type": ["integer", "number"] },
+          "DefaultValue": { "type": ["integer", "number"] },
+          "Max": { "type": ["integer", "number"] }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}

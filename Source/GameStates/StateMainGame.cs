@@ -5,6 +5,7 @@ using Arch.Core.Extensions;
 using ImGuiNET;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using MonoGame.Extended.Screens;
 
@@ -18,6 +19,7 @@ using Origin.Source.Resources;
 using Origin.Source.Save;
 using Origin.Source.Utils;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,6 +38,10 @@ namespace Origin.Source.GameStates
         private bool _postInitPrepared;
         private float _loadingProgress;
         private string _loadingOperation = "Preparing";
+
+        private bool _compassTextureResolved;
+        private Texture2D _compassTexture;
+        private IntPtr _compassTextureId = IntPtr.Zero;
 
         public static int GameSpeed { get; private set; } = 1;
 
@@ -250,6 +256,7 @@ namespace Origin.Source.GameStates
             if (!EscMenu)
             {
                 DrawTimeScaleOverlay();
+                DrawCompassOverlay();
                 DrawToolsPanel();
             }
 
@@ -490,8 +497,95 @@ namespace Origin.Source.GameStates
             ImGui.End();
         }
 
+        private void EnsureCompassTextureBound()
+        {
+            if (_compassTextureResolved)
+                return;
+
+            _compassTextureResolved = true;
+            _compassTexture = GlobalResources.Textures.FirstOrDefault(t =>
+                !string.IsNullOrWhiteSpace(t?.Name) && t.Name.Contains("compass", StringComparison.OrdinalIgnoreCase));
+
+            if (_compassTexture != null)
+                _compassTextureId = OriginGame.GuiRenderer.BindTexture(_compassTexture);
+        }
+
+        private static int GetCompassFrameByRotation(WorldRotation rotation)
+        {
+            return rotation switch
+            {
+                WorldRotation.TR => 0,
+                WorldRotation.BR => 3,
+                WorldRotation.BL => 2,
+                WorldRotation.TL => 1,
+                _ => 0
+            };
+        }
+
+        private void DrawCompassOverlay()
+        {
+            EnsureCompassTextureBound();
+
+            Vector2 imageSize = new(64, 64);
+            if (_compassTexture != null)
+            {
+                float frameWidth = _compassTexture.Width / 4f;
+                float frameHeight = _compassTexture.Height;
+                float scale = 2f;
+                imageSize = new(frameWidth * scale, frameHeight * scale);
+            }
+
+            ImGuiViewportPtr viewport = ImGui.GetMainViewport();
+            Vector2 size = new(imageSize.X + 4, imageSize.Y + 4);
+            Vector2 pos = new(viewport.WorkPos.X + viewport.WorkSize.X - size.X - 12, viewport.WorkPos.Y + 84);
+
+            ImGui.SetNextWindowPos(pos);
+            ImGui.SetNextWindowSize(size);
+
+            var flags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoBackground;
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            if (ImGui.Begin("CompassOverlay", flags))
+            {
+                if (_compassTextureId != IntPtr.Zero && _compassTexture != null)
+                {
+                    int frame = GetCompassFrameByRotation(World.ActiveSite.Rotation);
+                    Vector2 uv0 = new(frame / 4f, 0f);
+                    Vector2 uv1 = new((frame + 1) / 4f, 1f);
+
+                    ImGui.SetCursorPos(new Vector2(2, 2));
+                    ImGui.InvisibleButton("##CompassButton", imageSize);
+
+                    Vector2 p0 = ImGui.GetItemRectMin();
+                    Vector2 p1 = ImGui.GetItemRectMax();
+                    var drawList = ImGui.GetWindowDrawList();
+
+                    bool active = ImGui.IsItemActive();
+                    bool hovered = ImGui.IsItemHovered();
+                    if (active)
+                        drawList.AddRectFilled(p0, p1, ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.45f, 0.78f, 0.45f)), 8f);
+                    else if (hovered)
+                        drawList.AddRectFilled(p0, p1, ImGui.GetColorU32(new System.Numerics.Vector4(0.2f, 0.45f, 0.78f, 0.25f)), 8f);
+
+                    drawList.AddImage(_compassTextureId, p0, p1, uv0, uv1);
+
+                    if (ImGui.IsItemClicked())
+                        World.ActiveSite.RotateRight();
+                }
+                else
+                {
+                    if (ImGui.Button($"Compass [{World.ActiveSite.Rotation}]", new Vector2(120, 24)))
+                        World.ActiveSite.RotateRight();
+                }
+            }
+            ImGui.End();
+            ImGui.PopStyleVar();
+        }
+
         public override void Dispose()
         {
+            if (_compassTextureId != IntPtr.Zero)
+                OriginGame.GuiRenderer.UnbindTexture(_compassTextureId);
+
             base.Dispose();
             World?.Dispose();
             World = null;

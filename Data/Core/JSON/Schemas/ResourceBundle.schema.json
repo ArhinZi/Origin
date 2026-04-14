@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ResourceBundle.schema.json",
+  "type": "object",
+  "properties": {
+    "Sprites": { "type": "array" },
+    "RotationSprites": { "type": "array" },
+    "Materials": { "type": "array" },
+    "Items": { "type": "array" },
+    "Constructions": { "type": "array" },
+    "Vegetations": { "type": "array" },
+    "Textures": { "type": "array" },
+    "HalfWallDefs": { "type": "array" },
+    "Settings": { "type": "object" }
+  },
+  "additionalProperties": true
+}

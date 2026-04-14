@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "SitePasses.schema.json",
+  "type": "object",
+  "required": ["SitePasses"],
+  "properties": {
+    "SitePasses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Class", "Order"],
+        "properties": {
+          "Class": { "type": "string", "minLength": 1 },
+          "Order": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}

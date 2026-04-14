@@ -1,0 +1,19 @@
+{
+  "$schema": "../Schemas/SiteGeneratorParameters.schema.json",
+  "SiteGenParameters": [
+    {
+      "Type": "Int",
+      "Name": "DirtDepth",
+      "Min": 0,
+      "DefaultValue": 4,
+      "Max": 100
+    },
+    {
+      "Type": "Float",
+      "Name": "Scale",
+      "Min": 0,
+      "DefaultValue": 0.005,
+      "Max": 1
+    }
+  ]
+}

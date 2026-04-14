@@ -1,0 +1,9 @@
+{
+  "$schema": "../Schemas/SitePasses.schema.json",
+  "SitePasses": [
+    {
+      "Class": "Origin.Source.Generators.TerrainPass",
+      "Order": 0
+    }
+  ]
+}

@@ -60,7 +60,7 @@
 		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="Mods\**">
+		<Content Include="Data\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 		<Content Include="Content\Fonts\**">
@@ -68,23 +68,21 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-	  <None Remove="mods\core\info.ini" />
-	  <None Remove="Mods\Core\JSON\animals.xml" />
-	  <None Remove="Mods\Core\JSON\BasicSprites.json" />
-	  <None Remove="Mods\Core\JSON\Buildings.json" />
-	  <None Remove="Mods\Core\JSON\ConstructionTypes.json" />
-	  <None Remove="Mods\Core\JSON\Generators\SiteGeneratorParameters.xml" />
-	  <None Remove="Mods\Core\JSON\Generators\SitePasses.xml" />
-	  <None Remove="mods\core\json\HalfWallDefs.json" />
-	  <None Remove="Mods\Core\JSON\Items.json" />
-	  <None Remove="Mods\Core\JSON\Materials.json" />
-	  <None Remove="Mods\Core\JSON\pawnSprites.json" />
-	  <None Remove="Mods\Core\JSON\RotationSprites.json" />
-	  <None Remove="Mods\Core\JSON\Settings.json" />
-	  <None Remove="Mods\Core\JSON\spritesAnimals.json" />
-	  <None Remove="Mods\Core\JSON\TerrainSettings.json" />
-	  <None Remove="mods\core\json\textures.json" />
-	  <None Remove="Mods\Core\JSON\Vegetations.json" />
+	  <None Remove="Data\core\info.ini" />
+	  <None Remove="Data\Core\JSON\animals.xml" />
+	  <None Remove="Data\Core\JSON\BasicSprites.json" />
+	  <None Remove="Data\Core\JSON\Buildings.json" />
+	  <None Remove="Data\Core\JSON\ConstructionTypes.json" />
+	  <None Remove="Data\core\json\HalfWallDefs.json" />
+	  <None Remove="Data\Core\JSON\Items.json" />
+	  <None Remove="Data\Core\JSON\Materials.json" />
+	  <None Remove="Data\Core\JSON\pawnSprites.json" />
+	  <None Remove="Data\Core\JSON\RotationSprites.json" />
+	  <None Remove="Data\Core\JSON\Settings.json" />
+	  <None Remove="Data\Core\JSON\spritesAnimals.json" />
+	  <None Remove="Data\Core\JSON\TerrainSettings.json" />
+	  <None Remove="Data\core\json\textures.json" />
+	  <None Remove="Data\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="Arch.Extended\Arch.LowLevel\Arch.LowLevel.csproj" />

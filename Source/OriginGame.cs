@@ -24,6 +24,7 @@ using Origin.Source.Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 
@@ -47,6 +48,8 @@ namespace Origin.Source
         public DebugMonitor dmonitor;
 
         public static ImGuiRenderer GuiRenderer;
+
+        private bool _showResourceLoadReport;
 
         public OriginGame()
         {
@@ -115,6 +118,7 @@ namespace Origin.Source
 
             // Load Resources
             ResourceLoader.LoadResources();
+            _showResourceLoadReport = ResourceLoader.LastReport.HasMessages;
             //SaveGameEntity.ReadAllSaves();
 
             GuiRenderer.RebuildFontAtlas();
@@ -179,7 +183,73 @@ namespace Origin.Source
 
             base.Draw(gameTime);
 
+            DrawResourceLoadReportWindow();
+
             GuiRenderer.EndLayout();
+        }
+
+        private void DrawResourceLoadReportWindow()
+        {
+            if (!_showResourceLoadReport || !ResourceLoader.LastReport.HasMessages)
+                return;
+
+            var report = ResourceLoader.LastReport;
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(900, 540), ImGuiCond.FirstUseEver);
+            if (ImGui.Begin("Resource Load Warnings", ref _showResourceLoadReport))
+            {
+                ImGui.TextWrapped("Resource loading completed with warnings/errors. Merge was applied. Please review details below.");
+
+                if (ImGui.Button("Copy report"))
+                {
+                    var sb = new StringBuilder();
+
+                    if (report.ParseErrors.Count > 0)
+                    {
+                        sb.AppendLine($"JSON Parse Errors ({report.ParseErrors.Count})");
+                        foreach (var msg in report.ParseErrors)
+                            sb.AppendLine($"- {msg}");
+                        sb.AppendLine();
+                    }
+
+                    if (report.MergeWarnings.Count > 0)
+                    {
+                        sb.AppendLine($"Merge Conflicts/Overwrites ({report.MergeWarnings.Count})");
+                        foreach (var msg in report.MergeWarnings)
+                            sb.AppendLine($"- {msg}");
+                        sb.AppendLine();
+                    }
+
+                    if (report.ValidationErrors.Count > 0)
+                    {
+                        sb.AppendLine($"Validation Errors ({report.ValidationErrors.Count})");
+                        foreach (var msg in report.ValidationErrors)
+                            sb.AppendLine($"- {msg}");
+                    }
+
+                    ImGui.SetClipboardText(sb.ToString());
+                }
+
+                ImGui.Separator();
+
+                if (report.ParseErrors.Count > 0 && ImGui.CollapsingHeader($"JSON Parse Errors ({report.ParseErrors.Count})", ImGuiTreeNodeFlags.DefaultOpen))
+                {
+                    foreach (var msg in report.ParseErrors)
+                        ImGui.BulletText(msg);
+                }
+
+                if (report.MergeWarnings.Count > 0 && ImGui.CollapsingHeader($"Merge Conflicts/Overwrites ({report.MergeWarnings.Count})", ImGuiTreeNodeFlags.DefaultOpen))
+                {
+                    foreach (var msg in report.MergeWarnings)
+                        ImGui.BulletText(msg);
+                }
+
+                if (report.ValidationErrors.Count > 0 && ImGui.CollapsingHeader($"Validation Errors ({report.ValidationErrors.Count})", ImGuiTreeNodeFlags.DefaultOpen))
+                {
+                    foreach (var msg in report.ValidationErrors)
+                        ImGui.BulletText(msg);
+                }
+            }
+            ImGui.End();
         }
 
         public void ApplyGraphicsSettings(int width, int height, bool fullscreen, bool vsync, int fpsLimit)

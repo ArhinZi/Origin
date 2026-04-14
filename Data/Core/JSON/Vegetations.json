@@ -24,7 +24,9 @@
             }
           }
         }
-      ]
+      ],
+      "SunLightRequired": true
+
     }
   ]
 }
