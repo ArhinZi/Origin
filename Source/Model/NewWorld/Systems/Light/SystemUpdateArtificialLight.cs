@@ -16,6 +16,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
         private const int TailSteps = MaxLightLevel - 1;
         private const int MaxEffectiveDistance = MaxEmitterPower + TailSteps;
         private const int BlockSize = BlockBase.BLOCK_SIZE;
+        private const double LightRoundness = 0.5; // 0.0 = ромб (манхеттен), 1.0 = округле (евклід)
 
         private readonly HashSet<Point3> dirtyPositions = [];
         private readonly Dictionary<Point3, byte> emitterPowers = [];
@@ -23,9 +24,22 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         private readonly Point3[] starNeighbours = WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(false);
         private readonly Point3[] plusNeighbours = WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false);
+        private readonly Point3[] propagationNeighbours =
+        [
+            new(1, 0, 0),
+            new(0, 1, 0),
+            new(-1, 0, 0),
+            new(0, -1, 0),
+            new(-1, -1, 0),
+            new(-1, 1, 0),
+            new(1, -1, 0),
+            new(1, 1, 0),
+            Point3.Up,
+            Point3.Down
+        ];
         private bool recastDirty = false;
 
-        private readonly record struct LightWaveNode(Point3 Pos, byte Level, byte FlatStepsLeft);
+        private readonly record struct LightWaveNode(Point3 Pos);
 
         public SystemUpdateArtificialLight(Site site) : base(site)
         {
@@ -368,43 +382,42 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             if (propagationArea != null && !propagationArea.Contains(sourcePos))
                 return;
 
-            byte flatSteps = emitterPower > MaxEmitterPower ? (byte)MaxEmitterPower : emitterPower;
             byte attenuationStep = GetAttenuationStep(emitterPower);
+            int maxRange = GetEmitterRange(emitterPower);
+            int maxRangeSq = maxRange * maxRange;
 
             Queue<LightWaveNode> queue = new();
-            Dictionary<Point3, ushort> visited = new();
+            HashSet<Point3> visited = [];
 
-            queue.Enqueue(new LightWaveNode(sourcePos, MaxLightLevel, flatSteps));
-            visited[sourcePos] = PackState(MaxLightLevel, flatSteps);
+            queue.Enqueue(new LightWaveNode(sourcePos));
+            visited.Add(sourcePos);
 
             while (queue.Count > 0)
             {
                 var node = queue.Dequeue();
                 Point3 pos = node.Pos;
 
-                if (targetArea == null || targetArea.Contains(pos))
-                    PutBestLight(pos, node.Level, best, overlap);
-
-                if (node.Level == 0)
+                int dx = pos.X - sourcePos.X;
+                int dy = pos.Y - sourcePos.Y;
+                int dz = pos.Z - sourcePos.Z;
+                int distSq = dx * dx + dy * dy + dz * dz;
+                if (distSq > maxRangeSq)
                     continue;
 
+                double distance = ComputeDistanceWithRoundness(dx, dy, dz);
+                byte level = ComputeLightLevelByDistance(emitterPower, attenuationStep, distance);
+                if (level == 0)
+                    continue;
+
+                if (targetArea == null || targetArea.Contains(pos))
+                    PutBestLight(pos, level, best, overlap);
+
                 if (!IsBlockingTile(pos))
-                    LightAdjacentBlockers(pos, node.Level, targetArea, best, overlap);
+                    LightAdjacentBlockers(pos, level, targetArea, best, overlap);
                 else
                     continue;
 
-                byte nextLevel = node.FlatStepsLeft > 0
-                    ? node.Level
-                    : (byte)Math.Max(0, node.Level - attenuationStep);
-
-                if (nextLevel == 0)
-                    continue;
-
-                byte nextFlatSteps = node.FlatStepsLeft > 0
-                    ? (byte)(node.FlatStepsLeft - 1)
-                    : (byte)0;
-
-                foreach (var step in starNeighbours)
+                foreach (var step in propagationNeighbours)
                 {
                     if (!CanMoveOutwardFromSource(sourcePos, pos, step))
                         continue;
@@ -419,14 +432,30 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                     if (IsBlockingTile(nextPos))
                         continue;
 
-                    ushort packed = PackState(nextLevel, nextFlatSteps);
-                    if (visited.TryGetValue(nextPos, out ushort existing) && existing >= packed)
+                    if (!visited.Add(nextPos))
                         continue;
 
-                    visited[nextPos] = packed;
-                    queue.Enqueue(new LightWaveNode(nextPos, nextLevel, nextFlatSteps));
+                    queue.Enqueue(new LightWaveNode(nextPos));
                 }
             }
+        }
+
+        private static double ComputeDistanceWithRoundness(int dx, int dy, int dz)
+        {
+            double euclidean = Math.Sqrt(dx * dx + dy * dy + dz * dz);
+            double manhattan = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
+            double k = Math.Clamp(LightRoundness, 0.0, 1.0);
+            return manhattan + (euclidean - manhattan) * k;
+        }
+
+        private static byte ComputeLightLevelByDistance(byte emitterPower, byte attenuationStep, double distance)
+        {
+            if (distance <= emitterPower)
+                return MaxLightLevel;
+
+            int extraSteps = (int)Math.Ceiling(distance - emitterPower);
+            int level = MaxLightLevel - extraSteps * attenuationStep;
+            return level > 0 ? (byte)level : (byte)0;
         }
 
         private static bool CanMoveOutwardFromSource(Point3 sourcePos, Point3 currentPos, Point3 step)
@@ -480,11 +509,6 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 if (IsBlockingTile(side))
                     PutBestLight(side, lightLevel, best, overlap);
             }
-        }
-
-        private static ushort PackState(byte level, byte flatStepsLeft)
-        {
-            return (ushort)((level << 8) | flatStepsLeft);
         }
 
         private void AddInfluenceArea(Point3 seed, int radius, HashSet<Point3> affected)
