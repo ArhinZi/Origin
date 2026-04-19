@@ -1,5 +1,6 @@
 using Origin.Source.Model.Map.Light;
 using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Map;
 using Origin.Source.Model.NewWorld.Systems;
 using Origin.Source.Utils;
 using System;
@@ -12,12 +13,19 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
     {
         private const byte MaxLightLevel = 7;
         private const int MaxEmitterPower = 7;
-        private const int GeometricTailSteps = 3;
-        private const int MaxEffectiveDistance = MaxEmitterPower + GeometricTailSteps - 1;
+        private const int TailSteps = MaxLightLevel - 1;
+        private const int MaxEffectiveDistance = MaxEmitterPower + TailSteps;
+        private const int BlockSize = BlockBase.BLOCK_SIZE;
 
-        private readonly List<HashSet<Point3>> recastPlan = [];
+        private readonly HashSet<Point3> dirtyPositions = [];
+        private readonly Dictionary<Point3, byte> emitterPowers = [];
+        private readonly Dictionary<Point3, HashSet<Point3>> emittersByBlock = [];
+
+        private readonly Point3[] starNeighbours = WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(false);
+        private readonly Point3[] plusNeighbours = WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false);
         private bool recastDirty = false;
-        private readonly Point3[] neighbours = WorldUtils.FULL_NEIGHBOUR_PATTERN_3L(false);
+
+        private readonly record struct LightWaveNode(Point3 Pos, byte Level, byte FlatStepsLeft);
 
         public SystemUpdateArtificialLight(Site site) : base(site)
         {
@@ -26,10 +34,10 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         public override void Initialize()
         {
-            recastPlan.Clear();
-            recastPlan.Capacity = _site.Size.Z;
-            for (int i = 0; i < _site.Size.Z; i++)
-                recastPlan.Add(null);
+            dirtyPositions.Clear();
+            emitterPowers.Clear();
+            emittersByBlock.Clear();
+            BuildEmitterRegistry();
 
             RecalculateAllLight();
             _site.LightControl.bufferDirty = true;
@@ -70,23 +78,78 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 if (!target.InBounds(Point3.Zero, _site.Size))
                     continue;
 
-                if (recastPlan[target.Z] == null)
-                    recastPlan[target.Z] = [];
-
-                recastPlan[target.Z].Add(target);
-                recastDirty = true;
+                dirtyPositions.Add(target);
             }
+
+            UpdateEmitterAt(pos);
+            recastDirty = true;
         }
 
         private void ClearRecastPlan()
         {
-            for (int i = 0; i < _site.Size.Z; i++)
-                recastPlan[i] = null;
+            dirtyPositions.Clear();
+        }
+
+        private void BuildEmitterRegistry()
+        {
+            for (int z = 0; z < _site.Size.Z; z++)
+            {
+                for (int x = 0; x < _site.Size.X; x++)
+                {
+                    for (int y = 0; y < _site.Size.Y; y++)
+                    {
+                        Point3 pos = new(x, y, z);
+                        byte power = GetEmitterPower(pos);
+                        if (power > 0)
+                            RegisterEmitter(pos, power);
+                    }
+                }
+            }
+        }
+
+        private void UpdateEmitterAt(Point3 pos)
+        {
+            UnregisterEmitter(pos);
+
+            byte power = GetEmitterPower(pos);
+            if (power > 0)
+                RegisterEmitter(pos, power);
+        }
+
+        private void RegisterEmitter(Point3 pos, byte power)
+        {
+            emitterPowers[pos] = power;
+            Point3 blockPos = ToBlockPos(pos);
+            if (!emittersByBlock.TryGetValue(blockPos, out var set))
+            {
+                set = [];
+                emittersByBlock[blockPos] = set;
+            }
+
+            set.Add(pos);
+        }
+
+        private void UnregisterEmitter(Point3 pos)
+        {
+            if (!emitterPowers.Remove(pos))
+                return;
+
+            Point3 blockPos = ToBlockPos(pos);
+            if (!emittersByBlock.TryGetValue(blockPos, out var set))
+                return;
+
+            set.Remove(pos);
+            if (set.Count == 0)
+                emittersByBlock.Remove(blockPos);
+        }
+
+        private static Point3 ToBlockPos(Point3 pos)
+        {
+            return new Point3(pos.X / BlockSize, pos.Y / BlockSize, pos.Z);
         }
 
         private void RecalculateAllLight()
         {
-            var sources = new List<(Point3 Pos, byte Power)>();
             for (int z = 0; z < _site.Size.Z; z++)
             {
                 for (int x = 0; x < _site.Size.X; x++)
@@ -98,18 +161,15 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                         RefreshBlockerState(pos, ref pl);
                         pl.LightLevel = 0;
                         pl.HasMultipleLightSources = false;
-
-                        byte emitterPower = GetEmitterPower(pos);
-                        if (emitterPower > 0)
-                            sources.Add((pos, emitterPower));
                     }
                 }
             }
 
             var best = new Dictionary<Point3, byte>();
             var overlap = new HashSet<Point3>();
-            foreach (var source in sources)
-                PropagateFromSource(source.Pos, source.Power, null, null, best, overlap);
+
+            foreach (var emitter in emitterPowers)
+                PropagateFromSource(emitter.Key, emitter.Value, null, null, best, overlap);
 
             for (int z = 0; z < _site.Size.Z; z++)
             {
@@ -128,11 +188,22 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         private void RecalculatePartialLight()
         {
-            HashSet<Point3> area = BuildAffectedAreaFromDirtyPlan();
+            if (dirtyPositions.Count == 0)
+                return;
+
+            HashSet<Point3> recastEmitters = CollectEmittersForDirtyPositions();
+            HashSet<Point3> area = BuildAffectedArea(dirtyPositions, recastEmitters);
             if (area.Count == 0)
                 return;
 
-            HashSet<Point3> discoverArea = BuildDiscoveryAreaFromDirtyPlan();
+            ExpandEmittersFromAreaBounds(area, recastEmitters);
+
+            int totalCells = _site.Size.X * _site.Size.Y * _site.Size.Z;
+            if (area.Count >= totalCells / 2)
+            {
+                RecalculateAllLight();
+                return;
+            }
 
             foreach (var pos in area)
             {
@@ -142,12 +213,14 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 pl.HasMultipleLightSources = false;
             }
 
-            var sources = CollectSources(discoverArea);
             var best = new Dictionary<Point3, byte>();
             var overlap = new HashSet<Point3>();
 
-            foreach (var source in sources)
-                PropagateFromSource(source.Pos, source.Power, discoverArea, area, best, overlap);
+            foreach (var emitterPos in recastEmitters)
+            {
+                if (emitterPowers.TryGetValue(emitterPos, out var power))
+                    PropagateFromSource(emitterPos, power, null, area, best, overlap);
+            }
 
             foreach (var pos in area)
             {
@@ -157,138 +230,261 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             }
         }
 
-        private HashSet<Point3> BuildAffectedAreaFromDirtyPlan()
+        private void ExpandEmittersFromAreaBounds(HashSet<Point3> area, HashSet<Point3> emitters)
         {
-            HashSet<Point3> affected = [];
+            bool initialized = false;
+            int minX = 0, minY = 0, minZ = 0, maxX = 0, maxY = 0, maxZ = 0;
 
-            for (int z = 0; z < recastPlan.Count; z++)
+            foreach (var pos in area)
             {
-                var layer = recastPlan[z];
-                if (layer == null)
+                if (!initialized)
+                {
+                    minX = maxX = pos.X;
+                    minY = maxY = pos.Y;
+                    minZ = maxZ = pos.Z;
+                    initialized = true;
                     continue;
+                }
 
-                foreach (var seed in layer)
-                    AddInfluenceArea(seed, MaxEffectiveDistance, affected);
+                if (pos.X < minX) minX = pos.X;
+                if (pos.X > maxX) maxX = pos.X;
+                if (pos.Y < minY) minY = pos.Y;
+                if (pos.Y > maxY) maxY = pos.Y;
+                if (pos.Z < minZ) minZ = pos.Z;
+                if (pos.Z > maxZ) maxZ = pos.Z;
             }
 
-            return affected;
+            if (!initialized)
+                return;
+
+            minX = Math.Max(0, minX - MaxEffectiveDistance);
+            minY = Math.Max(0, minY - MaxEffectiveDistance);
+            minZ = Math.Max(0, minZ - MaxEffectiveDistance);
+
+            maxX = Math.Min(_site.Size.X - 1, maxX + MaxEffectiveDistance);
+            maxY = Math.Min(_site.Size.Y - 1, maxY + MaxEffectiveDistance);
+            maxZ = Math.Min(_site.Size.Z - 1, maxZ + MaxEffectiveDistance);
+
+            int minBX = minX / BlockSize;
+            int maxBX = maxX / BlockSize;
+            int minBY = minY / BlockSize;
+            int maxBY = maxY / BlockSize;
+
+            for (int bz = minZ; bz <= maxZ; bz++)
+            {
+                for (int bx = minBX; bx <= maxBX; bx++)
+                {
+                    for (int by = minBY; by <= maxBY; by++)
+                    {
+                        Point3 blockPos = new(bx, by, bz);
+                        if (!emittersByBlock.TryGetValue(blockPos, out var blockEmitters))
+                            continue;
+
+                        foreach (var emitterPos in blockEmitters)
+                            emitters.Add(emitterPos);
+                    }
+                }
+            }
         }
 
-        private HashSet<Point3> BuildDiscoveryAreaFromDirtyPlan()
+        private HashSet<Point3> CollectEmittersForDirtyPositions()
         {
-            HashSet<Point3> discover = [];
+            HashSet<Point3> result = [];
 
-            int discoveryRadius = MaxEffectiveDistance * 2;
-            for (int z = 0; z < recastPlan.Count; z++)
+            foreach (var dirtyPos in dirtyPositions)
             {
-                var layer = recastPlan[z];
-                if (layer == null)
-                    continue;
+                int blockRadius = (MaxEffectiveDistance * 2 + BlockSize - 1) / BlockSize;
+                Point3 centerBlock = ToBlockPos(dirtyPos);
 
-                foreach (var seed in layer)
-                    AddInfluenceArea(seed, discoveryRadius, discover);
+                int minBZ = Math.Max(0, dirtyPos.Z - MaxEffectiveDistance * 2);
+                int maxBZ = Math.Min(_site.Size.Z - 1, dirtyPos.Z + MaxEffectiveDistance * 2);
+
+                for (int bz = minBZ; bz <= maxBZ; bz++)
+                {
+                    for (int bx = Math.Max(0, centerBlock.X - blockRadius); bx <= Math.Min((_site.Size.X - 1) / BlockSize, centerBlock.X + blockRadius); bx++)
+                    {
+                        for (int by = Math.Max(0, centerBlock.Y - blockRadius); by <= Math.Min((_site.Size.Y - 1) / BlockSize, centerBlock.Y + blockRadius); by++)
+                        {
+                            Point3 blockPos = new(bx, by, bz);
+                            if (!emittersByBlock.TryGetValue(blockPos, out var blockEmitters))
+                                continue;
+
+                            foreach (var emitterPos in blockEmitters)
+                            {
+                                byte power = emitterPowers[emitterPos];
+                                int emitterRange = GetEmitterRange(power);
+
+                                int distance = Math.Abs(emitterPos.X - dirtyPos.X)
+                                    + Math.Abs(emitterPos.Y - dirtyPos.Y)
+                                    + Math.Abs(emitterPos.Z - dirtyPos.Z);
+
+                                if (distance <= emitterRange + MaxEffectiveDistance)
+                                    result.Add(emitterPos);
+                            }
+                        }
+                    }
+                }
             }
 
-            return discover;
+            return result;
         }
 
-        private static byte ComputeLightAtDistance(byte emitterPower, double distance)
+        private HashSet<Point3> BuildAffectedArea(HashSet<Point3> dirty, HashSet<Point3> recastEmitters)
         {
-            int dist = (int)Math.Ceiling(distance);
-            if (dist <= emitterPower)
-                return MaxLightLevel;
+            HashSet<Point3> area = [];
 
-            int extraDistance = dist - emitterPower;
-            if (extraDistance >= GeometricTailSteps)
-                return 0;
+            foreach (var pos in dirty)
+                AddInfluenceArea(pos, MaxEffectiveDistance, area);
 
-            return (byte)(MaxLightLevel >> extraDistance);
+            foreach (var emitterPos in recastEmitters)
+            {
+                if (!emitterPowers.TryGetValue(emitterPos, out var power))
+                    continue;
+
+                AddInfluenceArea(emitterPos, GetEmitterRange(power), area);
+            }
+
+            return area;
+        }
+
+        private static int GetEmitterRange(byte emitterPower)
+        {
+            byte attenuation = GetAttenuationStep(emitterPower);
+            int tail = (int)Math.Ceiling((MaxLightLevel - 1) / (double)attenuation);
+            return emitterPower + tail;
         }
 
         private void PropagateFromSource(
             Point3 sourcePos,
             byte emitterPower,
-            HashSet<Point3> discoveryArea,
+            HashSet<Point3> propagationArea,
             HashSet<Point3> targetArea,
             Dictionary<Point3, byte> best,
             HashSet<Point3> overlap)
         {
-            int maxDistance = emitterPower + GeometricTailSteps - 1;
-            int maxDistanceSq = maxDistance * maxDistance;
+            if (emitterPower == 0)
+                return;
 
-            var visited = new HashSet<Point3> { sourcePos };
-            Queue<Point3> queue = new();
-            queue.Enqueue(sourcePos);
+            if (propagationArea != null && !propagationArea.Contains(sourcePos))
+                return;
+
+            byte flatSteps = emitterPower > MaxEmitterPower ? (byte)MaxEmitterPower : emitterPower;
+            byte attenuationStep = GetAttenuationStep(emitterPower);
+
+            Queue<LightWaveNode> queue = new();
+            Dictionary<Point3, ushort> visited = new();
+
+            queue.Enqueue(new LightWaveNode(sourcePos, MaxLightLevel, flatSteps));
+            visited[sourcePos] = PackState(MaxLightLevel, flatSteps);
 
             while (queue.Count > 0)
             {
-                Point3 nodePos = queue.Dequeue();
+                var node = queue.Dequeue();
+                Point3 pos = node.Pos;
 
-                int dxs = nodePos.X - sourcePos.X;
-                int dys = nodePos.Y - sourcePos.Y;
-                int dzs = nodePos.Z - sourcePos.Z;
-                int distSq = dxs * dxs + dys * dys + dzs * dzs;
-                if (distSq > maxDistanceSq)
+                if (targetArea == null || targetArea.Contains(pos))
+                    PutBestLight(pos, node.Level, best, overlap);
+
+                if (node.Level == 0)
                     continue;
 
-                byte candidate = ComputeLightAtDistance(emitterPower, Math.Sqrt(distSq));
-                if (candidate == 0)
+                if (!IsBlockingTile(pos))
+                    LightAdjacentBlockers(pos, node.Level, targetArea, best, overlap);
+                else
                     continue;
 
-                if (targetArea == null || targetArea.Contains(nodePos))
-                    PutBestLight(nodePos, candidate, best, overlap);
+                byte nextLevel = node.FlatStepsLeft > 0
+                    ? node.Level
+                    : (byte)Math.Max(0, node.Level - attenuationStep);
 
-                if (nodePos != sourcePos && IsBlockingTile(nodePos))
+                if (nextLevel == 0)
                     continue;
 
-                foreach (var n in neighbours)
+                byte nextFlatSteps = node.FlatStepsLeft > 0
+                    ? (byte)(node.FlatStepsLeft - 1)
+                    : (byte)0;
+
+                foreach (var step in starNeighbours)
                 {
-                    Point3 npos = nodePos + n;
-                    if (!npos.InBounds(Point3.Zero, _site.Size))
+                    if (!CanMoveOutwardFromSource(sourcePos, pos, step))
                         continue;
 
-                    // Вгору не заходимо у лайт-блокер (не освітлюємо blocker зверху).
-                    if (n.Z > 0 && IsBlockingTile(npos))
+                    Point3 nextPos = pos + step;
+                    if (!nextPos.InBounds(Point3.Zero, _site.Size))
                         continue;
 
-                    if (discoveryArea != null && !discoveryArea.Contains(npos))
+                    if (propagationArea != null && !propagationArea.Contains(nextPos))
                         continue;
 
-                    if (!visited.Add(npos))
+                    if (IsBlockingTile(nextPos))
                         continue;
 
-                    queue.Enqueue(npos);
+                    ushort packed = PackState(nextLevel, nextFlatSteps);
+                    if (visited.TryGetValue(nextPos, out ushort existing) && existing >= packed)
+                        continue;
+
+                    visited[nextPos] = packed;
+                    queue.Enqueue(new LightWaveNode(nextPos, nextLevel, nextFlatSteps));
                 }
             }
         }
 
-        private static void PutBestLight(Point3 pos, byte candidate, Dictionary<Point3, byte> best, HashSet<Point3> overlap)
+        private static bool CanMoveOutwardFromSource(Point3 sourcePos, Point3 currentPos, Point3 step)
         {
-            if (!best.TryGetValue(pos, out byte existing))
-            {
-                best[pos] = candidate;
-                return;
-            }
+            int dx = currentPos.X - sourcePos.X;
+            int dy = currentPos.Y - sourcePos.Y;
+            int dz = currentPos.Z - sourcePos.Z;
 
-            if (candidate > existing)
-            {
-                if (existing > 0)
-                    overlap.Add(pos);
-                best[pos] = candidate;
-                return;
-            }
+            if (dx > 0 && step.X < 0) return false;
+            if (dx < 0 && step.X > 0) return false;
+            if (dy > 0 && step.Y < 0) return false;
+            if (dy < 0 && step.Y > 0) return false;
+            if (dz > 0 && step.Z < 0) return false;
+            if (dz < 0 && step.Z > 0) return false;
 
-            if (candidate > 0)
-                overlap.Add(pos);
+            return true;
         }
 
-        private HashSet<Point3> ExpandArea(HashSet<Point3> area, int radius)
+        private static byte GetAttenuationStep(byte emitterPower)
         {
-            HashSet<Point3> expanded = [];
-            foreach (var pos in area)
-                AddInfluenceArea(pos, radius, expanded);
+            if (emitterPower == 0)
+                return MaxLightLevel;
 
-            return expanded;
+            return (byte)Math.Max(1, (int)Math.Ceiling(MaxEmitterPower / (double)emitterPower));
+        }
+
+        private void LightAdjacentBlockers(
+            Point3 litAirPos,
+            byte lightLevel,
+            HashSet<Point3> targetArea,
+            Dictionary<Point3, byte> best,
+            HashSet<Point3> overlap)
+        {
+            Point3 below = litAirPos + Point3.Down;
+            if (below.InBounds(Point3.Zero, _site.Size)
+                && (targetArea == null || targetArea.Contains(below))
+                && IsBlockingTile(below))
+            {
+                PutBestLight(below, lightLevel, best, overlap);
+            }
+
+            foreach (var n in plusNeighbours)
+            {
+                Point3 side = litAirPos + n;
+                if (!side.InBounds(Point3.Zero, _site.Size))
+                    continue;
+
+                if (targetArea != null && !targetArea.Contains(side))
+                    continue;
+
+                if (IsBlockingTile(side))
+                    PutBestLight(side, lightLevel, best, overlap);
+            }
+        }
+
+        private static ushort PackState(byte level, byte flatStepsLeft)
+        {
+            return (ushort)((level << 8) | flatStepsLeft);
         }
 
         private void AddInfluenceArea(Point3 seed, int radius, HashSet<Point3> affected)
@@ -323,11 +519,29 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                     int maxY = Math.Min(dyLimit, _site.Size.Y - 1 - seed.Y);
 
                     for (int dy = minY; dy <= maxY; dy++)
-                    {
                         affected.Add(new Point3(xx, seed.Y + dy, zz));
-                    }
                 }
             }
+        }
+
+        private static void PutBestLight(Point3 pos, byte candidate, Dictionary<Point3, byte> best, HashSet<Point3> overlap)
+        {
+            if (!best.TryGetValue(pos, out byte existing))
+            {
+                best[pos] = candidate;
+                return;
+            }
+
+            if (candidate > existing)
+            {
+                if (existing > 0)
+                    overlap.Add(pos);
+                best[pos] = candidate;
+                return;
+            }
+
+            if (candidate > 0)
+                overlap.Add(pos);
         }
 
         private List<(Point3 Pos, byte Power)> CollectSources(HashSet<Point3> area)
