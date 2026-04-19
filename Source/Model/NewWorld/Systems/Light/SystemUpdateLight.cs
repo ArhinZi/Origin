@@ -41,12 +41,15 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         public void OnConstructionPlaced(Point3 pos)
         {
+            // Для встановлення блокера достатньо стартувати з його рівня.
             MarkForRecast(pos);
         }
 
         public void OnConstructionRemoved(Point3 pos)
         {
+            // Для видалення додаємо і сам тайл, і тайл над ним як можливе зовнішнє джерело.
             MarkForRecast(pos);
+            MarkForRecast(pos + Point3.Up);
         }
 
         public override void Update(in ulong t)
@@ -114,17 +117,26 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 
         private void AddInfluenceArea(Point3 seed, HashSet<Point3> affected)
         {
-            // Світло може поширитись максимум на MaxSunLight по XY та на всі рівні вниз.
-            for (int z = seed.Z; z >= 0; z--)
+            // Світло може поширитись максимум на MaxSunLight по XY.
+            // По Z йдемо вниз, але для бокових колонок зупиняємось на першому блокері.
+            // Центральну колонку (seed) не обрізаємо, щоб коректно прибирати/додавати тінь нижче.
+            for (int dx = -MaxSunLight; dx <= MaxSunLight; dx++)
             {
-                for (int dx = -MaxSunLight; dx <= MaxSunLight; dx++)
+                int maxDy = MaxSunLight - Math.Abs(dx);
+                for (int dy = -maxDy; dy <= maxDy; dy++)
                 {
-                    int maxDy = MaxSunLight - Math.Abs(dx);
-                    for (int dy = -maxDy; dy <= maxDy; dy++)
+                    bool isSeedColumn = dx == 0 && dy == 0;
+
+                    for (int z = seed.Z; z >= 0; z--)
                     {
                         Point3 pos = new(seed.X + dx, seed.Y + dy, z);
-                        if (pos.InBounds(Point3.Zero, _site.Size))
-                            affected.Add(pos);
+                        if (!pos.InBounds(Point3.Zero, _site.Size))
+                            continue;
+
+                        affected.Add(pos);
+
+                        if (!isSeedColumn && IsBlockingTile(pos))
+                            break;
                     }
                 }
             }
@@ -263,14 +275,19 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             }
         }
 
-        private void RefreshBlockerState(Point3 pos, ref PackedLight pl)
+        private bool IsBlockingTile(Point3 pos)
         {
-            // Стан блокера завжди синхронізується з поточним станом тайла на мапі.
             Tile tile = _site.Map[pos];
-            pl.IsLightBlocker = tile.Exists
+            return tile.Exists
                 && tile.HasConstruction
                 && tile.Construction.Construction != null
                 && tile.Construction.Construction.IsLightBlocker;
+        }
+
+        private void RefreshBlockerState(Point3 pos, ref PackedLight pl)
+        {
+            // Стан блокера завжди синхронізується з поточним станом тайла на мапі.
+            pl.IsLightBlocker = IsBlockingTile(pos);
         }
     }
 }
