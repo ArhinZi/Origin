@@ -9,14 +9,14 @@ using Tile = Origin.Source.Model.NewWorld.Tile;
 
 namespace Origin.Source.Model.NewWorld.Systems.Light
 {
-    internal class SystemUpdateLight : TickSystem
+    internal class SystemUpdateSunlight : TickSystem
     {
         // Максимальний рівень сонячного світла (3 біти у PackedLight).
         private const byte MaxSunLight = 7;
 
-        public SystemUpdateLight(Site site) : base(site)
+        public SystemUpdateSunlight(Site site) : base(site)
         {
-            site.LightSystem = this;
+            site.SunlightSystem = this;
         }
 
         private readonly List<HashSet<Point3>> recastPlan = [];
@@ -100,7 +100,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
         private HashSet<Point3> BuildAffectedAreaFromDirtyPlan()
         {
             // Збираємо сумарну область впливу від усіх "брудних" seed-позицій.
-            HashSet<Point3> affected = [];
+            Dictionary<(int X, int Y), (int StartZ, bool ForceFullDepth)> columns = [];
 
             for (int z = 0; z < recastPlan.Count; z++)
             {
@@ -109,35 +109,60 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                     continue;
 
                 foreach (var seed in layer)
-                    AddInfluenceArea(seed, affected);
+                    AddInfluenceColumns(seed, columns);
+            }
+
+            HashSet<Point3> affected = new(columns.Count * 8);
+            foreach (var kv in columns)
+            {
+                var (x, y) = kv.Key;
+                var (startZ, forceFullDepth) = kv.Value;
+
+                for (int z = startZ; z >= 0; z--)
+                {
+                    Point3 pos = new(x, y, z);
+                    affected.Add(pos);
+
+                    if (!forceFullDepth && IsBlockingTile(pos))
+                        break;
+                }
             }
 
             return affected;
         }
 
-        private void AddInfluenceArea(Point3 seed, HashSet<Point3> affected)
+        private void AddInfluenceColumns(Point3 seed, Dictionary<(int X, int Y), (int StartZ, bool ForceFullDepth)> columns)
         {
             // Світло може поширитись максимум на MaxSunLight по XY.
             // По Z йдемо вниз, але для бокових колонок зупиняємось на першому блокері.
             // Центральну колонку (seed) не обрізаємо, щоб коректно прибирати/додавати тінь нижче.
-            for (int dx = -MaxSunLight; dx <= MaxSunLight; dx++)
+            int minX = Math.Max(seed.X - MaxSunLight, 0);
+            int maxX = Math.Min(seed.X + MaxSunLight, _site.Size.X - 1);
+            int minYGlobal = 0;
+            int maxYGlobal = _site.Size.Y - 1;
+
+            for (int x = minX; x <= maxX; x++)
             {
-                int maxDy = MaxSunLight - Math.Abs(dx);
-                for (int dy = -maxDy; dy <= maxDy; dy++)
+                int maxDy = MaxSunLight - Math.Abs(x - seed.X);
+                int minY = Math.Max(seed.Y - maxDy, minYGlobal);
+                int maxY = Math.Min(seed.Y + maxDy, maxYGlobal);
+
+                for (int y = minY; y <= maxY; y++)
                 {
-                    bool isSeedColumn = dx == 0 && dy == 0;
+                    bool isSeedColumn = x == seed.X && y == seed.Y;
+                    var key = (x, y);
 
-                    for (int z = seed.Z; z >= 0; z--)
+                    if (!columns.TryGetValue(key, out var plan))
                     {
-                        Point3 pos = new(seed.X + dx, seed.Y + dy, z);
-                        if (!pos.InBounds(Point3.Zero, _site.Size))
-                            continue;
-
-                        affected.Add(pos);
-
-                        if (!isSeedColumn && IsBlockingTile(pos))
-                            break;
+                        columns[key] = (seed.Z, isSeedColumn);
+                        continue;
                     }
+
+                    int startZ = plan.StartZ;
+                    if (seed.Z > startZ)
+                        startZ = seed.Z;
+
+                    columns[key] = (startZ, plan.ForceFullDepth || isSeedColumn);
                 }
             }
         }

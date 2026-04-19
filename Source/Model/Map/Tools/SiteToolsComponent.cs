@@ -28,6 +28,7 @@ namespace Origin.Source.Model.Map.Tools
                 new ToolPathfind(this),
                 new ToolPlaceDirt(this),
                 new ToolPlaceWater(this),
+                new ToolPlaceLighter(this),
                 new ToolInfo(this),
             ];
             //SetToolByName("ToolDig");

@@ -16,6 +16,7 @@
 	<ItemGroup>
 		<Compile Remove="Arch.Extended\**" />
 		<Compile Remove="Arch\**" />
+		<Compile Remove="BenchmarkSuite1\**" />
 		<Compile Remove="Content\bin\**" />
 		<Compile Remove="MGUI.Core\**" />
 		<Compile Remove="MGUI.Shared\**" />
@@ -23,6 +24,7 @@
 		<Compile Remove="Roy-T.AStar\**" />
 		<EmbeddedResource Remove="Arch.Extended\**" />
 		<EmbeddedResource Remove="Arch\**" />
+		<EmbeddedResource Remove="BenchmarkSuite1\**" />
 		<EmbeddedResource Remove="Content\bin\**" />
 		<EmbeddedResource Remove="MGUI.Core\**" />
 		<EmbeddedResource Remove="MGUI.Shared\**" />
@@ -30,6 +32,7 @@
 		<EmbeddedResource Remove="Roy-T.AStar\**" />
 		<None Remove="Arch.Extended\**" />
 		<None Remove="Arch\**" />
+		<None Remove="BenchmarkSuite1\**" />
 		<None Remove="Content\bin\**" />
 		<None Remove="MGUI.Core\**" />
 		<None Remove="MGUI.Shared\**" />

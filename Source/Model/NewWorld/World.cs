@@ -101,7 +101,8 @@ namespace Origin.Source.Model.NewWorld
             SystemManager.Systems.Add(new UpdateVegsOnConstructionPlacedSystem(ActiveSite));
             SystemManager.Systems.Add(new VegatationControlSystem(ActiveSite));
 
-            SystemManager.Systems.Add(new SystemUpdateLight(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateSunlight(ActiveSite));
+            SystemManager.Systems.Add(new SystemUpdateArtificialLight(ActiveSite));
 
             SystemManager.Systems.Add(new SystemUpdateFluids(ActiveSite));
 

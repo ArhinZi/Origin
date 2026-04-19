@@ -8,35 +8,35 @@ namespace Origin.Source.Model.Map.Light
         [FieldOffset(0)] // Start at the first byte
         public uint packedValue;
 
-        // 4 bits for LightLevel - 16
+        // 3 bits for LightLevel - 8 states
         public byte LightLevel
         {
             get
             {
-                uint LightLevelMask = 0b1111;
-                return (byte)(packedValue & LightLevelMask);
+                uint lightLevelMask = 0b111;
+                return (byte)(packedValue & lightLevelMask);
             }
             set
             {
-                uint LightLevelMask = 0b1111;
-                value = value > 15 ? (byte)15 : value;
-                packedValue = (uint)((packedValue & ~LightLevelMask) | (value & LightLevelMask));
+                uint lightLevelMask = 0b111;
+                value = value > 7 ? (byte)7 : value;
+                packedValue = (uint)((packedValue & ~lightLevelMask) | (value & lightLevelMask));
             }
         }
 
-        // 3 bits for SunLighted - 8
+        // 3 bits for SunLighted - 8 states
         public byte SunLighted
         {
             get
             {
-                uint SunLightedMask = 0b111 << 4;
-                return (byte)((packedValue & SunLightedMask) >> 4);
+                uint sunLightedMask = 0b111 << 3;
+                return (byte)((packedValue & sunLightedMask) >> 3);
             }
             set
             {
-                uint SunLightedMask = 0b111 << 4;
+                uint sunLightedMask = 0b111 << 3;
                 value = value > 7 ? (byte)7 : value;
-                packedValue = (uint)((packedValue & ~SunLightedMask) | ((value << 4) & SunLightedMask));
+                packedValue = (uint)((packedValue & ~sunLightedMask) | ((value << 3) & sunLightedMask));
             }
         }
 
@@ -45,13 +45,28 @@ namespace Origin.Source.Model.Map.Light
         {
             get
             {
-                uint IsLightBlockerMask = 0b1 << 7;
-                return (packedValue & IsLightBlockerMask) != 0;
+                uint isLightBlockerMask = 0b1 << 6;
+                return (packedValue & isLightBlockerMask) != 0;
             }
             set
             {
-                uint IsLightBlockerMask = 0b1 << 7;
-                packedValue = (uint)((packedValue & ~IsLightBlockerMask) | (value ? IsLightBlockerMask : 0x00));
+                uint isLightBlockerMask = 0b1 << 6;
+                packedValue = (uint)((packedValue & ~isLightBlockerMask) | (value ? isLightBlockerMask : 0x00));
+            }
+        }
+
+        // 1 reserved bit
+        public bool HasMultipleLightSources
+        {
+            get
+            {
+                uint reservedMask = 0b1 << 7;
+                return (packedValue & reservedMask) != 0;
+            }
+            set
+            {
+                uint reservedMask = 0b1 << 7;
+                packedValue = (uint)((packedValue & ~reservedMask) | (value ? reservedMask : 0x00));
             }
         }
 

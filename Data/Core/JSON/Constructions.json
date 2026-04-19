@@ -165,6 +165,24 @@
           "Amount": 1
         }
       ]
+    },
+    {
+      "ID": "Lighter",
+      "Name": "Lighter",
+      "ConstructAble": false,
+      "RotateAble": false,
+      "HasMaterialColor": false,
+      "OverAble": true,
+      "IsLightBlocker": false,
+      "LightEmitter": 10,
+      "WalkDifficulty": 1,
+      "Type": "Floor",
+      "Category": "Utility",
+      "Sprites": {
+        "Wall": [ "SolidWall" ],
+        "Floor": [ "SolidWall" ]
+      },
+      "Components": []
     }
   ]
 }

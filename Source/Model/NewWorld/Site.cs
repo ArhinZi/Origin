@@ -38,7 +38,8 @@ namespace Origin.Source.Model.NewWorld
 
         public SiteDrawComponent DrawComponent { get; private set; }
         public LightComponent LightControl { get; private set; }
-        internal SystemUpdateLight LightSystem { get; set; }
+        internal SystemUpdateSunlight SunlightSystem { get; set; }
+        internal SystemUpdateArtificialLight ArtificialLightSystem { get; set; }
 
         public SiteToolsComponent Tools { get; private set; }
 
@@ -297,7 +298,8 @@ namespace Origin.Source.Model.NewWorld
             UpdateWalkabilityAround(pos);
             UpdatePathAround(pos);
             UpdateVegsOnConstructionRemovedSystem.Apply(this, pos);
-            LightSystem?.OnConstructionRemoved(pos);
+            SunlightSystem?.OnConstructionRemoved(pos);
+            ArtificialLightSystem?.OnConstructionRemoved(pos);
             InvalidateRender(pos);
         }
 
@@ -342,7 +344,8 @@ namespace Origin.Source.Model.NewWorld
             UpdateWalkabilityAround(pos);
             UpdatePathAround(pos);
             UpdateVegsOnConstructionPlacedSystem.Apply(this, pos);
-            LightSystem?.OnConstructionPlaced(pos);
+            SunlightSystem?.OnConstructionPlaced(pos);
+            ArtificialLightSystem?.OnConstructionPlaced(pos);
             InvalidateRender(pos);
         }
 

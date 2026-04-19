@@ -168,6 +168,8 @@ namespace Origin.Source.Model.Map.Tools
         private static void DrawPackedLight(PackedLight light)
         {
             DrawText("SunLighted", light.SunLighted);
+            DrawText("LightLevel", light.LightLevel);
+            DrawBool("HasMultipleLightSources", light.HasMultipleLightSources);
             DrawBool("IsLightBlocker", light.IsLightBlocker);
         }
 

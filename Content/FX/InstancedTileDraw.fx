@@ -212,28 +212,24 @@ InstancingVSoutput SpriteInstancingVS(in StaticVSinput input)
 
     float2 vertPos = float2(input.Position.x * extra.TextureRect.z,
         input.Position.y * extra.TextureRect.w);
-    /*//text
-    uint2 ppos = uint2(spriteID % worldSize.x,
-                        spriteID / worldSize.x);
-    float3 spritePos = float3(GetSpriteWorldPosition(uint3(ppos, CurrentLevel)));
-    //endtest*/
-	//calculate position with camera
+    //calculate position with camera
 
     float4 pos = float4(main.SpritePosition.xy + vertPos, main.SpritePosition.z, 1) + float4(PositionOffset, 0);
-    //float4 pos = float4(spritePos.xy + vertPos, spritePos.z, 1);
     pos = mul(pos, WorldViewProjection);
 
-    //int n = (main.CellPosition.x * WorldSize.x + main.CellPosition.y) % 4;
-    uint sun = Unpack(LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)], 4, 3);
+    uint packedLight = LightBuffer[(main.CellPosition.x * WorldSize.x + main.CellPosition.y)];
+    uint local = Unpack(packedLight, 0, 3);
+    uint sun = Unpack(packedLight, 3, 3);
 
     output.Position = pos;
     output.TexCoord = float2((extra.TextureRect.x + vertPos.x) / TextureSize.x,
         (extra.TextureRect.y + vertPos.y) / TextureSize.y);
     output.ColorD = ShadeColor(extra.Color, uint3(uint2(0, 0), CurrentLevel));
     output.dolight = true;
-    output.light = max(sun / 7.0f, 0.1) * SunLightIntensity;
-    //if(sun == 7)
-    //output.ColorD.r = 1;
+
+    float sunLight = (sun / 7.0f) * SunLightIntensity;
+    float localLight = local / 7.0f;
+    output.light = max(max(sunLight, localLight), 0.1);
 
     return output;
 }
@@ -306,9 +302,9 @@ float4 InstancingPS(InstancingVSoutput input) : SV_TARGET
     {
         float luminance = dot(color.rgb, float3(0.2126, 0.7152, 0.0722));
         float sunLight = RemapSunLight(SunLightIntensity);
-        float localLight = saturate(input.light * sunLight);
+        float finalLight = saturate(input.light);
         float3 twilightTint = GetTwilightTint(sunLight);
-        color.rgb = lerp(float3(luminance, luminance, luminance) / 2, color.rgb, float3(localLight, localLight, localLight));
+        color.rgb = lerp(float3(luminance, luminance, luminance) / 2, color.rgb, float3(finalLight, finalLight, finalLight));
         color.rgb *= twilightTint;
     }
 
