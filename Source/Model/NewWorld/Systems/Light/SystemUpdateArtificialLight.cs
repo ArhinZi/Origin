@@ -11,19 +11,28 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
 {
     internal class SystemUpdateArtificialLight : TickSystem
     {
+        // Базові параметри моделі штучного освітлення.
         private const byte MaxLightLevel = 7;
         private const int MaxEmitterPower = 7;
         private const int TailSteps = MaxLightLevel - 1;
         private const int MaxEffectiveDistance = MaxEmitterPower + TailSteps;
         private const int BlockSize = BlockBase.BLOCK_SIZE;
-        private const double LightRoundness = 0.5; // 0.0 = ромб (манхеттен), 1.0 = округле (евклід)
+        private const double LightRoundness = 0.7; // 0.0 = ромб (манхеттен), 1.0 = округле (евклід)
 
+        // Патерни сусідів та попередньо підрахований коефіцієнт округлості.
+        private static readonly Point3[] RecastNeighbours = WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true);
+        private static readonly double LightRoundnessK = Math.Clamp(LightRoundness, 0.0, 1.0);
+
+        // Dirty-набір змінених позицій після конструкцій.
         private readonly HashSet<Point3> dirtyPositions = [];
+        // Реєстр емітерів: позиція -> потужність.
         private readonly Dictionary<Point3, byte> emitterPowers = [];
+        // Індекс емітерів по блоках для швидкого локального пошуку.
         private readonly Dictionary<Point3, HashSet<Point3>> emittersByBlock = [];
 
-        private readonly Point3[] starNeighbours = WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(false);
+        // Сусіди для підсвітки блокерів поруч із освітленим повітрям.
         private readonly Point3[] plusNeighbours = WorldUtils.PLUS_NEIGHBOUR_PATTERN_1L(false);
+        // Сусіди для поширення хвилі світла.
         private readonly Point3[] propagationNeighbours =
         [
             new(1, 0, 0),
@@ -37,8 +46,15 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             Point3.Up,
             Point3.Down
         ];
+
+        // Буфери, які перевикористовуються між апдейтами (мінімум алокацій).
+        private readonly Dictionary<Point3, byte> bestBuffer = [];
+        private readonly HashSet<Point3> overlapBuffer = [];
+        private readonly Queue<LightWaveNode> waveQueue = [];
+        private readonly HashSet<Point3> visitedBuffer = [];
         private bool recastDirty = false;
 
+        // Вузол BFS-хвилі.
         private readonly record struct LightWaveNode(Point3 Pos);
 
         public SystemUpdateArtificialLight(Site site) : base(site)
@@ -46,6 +62,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             site.ArtificialLightSystem = this;
         }
 
+        // Повна ініціалізація: очистка стану, побудова реєстру емітерів, повний перерахунок.
         public override void Initialize()
         {
             dirtyPositions.Clear();
@@ -84,9 +101,10 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             _site.LightControl.bufferDirty = true;
         }
 
+        // Відмічає локальну зону для часткового перерахунку після змін у світі.
         private void MarkForRecast(Point3 pos)
         {
-            foreach (var n in WorldUtils.STAR_NEIGHBOUR_PATTERN_3L(true))
+            foreach (var n in RecastNeighbours)
             {
                 Point3 target = pos + n;
                 if (!target.InBounds(Point3.Zero, _site.Size))
@@ -104,6 +122,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             dirtyPositions.Clear();
         }
 
+        // Перебудова індексу емітерів по всій мапі.
         private void BuildEmitterRegistry()
         {
             for (int z = 0; z < _site.Size.Z; z++)
@@ -121,6 +140,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             }
         }
 
+        // Оновлює запис емітера лише в одній позиції після place/remove конструкції.
         private void UpdateEmitterAt(Point3 pos)
         {
             UnregisterEmitter(pos);
@@ -130,6 +150,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 RegisterEmitter(pos, power);
         }
 
+        // Реєструє емітер у загальному словнику та block-індексі.
         private void RegisterEmitter(Point3 pos, byte power)
         {
             emitterPowers[pos] = power;
@@ -143,6 +164,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             set.Add(pos);
         }
 
+        // Видаляє емітер із загального словника та block-індексу.
         private void UnregisterEmitter(Point3 pos)
         {
             if (!emitterPowers.Remove(pos))
@@ -162,6 +184,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return new Point3(pos.X / BlockSize, pos.Y / BlockSize, pos.Z);
         }
 
+        // Повний перерахунок штучного світла по всій мапі.
         private void RecalculateAllLight()
         {
             for (int z = 0; z < _site.Size.Z; z++)
@@ -179,11 +202,11 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 }
             }
 
-            var best = new Dictionary<Point3, byte>();
-            var overlap = new HashSet<Point3>();
+            bestBuffer.Clear();
+            overlapBuffer.Clear();
 
             foreach (var emitter in emitterPowers)
-                PropagateFromSource(emitter.Key, emitter.Value, null, null, best, overlap);
+                PropagateFromSource(emitter.Key, emitter.Value, null, null, bestBuffer, overlapBuffer);
 
             for (int z = 0; z < _site.Size.Z; z++)
             {
@@ -193,13 +216,14 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                     {
                         Point3 pos = new(x, y, z);
                         ref PackedLight pl = ref _site.LightControl.GetTile(pos);
-                        pl.LightLevel = best.TryGetValue(pos, out var level) ? level : (byte)0;
-                        pl.HasMultipleLightSources = overlap.Contains(pos);
+                        pl.LightLevel = bestBuffer.TryGetValue(pos, out var level) ? level : (byte)0;
+                        pl.HasMultipleLightSources = overlapBuffer.Contains(pos);
                     }
                 }
             }
         }
 
+        // Частковий перерахунок: dirty-позиції -> релевантні емітери -> локальна зона.
         private void RecalculatePartialLight()
         {
             if (dirtyPositions.Count == 0)
@@ -227,23 +251,24 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 pl.HasMultipleLightSources = false;
             }
 
-            var best = new Dictionary<Point3, byte>();
-            var overlap = new HashSet<Point3>();
+            bestBuffer.Clear();
+            overlapBuffer.Clear();
 
             foreach (var emitterPos in recastEmitters)
             {
                 if (emitterPowers.TryGetValue(emitterPos, out var power))
-                    PropagateFromSource(emitterPos, power, null, area, best, overlap);
+                    PropagateFromSource(emitterPos, power, null, area, bestBuffer, overlapBuffer);
             }
 
             foreach (var pos in area)
             {
                 ref PackedLight pl = ref _site.LightControl.GetTile(pos);
-                pl.LightLevel = best.TryGetValue(pos, out var level) ? level : (byte)0;
-                pl.HasMultipleLightSources = overlap.Contains(pos);
+                pl.LightLevel = bestBuffer.TryGetValue(pos, out var level) ? level : (byte)0;
+                pl.HasMultipleLightSources = overlapBuffer.Contains(pos);
             }
         }
 
+        // Розширює список емітерів за bounds локальної зони, щоб уникнути «затінення старих джерел».
         private void ExpandEmittersFromAreaBounds(HashSet<Point3> area, HashSet<Point3> emitters)
         {
             bool initialized = false;
@@ -301,6 +326,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             }
         }
 
+        // Збирає емітери, які потенційно можуть впливати на dirty-позиції.
         private HashSet<Point3> CollectEmittersForDirtyPositions()
         {
             HashSet<Point3> result = [];
@@ -343,6 +369,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return result;
         }
 
+        // Будує фінальну локальну зону перерахунку (dirty + область впливу релевантних емітерів).
         private HashSet<Point3> BuildAffectedArea(HashSet<Point3> dirty, HashSet<Point3> recastEmitters)
         {
             HashSet<Point3> area = [];
@@ -361,6 +388,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return area;
         }
 
+        // Оцінка максимальної дальності променя для поточної потужності емітера.
         private static int GetEmitterRange(byte emitterPower)
         {
             byte attenuation = GetAttenuationStep(emitterPower);
@@ -368,6 +396,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return emitterPower + tail;
         }
 
+        // BFS-поширення світла від одного емітера в межах заданих обмежень.
         private void PropagateFromSource(
             Point3 sourcePos,
             byte emitterPower,
@@ -386,15 +415,15 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             int maxRange = GetEmitterRange(emitterPower);
             int maxRangeSq = maxRange * maxRange;
 
-            Queue<LightWaveNode> queue = new();
-            HashSet<Point3> visited = [];
+            waveQueue.Clear();
+            visitedBuffer.Clear();
 
-            queue.Enqueue(new LightWaveNode(sourcePos));
-            visited.Add(sourcePos);
+            waveQueue.Enqueue(new LightWaveNode(sourcePos));
+            visitedBuffer.Add(sourcePos);
 
-            while (queue.Count > 0)
+            while (waveQueue.Count > 0)
             {
-                var node = queue.Dequeue();
+                var node = waveQueue.Dequeue();
                 Point3 pos = node.Pos;
 
                 int dx = pos.X - sourcePos.X;
@@ -432,22 +461,23 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                     if (IsBlockingTile(nextPos))
                         continue;
 
-                    if (!visited.Add(nextPos))
+                    if (!visitedBuffer.Add(nextPos))
                         continue;
 
-                    queue.Enqueue(new LightWaveNode(nextPos));
+                    waveQueue.Enqueue(new LightWaveNode(nextPos));
                 }
             }
         }
 
+        // Змішана метрика відстані для керування формою світлової плями.
         private static double ComputeDistanceWithRoundness(int dx, int dy, int dz)
         {
             double euclidean = Math.Sqrt(dx * dx + dy * dy + dz * dz);
             double manhattan = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
-            double k = Math.Clamp(LightRoundness, 0.0, 1.0);
-            return manhattan + (euclidean - manhattan) * k;
+            return manhattan + (euclidean - manhattan) * LightRoundnessK;
         }
 
+        // Розрахунок рівня світла за відстанню: повне освітлення в зоні power, далі спад.
         private static byte ComputeLightLevelByDistance(byte emitterPower, byte attenuationStep, double distance)
         {
             if (distance <= emitterPower)
@@ -458,6 +488,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return level > 0 ? (byte)level : (byte)0;
         }
 
+        // Забороняє «рух назад» до джерела, щоб зменшити протікання світла через геометрію.
         private static bool CanMoveOutwardFromSource(Point3 sourcePos, Point3 currentPos, Point3 step)
         {
             int dx = currentPos.X - sourcePos.X;
@@ -474,6 +505,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return true;
         }
 
+        // Крок згасання після повної зони: обернено пропорційний потужності емітера.
         private static byte GetAttenuationStep(byte emitterPower)
         {
             if (emitterPower == 0)
@@ -482,6 +514,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return (byte)Math.Max(1, (int)Math.Ceiling(MaxEmitterPower / (double)emitterPower));
         }
 
+        // Підсвічує блокери, які прилягають до освітленого повітрям (вниз + по PLUS-сусідах).
         private void LightAdjacentBlockers(
             Point3 litAirPos,
             byte lightLevel,
@@ -511,6 +544,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             }
         }
 
+        // Додає сфероподібну область впливу seed-позиції в локальну зону.
         private void AddInfluenceArea(Point3 seed, int radius, HashSet<Point3> affected)
         {
             int radiusSq = radius * radius;
@@ -548,6 +582,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             }
         }
 
+        // Агрегує найкращий рівень світла в тайлі та фіксує накладання кількох джерел.
         private static void PutBestLight(Point3 pos, byte candidate, Dictionary<Point3, byte> best, HashSet<Point3> overlap)
         {
             if (!best.TryGetValue(pos, out byte existing))
@@ -568,19 +603,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 overlap.Add(pos);
         }
 
-        private List<(Point3 Pos, byte Power)> CollectSources(HashSet<Point3> area)
-        {
-            List<(Point3 Pos, byte Power)> sources = [];
-            foreach (var pos in area)
-            {
-                byte emitterPower = GetEmitterPower(pos);
-                if (emitterPower > 0)
-                    sources.Add((pos, emitterPower));
-            }
-
-            return sources;
-        }
-
+        // Отримує потужність емітера з конструкції в тайлі (з обмеженням MaxEmitterPower).
         private byte GetEmitterPower(Point3 pos)
         {
             Tile tile = _site.Map[pos];
@@ -594,6 +617,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
             return power;
         }
 
+        // Поточний стан light-blocker для конкретної позиції.
         private bool IsBlockingTile(Point3 pos)
         {
             Tile tile = _site.Map[pos];
@@ -603,6 +627,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Light
                 && tile.Construction.Construction.IsLightBlocker;
         }
 
+        // Синхронізація прапора blocker у PackedLight із фактичним тайлом на мапі.
         private void RefreshBlockerState(Point3 pos, ref PackedLight pl)
         {
             pl.IsLightBlocker = IsBlockingTile(pos);
