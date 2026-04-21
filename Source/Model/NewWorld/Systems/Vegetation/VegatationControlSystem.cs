@@ -27,7 +27,8 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
                             continue;
 
                         Tile tile = _site.Map[pos];
-                        if (!VegUtilities.TryGetVegetationFor(tile.Construction, out var vegetation))
+                        // Вибір рослинності з перевіркою умов тайла, включно з SunLightRequired.
+                        if (!VegUtilities.TryGetVegetationFor(_site, pos, tile.Construction, out var vegetation))
                             continue;
 
                         tile.HasVegetation = true;

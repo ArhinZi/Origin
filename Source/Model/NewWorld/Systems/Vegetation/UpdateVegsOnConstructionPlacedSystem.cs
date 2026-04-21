@@ -33,7 +33,9 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             }
 
             if (site.Map.TryGet(pos, out Tile tile) && tile.Exists && tile.HasConstruction && !tile.HasVegetation &&
-                VegUtilities.IsExposedTop(site, pos) && VegUtilities.TryGetVegetationFor(tile.Construction, out var vegetation))
+                VegUtilities.IsExposedTop(site, pos) &&
+                // Перевіряємо, що рослинність дозволена для цього тайла (включно з SunLightRequired).
+                VegUtilities.TryGetVegetationFor(site, pos, tile.Construction, out var vegetation))
             {
                 tile.HasVegetation = true;
                 tile.Vegetation = new TileVegetation

@@ -16,15 +16,29 @@ namespace Origin.Source.Model.NewWorld
         public static readonly ulong YEAR = 4838400;
 
         private const int SunTransitionDurationMinutes = 240;
+        // Базовий TPS для режиму x1 (сумісність зі старим TimeScale).
+        private const float BaseTicksPerSecond = 60f;
+        // Інтервал оновлення метрики фактичного TPS.
+        private const float TpsSampleWindowSeconds = 1f;
 
         public TimeOnly SunRiseTime { get; private set; } = new TimeOnly(6, 0);
         public TimeOnly SunSetTime { get; private set; } = new TimeOnly(19, 0);
 
         public ulong Ticks { get; set; } = DAY / 4;
 
-        public float TimeMod { get; private set; } = 1f;
-        public float PrePauseTimeMod { get; private set; } = 1f;
-        public float ActiveTimeScale => Pause ? PrePauseTimeMod : TimeMod;
+        // Цільовий TPS (коли не на паузі).
+        public float TicksPerSecond { get; private set; } = BaseTicksPerSecond;
+        // Збережений TPS для відновлення після паузи.
+        public float PrePauseTicksPerSecond { get; private set; } = BaseTicksPerSecond;
+        // Активний TPS для UI/дебагу (на паузі показує збережене значення).
+        public float ActiveTPS => Pause ? PrePauseTicksPerSecond : TicksPerSecond;
+        // Фактичний TPS, виміряний за останнє вікно часу.
+        public float CurrentTPS { get; private set; }
+
+        // Зворотна сумісність зі старим API швидкості.
+        public float TimeMod => ActiveTimeScale;
+        public float PrePauseTimeMod => PrePauseTicksPerSecond / BaseTicksPerSecond;
+        public float ActiveTimeScale => ActiveTPS / BaseTicksPerSecond;
 
         public ulong DayTick => Ticks % DAY;
 
@@ -39,7 +53,11 @@ namespace Origin.Source.Model.NewWorld
         public ulong Season => (Ticks / SEASON) % 4;
         public ulong Year => Ticks / YEAR;
 
+        // Акумулятор дробових тіків (для стабільного TPS поверх elapsed time).
         private float _htick = 0;
+        // Акумулятори для розрахунку фактичного TPS.
+        private float _tpsElapsed;
+        private int _tpsTicks;
 
         public SystemGroupsManager SystemsManager;
         private World World;
@@ -54,17 +72,38 @@ namespace Origin.Source.Model.NewWorld
 
         public void Update(GameTime gameTime)
         {
-            _htick += TimeMod;
-            var counter = 0;
-            while (_htick > 1)
+            // На паузі не виконуємо системні тіки, але лишаємо TickTricky(0).
+            if (Pause)
+            {
+                CurrentTPS = 0f;
+                TickTricky(0);
+                return;
+            }
+
+            float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _htick += TicksPerSecond * elapsedSeconds;
+
+            int counter = 0;
+            while (_htick >= 1f)
             {
                 BeforeTickSimple();
                 SystemsManager.Tick(gameTime);
                 AfterTickSimple();
-                _htick--;
+                _htick -= 1f;
                 Ticks++;
                 counter++;
             }
+
+            // Оновлюємо фактичний TPS у ковзному часовому вікні.
+            _tpsElapsed += elapsedSeconds;
+            _tpsTicks += counter;
+            if (_tpsElapsed >= TpsSampleWindowSeconds)
+            {
+                CurrentTPS = _tpsTicks / _tpsElapsed;
+                _tpsElapsed = 0f;
+                _tpsTicks = 0;
+            }
+
             TickTricky(counter);
         }
 
@@ -124,20 +163,30 @@ namespace Origin.Source.Model.NewWorld
             return 1f;
         }
 
+        // Новий керуючий API: задає швидкість гри у тіках за секунду.
+        public void SetTicksPerSecond(float tps)
+        {
+            if (tps <= 0)
+                tps = BaseTicksPerSecond;
+
+            if (Pause)
+            {
+                PrePauseTicksPerSecond = tps;
+            }
+            else
+            {
+                TicksPerSecond = tps;
+                PrePauseTicksPerSecond = tps;
+            }
+        }
+
+        // Зворотна сумісність: scale x1 відповідає BaseTicksPerSecond.
         public void SetTimeScale(float scale)
         {
             if (scale <= 0)
                 scale = 1f;
 
-            if (Pause)
-            {
-                PrePauseTimeMod = scale;
-            }
-            else
-            {
-                TimeMod = scale;
-                PrePauseTimeMod = scale;
-            }
+            SetTicksPerSecond(BaseTicksPerSecond * scale);
         }
 
         public bool TogglePause()
@@ -145,12 +194,12 @@ namespace Origin.Source.Model.NewWorld
             Pause = !Pause;
             if (Pause)
             {
-                PrePauseTimeMod = TimeMod;
-                TimeMod = 0;
+                PrePauseTicksPerSecond = TicksPerSecond;
+                TicksPerSecond = 0f;
             }
             else
             {
-                TimeMod = PrePauseTimeMod;
+                TicksPerSecond = PrePauseTicksPerSecond;
             }
             return Pause;
         }

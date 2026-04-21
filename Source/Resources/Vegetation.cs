@@ -22,6 +22,8 @@ namespace Origin.Source.Resources
     public class Vegetation : IDKeeper
     {
         public List<Drawing> Drawing { get; set; }
+        // Визначає, чи потрібне сонячне світло для появи/існування рослинності.
+        public bool SunLightRequired { get; set; }
 
         public override string ToString()
         {

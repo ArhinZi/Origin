@@ -30,6 +30,7 @@ namespace Origin.Source.GameStates
 {
     public class StateMainGame : GameScreen
     {
+        // Пресети відображення швидкості як модифікатор (x), керування лишається через TPS API.
         private static readonly float[] TimeScaleButtons = [0.5f, 1f, 2f, 4f];
         private bool _exitingToMainMenu;
 
@@ -234,6 +235,9 @@ namespace Origin.Source.GameStates
             {
                 ["DayTime"] = World.TimeManager.DayTime.ToString(),
                 ["SunIntensity"] = World.TimeManager.GetSunLightIntensity().ToString("#.##"),
+                // Окремо виводимо фактичний/цільовий TPS та масштаб x-відносно бази.
+                ["TPS"] = $"{World.TimeManager.CurrentTPS:0.#} / {World.TimeManager.ActiveTPS:0.#}",
+                ["TimeScale"] = $"x{World.TimeManager.ActiveTimeScale:0.##}",
             }));
         }
 
@@ -386,7 +390,7 @@ namespace Origin.Source.GameStates
         private void DrawTimeScaleOverlay()
         {
             ImGuiViewportPtr viewport = ImGui.GetMainViewport();
-            Vector2 size = new(340, 64);
+            Vector2 size = new(380, 64);
             Vector2 pos = new(viewport.WorkPos.X + viewport.WorkSize.X - size.X - 12, viewport.WorkPos.Y + 12);
 
             ImGui.SetNextWindowPos(pos);
@@ -395,6 +399,7 @@ namespace Origin.Source.GameStates
             var overlayFlags = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings;
             if (ImGui.Begin("TimeScaleOverlay", overlayFlags))
             {
+                // Показуємо у кнопках модифікатор швидкості, а не TPS.
                 float activeScale = World.TimeManager.ActiveTimeScale;
                 bool paused = World.TimeManager.Pause;
 
@@ -426,8 +431,9 @@ namespace Origin.Source.GameStates
                             ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0.2f, 0.55f, 0.25f, 1f));
                     }
 
-                    if (ImGui.Button($"x{scale:0.#}", new Vector2(56, 44)))
+                    if (ImGui.Button($"x{scale:0.#}", new Vector2(72, 44)))
                     {
+                        // Виставляємо швидкість через сумісний API модифікатора.
                         World.TimeManager.SetTimeScale(scale);
                         if (World.TimeManager.Pause)
                             World.TimeManager.TogglePause();
