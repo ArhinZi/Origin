@@ -1,3 +1,5 @@
+using Arch.Core;
+
 namespace Origin.Source.Model.NewWorld
 {
     public struct Tile
@@ -29,7 +31,8 @@ namespace Origin.Source.Model.NewWorld
         public bool IsFluidBlocker { readonly get => _flags.IsFluidBlocker; set => _flags.IsFluidBlocker = value; }
 
         public bool HasVegetation { readonly get => _flags.HasVegetation; set => _flags.HasVegetation = value; }
-        public TileVegetation Vegetation;
+        // Зберігаємо лише посилання на ECS-ентіті рослинності (без дублювання стану у тайлі).
+        public Entity VegetationEntity;
 
         public bool IsWalkable { readonly get => _flags.IsWalkable; set => _flags.IsWalkable = value; }
 

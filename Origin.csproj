@@ -88,6 +88,9 @@
 	  <None Remove="Data\Core\JSON\Vegetations.json" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Include=".github\copilot-instructions.md" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="Arch.Extended\Arch.LowLevel\Arch.LowLevel.csproj" />
 	  <ProjectReference Include="Arch\src\Arch\Arch.csproj" />
 	  <ProjectReference Include="Monogame.ImGuiNET\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj" />

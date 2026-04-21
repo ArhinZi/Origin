@@ -1,5 +1,4 @@
 using Origin.Source.Model.NewWorld.Systems;
-using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 namespace Origin.Source.Model.NewWorld.Systems.Vegetation
@@ -20,33 +19,16 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
 
         public static void Apply(Site site, Point3 pos)
         {
+            // При встановленні конструкції прибираємо рослинність під нею (якщо була).
             var belowPos = pos + Point3.Down;
-            if (site.Map.TryGet(belowPos, out Tile belowTile) && belowTile.Exists && belowTile.HasVegetation)
-            {
-                if (belowTile.Vegetation.IsGrown)
-                    VegUtilities.UpdateNeighboursOf(site, belowPos, -1);
+            VegUtilities.RemoveVegetationEntityAt(site, belowPos);
 
-                belowTile.HasVegetation = false;
-                belowTile.Vegetation = default;
-                site.Map[belowPos] = belowTile;
-                site.InvalidateRender(belowPos);
-            }
+            // Пробуємо заселити поточний тайл новою рослинністю, якщо умови підходять.
+            VegUtilities.TrySpawnVegetationEntity(site, pos, 0);
 
-            if (site.Map.TryGet(pos, out Tile tile) && tile.Exists && tile.HasConstruction && !tile.HasVegetation &&
-                VegUtilities.IsExposedTop(site, pos) &&
-                // Перевіряємо, що рослинність дозволена для цього тайла (включно з SunLightRequired).
-                VegUtilities.TryGetVegetationFor(site, pos, tile.Construction, out var vegetation))
-            {
-                tile.HasVegetation = true;
-                tile.Vegetation = new TileVegetation
-                {
-                    VegetationMetaID = GlobalResources.Vegetations.IndexOf(vegetation.ID),
-                    VegetationNeighbours = VegUtilities.GetNeighboursFor(site, pos),
-                    IsGrown = false
-                };
-                site.Map[pos] = tile;
-                site.InvalidateRender(pos);
-            }
+            // Централізовано реєструємо terrain-дерті для подальшої валідації у спеціальній ECS-системі.
+            site.VegetationEnvironmentDirtySystem?.MarkTerrainDirty(pos);
+            site.VegetationEnvironmentDirtySystem?.MarkTerrainDirty(belowPos);
         }
     }
 }

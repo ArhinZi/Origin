@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Origin.Source.Model.Map.Light;
 using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Systems.Vegetation;
 using Origin.Source.Resources;
 using System;
 using System.Collections.Generic;
@@ -105,15 +106,24 @@ namespace Origin.Source.Model.Map.Tools
             DrawText("Direction", fluid.Direction);
         }
 
-        private static void DrawVegetation(TileVegetation vegetation)
+        private static void DrawVegetation(Site site, Tile tile)
         {
-            DrawText("Vegetation", vegetation.VegetationID);
-            DrawText("VegetationMetaID", vegetation.VegetationMetaID);
-            DrawText("VegetationNeighbours", vegetation.VegetationNeighbours);
-            DrawBool("IsGrown", vegetation.IsGrown);
+            // Читаємо стан рослинності напряму з ECS-ентіті.
+            if (!VegUtilities.TryGetVegetationState(site, tile, out var vegetation, out var growthLevel, out var neighbours))
+            {
+                ImGui.TextWrapped("Vegetation entity is missing or invalid.");
+                return;
+            }
+
+            DrawText("Vegetation", vegetation.ID);
+            DrawText("VegetationMetaID", GlobalResources.Vegetations.IndexOf(vegetation.ID));
+            DrawText("VegetationNeighbours", neighbours);
+            DrawText("GrowthLevel", growthLevel);
+            DrawBool("IsGrown", growthLevel >= 8);
+            DrawText("Entity", tile.VegetationEntity);
         }
 
-        private static void DrawTile(Tile tile)
+        private static void DrawTile(Site site, Tile tile)
         {
             DrawBool("Exists", tile.Exists);
             DrawBool("HasConstruction", tile.HasConstruction);
@@ -157,7 +167,7 @@ namespace Origin.Source.Model.Map.Tools
             if (tile.HasVegetation)
             {
                 ImGui.SeparatorText("Vegetation");
-                DrawVegetation(tile.Vegetation);
+                DrawVegetation(site, tile);
             }
 
             DrawBool("IsWalkable", tile.IsWalkable);
@@ -203,7 +213,7 @@ namespace Origin.Source.Model.Map.Tools
                         {
                             if (selectedOther == 0)
                             {
-                                DrawTile(tile);
+                                DrawTile(Controller.Site, tile);
                             }
                             else if (selectedOther == 1)
                             {
@@ -213,7 +223,7 @@ namespace Origin.Source.Model.Map.Tools
                             else
                             {
                                 if (tile.HasVegetation)
-                                    DrawVegetation(tile.Vegetation);
+                                    DrawVegetation(Controller.Site, tile);
                                 else
                                     ImGui.TextWrapped("No vegetation on this tile.");
                             }

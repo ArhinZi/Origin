@@ -99,10 +99,15 @@ namespace Origin.Source.Model.NewWorld
 
             SystemManager.Systems.Add(new UpdateVegsOnConstructionRemovedSystem(ActiveSite));
             SystemManager.Systems.Add(new UpdateVegsOnConstructionPlacedSystem(ActiveSite));
-            SystemManager.Systems.Add(new VegatationControlSystem(ActiveSite));
 
+            // Світлові системи мають оновити буфери перед валідацією рослинності по сонцю.
             SystemManager.Systems.Add(new SystemUpdateSunlight(ActiveSite));
             SystemManager.Systems.Add(new SystemUpdateArtificialLight(ActiveSite));
+
+            // Спеціальна ECS-система, що ставить теги перевірки рослинності за змінами світла/рельєфу.
+            SystemManager.Systems.Add(new VegetationEnvironmentDirtySystem(ActiveSite));
+            // Основна ECS-система рослинності (валідація/ріст/витоптаність/рендер-дерті).
+            SystemManager.Systems.Add(new VegatationControlSystem(ActiveSite));
 
             SystemManager.Systems.Add(new SystemUpdateFluids(ActiveSite));
 

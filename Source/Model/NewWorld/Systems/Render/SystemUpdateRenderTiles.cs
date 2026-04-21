@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Model.NewWorld.Systems;
+using Origin.Source.Model.NewWorld.Systems.Vegetation;
 using Tile = Origin.Source.Model.NewWorld.Tile;
 using Origin.Source.Render;
 using Origin.Source.Resources;
@@ -87,7 +88,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                             }
                         }
 
-                        if (tile.HasVegetation && tile.Vegetation.IsGrown)
+                        if (tile.HasVegetation)
                         {
                             foreach (var data in GetVegetationRenderData(tilePos, tile))
                             {
@@ -185,7 +186,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                     }
                 }
 
-                if (tile.HasVegetation && tile.Vegetation.IsGrown)
+                if (tile.HasVegetation)
                 {
                     foreach (var data in GetVegetationRenderData(tilePos, tile))
                     {
@@ -310,11 +311,18 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
         private List<RenderData> GetVegetationRenderData(Point3 tilePos, Tile tile)
         {
             var list = new List<RenderData>();
-            if (!tile.HasVegetation || !tile.Vegetation.IsGrown || !tile.HasConstruction)
+            if (!tile.HasVegetation || !tile.HasConstruction)
+                return list;
+
+            // Беремо стан рослинності напряму з ECS-ентіті, без дублювання в тайлі.
+            if (!VegUtilities.TryGetVegetationState(site, tile, out var vegetation, out var growthLevel, out _))
+                return list;
+
+            // Захист від рендера нульового рівня росту.
+            if (growthLevel <= 0)
                 return list;
 
             var constr = tile.Construction.Construction;
-            var vegetation = tile.Vegetation.Vegetation;
             int rand = Math.Abs(HashCode.Combine(tilePos.X, tilePos.Y, tilePos.Z, vegetation.ID));
             Sprite sprite = null;
             List<Sprite> sprites = null;
@@ -338,7 +346,13 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
 
             if (sprite != null)
             {
-                list.Add(new RenderData((int)Global.DrawBufferLayer.FrontOver, tilePos, sprite, Color.White,
+                // Прозорість залежить від рівня росту: 0 -> майже прозора, 8 -> повністю непрозора.
+                float growth01 = Math.Clamp(growthLevel / 8f, 0f, 1f);
+                byte alpha = (byte)Math.Clamp(32 + (int)(growth01 * 223f), 0, 255);
+                Color color = Color.White;
+                color.A = alpha;
+
+                list.Add(new RenderData((int)Global.DrawBufferLayer.FrontOver, tilePos, sprite, color,
                     new Vector3(0, -GlobalResources.Settings.FloorYoffset + (sprites != null ? -8 : 0), 0)));
             }
 

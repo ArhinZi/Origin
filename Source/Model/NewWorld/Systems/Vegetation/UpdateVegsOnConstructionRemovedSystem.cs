@@ -1,5 +1,4 @@
 using Origin.Source.Model.NewWorld.Systems;
-using Origin.Source.Resources;
 using Origin.Source.Utils;
 
 namespace Origin.Source.Model.NewWorld.Systems.Vegetation
@@ -20,33 +19,16 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
 
         public static void Apply(Site site, Point3 pos)
         {
-            if (site.Map.TryGet(pos, out Tile tile) && tile.Exists && tile.HasVegetation)
-            {
-                if (tile.Vegetation.IsGrown)
-                    VegUtilities.UpdateNeighboursOf(site, pos, -1);
+            // Видаляємо рослинність на поточному тайлі, якщо вона існує.
+            VegUtilities.RemoveVegetationEntityAt(site, pos);
 
-                tile.HasVegetation = false;
-                tile.Vegetation = default;
-                site.Map[pos] = tile;
-                site.InvalidateRender(pos);
-            }
-
+            // Після зняття конструкції перевіряємо тайл нижче на можливість появи рослинності.
             var belowPos = pos + Point3.Down;
-            if (site.Map.TryGet(belowPos, out Tile belowTile) && belowTile.Exists && belowTile.HasConstruction && !belowTile.HasVegetation &&
-                VegUtilities.IsExposedTop(site, belowPos) &&
-                // Перевіряємо, що рослинність дозволена для цього тайла (включно з SunLightRequired).
-                VegUtilities.TryGetVegetationFor(site, belowPos, belowTile.Construction, out var vegetation))
-            {
-                belowTile.HasVegetation = true;
-                belowTile.Vegetation = new TileVegetation
-                {
-                    VegetationMetaID = GlobalResources.Vegetations.IndexOf(vegetation.ID),
-                    VegetationNeighbours = VegUtilities.GetNeighboursFor(site, belowPos),
-                    IsGrown = false
-                };
-                site.Map[belowPos] = belowTile;
-                site.InvalidateRender(belowPos);
-            }
+            VegUtilities.TrySpawnVegetationEntity(site, belowPos, 0);
+
+            // Централізовано реєструємо terrain-дерті для подальшої валідації у спеціальній ECS-системі.
+            site.VegetationEnvironmentDirtySystem?.MarkTerrainDirty(pos);
+            site.VegetationEnvironmentDirtySystem?.MarkTerrainDirty(belowPos);
         }
     }
 }

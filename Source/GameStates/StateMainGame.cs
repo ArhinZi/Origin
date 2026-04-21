@@ -15,6 +15,7 @@ using Origin.Source.Controller.UI;
 using Origin.Source.Events;
 using Origin.Source.Model.Generators;
 using Origin.Source.Model.NewWorld;
+using Origin.Source.Model.NewWorld.Systems.Vegetation;
 using Origin.Source.Resources;
 using Origin.Source.Save;
 using Origin.Source.Utils;
@@ -217,16 +218,27 @@ namespace Origin.Source.GameStates
             {
                 Point3 pos = World.ActiveSite.Tools.CurrentTool.Position;
                 string blockMat = "NONE";
+                string vegetationInfo = "NONE";
 
-                if (World.ActiveSite.Map.TryGet(pos, out var tile) && tile.Exists && tile.HasConstruction)
+                if (World.ActiveSite.Map.TryGet(pos, out var tile) && tile.Exists)
                 {
-                    var bc = tile.Construction;
-                    blockMat = string.Format("{0} of {1}", bc.Construction.ID, bc.Material.ID);
+                    if (tile.HasConstruction)
+                    {
+                        var bc = tile.Construction;
+                        blockMat = string.Format("{0} of {1}", bc.Construction.ID, bc.Material.ID);
+                    }
+
+                    // Виводимо коротку інформацію про рослинність вибраного тайла з ECS-стану.
+                    if (tile.HasVegetation && VegUtilities.TryGetVegetationState(World.ActiveSite, tile, out var vegetation, out var growthLevel, out var neighbours))
+                    {
+                        vegetationInfo = $"ID:{vegetation.ID} L:{growthLevel} N:{neighbours}";
+                    }
                 }
 
                 EventBus.Send(new DebugValueChanged(6, new Dictionary<string, string>()
                 {
-                    ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position.ToString() + blockMat,
+                    ["DebugSelectedBlock"] = World.ActiveSite.Tools.CurrentTool.Position + " " + blockMat,
+                    ["DebugVegetation"] = vegetationInfo,
                     ["DebugLayer"] = World.ActiveSite.CurrentLevel.ToString(),
                 }));
             }

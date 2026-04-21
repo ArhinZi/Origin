@@ -40,6 +40,8 @@ namespace Origin.Source.Model.NewWorld
         public LightComponent LightControl { get; private set; }
         internal SystemUpdateSunlight SunlightSystem { get; set; }
         internal SystemUpdateArtificialLight ArtificialLightSystem { get; set; }
+        // Централізований ECS-системний маркер зміни середовища для рослинності.
+        internal VegetationEnvironmentDirtySystem VegetationEnvironmentDirtySystem { get; set; }
 
         public SiteToolsComponent Tools { get; private set; }
 
