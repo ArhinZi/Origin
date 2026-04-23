@@ -27,28 +27,49 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
 
         public override void Update(in ulong t)
         {
-            bool anyChange = false;
-
             // Якщо перераховувалося світло — рослинність потенційно втратила/отримала сонце.
             if (_site.LightControl.bufferDirty)
             {
                 MarkAllVegetationForValidation();
-                anyChange = true;
+                // Важливо: після повернення сонця на порожніх тайлах потрібно знову створити ентіті рослинності.
+                TrySpawnVegetationOnSuitableTiles();
             }
 
             // Якщо були локальні terrain-зміни — ставимо валідацію навколо них.
-            if (_terrainDirtyPositions.Count > 0)
-            {
-                foreach (var pos in _terrainDirtyPositions)
-                    VegUtilities.MarkVegetationValidationAround(_site, pos);
+            if (_terrainDirtyPositions.Count <= 0)
+                return;
 
-                _terrainDirtyPositions.Clear();
-                anyChange = true;
+            foreach (var pos in _terrainDirtyPositions)
+            {
+                VegUtilities.MarkVegetationValidationAround(_site, pos);
+                // Локальна спроба spawn на зміненому тайлі та сусідніх по вертикалі позиціях.
+                TrySpawnVegetationNear(pos);
             }
 
-            if (anyChange)
+            _terrainDirtyPositions.Clear();
+        }
+
+        // Пробує створити рослинність на тайлі та на сусідах по вертикалі після terrain-зміни.
+        private void TrySpawnVegetationNear(Point3 pos)
+        {
+            VegUtilities.TrySpawnVegetationEntity(_site, pos, 0);
+            VegUtilities.TrySpawnVegetationEntity(_site, pos + Point3.Down, 0);
+            VegUtilities.TrySpawnVegetationEntity(_site, pos + Point3.Up, 0);
+        }
+
+        // Глобальний прохід після перерахунку світла: повертає рослинність там, де умови знову стали валідними.
+        private void TrySpawnVegetationOnSuitableTiles()
+        {
+            for (int z = 0; z < _site.Size.Z; z++)
             {
-                // Рендер-інвалідація робиться цільово далі в системі рослинності через RenderDirtyTag.
+                for (int x = 0; x < _site.Size.X; x++)
+                {
+                    for (int y = 0; y < _site.Size.Y; y++)
+                    {
+                        Point3 pos = new(x, y, z);
+                        VegUtilities.TrySpawnVegetationEntity(_site, pos, 0);
+                    }
+                }
             }
         }
 

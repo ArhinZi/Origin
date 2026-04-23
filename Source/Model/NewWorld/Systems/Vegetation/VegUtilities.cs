@@ -63,6 +63,9 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             entity.Add(new VegetationGrowthLevel { Value = clampedGrowth });
             entity.Add(new VegetationNeighboursComponent { Value = neighbours });
             entity.Add(new VegetationTileLink { Pos = pos });
+            // Варіант спрайта тепер обчислюється в рендері детерміновано від seed/позиції/типу, без зберігання в ECS.
+            // Локатор буде оновлено рендер-системою після фактичного додавання спрайта.
+            entity.Add(new VegetationSpriteRenderLocator { Value = default });
             entity.Add<VegetationNeedsValidationTag>();
             entity.Add<VegetationRenderDirtyTag>();
 
@@ -213,19 +216,25 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
         public static short GetNeighboursFor(Site site, Point3 pos)
         {
             short count = 0;
-            foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L())
+            foreach (var item in WorldUtils.FULL_NEIGHBOUR_PATTERN_3L(false))
             {
                 var pos2 = pos + item;
                 if (!pos2.InBounds(Point3.Zero, site.Size))
                 {
-                    count++;
+                    // Позиції поза межами мапи — не рослинність, пропускаємо
                     continue;
                 }
 
                 var tile = site.Map[pos2];
                 if (tile.Exists && tile.HasVegetation)
                 {
-                    count++;
+                    // Рахуємо сусіда лише якщо рослинність вже виросла (рівень > 0)
+                    Entity neighbourEntity = tile.VegetationEntity;
+                    if (neighbourEntity != Entity.Null && neighbourEntity.IsAlive()
+                        && neighbourEntity.TryGet(out VegetationGrowthLevel gl) && gl.Value > 0)
+                    {
+                        count++;
+                    }
                 }
             }
             return count;

@@ -121,6 +121,26 @@ namespace Origin.Source.Render
             return ScheduleAdd(layer, smd, sed, data.tilePos);
         }
 
+        // Оновлює вже існуючий інстанс спрайта за locator без перевиділення індексу.
+        public void ScheduleUpdate(SpriteLocator locator, RenderData data)
+        {
+            var chunk = GetChunkByPos(data.tilePos);
+
+            float vertexZ = WorldUtils.GetSpriteZOffsetByCellPos(data.tilePos, site);
+            SpriteMainData smd = new()
+            {
+                SpritePosition = new Vector3(WorldUtils.GetSpritePositionByCellPosition(data.tilePos, site).ToVector2(), vertexZ) + data.spriteOffset,
+                CellPosition = data.tilePos,
+            };
+            SpriteExtraData sed = new()
+            {
+                Color = data.color.ToVector4(),
+                TextureRect = new Vector4(data.sprite.RectPos.X, data.sprite.RectPos.Y, data.sprite.RectPos.Width, data.sprite.RectPos.Height)
+            };
+
+            chunk.ScheduleUpdate(locator, smd, sed);
+        }
+
         public void ClearLayer(DrawBufferLayer layer)
         {
             for (int z = 0; z < chunksCount.Z; z++)
@@ -288,12 +308,15 @@ namespace Origin.Source.Render
                                     //    SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset+new Vector3(0,0, 0.01f));
                                     //} 
                                     //else
-                                        SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset);
+                                    SiteRenderer.InstanceMainEffect.Parameters["PositionOffset"].SetValue(offset);
                                     SiteRenderer.InstanceMainEffect.Parameters["SpriteTexture"].SetValue(tex);
                                     SiteRenderer.InstanceMainEffect.Parameters["TextureSize"].SetValue(new Vector2(tex.Width, tex.Height));
 
                                     device.SetVertexBuffer(SiteRenderer.GeometryBuffer);
-                                    device.DepthStencilState = DepthStencilState.Default;
+                                    // FrontOver (трава) — напівпрозора, не пишемо у depth buffer щоб не було "вікон у пустоту"
+                                    device.DepthStencilState = (sublayer == (byte)DrawBufferLayer.FrontOver)
+                                        ? DepthStencilState.DepthRead
+                                        : DepthStencilState.Default;
                                     device.BlendState = BlendState.AlphaBlend;
 
                                     CheckLayerLight(sublayer);

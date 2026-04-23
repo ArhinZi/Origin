@@ -104,7 +104,7 @@ namespace Origin.Source.Render
             InstanceMainEffect.Parameters["CurrentLevel"].SetValue(_drawHighest);
             // top
             HiddenDrawer.DrawLayer(_drawHighest, site.DrawComponent.HalfWallMode);
-            StaticDrawer.Draw(_drawHighest, [(byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackNoLight, (byte)DrawBufferLayer.BackInteractives, (byte)DrawBufferLayer.Water], site.DrawComponent.HalfWallMode);
+            StaticDrawer.Draw(_drawHighest, [(byte)DrawBufferLayer.Back, (byte)DrawBufferLayer.BackNoLight, (byte)DrawBufferLayer.BackInteractives, (byte)DrawBufferLayer.FrontInteractives, (byte)DrawBufferLayer.Water], site.DrawComponent.HalfWallMode);
         }
     }
 }

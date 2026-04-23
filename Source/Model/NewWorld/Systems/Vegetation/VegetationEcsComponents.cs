@@ -1,3 +1,4 @@
+using Origin.Source.Render;
 using Origin.Source.Utils;
 
 namespace Origin.Source.Model.NewWorld.Systems.Vegetation
@@ -30,6 +31,12 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
     internal struct VegetationTileLink
     {
         public Point3 Pos;
+    }
+
+    // Останній locator спрайта рослинності у статичному drawer.
+    internal struct VegetationSpriteRenderLocator
+    {
+        public SpriteLocator Value;
     }
 
     // Тег: ентіті потрібно перевірити на валідність умов росту.

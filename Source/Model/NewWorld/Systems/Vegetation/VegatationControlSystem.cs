@@ -14,7 +14,6 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
         // Затримка витоптаності в тіках.
         private const int TrampleDelayTicks = 1000;
 
-        private readonly List<Entity> _entitiesBuffer = [];
         // Буфери для відкладених structural-змін поза ітератором query.
         private readonly List<Entity> _removeGrowthDelayBuffer = [];
         private readonly List<Entity> _addRenderDirtyBuffer = [];
@@ -26,6 +25,8 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
         private readonly List<(Entity Entity, VegetationGrowthDelay Delay)> _addGrowthDelayBuffer = [];
         // Відкладені structural-зміни для витоптаності.
         private readonly List<Entity> _removeTrampledTagBuffer = [];
+        // Буфер для оновлення сусідів при перетині порогу видимості (рівень 0 ↔ 1).
+        private readonly List<(Point3 Pos, short Delta)> _neighbourUpdateBuffer = [];
 
         public VegatationControlSystem(Site site) : base(site)
         {
@@ -66,10 +67,22 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             // Ріст та глобальна перевірка умов росту — раз на 60 тіків.
             if (t % GrowthTickInterval == 0)
             {
-                // Глобальну валідацію тепер централізовано робить VegetationEnvironmentDirtySystem
+                // Глобальну валідацію тепер centraлізовано робить VegetationEnvironmentDirtySystem
                 // на основі дерті-сигналів середовища, тому тут запускаємо лише ріст.
                 ProcessGrowthTick();
                 ProcessRenderDirtyTags();
+            }
+        }
+
+        // Централізоване очищення зв'язку рослинності з тайлом перед знищенням ентіті.
+        private void ClearTileVegetationLink(Point3 pos)
+        {
+            if (_site.Map.TryGet(pos, out Tile oldTile) && oldTile.Exists && oldTile.HasVegetation)
+            {
+                oldTile.HasVegetation = false;
+                oldTile.VegetationEntity = Entity.Null;
+                _site.Map[pos] = oldTile;
+                _site.InvalidateRender(pos);
             }
         }
 
@@ -97,22 +110,6 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             }
         }
 
-        // Позначає всі рослини тегом перевірки умов (сонце/конструкція/експозиція).
-        private void MarkAllVegetationForValidation()
-        {
-            QueryDescription query = new QueryDescription().WithAll<VegetationTileLink>();
-            _entitiesBuffer.Clear();
-            _site.ArchWorld.GetEntities(in query, _entitiesBuffer);
-
-            foreach (var entity in _entitiesBuffer)
-            {
-                if (!entity.IsAlive())
-                    continue;
-
-                entity.Add<VegetationNeedsValidationTag>();
-            }
-        }
-
         // Валідує ентіті рослинності по тегу і видаляє ті, що більше не відповідають умовам.
         private void ProcessValidationTags()
         {
@@ -120,6 +117,7 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             _destroyVegetationBuffer.Clear();
             _removeNeedsValidationTagBuffer.Clear();
             _addGrowthDelayBuffer.Clear();
+            _removeGrowthDelayBuffer.Clear();
 
             QueryDescription queryDesc = new QueryDescription().WithAll<VegetationNeedsValidationTag, VegetationTileLink, VegetationTypeTag>();
             var query = _site.ArchWorld.Query(in queryDesc);
@@ -145,37 +143,31 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
                     {
                         remove = true;
                     }
-                    else if (!VegUtilities.HasSunlightAt(_site, link.Pos))
-                    {
-                        // За вимогою: рослинність не існує при SunLighted == 0.
-                        remove = true;
-                    }
                     else if (!VegUtilities.TryGetVegetationFor(_site, link.Pos, tile.Construction, out _))
                     {
+                        remove = true;
+                    }
+                    else if (entity.TryGet(out VegetationGrowthLevel growthLevel) && growthLevel.Value == 0 && !VegUtilities.HasSunlightAt(_site, link.Pos))
+                    {
+                        // На нульовому рівні без сонця рослинність прибираємо повністю.
                         remove = true;
                     }
 
                     if (remove)
                     {
-                        if (_site.Map.TryGet(link.Pos, out Tile oldTile) && oldTile.Exists && oldTile.HasVegetation)
-                        {
-                            oldTile.HasVegetation = false;
-                            oldTile.VegetationEntity = Entity.Null;
-                            _site.Map[link.Pos] = oldTile;
-                            _site.InvalidateRender(link.Pos);
-                        }
-
+                        // Єдиний шлях очищення тайла перед видаленням ентіті.
+                        ClearTileVegetationLink(link.Pos);
                         _destroyVegetationBuffer.Add(entity);
                         continue;
                     }
 
-                    // Синхронізуємо сусідів, тайл і плануємо таймери росту.
+                    // При втраті сонця не знищуємо ентіті: ріст/згасання обробляються в ProcessGrowthTick.
                     short neighbours = VegUtilities.GetNeighboursFor(_site, link.Pos);
                     entity.Set(new VegetationNeighboursComponent { Value = neighbours });
 
                     if (entity.TryGet(out VegetationGrowthLevel level))
                     {
-                        if (level.Value >= 8)
+                        if (level.Value >= 8 && VegUtilities.HasSunlightAt(_site, link.Pos))
                         {
                             if (entity.Has<VegetationGrowthDelay>())
                                 _removeGrowthDelayBuffer.Add(entity);
@@ -220,54 +212,122 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             _removeGrowthDelayBuffer.Clear();
         }
 
-        // Раз на 60 тіків зменшує затримку росту і підвищує рівень росту при досягненні 0.
+        // Раз на 60 тіків зменшує/збільшує рівень росту залежно від сонця.
         private void ProcessGrowthTick()
         {
-            // Гарячий шлях: ітератор по чанках + spans, structural-зміни відкладені.
             _removeGrowthDelayBuffer.Clear();
             _addRenderDirtyBuffer.Clear();
+            _addGrowthDelayBuffer.Clear();
+            _destroyVegetationBuffer.Clear(); // Очищаємо буфер відкладеного видалення для цього тіку росту.
+            _neighbourUpdateBuffer.Clear(); // скидаємо буфер оновлення сусідів
 
-            QueryDescription queryDesc = new QueryDescription().WithAll<VegetationGrowthDelay, VegetationGrowthLevel, VegetationNeighboursComponent, VegetationTileLink>();
+            QueryDescription queryDesc = new QueryDescription().WithAll<VegetationGrowthLevel, VegetationNeighboursComponent, VegetationTileLink>();
             var query = _site.ArchWorld.Query(in queryDesc);
 
             foreach (ref var chunk in query)
             {
-                var delays = chunk.GetSpan<VegetationGrowthDelay>();
                 var levels = chunk.GetSpan<VegetationGrowthLevel>();
                 var neighbours = chunk.GetSpan<VegetationNeighboursComponent>();
                 var links = chunk.GetSpan<VegetationTileLink>();
 
                 foreach (var entityIndex in chunk)
                 {
-                    ref var delay = ref delays[entityIndex];
+                    Entity entity = chunk.Entity(entityIndex);
                     ref var level = ref levels[entityIndex];
                     ref var neighbour = ref neighbours[entityIndex];
                     ref var link = ref links[entityIndex];
 
-                    delay.TicksRemaining -= GrowthTickInterval;
-                    if (delay.TicksRemaining > 0)
-                        continue;
+                    bool hasSunlight = VegUtilities.HasSunlightAt(_site, link.Pos);
+                    bool hasDelay = entity.TryGet(out VegetationGrowthDelay delay);
 
-                    if (level.Value < 8)
+                    if (!hasDelay)
                     {
-                        level.Value++;
-                        _addRenderDirtyBuffer.Add(chunk.Entity(entityIndex));
+                        // Якщо рослина вже згасла в 0 і сонця все ще нема — видаляємо ентіті одразу.
+                        if (!hasSunlight && level.Value == 0)
+                        {
+                            // Єдиний шлях очищення тайла перед видаленням ентіті.
+                            ClearTileVegetationLink(link.Pos);
+                            _destroyVegetationBuffer.Add(entity);
+                            continue;
+                        }
+
+                        // Додаємо таймер, якщо рослина може змінювати рівень (ріст або згасання).
+                        if ((hasSunlight && level.Value < 8) || (!hasSunlight && level.Value > 0))
+                        {
+                            _addGrowthDelayBuffer.Add((entity, new VegetationGrowthDelay
+                            {
+                                TicksRemaining = VegUtilities.RollGrowthDelayTicks(_site, link.Pos, neighbour.Value)
+                            }));
+                        }
+                        continue;
                     }
 
-                    if (level.Value >= 8)
+                    delay.TicksRemaining -= GrowthTickInterval;
+                    if (delay.TicksRemaining > 0)
                     {
-                        _removeGrowthDelayBuffer.Add(chunk.Entity(entityIndex));
+                        entity.Set(delay);
+                        continue;
+                    }
+
+                    byte prevLevel = level.Value;
+                    if (hasSunlight)
+                    {
+                        if (level.Value < 8)
+                            level.Value++;
+                    }
+                    else
+                    {
+                        if (level.Value > 0)
+                            level.Value--;
+                    }
+
+                    if (prevLevel != level.Value)
+                    {
+                        // Перетини порогу видимості 0↔1 впливають на сусідні коефіцієнти росту.
+                        if (prevLevel == 0 && level.Value == 1)
+                            _neighbourUpdateBuffer.Add((link.Pos, +1));
+                        else if (prevLevel == 1 && level.Value == 0)
+                            _neighbourUpdateBuffer.Add((link.Pos, -1));
+
+                        _addRenderDirtyBuffer.Add(entity);
+                    }
+
+                    // Якщо після кроку згасання рівень став 0 і сонця нема — прибираємо рослинність повністю.
+                    if (!hasSunlight && level.Value == 0)
+                    {
+                        // Єдиний шлях очищення тайла перед видаленням ентіті.
+                        ClearTileVegetationLink(link.Pos);
+                        _destroyVegetationBuffer.Add(entity);
+                        continue;
+                    }
+
+                    bool reachedBoundary = hasSunlight ? level.Value >= 8 : level.Value == 0;
+                    if (reachedBoundary)
+                    {
+                        _removeGrowthDelayBuffer.Add(entity);
                     }
                     else
                     {
                         delay.TicksRemaining = VegUtilities.RollGrowthDelayTicks(_site, link.Pos, neighbour.Value);
+                        entity.Set(delay);
                     }
 
-                    VegUtilities.SyncTileFromEntity(_site, chunk.Entity(entityIndex));
+                    VegUtilities.SyncTileFromEntity(_site, entity);
                 }
             }
 
-            // Structural-зміни застосовуємо окремо, після проходу ітератора.
+            foreach (var entity in _destroyVegetationBuffer)
+            {
+                if (entity.IsAlive())
+                    _site.ArchWorld.Destroy(entity);
+            }
+
+            foreach (var item in _addGrowthDelayBuffer)
+            {
+                if (item.Entity.IsAlive() && !item.Entity.Has<VegetationGrowthDelay>())
+                    item.Entity.Add(item.Delay);
+            }
+
             foreach (var entity in _removeGrowthDelayBuffer)
             {
                 if (entity.IsAlive() && entity.Has<VegetationGrowthDelay>())
@@ -279,6 +339,10 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
                 if (entity.IsAlive() && !entity.Has<VegetationRenderDirtyTag>())
                     entity.Add<VegetationRenderDirtyTag>();
             }
+
+            // Оновлюємо кількість сусідів для рослин навколо тих, що перетнули поріг.
+            foreach (var (pos, delta) in _neighbourUpdateBuffer)
+                VegUtilities.UpdateNeighboursOf(_site, pos, delta);
         }
 
         // Логіка витоптаності: при тегу Trampled старт/рестарт таймера і опційне зменшення рівня.
@@ -288,11 +352,13 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
             _removeTrampledTagBuffer.Clear();
             _addRenderDirtyBuffer.Clear();
             _addGrowthDelayBuffer.Clear();
+            _neighbourUpdateBuffer.Clear(); // скидаємо буфер оновлення сусідів
 
             QueryDescription queryDesc = new QueryDescription().WithAll<VegetationTrampledTag, VegetationGrowthLevel, VegetationTileLink>();
             var query = _site.ArchWorld.Query(in queryDesc);
 
-            foreach (ref var chunk in query)
+            foreach (ref var chunk in query
+            )
             {
                 var levels = chunk.GetSpan<VegetationGrowthLevel>();
                 var links = chunk.GetSpan<VegetationTileLink>();
@@ -308,7 +374,13 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
 
                     bool hadActiveDelay = entity.TryGet(out VegetationTrampleDelay trampleDelay) && trampleDelay.TicksRemaining > 0;
                     if (hadActiveDelay)
+                    {
+                        byte prevLevel = level.Value;
                         level.Value = (byte)Math.Max(0, level.Value - 1);
+                        // Перетин порогу 1→0: ця рослина перестала бути видимим сусідом
+                        if (prevLevel == 1 && level.Value == 0)
+                            _neighbourUpdateBuffer.Add((link.Pos, -1));
+                    }
 
                     trampleDelay.TicksRemaining = TrampleDelayTicks;
                     if (entity.Has<VegetationTrampleDelay>())
@@ -348,6 +420,10 @@ namespace Origin.Source.Model.NewWorld.Systems.Vegetation
                 if (entity.IsAlive() && !entity.Has<VegetationRenderDirtyTag>())
                     entity.Add<VegetationRenderDirtyTag>();
             }
+
+            // Оновлюємо кількість сусідів для рослин навколо тих, що перетнули поріг
+            foreach (var (pos, delta) in _neighbourUpdateBuffer)
+                VegUtilities.UpdateNeighboursOf(_site, pos, delta);
         }
 
         // Тіковий відлік таймера витоптаності; після завершення компонент видаляється.

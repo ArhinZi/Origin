@@ -182,6 +182,21 @@ namespace Origin.Source.Render
             return spriteLocator;
         }
 
+        // Плануємо оновлення вже існуючого інстансу за locator без remove/add.
+        public void ScheduleUpdate(SpriteLocator locator, SpriteMainData dataMain, SpriteExtraData dataExtra)
+        {
+            var texture = GlobalResources.GetByMetaID(GlobalResources.Textures, (int)locator.TextureMetaID);
+            if (!layersBatches.TryGetValue(texture, out var batch) || !batch.TryGetValue((int)locator.Layer, out var layer))
+                return;
+
+            layer.SpritesToUpdate.Add(new UpdateSpriteInstanceData
+            {
+                index = locator.Index,
+                mainData = dataMain,
+                extraData = dataExtra
+            });
+        }
+
         public void RemoveScheduled()
         {
             void Remove(Effect effect, GraphicsDevice device, SpriteLayer layer)
@@ -225,13 +240,14 @@ namespace Origin.Source.Render
 
         public void AddScheduled()
         {
-            void Add(Effect effect, GraphicsDevice device, SpriteLayer layer)
+            // Окремий локальний хелпер для заливки довільної черги апдейтів у compute pass.
+            void ApplyUpdates(Effect effect, GraphicsDevice device, SpriteLayer layer, List<UpdateSpriteInstanceData> queue)
             {
-                int count = layer.SpritesToAdd.Count;
+                int count = queue.Count;
                 if (count == 0) return;
 
-                UpdateSpriteInstanceData[] add = layer.SpritesToAdd.ToArray();
-                layer.SpritesToAdd.Clear();
+                UpdateSpriteInstanceData[] add = queue.ToArray();
+                queue.Clear();
                 var buff = new StructuredBuffer(device, typeof(UpdateSpriteInstanceData), count, BufferUsage.WriteOnly, ShaderAccess.Read);
 
                 SiteRenderer.InstanceMainEffect.Parameters["RWMainBuffer"].SetValue(layer.bufferDataMain);
@@ -241,8 +257,15 @@ namespace Origin.Source.Render
                 SiteRenderer.InstanceMainEffect.Parameters["count"].SetValue(count);
 
                 effect.CurrentTechnique.Passes["Update"].ApplyCompute();
-                int ihh = (count + 63) / 64;
                 device.DispatchCompute((count + 63) / 64, 1, 1);
+            }
+
+            void Add(Effect effect, GraphicsDevice device, SpriteLayer layer)
+            {
+                // Оновлюємо спочатку існуючі інстанси.
+                ApplyUpdates(effect, device, layer, layer.SpritesToUpdate);
+                // Потім додаємо нові інстанси.
+                ApplyUpdates(effect, device, layer, layer.SpritesToAdd);
             }
 
             Effect effect = SiteRenderer.InstanceMainEffect;

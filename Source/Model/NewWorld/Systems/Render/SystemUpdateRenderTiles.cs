@@ -1,3 +1,5 @@
+using Arch.Core;
+using Arch.Core.Extensions;
 using Microsoft.Xna.Framework;
 using Origin.Source.Model.NewWorld;
 using Origin.Source.Model.NewWorld.Systems;
@@ -92,7 +94,9 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                         {
                             foreach (var data in GetVegetationRenderData(tilePos, tile))
                             {
-                                renderState.VegetationLocators.Add(renderer.StaticDrawer.AddTileSprite(data));
+                                var locator = renderer.StaticDrawer.AddTileSprite(data);
+                                renderState.VegetationLocators.Add(locator);
+                                SetVegetationSpriteLocator(tile, locator);
                             }
                         }
 
@@ -129,18 +133,15 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                         state.ConstructionLocators.Clear();
                         removeDirty = true;
                     }
+
                     if (state.FluidLocators.Count > 0)
                     {
                         renderer.StaticDrawer.ScheduleRemove(state.FluidLocators, tilePos);
                         state.FluidLocators.Clear();
                         removeDirty = true;
                     }
-                    if (state.VegetationLocators.Count > 0)
-                    {
-                        renderer.StaticDrawer.ScheduleRemove(state.VegetationLocators, tilePos);
-                        state.VegetationLocators.Clear();
-                        removeDirty = true;
-                    }
+
+                    // Для рослинності намагаємось зберегти locator і оновити інстанс in-place в другому проході.
                 }
 
                 renderer.HiddenDrawer.ClearHidden(tilePos);
@@ -158,15 +159,24 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                     continue;
 
                 Tile tile = site.Map[tilePos];
+                if (!site.RenderState.TryGet(tilePos, out var state))
+                    state = site.RenderState.GetOrCreate(tilePos);
+
                 if (!tile.Exists)
                 {
+                    // Якщо тайл зник, прибираємо й рослинні локатори, які могли лишитися.
+                    if (state.VegetationLocators.Count > 0)
+                    {
+                        renderer.StaticDrawer.ScheduleRemove(state.VegetationLocators, tilePos);
+                        state.VegetationLocators.Clear();
+                        removeDirty = true;
+                    }
+
                     renderer.HiddenDrawer.MakeHidden(tilePos);
                     site.RenderState.Remove(tilePos);
                     hiddenDirty = true;
                     continue;
                 }
-
-                var state = site.RenderState.GetOrCreate(tilePos);
 
                 if (tile.HasConstruction)
                 {
@@ -186,13 +196,45 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                     }
                 }
 
-                if (tile.HasVegetation)
+                var vegetationData = GetVegetationRenderData(tilePos, tile);
+                if (tile.HasVegetation && vegetationData.Count > 0)
                 {
-                    foreach (var data in GetVegetationRenderData(tilePos, tile))
+                    // Якщо вже є валідні локатори тієї ж кількості — робимо in-place update без remove/add.
+                    if (state.VegetationLocators.Count == vegetationData.Count)
                     {
-                        state.VegetationLocators.Add(renderer.StaticDrawer.ScheduleUpdate(data));
-                        addDirty = true;
+                        for (int i = 0; i < vegetationData.Count; i++)
+                        {
+                            var locator = state.VegetationLocators[i];
+                            renderer.StaticDrawer.ScheduleUpdate(locator, vegetationData[i]);
+                            SetVegetationSpriteLocator(tile, locator);
+                            addDirty = true;
+                        }
                     }
+                    else
+                    {
+                        // Інакше (кількість змінилась) робимо стандартний remove/add.
+                        if (state.VegetationLocators.Count > 0)
+                        {
+                            renderer.StaticDrawer.ScheduleRemove(state.VegetationLocators, tilePos);
+                            state.VegetationLocators.Clear();
+                            removeDirty = true;
+                        }
+
+                        foreach (var data in vegetationData)
+                        {
+                            var locator = renderer.StaticDrawer.ScheduleUpdate(data);
+                            state.VegetationLocators.Add(locator);
+                            SetVegetationSpriteLocator(tile, locator);
+                            addDirty = true;
+                        }
+                    }
+                }
+                else if (state.VegetationLocators.Count > 0)
+                {
+                    // Рослинність зникла — прибираємо старі інстанси.
+                    renderer.StaticDrawer.ScheduleRemove(state.VegetationLocators, tilePos);
+                    state.VegetationLocators.Clear();
+                    removeDirty = true;
                 }
 
                 if (!state.HasAny)
@@ -201,8 +243,15 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
                 }
             }
 
+            // Після другого проходу могли з'явитися нові remove-операції (наприклад, vegetation mismatch).
+            if (removeDirty)
+            {
+                renderer.StaticDrawer.RemoveSprites();
+            }
+
             if (addDirty)
             {
+                // Цей прохід застосовує і додавання, і in-place оновлення інстансів.
                 renderer.StaticDrawer.AddSprites();
             }
 
@@ -314,6 +363,10 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
             if (!tile.HasVegetation || !tile.HasConstruction)
                 return list;
 
+            Entity entity = tile.VegetationEntity;
+            if (entity == Entity.Null || !entity.IsAlive())
+                return list;
+
             // Беремо стан рослинності напряму з ECS-ентіті, без дублювання в тайлі.
             if (!VegUtilities.TryGetVegetationState(site, tile, out var vegetation, out var growthLevel, out _))
                 return list;
@@ -322,41 +375,72 @@ namespace Origin.Source.Model.NewWorld.Systems.Render
             if (growthLevel <= 0)
                 return list;
 
+            // Простий стабільний варіант спрайта від seed/позиції/типу.
+            int vegetationMeta = entity.TryGet(out VegetationTypeTag typeTag) ? typeTag.VegetationMetaID : 0;
+            int variant = ComputeStableSpriteVariant(site.World.Seed, site.ID, tilePos, vegetationMeta);
+
             var constr = tile.Construction.Construction;
-            int rand = Math.Abs(HashCode.Combine(tilePos.X, tilePos.Y, tilePos.Z, vegetation.ID));
             Sprite sprite = null;
             List<Sprite> sprites = null;
 
             if (constr.Type != "Ramp")
             {
                 if (!string.IsNullOrEmpty(constr.Category) && Resources.Vegetation.VegetationSpritesByConstrCategory.TryGetValue((vegetation, constr.Category), out sprites))
-                    sprite = sprites[rand % sprites.Count];
+                    sprite = sprites[variant % sprites.Count];
                 else if (Resources.Vegetation.VegetationSpritesByConstruction.TryGetValue((vegetation, constr.ID), out sprites))
-                    sprite = sprites[rand % sprites.Count];
+                    sprite = sprites[variant % sprites.Count];
             }
             else if (tile.HasConstructionShape && tile.HasConstructionRotation &&
                 Resources.Vegetation.VegetationDrawingByConstruction.TryGetValue((vegetation, constr.ID), out var drawing) &&
                 drawing.Shapes != null && drawing.Shapes.TryGetValue(tile.ConstructionShape.Name, out var shape))
             {
-                sprite = shape.Sprites[rand % shape.Sprites.Count];
-                var directional = sprite.GetSpritesByDir(tile.ConstructionRotation.Direction);
-                directional = sprite.GetSpritesByDir(WorldUtils.RotateDirection(tile.ConstructionRotation.Direction, site.Rotation));
-                sprite = directional[rand % directional.Count];
+                sprite = shape.Sprites[variant % shape.Sprites.Count];
+                var directional = sprite.GetSpritesByDir(WorldUtils.RotateDirection(tile.ConstructionRotation.Direction, site.Rotation));
+                int dirVariant = ((variant / Math.Max(1, shape.Sprites.Count)) & int.MaxValue) % directional.Count;
+                sprite = directional[dirVariant];
             }
 
             if (sprite != null)
             {
-                // Прозорість залежить від рівня росту: 0 -> майже прозора, 8 -> повністю непрозора.
+                // Прозорість і яскравість залежать від рівня росту: 0 -> майже прозора і темна, 8 -> повна непрозорість і нормальна яскравість.
                 float growth01 = Math.Clamp(growthLevel / 8f, 0f, 1f);
                 byte alpha = (byte)Math.Clamp(32 + (int)(growth01 * 223f), 0, 255);
-                Color color = Color.White;
-                color.A = alpha;
+                // Мінімальна яскравість 40% при рівні 0, 100% при рівні 8
+                byte brightness = (byte)Math.Clamp(102 + (int)(growth01 * 153f), 0, 255);
+                Color color = new Color(brightness, brightness, brightness, alpha);
 
                 list.Add(new RenderData((int)Global.DrawBufferLayer.FrontOver, tilePos, sprite, color,
                     new Vector3(0, -GlobalResources.Settings.FloorYoffset + (sprites != null ? -8 : 0), 0)));
             }
 
             return list;
+        }
+
+        // Фіксуємо locator спрайта рослинності в ECS-компоненті ентіті.
+        private static void SetVegetationSpriteLocator(in Tile tile, SpriteLocator locator)
+        {
+            if (!tile.HasVegetation)
+                return;
+
+            Entity entity = tile.VegetationEntity;
+            if (entity == Entity.Null || !entity.IsAlive())
+                return;
+
+            var value = new VegetationSpriteRenderLocator { Value = locator };
+            if (entity.Has<VegetationSpriteRenderLocator>())
+                entity.Set(value);
+            else
+                entity.Add(value);
+        }
+
+        // Простий стабільний хеш для вибору варіанту спрайта.
+        private static int ComputeStableSpriteVariant(int worldSeed, int siteId, Point3 pos, int vegetationMeta)
+        {
+            unchecked
+            {
+                int h = worldSeed + pos.GetHashCode();
+                return h & int.MaxValue;
+            }
         }
 
         private List<RenderData> GetFluidRenderData(Point3 tilePos, Tile tile)
